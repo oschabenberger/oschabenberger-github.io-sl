@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 30&nbsp; Artificial Neural Networks</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./training_ann.html" rel="next">
+<link href="./mixed.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ann.html">Neural Networks and Deep Learning</a></li><li class="breadcrumb-item"><a href="./ann.html"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-ann-intro" id="toc-sec-ann-intro" class="nav-link active" data-scroll-target="#sec-ann-intro"><span class="header-section-number">30.1</span> Introduction</a>
+  <ul>
+  <li><a href="#a-look-back" id="toc-a-look-back" class="nav-link" data-scroll-target="#a-look-back">A Look Back</a></li>
+  <li><a href="#what-changed" id="toc-what-changed" class="nav-link" data-scroll-target="#what-changed">What Changed?</a></li>
+  <li><a href="#the-basics" id="toc-the-basics" class="nav-link" data-scroll-target="#the-basics">The Basics</a></li>
+  </ul></li>
+  <li><a href="#single-layer-networks" id="toc-single-layer-networks" class="nav-link" data-scroll-target="#single-layer-networks"><span class="header-section-number">30.2</span> Single Layer Networks</a>
+  <ul>
+  <li><a href="#activation-functions" id="toc-activation-functions" class="nav-link" data-scroll-target="#activation-functions">Activation Functions</a></li>
+  <li><a href="#output-functions" id="toc-output-functions" class="nav-link" data-scroll-target="#output-functions">Output Functions</a></li>
+  <li><a href="#ann-by-hand" id="toc-ann-by-hand" class="nav-link" data-scroll-target="#ann-by-hand">ANN by Hand</a></li>
+  <li><a href="#sec-xor-gate" id="toc-sec-xor-gate" class="nav-link" data-scroll-target="#sec-xor-gate">The XOR Gate</a></li>
+  </ul></li>
+  <li><a href="#multi-layer-networks" id="toc-multi-layer-networks" class="nav-link" data-scroll-target="#multi-layer-networks"><span class="header-section-number">30.3</span> Multi Layer Networks</a></li>
+  <li><a href="#sec-mnist-first-look" id="toc-sec-mnist-first-look" class="nav-link" data-scroll-target="#sec-mnist-first-look"><span class="header-section-number">30.4</span> A First Look at MNIST Image Classification</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ann.html">Neural Networks and Deep Learning</a></li><li class="breadcrumb-item"><a href="./ann.html"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-ann" class="quarto-section-identifier"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="sec-ann-intro" class="level2" data-number="30.1">
+<h2 data-number="30.1" class="anchored" data-anchor-id="sec-ann-intro"><span class="header-section-number">30.1</span> Introduction</h2>
+<section id="a-look-back" class="level3">
+<h3 class="anchored" data-anchor-id="a-look-back">A Look Back</h3>
+<p>Few analytic methods have occupied conversations in recent years as neural networks. They seem at times inscrutable and complex, and mysteriously powerful. Yet neural networks, or better <strong>artificial neural networks</strong> (ANN), had their ups and downs since the <strong>perceptron</strong> was described by <span class="citation" data-cites="McCullochPitts">McCulloch and Pitts (<a href="references.html#ref-McCullochPitts" role="doc-biblioref">1943</a>)</span>.</p>
+<p>Once, ANNs were thought to hold the key to artificial intelligence (AI) and that within a short period of time machines based on neural networks would be capable to perform any task. These exuberant expectations could not be met. From the peak of inflated expectations the field of AI slumped into the trough of disillusionment and the first AI winter had set in. It was not fashionable in the 1980s or 1990s to say you were working on artificial intelligence. Neural networks were just another supervised learning approach to predict or classify a target variable. Compare the situation to today, when it is not fashionable to say you are working on anything but AI.</p>
+<p>Then, around 2010, everything changed—again. Classification models built on specialized neural networks improved greatly in performance. In 2012, AlexNet, a <strong>convolutional neural network</strong> (CNN, a special type of artificial neural network for image data), had the best top-5 error rate in the annual <a href="https://www.image-net.org/index.php">ImageNet</a> competition, beating out human interpreters for the first time. The task in the ImageNet competition is to recognize the objects on images and correctly associate them with 1,000 categories.</p>
+<p>This was a watershed moment in the history of artificial intelligence. Algorithms outperforming their human masters is not too surprising to us. After all, we build algorithms of all kinds for exactly that purpose: to perform a task repeatedly and reliably at a scale beyond human capacity. Who would want to trade a calculator for doing arithmetic themselves? The watershed moment occurred because an ANN bested human interpreters in a task that many previously thought was squarely in the human domain: <em>sensing</em> the world.</p>
+<p>Up until now, computerized systems and algorithms were great at solving problems that are <u>difficult for humans</u> but <u>easy for computers</u>. Those are problems that can be described by formal rules and logic. Performing mathematical operations and capturing the tax code in software are examples.</p>
+<p>The CNN that won ImageNet solved a problem that is <u>easy for humans</u> but was so far <u>difficult for computers</u>: interpreting the natural world. We can look at the world and immediately recognize the objects in our field of vision: a tree here, a person there–we might know their name–, a flower pot on top of a table. This task requires a large amount of knowledge about the world, yet it is something we can do intuitively. How was it possible that now an algorithm trained on data had become better at this task than us?</p>
+<p>Had it really?</p>
+<p>AlexNet had not become more knowledgeable about the world. The ANN was not capable of synthesizing information and concepts and deriving the nature of objects from it. It was not intelligent. The ANN was trained to be a pattern matching machine. Using many labeled training examples, where the objects on an image had been identified by humans for the benefit of the algorithm, the network learned to associate labels with certain patterns in the image pixels. When presented with a new image, the algorithm can then map the presented pixels against the learned associations and predict with surprising accuracy which objects it “sees” on the image.</p>
+<p>The pattern matching that occurs in our brains intuitively based on colors, shapes, edges, movement, context, etc., had been replaced with a crude pattern matching based on pixels. Exchange the pixels with some other means of encoding the visual information, and the neural network would fail miserably, unless it is retrained on the new type of data.</p>
+<p>Still, training an algorithm to perform a complex task as image recognition so well was remarkable. Other examples of neural network-based algorithms moving into the domain of easy-for-human specialties came from the fields of robotics, autonomous operations (driving), natural language understanding (reading, writing, summarization, interpretation), etc. That begged the questions</p>
+<ul>
+<li><p>How was this possible?</p></li>
+<li><p>Why now? Neural networks had been around since the 1940s? Why did it take another 6 decades to improve their performance. Regression has been around for a long time as well and it is not as if we are suddenly experiencing a massive “regression revolution”.</p></li>
+</ul>
+</section>
+<section id="what-changed" class="level3">
+<h3 class="anchored" data-anchor-id="what-changed">What Changed?</h3>
+<p>Several major developments came together to raise the performance and profile of neural networks.</p>
+<ol type="1">
+<li><p>The availability of large training data sets</p></li>
+<li><p>The availability of computing resources</p></li>
+<li><p>Specialized network architectures</p></li>
+<li><p>Better algorithms to train neural networks with greater depth</p></li>
+<li><p>Dedicated software packages for deep learning</p></li>
+</ol>
+<p>The performance of neural networks to this point had been limited by the size of the networks and the computational resources required to train them. While a large statistical model might have a thousand parameters, this would constitute a pretty small neural network by today’s standards. Networks consist of layer and those with more layers, so-called deep neural networks, tend to abstract concepts better than shallow networks. This increases the number of parameters dramatically, however. Millions of parameters is not uncommon in deep neural networks. GPT-1, released in June 2018 had 117 million parameters. GPT-2, released in February 2019 had 1.5 <strong>b</strong>illion parameters. GPT-3.5, released in November 2022 featured 175 billion parameters.</p>
+<p>The internet facilitated the collection (vacuuming) of data. In object classification, acceptable performance can be achieved with about 5,000 training observations for each category to be classified. If you want an algorithm to be good at identifying cats, you need 5,000 pictures of cats. To achieve human-level performance in categorization you need about 10 million observations. The massive data sets needed to train deep neural networks well are now available. The rise of the large language models (LLMs) such as GPT would probably not have been possible without the internet as the training data.</p>
+<p>Estimating such a large number of parameters is a formidable problem, made more complex by the nonlinear nature of neural networks and their over-parameterization. A single computer limits the size of networks that can be trained. Distributed computing platforms in which relatively cheap compute servers are stitched together into large high-performance computing arrays provided the necessary horsepower to train large networks. Cloud computing made these computing resources widely available to anyone with a credit card.</p>
+<p>Maybe more importantly, the use of GPUs (graphical processing units) instead of CPUs changed the computational equations. It turns out that much of the math in training neural networks is similar to the type of vector operations that occur in processing images. The GPU chips that accelerated graphics operations have become the dominating chip architecture for AI models. NVIDIA, maker of GPUs, evolved from a company supporting video gaming and graphics rendering to one of the most valuable companies on the planet. Its market capitalization was about $10 billion in 2014. It has eclipsed $3 trillion in June 2024. As of this writing, NVIDIA is worth more than Meta, Tesla, Netflix, AMD, Intel, and IBM <strong>combined</strong>.</p>
+<p>Initially, neural networks were used to process continuous input data, not unlike traditional regression or classification methods. The earliest applications of neural networks was as binary classifiers. Specialized networks were developed to process unstructured data such as text, images, audio. Convolutional neural networks revolutionized image processing and recurrent neural networks had a large impact on natural language processing. Increasingly, these architectures are now being replaced by <strong>transformer models</strong> such as GPT, BERT, or LLama.</p>
+<hr>
+<p>Because sensing the world and operating in it takes more brain than brawn, and partly because the term neural network invoked comparisons with human brain function, it was thought that—finally—machines are besting us and coming for us. The era of <strong>artificial general intelligence</strong> (AGI) was finally upon us. Not so fast.</p>
+<p>Well, that did not happen, and it probably never will based on algorithms just trained on data. Although we are today experiencing another massive shift in AI capabilities thanks to transformer models. These are basically very complex forms of artificial neural networks. Still, I firmly believe that no artificial general intelligence (AGI) will be based on a probabilistic prediction algorithm trained on historical data.</p>
+<p>Neural networks do not mimic the functioning of the human brain. Their fundamental building block is called a neuron, and that is where the similarities end. A neuron in an ANN does not at all work like a neuron in the brain. At best a parallel can be drawn because neurons in an ANN are connected and “activated” through weights.</p>
+<p>So let’s start figuring out what makes artificial neural networks tick.</p>
+</section>
+<section id="the-basics" class="level3">
+<h3 class="anchored" data-anchor-id="the-basics">The Basics</h3>
+<p>Artificial neural networks are supervised learning tools. Like other techniques in this family of algorithms they convert an input material (data) through an algorithm into the prediction or classification of a target variable (<a href="#fig-sup-learning" class="quarto-xref">Figure&nbsp;<span>30.1</span></a>).</p>
+<div id="fig-sup-learning" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sup-learning-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/SupervisedLearning.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/SupervisedLearning.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sup-learning-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.1: Supervised learning in a nutshell.
+</figcaption>
+</figure>
+</div>
+<p>Neural networks can take as input any type of data and produce any type of output. <a href="#fig-sup-learning" class="quarto-xref">Figure&nbsp;<span>30.1</span></a> displays this as predicting or classifying a target variable <span class="math inline">\(Y\)</span>, but keep in mind that such a prediction could also be the most likely word in the translation of an input sequence of words into an output sequence of words in a different language. The stuff that happens in between input and output is organized in layers of transformations. The output of one layer is the input to the next layer. Each layer is associated with parameters, linear predictors, and nonlinear transformations.</p>
+<p>A network with a single hidden layer is shown in <a href="#fig-sup-learning-ann" class="quarto-xref">Figure&nbsp;<span>30.2</span></a>. This brings the total number of layers in the network to three:</p>
+<ul>
+<li>an input layer with data</li>
+<li>a hidden layer that transforms the input data somehow and passes it on to an output layer</li>
+<li>an output layer that transforms the results from the hidden layer into the goal of the analysis, a prediction or a classification.</li>
+</ul>
+<div id="fig-sup-learning-ann" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sup-learning-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/SupervisedLearningANN.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/SupervisedLearningANN.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sup-learning-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.2: Supervised learning with single layer ANN.
+</figcaption>
+</figure>
+</div>
+<p>The earliest networks were called <strong>perceptrons</strong>, they did not have a hidden layer. A single layer perceptron thus processes the input data and transforms it directly into the output (<a href="#fig-perceptron" class="quarto-xref">Figure&nbsp;<span>30.3</span></a>).</p>
+<div id="fig-perceptron" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-perceptron-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/Perceptron_Network.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/Perceptron_Network.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-perceptron-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.3: Perceptron and single layer network.
+</figcaption>
+</figure>
+</div>
+<p>That sounds a lot like any other statistical model where the mean of the target is modeled as a function of inputs and parameters: <span class="math display">\[
+\text{E}[Y] = f(x_1,x_2,\cdots,x_p,\theta_1, \cdots,\theta_k)
+\]</span> Neural networks are in fact often viewed as tools to approximate unknown functions. The basic idea is that the approximation can be achieved by using a nonlinear transformation, called an <strong>activation</strong>, of a linear function. Simplifying our model we can then write <span class="math inline">\(f(x_1,x_2,\cdots,x_p,\theta_1, \cdots,\theta_k)\)</span> as <span class="math display">\[
+g(\beta_0 + \beta_1 x_1 + \cdots\beta_p x_p)
+\]</span> for some function <span class="math inline">\(g()\)</span>. It is customary in neural network analysis to refer to the coefficients of the linear predictor as <strong>bias</strong> and <strong>weights</strong>, rather than as intercept and slope coefficients (parameters). The notation <span class="math display">\[
+g(b + w_1 x_1 + \cdots w_p x_p)
+\]</span> for bias (<span class="math inline">\(b\)</span>) and weights (<span class="math inline">\(w_j\)</span>) is common. An ANN with 1 million parameters has a combined 1 million weights and biases. Since <span class="math inline">\(g()\)</span> operates on the predictor of the output layer, it is called the output activation function.</p>
+<p>We now see that a simple linear regression model is a special case of an artificial neural network:</p>
+<ul>
+<li>there are no hidden layers</li>
+<li>the output activation function is the identity (also called <strong>linear activation</strong>)</li>
+</ul>
+<p>A multinomial logistic regression model for <span class="math inline">\(k\)</span> categories works similarly, but now the output is a probability of class membership. Instead of a single linear predictor, you estimate a separate predictor <span class="math display">\[
+\eta_j = b_j + w_{j1} x_1 + \cdots + w_{jp} x_p \qquad j=1,\cdots,k
+\]</span> The output activation function is <span class="math display">\[
+g_j(\eta) = \frac{\exp\{\eta_j\}}{\sum_{l=1}^k\exp\{\eta_l\}}
+\]</span> known as the <strong>softmax</strong> activation. The <span class="math inline">\(g_j()\)</span> are now interpreted as category probabilities and an observation is classified into the category for which <span class="math inline">\(g_j\)</span> is largest. Note that <span class="math inline">\(g()\)</span> is a nonlinear function that serves two purposes: it makes the relationship between input variables and category probabilities nonlinear and it maps the linear predictors from the real line to the <span class="math inline">\([0,1]\)</span> interval.</p>
+</section>
+</section>
+<section id="single-layer-networks" class="level2" data-number="30.2">
+<h2 data-number="30.2" class="anchored" data-anchor-id="single-layer-networks"><span class="header-section-number">30.2</span> Single Layer Networks</h2>
+<p>Perceptrons proved to be limited in the number of categories (classes) they can learn. As a binary classifier, they required linear separability of the classes. Handling more complex problems was solved by the introduction of additional layers, known as <strong>hidden</strong> layers. The basic form of an artificial neural network today is the single layer network that consists of an input layer, a single hidden layer, and an output layer (<a href="#fig-single-layer-ann" class="quarto-xref">Figure&nbsp;<span>30.4</span></a>).</p>
+<div id="fig-single-layer-ann" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-single-layer-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/SingleLayerANN.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4"><img src="images/SingleLayerANN.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-single-layer-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.4: Single layer ANN.
+</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The distinction between single layer and multi layer network has to do with the number of hidden layers, not the total number of layers. As we will see in the discussion of deep learning, what constitutes a layer is not always clear. In convolutional neural networks, for example, a layer has multiple stages: convolution, activation, and pooling. These stages are often presented as separate layers, adding to the difficulty of exactly defining what we mean by <strong>deep</strong> learning based on the number of layers in a network.</p>
+</div>
+</div>
+<p>The single layer ANN is also called a feedforward network, information flows from the input to the output layer. It is a <strong>fully connected</strong> network when all of the inputs are connected to all nodes of the hidden layer and all nodes of the hidden layer feed into the output layer.</p>
+<p>The terms <span class="math inline">\(A_1, \cdots, A_M\)</span> in <a href="#fig-single-layer-ann" class="quarto-xref">Figure&nbsp;<span>30.4</span></a> are called the <strong>activations</strong> of the hidden layer, <span class="math inline">\(M\)</span> is the number of nodes (=number of neurons) in that layer.</p>
+<p>Expressing neural networks mathematically is straightforward but gets messy quickly because of the many nodes and possibly layers. Here it goes.</p>
+<ul>
+<li><p>The input variables are <span class="math inline">\(x_1, \cdots, x_p\)</span>. Unstructured data have been converted to a numerical representation through encoding. <span class="math inline">\(\textbf{x}\)</span> denotes the vector of inputs for a record, <span class="math inline">\(\textbf{x}= [x_1,\cdots,x_p]^\prime\)</span>.</p></li>
+<li><p><span class="math inline">\(A_j\)</span>, the <span class="math inline">\(j\)</span><sup>th</sup> neuron in the hidden layer, is modeled as <span class="math display">\[
+A_j = \sigma(b_j + \textbf{w}_j^\prime\textbf{x}) = \sigma(b_j + w_{j1} x_1 + \cdots + w_{jp} x_p) \qquad j=1,\cdots, M
+\]</span> for some activation function <span class="math inline">\(\sigma()\)</span>.</p></li>
+<li><p>The <span class="math inline">\(M\)</span> activations are collected into a vector <span class="math inline">\(\textbf{a}= [A_1, \cdots, A_M]^\prime\)</span></p></li>
+<li><p>The output layer is modeled as <span class="math display">\[
+T(\textbf{a}) = b^o+ \sum_{j=1}^M w_j^oA_j = b^o + \textbf{a}^\prime\textbf{w}^o
+\]</span></p></li>
+<li><p><span class="math inline">\(T(\textbf{a})\)</span> is transformed with an output function <span class="math inline">\(g(T(\textbf{a}))\)</span> to produce the desired analytical result.</p></li>
+</ul>
+<p>In summary, the activations <span class="math inline">\(A_j\)</span> are linear functions of the inputs that go through a nonlinear activation function <span class="math inline">\(\sigma()\)</span>. The transformed activations are modeled as another linear model, the output function <span class="math inline">\(g(T(\textbf{a}))\)</span> transforms <span class="math inline">\(T\)</span> for prediction or classification. You can think of the activations <span class="math inline">\(A_1, \cdots, A_M\)</span> as deriving <span class="math inline">\(M\)</span> new inputs from the <span class="math inline">\(p\)</span> inputs <span class="math inline">\(x_1, \cdots, x_p\)</span>. There is no connection between <span class="math inline">\(M\)</span> and <span class="math inline">\(p\)</span>, you can choose <span class="math inline">\(M\)</span> to be larger or smaller.</p>
+<p>There are several linear functions in the ANN, in the activations and in the output. <span class="math inline">\(\sigma()\)</span> and <span class="math inline">\(g()\)</span> introduce nonlinearity, but the ANN is nonlinear in the parameters (weights and biases) beyond that. Suppose that the output function <span class="math inline">\(g()\)</span> is the identity <span class="math inline">\(g(T(\textbf{a})) = T(\textbf{a})\)</span> (This is also called a “linear” output function although identity function is technically more accurate). In this situation <span class="math display">\[
+\begin{align*}
+g(T(\textbf{a})) &amp;= b^o + \textbf{a}^\prime\textbf{w}^o \\
+&amp;= b^o + \sum_{j=1}^M w_j^o \sigma\left(b_j + \sum_{k=1}^pw_{jk} x_k \right)
+\end{align*}
+\]</span> While <span class="math inline">\(g(T(\textbf{a}))\)</span> appears like a linear predictor, the function is highly nonlinear in the parameters since <span class="math inline">\(\textbf{a}\)</span> contains quantities estimated from the data. Even if <span class="math inline">\(\sigma()\)</span> is the identity function, <span class="math inline">\(g(T(\textbf{a}))\)</span> is nonlinear in the weights and biases. <span class="math inline">\(\sigma()\)</span> and <span class="math inline">\(g()\)</span> add nonlinearity beyond that.</p>
+<p>Why are the neurons <span class="math inline">\(A_1, \cdots, A_M\)</span> called a <strong>hidden</strong> layer? The layer is not directly specified by the training data. It is also not directly observed. We observe the <span class="math inline">\(x\)</span>s but connect the inputs only indirectly to the output of the model. The connection to the output is made through the neurons that hide between the two. The learning algorithm can decide how to best use the hidden layer—that is, assign biases and weights.</p>
+<section id="activation-functions" class="level3">
+<h3 class="anchored" data-anchor-id="activation-functions">Activation Functions</h3>
+<p>The activation function <span class="math inline">\(\sigma()\)</span> introduces nonlinearity into a linear structure, not unlike the kernel trick encountered with support vector machines (<a href="supportvectors.html" class="quarto-xref"><span>Chapter 16</span></a>).</p>
+<p>Prior to the advent of deep learning and the discovery of ReLU, the rectified linear unit, the sigmoid (logistic) activation function was the most important in training neural networks. ReLU has since dominated. Some of the more important activation functions are shown in <a href="#tbl-activation-funcs" class="quarto-xref">Table&nbsp;<span>30.1</span></a>.</p>
+<div id="tbl-activation-funcs" class="striped quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-activation-funcs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;30.1: Activation functions <span class="math inline">\(\sigma(\nu)\)</span>
+</figcaption>
+<div aria-describedby="tbl-activation-funcs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sigmoid (logistic)</td>
+<td><span class="math inline">\(\frac{1}{1+\exp\{-\nu\}}\)</span></td>
+</tr>
+<tr class="even">
+<td>Hyperbolic tangent</td>
+<td><span class="math inline">\(\tanh(\nu)\)</span></td>
+</tr>
+<tr class="odd">
+<td>Rectified linear unit (ReLU)</td>
+<td><span class="math inline">\(\max\{0,\nu\}\)</span></td>
+</tr>
+<tr class="even">
+<td>Radial basis function</td>
+<td><span class="math inline">\(\exp\{-\gamma\nu^2\}\)</span></td>
+</tr>
+<tr class="odd">
+<td>Softplus</td>
+<td><span class="math inline">\(\log\{1+e^\nu\}\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>You will recognize the sigmoid activation function as the inverse logit link from generalized linear models. The sigmoid (and hyperbolic tangent) function map from <span class="math inline">\((-\infty, \infty)\)</span> to <span class="math inline">\((0,1)\)</span>. The sigmoid function has a limited band of activation, its behavior is nearly linear around <span class="math inline">\(\nu = 0\)</span>.</p>
+<p>The ReLU function is deceptively simple. It takes on the value 0 whenever <span class="math inline">\(\nu &lt; 0\)</span> and returns the value if <span class="math inline">\(\nu &gt; 0\)</span> (<a href="#fig-relu-sigmoid" class="quarto-xref">Figure&nbsp;<span>30.5</span></a>). It is somewhat surprising that the ReLU function, which is <em>almost</em> linear, allows the approximation of arbitrary nonlinear functions. The ReLU in <a href="#fig-relu-sigmoid" class="quarto-xref">Figure&nbsp;<span>30.5</span></a> was scaled by factor <span class="math inline">\(1/4\)</span> to make it comparable to the sigmoid function. ReLU is not bounded for positive values and is not useful as an output function for probabilities if the goal is to predict on the <span class="math inline">\((0,1)\)</span> interval.</p>
+<div class="cell" data-layout-align="center" width="90%">
+<div class="cell-output-display">
+<div id="fig-relu-sigmoid" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-relu-sigmoid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ann_files/figure-html/fig-relu-sigmoid-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-relu-sigmoid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.5: ReLU (scaled) and sigmoid activation function.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The popularity of ReLU stems from its close-to-linear behavior. The function is easy to optimize with gradient-based algorithms (although it is not differentiable at zero), generalizes well, and is just sufficiently complex to be useful. The <strong>minimal component principle</strong> in computer science says that complicated system can be built from simpler components. As <span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="references.html#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016, 175</a>)</span> put it</p>
+<blockquote class="blockquote">
+<p><em>Much as a Turing machine’s memory needs only to be able to store 0 or 1 states, we can build a universal function approximator from rectified linear functions.</em></p>
+</blockquote>
+<div class="cell" data-layout-align="center" width="90%">
+<div class="cell-output-display">
+<div id="fig-tanh-sigmoid" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tanh-sigmoid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ann_files/figure-html/fig-tanh-sigmoid-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tanh-sigmoid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.6: Hyperbolic tangent and sigmoid activation function.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The hyperbolic tangent and sigmoid functions are related. If <span class="math inline">\(\sigma_1()\)</span> is sigmoid, then <span class="math display">\[
+\tanh(v) = 2\sigma_1(2v) - 1 = \frac{2}{1+\exp\{-2\nu\}} - 1
+\]</span></p>
+</section>
+<section id="output-functions" class="level3">
+<h3 class="anchored" data-anchor-id="output-functions">Output Functions</h3>
+<p>The <strong>output</strong> function <span class="math inline">\(g()\)</span> transforms the result of the output layer, <span class="math inline">\(T(\textbf{a})\)</span> into a prediction. In a regression context, <span class="math inline">\(g()\)</span> is often the <strong>identity</strong> function, <span class="math display">\[
+g(T(\textbf{a})) = T(\textbf{a})
+\]</span> that means no further transformation.</p>
+<p>For classification models <span class="math inline">\(g()\)</span> is typically the <strong>softmax</strong> function. If we model <span class="math inline">\(k\)</span> output categories with a neural network, then each category will have a separate function <span class="math display">\[
+T_j(\textbf{a}) = b^o_j + \textbf{a}^\prime\textbf{w}^0_j
+\]</span> and the softmax function transforms them into values in <span class="math inline">\((0,1)\)</span>, <span class="math display">\[
+g(T_j(\textbf{a})) = \frac{\exp\{T_j(\textbf{a})\}}{\sum_{l=1}^k \exp\{T_l(\textbf{a})\}}
+\]</span> In other words, the output layer has <span class="math inline">\(k\)</span> neurons and their “probabilities” sum to 1: <span class="math inline">\(\sum_{j=1}^k g(T_j(\textbf{a})) = 1\)</span>. The classified value of the output is the category <span class="math inline">\(j\)</span> for which <span class="math inline">\(g(T_j(\textbf{a}))\)</span> is largest.</p>
+<p>The softmax output function should look familiar, we encountered a similar function in multinomial logistic regression models. The probability to observe category <span class="math inline">\(j\)</span> of <span class="math inline">\(k\)</span> is modeled in a multinomial logistic model as <span id="eq-multinomial-probs"><span class="math display">\[
+\Pr(Y=j | \textbf{x}) = \frac{\exp\{\textbf{x}^\prime\boldsymbol{\beta}_j\}}{\sum_{l=1}^k \exp\{\textbf{x}^\prime\boldsymbol{\beta}_l\}}
+\tag{30.1}\]</span></span></p>
+<p>Because the probabilities sum to 1 across all categories, it is sufficient to model <span class="math inline">\(k-1\)</span> category probabilities. In multinomial regression models it is common to set the linear predictor for one of the categories to 0. Suppose we choose the last category, so that <span class="math inline">\(\boldsymbol{\beta}_k = \textbf{0}\)</span>. <a href="#eq-multinomial-probs" class="quarto-xref">Equation&nbsp;<span>30.1</span></a> then becomes <span class="math display">\[
+\begin{align*}
+\Pr(Y=j | \textbf{x}) &amp;= \frac{\exp\{\textbf{x}^\prime\boldsymbol{\beta}_j\}} {1 +\sum_{l=1}^{k-1} \exp\{\textbf{x}^\prime\boldsymbol{\beta}_l\}} \qquad j &lt; k\\
+\Pr(Y=k | \textbf{x}) &amp;= \frac{1}{1 +\sum_{l=1}^{k-1} \exp\{\textbf{x}^\prime\boldsymbol{\beta}_l\}} \\
+\end{align*}
+\]</span></p>
+<p>Statisticians are familiar with this form than the softmax version that allows for a predictor in all categories—neural networks are often over-parameterized.</p>
+</section>
+<section id="ann-by-hand" class="level3">
+<h3 class="anchored" data-anchor-id="ann-by-hand">ANN by Hand</h3>
+<p>It is instructive to work through a simple neural network by hand to see how inputs, weights, biases, hidden neurons, activation and output functions work together to map inputs into output. <a href="#fig-ann-by-hand1" class="quarto-xref">Figure&nbsp;<span>30.7</span></a> shows a simple single layer network with 3 inputs, 4 neurons in the hidden layer, and a single output for prediction. ReLU is used for the activation and the output function.</p>
+<p>This is essentially a regression context where we build a shallow neural network to predict <span class="math inline">\(Y\)</span> from <span class="math inline">\(X_1, X_2, X_3\)</span>.</p>
+<div id="fig-ann-by-hand1" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ann-by-hand1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/SingleLayerByHand1.png" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="quarto-lightbox-gallery-5"><img src="images/SingleLayerByHand1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ann-by-hand1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.7: Single layer ANN with 3 inputs and 4 hidden neurons.
+</figcaption>
+</figure>
+</div>
+<p>Suppose we have a single input vector (<span class="math inline">\(n=1\)</span>) <span class="math inline">\(\textbf{x}= [2, 1, 3]^\prime\)</span> and the parameters for the neural network are given as (<a href="#fig-ann-by-hand2" class="quarto-xref">Figure&nbsp;<span>30.8</span></a>) <span class="math display">\[
+\begin{align*}
+  A_1: b_1 &amp;= -5 \quad \textbf{w}_1 = [1, -1, 1]^\prime \\
+  A_2: b_2 &amp;=  0 \quad \textbf{w}_2 = [1,  1, 0]^\prime \\
+  A_3: b_3 &amp;=  1 \quad \textbf{w}_3 = [0,  1, 1]^\prime \\
+  A_4: b_4 &amp;= -2 \quad \textbf{w}_4 = [1,  0, 1]^\prime \\
+  T: b^0 &amp;= 1 \quad \textbf{w}^o = [1, 2, -1, 0]^\prime
+\end{align*}
+\]</span></p>
+<div id="fig-ann-by-hand2" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ann-by-hand2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/SingleLayerByHand2.png" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="quarto-lightbox-gallery-6"><img src="images/SingleLayerByHand2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ann-by-hand2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.8: Parameters of the single layer ANN.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-ann-by-hand3" class="quarto-xref">Figure&nbsp;<span>30.9</span></a> applies the parameter values to compute the activations <span class="math inline">\(A_1, \cdots, A_4\)</span>, applies the ReLU function and passes the results to the output layer.</p>
+<div id="fig-ann-by-hand3" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ann-by-hand3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/SingleLayerByHand3.png" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="quarto-lightbox-gallery-7"><img src="images/SingleLayerByHand3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ann-by-hand3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.9: Computing the solution for activations and output.
+</figcaption>
+</figure>
+</div>
+<p>The activations from the hidden layer, after the ReLU is applied, are <span class="math inline">\(A_1 = 0\)</span>, <span class="math inline">\(A_2 = 3\)</span>, <span class="math inline">\(A_3 = 5\)</span> and <span class="math inline">\(A_4 = 3\)</span>. The value in the output layer is <span class="math inline">\(T(\textbf{a}) = b^0 + w_1^0 A_1 + \cdots + w_4^0 A_4\)</span> = 2. Because it is positive, the ReLU output function <span class="math inline">\(g(T(\textbf{a})) = \max\{0,T(\textbf{a})\}\)</span> returns 2 as the predicted value.</p>
+</section>
+<section id="sec-xor-gate" class="level3">
+<h3 class="anchored" data-anchor-id="sec-xor-gate">The XOR Gate</h3>
+<p>Neural networks have many parameters, frequently more parameters than observations. How is that possible, does that not create a singular situation where solutions are not unique and the model is saturated (perfect fit)? That is true for linear models, a linear regression with <span class="math inline">\(p\)</span> inputs and <span class="math inline">\(n= p+1\)</span> observations is a saturated model with zero residual error. Add another input or take away an observation and a least-squares solution cannot be found.</p>
+<p>This is not so with nonlinear models, you can find a minimum of the objective function for an over-specified nonlinear model; and it does not necessarily produce a perfect fit at the solution.</p>
+<p>Suppose we train a single layer network with <span class="math inline">\(p=10\)</span> inputs, a single output (regression), and a hidden layer with <span class="math inline">\(M=100\)</span> nodes. How many parameters are in this model?</p>
+<ul>
+<li><p>The input layer fully connects 10 inputs to 100 hidden units. Each of the <span class="math inline">\(A_1, \cdots, A_M\)</span> has 11 parameters, a weight for each of the input variables and a bias. So there are 1,100 parameters in the hidden layer.</p></li>
+<li><p>The hidden layer passes 100 activations to the output layer, which adds a weight for each activation and a bias, another 101 parameters.</p></li>
+</ul>
+<p>The total number of quantities estimated in this fairly simple neural network is 1,100 + 101 = 1,201. Note that this number is independent of the number of observations in the training data. Even with <span class="math inline">\(n=20\)</span>, the ANN (attempts to) estimates 1,201 quantities.</p>
+<p>As an example of an over-specified neural network that can be solved with a more parsimonious modeling alternative, we consider the famous XOR example.</p>
+<p>The <strong>exclusive OR</strong> (XOR) function is a logic gate that can be modeled as follows. Take two binary inputs <span class="math inline">\(X_1 \in \{0,1\}\)</span> and <span class="math inline">\(X_2 \in \{0,1\}\)</span>. The XOR gate takes on the value <span class="math inline">\(Y=1\)</span> if exactly one of the <span class="math inline">\(X\)</span>s is 1, otherwise the gate is <span class="math inline">\(Y=0\)</span>. The following table shows the four possible states of the gate.</p>
+<div id="tbl-xor-gate" class="striped quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-xor-gate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;30.2: XOR gate data.
+</figcaption>
+<div aria-describedby="tbl-xor-gate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table">
+<thead>
+<tr class="header">
+<th>Obs #</th>
+<th><span class="math inline">\(X_1\)</span></th>
+<th><span class="math inline">\(X_2\)</span></th>
+<th><span class="math inline">\(Y\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The goal is to construct a neural network with one hidden layer with <span class="math inline">\(M=2\)</span> units, ReLU activation and identity (“linear”) output function (<a href="#fig-xor-ann" class="quarto-xref">Figure&nbsp;<span>30.10</span></a>). The network should model the XOR gate correctly—that is, provide a perfect fit to the data in <a href="#tbl-xor-gate" class="quarto-xref">Table&nbsp;<span>30.2</span></a>.</p>
+<div id="fig-xor-ann" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-xor-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/XORNetwork.png" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="quarto-lightbox-gallery-8"><img src="images/XORNetwork.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-xor-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.10: Single layer ANN for XOR problem.
+</figcaption>
+</figure>
+</div>
+<p>The network has nine parameters and the following structure <span class="math display">\[
+\begin{align*}
+        A_1 &amp;= \max \{ 0, b_{1} + w_{11}x_1 + w_{21}x_2 \} \\
+        A_2 &amp;= \max \{ 0, b_{2} + w_{21}x_1 + w_{22}x_2 \} \\
+        T &amp;= b^o + w^o_1 A_1 + w^o_2 A_2 \\
+        g(T) &amp;= T
+\end{align*}
+\]</span></p>
+<p>You can easily verify that the following values are a solution (<a href="#tbl-xor-gate-solved" class="quarto-xref">Table&nbsp;<span>30.3</span></a>) <span class="math display">\[
+\begin{align*}
+    b_1 &amp;=  0, \textbf{w}_1 = [1,1] \\
+    b_2 &amp;= -1, \textbf{w}_2 = [1,1] \\
+    b^o &amp;= 0, \textbf{w}^o = [1, -2]
+\end{align*}
+\]</span></p>
+<div id="tbl-xor-gate-solved" class="striped quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-xor-gate-solved-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;30.3: XOR gate data and solution.
+</figcaption>
+<div aria-describedby="tbl-xor-gate-solved-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table">
+<thead>
+<tr class="header">
+<th>Obs #</th>
+<th><span class="math inline">\(X_1\)</span></th>
+<th><span class="math inline">\(X_2\)</span></th>
+<th><span class="math inline">\(A_1\)</span></th>
+<th><span class="math inline">\(A_2\)</span></th>
+<th><span class="math inline">\(Y\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>This is great. A neural network with 9 parameters was able to predict the exclusive OR gate. Is there a more parsimonious option?</p>
+<p><span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="references.html#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016, 173</a>)</span> state that a linear model is not capable of fitting the XOR gate. This is correct if one considers a main-effects only model as in the following code</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">x2=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>dat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  x1 x2 y
+1  0  0 0
+2  0  1 1
+3  1  0 1
+4  1  1 0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>reg_main <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data=</span>dat)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(reg_main)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ x1 + x2, data = dat)
+
+Residuals:
+   1    2    3    4 
+-0.5  0.5  0.5 -0.5 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) 5.00e-01   8.66e-01   0.577    0.667
+x1          1.11e-16   1.00e+00   0.000    1.000
+x2          0.00e+00   1.00e+00   0.000    1.000
+
+Residual standard error: 1 on 1 degrees of freedom
+Multiple R-squared:  3.698e-32, Adjusted R-squared:     -2 
+F-statistic: 1.849e-32 on 2 and 1 DF,  p-value: 1</code></pre>
+</div>
+</div>
+<p>The linear regression model <span class="math inline">\(y = \beta_0 + \beta_1 x_1 + \beta_2 x_2\)</span> does not provide a solution, otherwise it would result in a perfect fit. Instead, it has non-zero residuals. However, if you allow <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> to interact, then the linear model fits the XOR gate perfectly. In fact, you can also remove the intercept and model the gate with only three parameters:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>reg_ia <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2 <span class="sc">+</span> x1<span class="sc">*</span>x2 <span class="sc">-</span><span class="dv">1</span>, <span class="at">data=</span>dat)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(reg_ia)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ x1 + x2 + x1 * x2 - 1, data = dat)
+
+Residuals:
+         1          2          3          4 
+-1.178e-16 -1.424e-32  1.298e-32  6.588e-34 
+
+Coefficients:
+        Estimate Std. Error    t value Pr(&gt;|t|)    
+x1     1.000e+00  1.178e-16  8.489e+15   &lt;2e-16 ***
+x2     1.000e+00  1.178e-16  8.489e+15   &lt;2e-16 ***
+x1:x2 -2.000e+00  2.040e-16 -9.802e+15   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.178e-16 on 1 degrees of freedom
+Multiple R-squared:      1, Adjusted R-squared:      1 
+F-statistic: 4.804e+31 on 3 and 1 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">predict</span>(reg_ia),<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1 2 3 4 
+0 1 1 0 </code></pre>
+</div>
+</div>
+<p>Notice that the model <span class="math display">\[
+Y = \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1x_2
+\]</span> has zero residual error (all residuals are zero) but still has one degree of freedom left for the error term. It fits perfectly but not by saturating the model with parameters. The parameter estimates are <span class="math inline">\(\widehat{\beta}_1 = 1\)</span>, <span class="math inline">\(\widehat{\beta}_2 = 1\)</span>, and <span class="math inline">\(\widehat{\beta}_3 = -2\)</span>. The fitted equation is <span class="math display">\[
+\widehat{Y} = x_1 + x_2 - 2 x_1 x_2
+\]</span></p>
+<div id="tbl-xor-gate-solved-reg" class="striped quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-xor-gate-solved-reg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;30.4: XOR gate data and regression solution.
+</figcaption>
+<div aria-describedby="tbl-xor-gate-solved-reg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table">
+<thead>
+<tr class="header">
+<th>Obs #</th>
+<th><span class="math inline">\(X_1\)</span></th>
+<th><span class="math inline">\(X_2\)</span></th>
+<th><span class="math inline">\(X_1X_2\)</span></th>
+<th><span class="math inline">\(Y\)</span></th>
+<th><span class="math inline">\(\widehat{Y}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\beta\)</span></td>
+<td>1</td>
+<td>1</td>
+<td>-2</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>I leave it up to you to decide which model is preferable (<a href="#fig-xor-two-solutions" class="quarto-xref">Figure&nbsp;<span>30.11</span></a>):</p>
+<p><span class="math display">\[
+Y = \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1x_2
+\]</span></p>
+<p>or</p>
+<p><span class="math display">\[
+\begin{align*}
+        A_1 &amp;= \max \{ 0, b_{1} + w_{11}x_1 + w_{21}x_2 \} \\
+        A_2 &amp;= \max \{ 0, b_{2} + w_{21}x_1 + w_{22}x_2 \} \\
+        T &amp;= b^o + w^o_1 A_1 + w^o_2 A_2 \\
+        g(T) &amp;= T
+\end{align*}
+\]</span></p>
+<p>The linear model has a closed-form solution and no tuning parameters. The ANN is a nonlinear model and you have to choose <span class="math inline">\(M\)</span>, the number of hidden units as well as the activation function <span class="math inline">\(\sigma()\)</span> and the output function <span class="math inline">\(g()\)</span>.</p>
+<div id="fig-xor-two-solutions" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-xor-two-solutions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/XOR_Solution2.png" class="lightbox" data-glightbox="description: .lightbox-desc-9" data-gallery="quarto-lightbox-gallery-9"><img src="images/XOR_Solution2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-xor-two-solutions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.11: Two solutions for the XOR gate problem.
+</figcaption>
+</figure>
+</div>
+<p>Finally, the neural network solution is not unique, other combinations of weights and biases lead to a solution. For example, <span class="math display">\[
+\begin{align*}
+    b_1 &amp;=  0, \textbf{w}_1 = [1,-1] \\
+    b_2 &amp;= -1, \textbf{w}_2 = [-1,2] \\
+    b^o &amp;= 0, \textbf{w}^o = [1, 1]
+\end{align*}
+\]</span> is also a solution (<a href="#tbl-xor-gate-another" class="quarto-xref">Table&nbsp;<span>30.5</span></a>).</p>
+<div id="tbl-xor-gate-another" class="striped quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-xor-gate-another-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;30.5: XOR gate data and another solution.
+</figcaption>
+<div aria-describedby="tbl-xor-gate-another-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table">
+<thead>
+<tr class="header">
+<th>Obs #</th>
+<th><span class="math inline">\(X_1\)</span></th>
+<th><span class="math inline">\(X_2\)</span></th>
+<th><span class="math inline">\(A_1\)</span></th>
+<th><span class="math inline">\(A_2\)</span></th>
+<th><span class="math inline">\(T=A_1+A_2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>That is a common problem in over-parameterized neural networks. The objective function surface has mutiple local extrema. Training algorithms can get stuck in one of the many local solutions and might never see the global solution. This phenomenon is so common with neural networks that many data scientists simply accept <em>any</em> solution to the estimation problem.</p>
+</section>
+</section>
+<section id="multi-layer-networks" class="level2" data-number="30.3">
+<h2 data-number="30.3" class="anchored" data-anchor-id="multi-layer-networks"><span class="header-section-number">30.3</span> Multi Layer Networks</h2>
+<p>A single layer network can in theory approximate most functions, provided the hidden layer has enough neurons (=units). But networks with more than a single layer are often able to use fewer units per layer and can generalize well with fewer parameters overall. Increasing the <strong>depth</strong> of the network tends to be more effective than increasing the <strong>width</strong> of the network, although counter examples are easy to find.</p>
+<p>Modern neural networks have more than one hidden layer, we call them multi layer networks. In general, when the number of layers is greater than two, the networks are referred to as <strong>deep</strong> neural networks (DNN). This is not an established definition of DNNs, in part because it is sometime not clear what is being described as a layer. For example, in convolutional neural networks three processing stages alternate—convolution, activation, and pooling. The number of layers varies greatly depending on whether the stages are seen as separate layers or not.</p>
+<p>Besides pooling and convolving, the assumption in convolutional neural networks is that deeper layers learn increasingly higher-level abstractions of the data. The layers represent a nested hierarchy of concepts—edges, shapes, etc—with more abstract representations computed in terms of simpler ones. This idea of abstraction into hierarchy of concepts favors deeper multi layer networks over wider networks with fewer layers.</p>
+<p>In the chapter on deep learning we will encounter layers with many different purposes (<a href="deeplearning.html" class="quarto-xref"><span>Chapter 33</span></a>). Examples are</p>
+<ul>
+<li>convolutional layers</li>
+<li>pooling layers</li>
+<li>dropout layers</li>
+<li>flattening layers</li>
+<li>fully connected layers</li>
+<li>regularization layers</li>
+<li>normalization layers</li>
+<li>attention layers</li>
+<li>recurrent layers</li>
+<li>long short-term memory layers</li>
+<li>embedding layers</li>
+</ul>
+<p>In this section, multiple layers are simple fully-connected hidden layers. The first hidden layer with <span class="math inline">\(M_1\)</span> neurons passes its output to a second hidden layer with <span class="math inline">\(M_2\)</span> neurons and so forth. <a href="#fig-multi-ann" class="quarto-xref">Figure&nbsp;<span>30.12</span></a> shows a fully connected ANN with two hidden layers with <span class="math inline">\(M_1=4\)</span> and <span class="math inline">\(M_2=3\)</span> neurons, respectively.</p>
+<div id="fig-multi-ann" class="quarto-figure quarto-figure-center quarto-float anchored" width="90%" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-multi-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/MultipleLayer.png" class="lightbox" data-glightbox="description: .lightbox-desc-10" data-gallery="quarto-lightbox-gallery-10"><img src="images/MultipleLayer.png" id="fig-multi-ann" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-multi-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.12
+</figcaption>
+</figure>
+</div>
+<p>Mathematically we can present multi layer networks as chaining transformations. Let’s use superscripts in parentheses to denote the activations in the hidden layers. For example, <span class="math inline">\(A^{(1)}_j\)</span> is the activation of neuron <span class="math inline">\(j\)</span> in the first hidden layer, <span class="math inline">\(A^{(3)}_{M_3}\)</span> is the activation of the last neuron in the third hidden layer.</p>
+<p>The full network with <span class="math inline">\(h\)</span> hidden layers can be written as follows: <span class="math display">\[
+\begin{align*}
+A^{(1)}_j &amp;= \sigma^{(1)}\left( b^{(1)}_j + \textbf{w}^{(1)}_j\textbf{x}\right) \qquad j=1,\cdots,M_1 \\
+\textbf{a}^{(1)} &amp;= [A^{(1)}_1,\cdots, A^{(1)}_{M_1}] \\
+A^{(2)}_j &amp;= \sigma^{(2)}\left( b^{(2)}_j + \textbf{w}^{(2)}_j\textbf{a}^{(1)} \right) \qquad j=1,\cdots,M_2 \\
+\textbf{a}^{(2)} &amp;= [A^{(2)}_1,\cdots, A^{(2)}_{M_2}] \\
+\vdots \\
+A^{(h)}_j &amp;= \sigma^{(h)}\left( b^{(h)}_j + \textbf{w}^{(h)}_j\textbf{a}^{(h-1)} \right) \qquad j=1,\cdots,M_h \\
+\textbf{a}^{(h)} &amp;= [A^{(h)}_1,\cdots, A^{(h)}_{M_h}] \\
+g(T(\textbf{a}^{h})) &amp;= g(b^o+\textbf{w}^o\textbf{a}^{(h)})  
+\end{align*}
+\]</span></p>
+<p>This looks messier than it is:</p>
+<ul>
+<li>Each hidden layer has its own set of biases and weights.</li>
+<li>Each layer can have a different activation function <span class="math inline">\(\sigma^{(1)}, \cdots, \sigma^{(h)}\)</span>. Frequently, they are the same function throughout the hidden layers.</li>
+<li>Only the first hidden layer consumes the inputs <span class="math inline">\(\textbf{x}\)</span>. Subsequent hidden layers consume as input the output of the previous hidden layer.</li>
+<li>Only the final hidden layer feeds directly into the output layer. The other hidden layers contribute indirectly to the output through their impact on the final hidden layer.</li>
+<li>Each hidden layer can have a different number of neurons.</li>
+</ul>
+</section>
+<section id="sec-mnist-first-look" class="level2" data-number="30.4">
+<h2 data-number="30.4" class="anchored" data-anchor-id="sec-mnist-first-look"><span class="header-section-number">30.4</span> A First Look at MNIST Image Classification</h2>
+<p>The MNIST image classification data is a famous data set of hand-written digits from 0–9, captured as 28 x 28 grayscale pixel images. The data set comprises 60,000 training observations and 10,000 test observations and is the “Hello World” example for computer vision algorithms. The MNIST database was constructed from <a href="https://www.nist.gov/srd/shop/special-database-catalog">NIST’s Special Database</a> 3 (SD-3) and Special Database 1 (SD-1), 30,000/5,000 test/train images were chosen from SD-3, collected from Census Bureau employees, and 30,000/5,000 test/train images were chosen from SD-1, collected from high-school students.</p>
+<p>Every computer vision algorithm is tested against the MNIST data set and another famous benchmark, the <a href="https://www.cs.toronto.edu/~kriz/cifar.html">CIFAR</a> data sets. MNIST data is available from multiple sites, e.g., <a href="http://yann.lecun.com/exdb/mnist/">here</a>, and is also distributed with many deep learning frameworks.</p>
+<div id="fig-mnist-data" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mnist-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/MNIST_data.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-11" data-gallery="quarto-lightbox-gallery-11"><img src="images/MNIST_data.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mnist-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.13: Example of hand-written digits in MNIST data.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-mnist-data" class="quarto-xref">Figure&nbsp;<span>30.13</span></a> displays a sampling of the images in the data set for each of the ten digits. Many classification methods have been applied to the MNIST data, including various artificial neural networks—check the <a href="http://yann.lecun.com/exdb/mnist/">table</a> on Yann LeCun’s web site for approaches and their error rates. Many approaches ignore the spatial arrangement of the 28 x 28 pixels on each image and treats each record as 28 x 28 = 784 grayscale values. They still have admirable error rates.</p>
+<p>A neural network with two hidden layers, comparing 128 and 64 hidden units, respectively, is shown in <a href="#fig-mnist-2-layer" class="quarto-xref">Figure&nbsp;<span>30.14</span></a>.</p>
+<div id="fig-mnist-2-layer" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mnist-2-layer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/MNIST_Twolayer.png" class="lightbox" data-glightbox="description: .lightbox-desc-12" data-gallery="quarto-lightbox-gallery-12"><img src="images/MNIST_Twolayer.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mnist-2-layer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.14: A two layer network for MNIST data. <a href="https://aws.amazon.com/compare/the-difference-between-deep-learning-and-neural-networks/">Source</a>.
+</figcaption>
+</figure>
+</div>
+<p>There are 784 input variables, <span class="math inline">\(x_1, \cdots, x_{784}\)</span>, corresponding to the 784 pixel locations on each image. The first hidden layer has 128 neurons and ReLU activation. Consequently, there are 128 x 785 = 100,480 parameters in that layer (784 weights plus a bias for each neuron). The second hidden layer has 64 neurons and ReLU activation, adding 64 * 129 = 8,256 parameters. The output layer has a softmax output function because each image needs to be classified into one of 10 categories, adding 10 * 65 = 650 parameters. The total number of parameters in this two layer ANN is 100,480 + 8,256 + 650 = 109,386. The final layer in <a href="#fig-mnist-2-layer" class="quarto-xref">Figure&nbsp;<span>30.14</span></a> is shown as a cross-entropy layer. This simply means that the values (probabilities) associated with the softmax criterion in the output layer is used to choose as the classified value the digit for which the probability is largest.</p>
+<p>In the next chapter we demonstrate that this model has a test accuracy of more than 96%, which is quite remarkable, considering that no spatial information about the pixels is explicitly taken into account. The 28 x 28 grayscale values are simply stretched into a vector of size 784 and processed without considering a value’s neighborhood of grayscale values.</p>
+<p>Before we crunch the numbers for the MNIST data set, a few words about the process of training neural networks.</p>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;30.1: Supervised learning in a nutshell.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;30.2: Supervised learning with single layer ANN.</span>
+<span class="glightbox-desc lightbox-desc-3">Figure&nbsp;30.3: Perceptron and single layer network.</span>
+<span class="glightbox-desc lightbox-desc-4">Figure&nbsp;30.4: Single layer ANN.</span>
+<span class="glightbox-desc lightbox-desc-5">Figure&nbsp;30.7: Single layer ANN with 3 inputs and 4 hidden neurons.</span>
+<span class="glightbox-desc lightbox-desc-6">Figure&nbsp;30.8: Parameters of the single layer ANN.</span>
+<span class="glightbox-desc lightbox-desc-7">Figure&nbsp;30.9: Computing the solution for activations and output.</span>
+<span class="glightbox-desc lightbox-desc-8">Figure&nbsp;30.10: Single layer ANN for XOR problem.</span>
+<span class="glightbox-desc lightbox-desc-9">Figure&nbsp;30.11: Two solutions for the XOR gate problem.</span>
+<span class="glightbox-desc lightbox-desc-10">Figure&nbsp;30.12: </span>
+<span class="glightbox-desc lightbox-desc-11">Figure&nbsp;30.13: Example of hand-written digits in MNIST data.</span>
+<span class="glightbox-desc lightbox-desc-12">Figure&nbsp;30.14: A two layer network for MNIST data. <a href="https://aws.amazon.com/compare/the-difference-between-deep-learning-and-neural-networks/">Source</a>.</span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-Goodfellow-et-al-2016" class="csl-entry" role="listitem">
+Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016. <em>Deep Learning</em>. MIT Press.
+</div>
+<div id="ref-McCullochPitts" class="csl-entry" role="listitem">
+McCulloch, Warren S., and Walter Pitts. 1943. <span>“A Logical Calculus of the Ideas Immanent in Nervous Activity.”</span> <em>Bulletin of Mathematical Biophysics</em> 5: 115–33.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./mixed.html" class="pagination-link" aria-label="Mixed Models for Longitudinal Data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./training_ann.html" class="pagination-link" aria-label="Training Neural Networks">
+        <span class="nav-page-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

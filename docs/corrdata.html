@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 28&nbsp; Correlated Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./mixed.html" rel="next">
+<link href="./gam.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./glm.html">Supervised Learning III: Advanced Topics</a></li><li class="breadcrumb-item"><a href="./corrdata.html"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">28.1</span> Introduction</a></li>
+  <li><a href="#autocorrelation" id="toc-autocorrelation" class="nav-link" data-scroll-target="#autocorrelation"><span class="header-section-number">28.2</span> Autocorrelation</a>
+  <ul>
+  <li><a href="#consequences-of-autocorrelation" id="toc-consequences-of-autocorrelation" class="nav-link" data-scroll-target="#consequences-of-autocorrelation">Consequences of Autocorrelation</a></li>
+  <li><a href="#sec-stationarity" id="toc-sec-stationarity" class="nav-link" data-scroll-target="#sec-stationarity">Stationary Random Processes</a></li>
+  <li><a href="#autocorrelation-functions" id="toc-autocorrelation-functions" class="nav-link" data-scroll-target="#autocorrelation-functions">Autocorrelation Functions</a></li>
+  </ul></li>
+  <li><a href="#sec-corr-error-models" id="toc-sec-corr-error-models" class="nav-link" data-scroll-target="#sec-corr-error-models"><span class="header-section-number">28.3</span> Correlated Error Models</a>
+  <ul>
+  <li><a href="#setting-up-the-model" id="toc-setting-up-the-model" class="nav-link" data-scroll-target="#setting-up-the-model">Setting up the Model</a></li>
+  <li><a href="#parameter-estimation" id="toc-parameter-estimation" class="nav-link" data-scroll-target="#parameter-estimation">Parameter Estimation</a>
+  <ul class="collapse">
+  <li><a href="#estimating-the-fixed-effects" id="toc-estimating-the-fixed-effects" class="nav-link" data-scroll-target="#estimating-the-fixed-effects">Estimating the fixed effects</a></li>
+  <li><a href="#estimating-the-covariance-parameters" id="toc-estimating-the-covariance-parameters" class="nav-link" data-scroll-target="#estimating-the-covariance-parameters">Estimating the covariance parameters</a></li>
+  </ul></li>
+  <li><a href="#sec-apples-corr-errors" id="toc-sec-apples-corr-errors" class="nav-link" data-scroll-target="#sec-apples-corr-errors">Worked Example</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./glm.html">Supervised Learning III: Advanced Topics</a></li><li class="breadcrumb-item"><a href="./corrdata.html"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-corrdata" class="quarto-section-identifier"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="28.1">
+<h2 data-number="28.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">28.1</span> Introduction</h2>
+<p>Throughout much of the previous chapters we have encountered <strong>correlation</strong> in various forms and scenarios. For example,</p>
+<ul>
+<li><p>A common assumptions about the model errors is that they are not correlated. The homoscedastic (equi-variance) and uncorrelated situation, often called the <em>iid</em> case, is characterized by <span class="math inline">\(\text{Var}[\boldsymbol{\epsilon}] = \sigma^2 \textbf{I}\)</span>.</p></li>
+<li><p>The correlation between a target <span class="math inline">\(Y\)</span> and an input <span class="math inline">\(X\)</span> is a measure of their linear dependency.</p></li>
+<li><p>The <span class="math inline">\(R^2\)</span> statistic in linear models is the square of the correlation coefficient between <span class="math inline">\(Y\)</span> and <span class="math inline">\(\widehat{Y}\)</span>.</p></li>
+<li><p>Principal component analysis (<a href="pca.html" class="quarto-xref"><span>Chapter 22</span></a>) constructs uncorrelated linear projections of the input variables.</p></li>
+<li><p>Correlation does not imply causation.</p></li>
+<li><p>Random variables that are independent are also uncorrelated. The reverse is not generally true, but it is true for Gaussian random variables (<a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 4.7</span></a>).</p></li>
+<li><p>The covariance/correlation structure between inputs is explicitly modeled in model-based clustering (<a href="mbc.html" class="quarto-xref"><span>Chapter 24</span></a>).</p></li>
+<li><p>Multicollinearity is a broader concept than pairwise correlations. In the presence of weak pairwise correlations you can have strong multicollinearity (<a href="regglobal.html#sec-collinearity-diag" class="quarto-xref"><span>Section 8.4.4</span></a>).</p></li>
+</ul>
+<p>Correlation is typically a good thing, it indicates relationships and patterns that we want to find. Correlations among the target values has so far been largely ignored or brushed aside by assuming that model errors are uncorrelated. We know that this assumption is not always correct.</p>
+<p>Suppose we are to collect data from individuals in the state of Virginia. The sampling is carried out in two stages to make sure that counties and individuals within counties are represented. First, we draw at random twenty entities from the 95 counties and 39 independent cities in the state. Then, in each of the twenty selected cities or counties, we sample 100 residents. If <span class="math inline">\(\tau_i\)</span> denotes the effect of the <span class="math inline">\(i\)</span><sup>th</sup> city/county and <span class="math inline">\(e_{ij}\)</span> the effect of the <span class="math inline">\(j\)</span><sup>th</sup> resident sampled within the city/county <span class="math inline">\(i\)</span>, then a model for the overall mean attribute is <span class="math display">\[
+Y_{ij} = \mu + \tau_i + e_{ij}
+\]</span></p>
+<p>Because we sampled at the stage of the city/county and at the stage of residents, the <span class="math inline">\(\tau_i\)</span> and the <span class="math inline">\(e_{ij}\)</span> are random variables. If there are no systematic effects, their basic stochastic properties are <span class="math inline">\(\tau_i \sim (0,\sigma^2_\tau)\)</span>, <span class="math inline">\(e_{ij} \sim (0,\sigma^2_e)\)</span>.</p>
+<p>This is an example of a <strong>hierarchical sampling</strong> scheme, we select one sample within the draws of another sample. What does this hierarchy of random variables have to do with correlated data? To answer this, consider two covariances:</p>
+<ul>
+<li>between observations from different cities/counties</li>
+<li>between observations from the same city/county</li>
+</ul>
+<p>The former is <span class="math display">\[\begin{align*}
+\text{Cov}[Y_{ij},Y_{kl}] &amp;= \text{Cov}[\mu + \tau_i + e_{ij},\mu + \tau_k + e_{kl}] \\
+&amp;= \text{Cov}[\tau_i + e_{ij},\tau_k + e_{kl}] \\
+&amp;= \text{Cov}[\tau_i,\tau_k] + \text{Cov}[\tau_i,e_{kl}] + \text{Cov}[e_{ij},\tau_k] + \text{Cov}[e_{ij},e_{kl}] \\
+&amp;= 0 + 0 + 0 + 0 \\
+&amp;= 0
+\end{align*}\]</span></p>
+<p>The covariance between two observations from the same city/county, on the other hand, is <span class="math display">\[\begin{align*}
+\text{Cov}[Y_{ij},Y_{il}] &amp;= \text{Cov}[\mu + \tau_i + e_{ij},\mu + \tau_i + e_{il}] \\
+&amp;= \text{Cov}[\tau_i + e_{ij},\tau_i + e_{il}] \\
+&amp;= \text{Cov}[\tau_i,\tau_i] + \text{Cov}[\tau_i,e_{il}] + \text{Cov}[e_{ij},\tau_i] + \text{Cov}[e_{ij},e_{il}] \\
+&amp;= \sigma^2_\tau + 0 + 0 + 0 \\
+&amp;= \sigma^2_\tau
+\end{align*}\]</span></p>
+<p>Two observations from the same city/county share the random effect <span class="math inline">\(\tau_i\)</span>; this sharing induces a correlation. Notice that if the <span class="math inline">\(\tau_i\)</span> were fixed effects, rather than random variables, there would be no induced correlation. That would be the case if samples were taken from all cities/counties in Virginia.</p>
+<p>Shared random effects due to random sampling is one mechanism that creates correlations among observations. <a href="#fig-corrdata-mindmap" class="quarto-xref">Figure&nbsp;<span>28.1</span></a> displays other ways in which correlations can come about.</p>
+<div id="fig-corrdata-mindmap" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-corrdata-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/CorrelatedDataMindMap.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/CorrelatedDataMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-corrdata-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.1: Correlated data mind map.
+</figcaption>
+</figure>
+</div>
+<p>Hierarchical random processes can also at work when treatments are assigned to experimental units. A common experimental design in agricultural application is the <strong>split-plot design</strong> in which two different treatment factors are deployed on experimental units of different size (<a href="#fig-split-plot" class="quarto-xref">Figure&nbsp;<span>28.2</span></a>). One factor might be a soil treatment that requires large areas for its application. Another factor might be four variants of a crop species that can be planted on smaller areas than the soil treatment. A split-plot design assigns soil treatments to large experimental units and assigns the four crop variants to small experimental units within each of the large units.</p>
+<div id="fig-split-plot" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-split-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/SplitPlotDesign.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/SplitPlotDesign.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-split-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.2: Split-plot design.
+</figcaption>
+</figure>
+</div>
+<p>A natural mechanism through which correlations occur is the observation of a stochastic process in time or space. In the subsampling example above, correlation is induced because two observations share something: they were sampled from the same city or county.</p>
+<p>An extreme version of sharing is when the same entity is measured repeatedly. Suppose you measure the length of an item at time <span class="math inline">\(t\)</span> and immediately afterwards. The two measurements will be very similar, due to measurement errors they might not be identical. If <span class="math inline">\(\epsilon\)</span> is the small time interval between the two measurements, then we expect <span class="math inline">\(Y(t)\)</span> and <span class="math inline">\(Y(t+\epsilon)\)</span> to be highly correlated. If <span class="math inline">\(Y\)</span> is the length of an inanimate object, an iron rod, say, then we actually expect the correlation to be very high over long time intervals, since <span class="math inline">\(Y\)</span> is essentially invariable. If <span class="math inline">\(Y\)</span> is an attribute subject to change, then we expect the correlation between <span class="math inline">\(Y(t)\)</span> and <span class="math inline">\(Y(t+\delta)\)</span> to somehow be a function of the time difference <span class="math inline">\(\delta\)</span>. The delay times of trains at the station are more highly correlated between now and ten minutes from now than between now and six months from now.</p>
+<p>This type of correlation, of a random variable with itself, is called <strong>autocorrelation</strong>.</p>
+<p>Hierarchical random processes and autocorrelated processes create <strong>clustered</strong> data structures. We need to distinguish the use of “cluster” in this context from the cluster analyses in <a href="clustering.html" class="quarto-xref"><span>Chapter 23</span></a>. What they have in common is that a cluster is a group of observations that have something in common. In cluster analysis the commonality is similarity of attribute values; the number and size of the clusters is not known a priori, finding the clusters is the goal of the analysis.</p>
+<p>In the context of correlated data the clusters are defined through the process in which the data are collected; observations from the same cluster are correlated and observations from different clusters are (typically) uncorrelated (<a href="#fig-cluster-structure" class="quarto-xref">Figure&nbsp;<span>28.3</span></a>). A longitudinal study where <span class="math inline">\(i=1,\cdots,k\)</span> subjects are measured <span class="math inline">\(j=1,\cdot n_i\)</span> times, creates a clustered data structure with <span class="math inline">\(k\)</span> clusters of sizes <span class="math inline">\(n_1,\cdots,n_k\)</span>. Cluster membership is known a priori and not subject to analysis.</p>
+<div id="fig-cluster-structure" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig.align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cluster-structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/Clustering.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/Clustering.png" class="img-fluid figure-img" style="width:80.0%" data-fig.align="center"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cluster-structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.3: Example of a clustered data structure. Observations from the same cluster are correlated, observations from different clusters are uncorrelated.
+</figcaption>
+</figure>
+</div>
+<p>Multiple causes for clustering can occur in the same study. For example, one might have a hierarchical sampling scheme and the elements drawn into the subsample are then measured repeatedly over time. The <code>apple</code> data which we introduce here and revisit throughout this and the following chapter are an example of such a data structure.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Apple Diameters</p>
+</div>
+<div class="example-container">
+<p>The data for this analysis were collected at the Winchester Agricultural Experiment Station of Virginia Tech and are analyzed in <span class="citation" data-cites="Schabenberger2001">(<a href="references.html#ref-Schabenberger2001" role="doc-biblioref">Schabenberger and Pierce 2001, 466–74</a>)</span>. Ten apple trees were randomly selected at the experiment station and 25 apples were randomly chosen on each tree. The data analyzed here comprise only the apples in the largest size class, those apples with an initial diameter equal or greater than 2.75 inches. Over a period of 12 weeks diameter measurements of the apples were taken at 2-week intervals. The variables in the data set are</p>
+<ul>
+<li><code>Tree</code>: the tree number</li>
+<li><code>appleid</code>: the number of the apple within the tree. Note that the same <code>appleid</code> can appear on multiple trees and only apples in the largest diameter size class appear in the data set.</li>
+<li><code>measurement</code>: the index of the measurements. Measurements are taken in two-week intervals, so that <code>measurement=1' refers to the state of the apple after 2 weeks and</code>measurement=6’ refers to the state of the apple at the end of the 12-week period</li>
+<li><code>diameter</code> the diameter of the apple at the time of measurement</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>apples <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM apples"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><a href="#fig-apple-data" class="quarto-xref">Figure&nbsp;<span>28.4</span></a> displays the diameter measurements on each tree. The data are longitudinal, each apple is measured one or more time during the 12-week period. The data also exhibit a subsampling structure: trees were randomly selected in the orchard and apples were randomly selected on each tree. There is clustering at two levels:</p>
+<ul>
+<li>apples are clustered within trees due to subsampling</li>
+<li>longitudinal measurements are creating a temporal cluster for each apple.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lattice)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">xyplot</span>(diameter <span class="sc">~</span> measurement <span class="sc">|</span> Tree, </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">data=</span>apples,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">strip =</span> <span class="cf">function</span>(...) {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>           <span class="fu">strip.default</span>(..., </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">strip.names =</span><span class="fu">c</span>(T,T), </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">strip.levels=</span><span class="fu">c</span>(T,T),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                         <span class="at">sep=</span><span class="st">" "</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>       },</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab=</span><span class="st">"Measurement index"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab=</span><span class="st">"Diameter (inches)"</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">type=</span><span class="fu">c</span>(<span class="st">"p"</span>),</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">as.table=</span><span class="cn">TRUE</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">layout=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-apple-data" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-apple-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="corrdata_files/figure-html/fig-apple-data-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4"><img src="corrdata_files/figure-html/fig-apple-data-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-apple-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.4: Trellis plot of the apple diameters for all ten trees.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="autocorrelation" class="level2" data-number="28.2">
+<h2 data-number="28.2" class="anchored" data-anchor-id="autocorrelation"><span class="header-section-number">28.2</span> Autocorrelation</h2>
+<p>As the name suggests, <strong>autocorrelation</strong> is the correlation of a random variable with itself. Rather than investigating the relationship between two different attributes, say <span class="math inline">\(Y\)</span>, the weight of an animal, and <span class="math inline">\(X\)</span>, the age of the animal, we are studying the behavior of the animal’s weight over time. Instead of <span class="math inline">\(\text{Corr}[Y,X]\)</span>, we are interested in <span class="math inline">\(\text{Corr}[Y(t),Y(t+\delta)]\)</span>.</p>
+<p>In time series analysis this type of correlation is also called <strong>serial</strong> correlation or <strong>temporal</strong> correlation. In the analysis of data in a spatial context it is referred to as <strong>spatial</strong> correlation. In <strong>longitudinal</strong> studies we encounter autocorrelation when the same entity is measured more than once; a typical example is taking repeated health measurements on patients in a study. When this occurs in the context of a designed experiment, the data are also referred to as <strong>repeated measures</strong>.</p>
+<p>Autocorrelation is typically positive. Observations of an attribute that are close temporally or spatially are similar to each other. As the temporal or spatial separation increases, the correlation tends to decline. This evolution of the correlation over time or space is captured by the <strong>autocorrelation function</strong>.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Autocorrelation of Apple Share Price</p>
+</div>
+<div class="example-container">
+<p><a href="#fig-aapl-share-price2" class="quarto-xref">Figure&nbsp;<span>28.5</span></a> displays the weekly closing share price for Apple stock (ticker symbol AAPL) between 2010 and 2023. This is a time series <span class="math inline">\(Y(t)\)</span>, where <span class="math inline">\(Y\)</span> represents the close price and <span class="math inline">\(t\)</span> is the point in time that marks the end of a particular week. A longer version of this time series was analyzed in #sec-smoothing-splines.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>weekly <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM AAPLWeekly"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>weekly<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">make_date</span>(weekly<span class="sc">$</span>year,weekly<span class="sc">$</span>month,weekly<span class="sc">$</span>day)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>weekly_2010 <span class="ot">&lt;-</span> <span class="fu">subset</span>(weekly,(weekly<span class="sc">$</span>year <span class="sc">&gt;=</span> <span class="dv">2010</span>) <span class="sc">&amp;</span> (weekly<span class="sc">$</span>year <span class="sc">&lt;=</span> <span class="dv">2023</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-aapl-share-price2" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aapl-share-price2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="corrdata_files/figure-html/fig-aapl-share-price2-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="quarto-lightbox-gallery-5"><img src="corrdata_files/figure-html/fig-aapl-share-price2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aapl-share-price2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.5: Weekly AAPL close share prices from January 2010 through December 2023.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Although the share price goes up and down, there is positive autocorrelation between the prices, <span class="math inline">\(\text{Corr}[Y(t),Y(t+\delta)] &gt; 0\)</span>. <a href="#fig-aapl-autocorr" class="quarto-xref">Figure&nbsp;<span>28.6</span></a> displays the empirical estimates of the autocorrelation for lags ranging from 1 to 20.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tseries)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>autocorr <span class="ot">&lt;-</span> <span class="fu">acf</span>(weekly_2010<span class="sc">$</span>Close,<span class="at">lag.max=</span><span class="dv">20</span>,<span class="at">main=</span><span class="st">""</span>,<span class="at">las=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-aapl-autocorr" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aapl-autocorr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="corrdata_files/figure-html/fig-aapl-autocorr-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="quarto-lightbox-gallery-6"><img src="corrdata_files/figure-html/fig-aapl-autocorr-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aapl-autocorr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.6: Empirical autocorrelations for lags 1–20 of AAPL weekly close prices between 2010 and 2023.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(<span class="at">lag=</span>autocorr<span class="sc">$</span>lag,<span class="at">acf=</span>autocorr<span class="sc">$</span>acf),<span class="at">align=</span><span class="st">"l"</span>,<span class="at">format=</span><span class="st">"simple"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">lag</th>
+<th style="text-align: left;">acf</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">1.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0.9939698</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">0.9878988</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">0.9815283</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">0.9750561</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">0.9689264</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">0.9627808</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">0.9568324</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">0.9512378</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">9</td>
+<td style="text-align: left;">0.9464483</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">0.9422454</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">0.9377848</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">12</td>
+<td style="text-align: left;">0.9327817</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">13</td>
+<td style="text-align: left;">0.9280758</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">0.9237923</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">15</td>
+<td style="text-align: left;">0.9192121</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">16</td>
+<td style="text-align: left;">0.9144181</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">17</td>
+<td style="text-align: left;">0.9093639</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">18</td>
+<td style="text-align: left;">0.9034697</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">19</td>
+<td style="text-align: left;">0.8981824</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">20</td>
+<td style="text-align: left;">0.8933590</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The estimate of the autocorrelation at lag 1, <span class="math inline">\(\widehat{\text{Corr}}[Y(t),Y(t+1)]\)</span> = 0.994. The correlation between two share prices twenty weeks apart is lower but still pretty high: <span class="math inline">\(\widehat{\text{Corr}}[Y(t),Y(t+20)]\)</span> = 0.8934. (The first entry of the autocorrelation results corresponds to lag=0).</p>
+</div>
+</div>
+<p>The calculation of the autocorrelation estimates in this example reveals that we think of the autocorrelation as a function of the distance between data points, the lag as measured in weeks. We do not think of it as a function of <span class="math inline">\(t\)</span> itself. In other words, the correlation between two share prices <span class="math inline">\(k\)</span> weeks apart is the same, whether the first date is in 2010, in 2015, or in 2023. It does not depend on the origin of time. This is a typical assumption in the analysis of stochastic processes, called <strong>stationarity</strong>. Before we explore stationarity properties further in <a href="#sec-stationarity" class="quarto-xref"><span>Section 28.2.2</span></a>, let’s spend a bit of time on what it means for data analytics if the data are autocorrelated.</p>
+<section id="consequences-of-autocorrelation" class="level3">
+<h3 class="anchored" data-anchor-id="consequences-of-autocorrelation">Consequences of Autocorrelation</h3>
+<p>Is autocorrelation good or bad? Does it matter if the data are autocorrelated? In a sense, autocorrelation is neither good nor bad, it just is what it is. It is unavoidable if we measure the same attribute in temporal or spatial proximity. Soil samples taken close to each other will be more similar than soil samples taken far apart. They will be spatially correlated and more so the closer they are.</p>
+<p>If you want to assess the growth in market capitalization of a company, you study their books at the beginning and at the end of the fiscal year. You could also take the difference between the average market cap of a random sample of companies taken at the beginning of the year and the average market cap of a random sample of companies taken at the end of the fiscal year. If the random samples are representative of our target company, this difference is an unbiased estimate of the growth–and a horrible estimate at that. If you want to measure change, measure the entity that changes! The result will be correlated observations.</p>
+<p>The more interesting question to ask is what happens if data are autocorrelated and we do not take this into account in the analysis? The kind of thing we did in <a href="reglocal.html#sec-smoothing-splines" class="quarto-xref"><span>Section 12.3.4</span></a> when the AAPL share price data was analyzed with smoothing splines under an <em>iid</em> assumption.</p>
+<p>To demonstrate the effect of ignoring correlation, we look at a special case, the equi-correlation model, also called the <strong>compound symmetry</strong> model of correlation. Under this correlation structure, all observations have the same correlation.</p>
+<p>Suppose that <span class="math inline">\(Y(t_1), \cdots, Y(t_n)\)</span> is a sequence of autocorrelated observations with common mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>. The (auto-)covariance is given by <span class="math display">\[
+    \text{Cov}[Y(t_i),Y(t_j)] = \left \{ \begin{array}{ll} \sigma^2\rho &amp; i \neq j \\ \sigma^2 &amp; i=j \end{array} \right .
+\]</span> and the autocorrelation is <span class="math inline">\(\text{Corr}[Y(t_i),Y(t_j)] = \rho\)</span>. Now suppose we estimate the mean <span class="math inline">\(\mu\)</span> of the sequence using the sample mean <span class="math display">\[
+\overline{Y} = \frac{1}{n}\sum_{i=1}^n Y(t_i)
+\]</span> What is the variance of <span class="math inline">\(\overline{Y}\)</span>? It is probably not <span class="math inline">\(\sigma^2/n\)</span>, the variance of <span class="math inline">\(\overline{Y}\)</span> if the <span class="math inline">\(Y(t_i)\)</span> are uncorrelated.</p>
+<p><span id="eq-cs-correlation-mean"><span class="math display">\[
+\begin{align*}
+        \text{Var}[\overline{Y}] &amp;= \frac{1}{n^2} \text{Var}\left [ \sum_{i=1}^n Y(t_i) \right ] = \frac{1}{n^2} \sum_{i=1}^n\sum_{j=1}^n\text{Cov}[Y(t_i),Y(t_j)] \\
+        &amp;= \frac{1}{n^2}\left \{ \sum_{i=1}^n\text{Var}[Y(t_i)] + \sum_{i=1}^n\sum_{j \neq i}^n \text{Cov}[Y(t_i),Y(t_j)]\right \} \\
+        &amp;= \frac{1}{n^2}\left \{ n\sigma^2 + n(n-1)\sigma^2\rho \right \} \\ \\
+        &amp;= \frac{\sigma^2}{n} \left \{ 1 + (n-1)\rho \right \}
+\end{align*}
+\tag{28.1}\]</span></span></p>
+<p>This is a very interesting result: <span class="math inline">\(\text{Var}[\overline{Y}] = \{1+(n-1)\}\rho \sigma^2/n\)</span>. The variance of the sample mean of the equi-correlated observations is <span class="math inline">\(\{1+(n-1)\rho\}\)</span> times the variance of the sample mean of uncorrelated observations. Since autocorrelation is typically positive, we have <span class="math display">\[
+\text{Var}[\overline{Y}] &gt; \frac{\sigma^2}{n}
+\]</span></p>
+<p>If you analyze data as if they were independent (uncorrelated), when in fact they exhibit positive autocorrelation, the estimates of the variability of the statistics are too small. By pretending that the data are uncorrelated we are pretending that the statistics are more precise than they really are. As a consequence, standard error estimates and <span class="math inline">\(p\)</span>-values are too small, confidence and prediction intervals are too narrow.</p>
+<p>Note that <span class="math inline">\(\overline{Y}\)</span> is not an unreasonable estimator of <span class="math inline">\(\mu\)</span> here. It is after all an unbiased estimator, <span class="math display">\[
+\text{E}[\overline{Y}] = \frac{1}{n}\text{E}[\sum_{i=1}^n Y(t_i)] = \frac{1}{n}\sum_{i=1}^n\text{E}[Y(t_i)] = \frac{1}{n}\sum_{i=1}^n\mu = \mu
+\]</span> Can we attach some intuition to the fact that ignoring positive autocorrelation leads to inflated statements of precision (underflated statements of variability)? The concept of the <strong>effective sample size</strong> helps: what is the equivalent number <span class="math inline">\(n^\prime\)</span> of independent observations that leads to the same precision as <span class="math inline">\(n\)</span> observations of the correlated kind? Based on the derivation above, for the compound symmetry model this number is <span class="math display">\[
+n^\prime = \frac{n}{1+(n-1)\rho}
+\]</span></p>
+<p><a href="#fig-eff-sample-size" class="quarto-xref">Figure&nbsp;<span>28.7</span></a> displays the effective sample size under compound symmetry for various values of <span class="math inline">\(n\)</span> and <span class="math inline">\(\rho\)</span>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-eff-sample-size" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-eff-sample-size-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="corrdata_files/figure-html/fig-eff-sample-size-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-eff-sample-size-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.7: Effective sample size for compound symmetry correlation structure for various values of <span class="math inline">\(\rho\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This is quite sobering. If you collect 10 observations with <span class="math inline">\(\rho = 0.4\)</span>, their sample mean will be as precise as the sample mean of 10/(1+9*0.4) = 2.17 uncorrelated observations! It seems like we are losing a lot of information. In the extreme situation where <span class="math inline">\(\rho = 1\)</span>, the effective sample size is <span class="math inline">\(n^\prime = 1\)</span>. How do we make sense of that?</p>
+<p>If the observations are perfectly correlated, then <span class="math inline">\(Y(t_1) = Y(t_2) = \cdots = Y(t_n)\)</span> and there is no variability. Once you observe one data point, you have all the information you could possibly gather. Collecting more data does not add more information in this situation. Another way to look at it: if <span class="math inline">\(\sigma^2 = 0\)</span>, then it does not matter what the denominator is in <span class="math inline">\(\sigma^2/n\)</span>. The sample mean will have zero variance because the observations have zero variance.</p>
+<p>In practice, the effective sample size reduction is not quite as harsh as in the compound symmetry example because autocorrelations diminish with increasing separation of data points. We chose the compound symmetry model since the calculation of the variance in <a href="#eq-cs-correlation-mean" class="quarto-xref">Equation&nbsp;<span>28.1</span></a> is relatively straightforward.</p>
+</section>
+<section id="sec-stationarity" class="level3">
+<h3 class="anchored" data-anchor-id="sec-stationarity">Stationary Random Processes</h3>
+<p>A stochastic process is called <strong>stationary</strong> if it is <strong>self-replicating</strong>, it looks similar in different parts of the domain <span class="math inline">\(D\)</span>. The domain <span class="math inline">\(D\)</span> for a temporal process are points in time and for a spatial process the domain consists of all possible spatial coordinates (latitudes and longitudes). For a spatial process the observations are indexed with a two-dimensional vector of coordinates, <span class="math inline">\(\textbf{s}= [x_1,x_2]\)</span>, for a temporal process the index is a scalar <span class="math inline">\(t\)</span> and the processes themselves are expressed as <span class="math inline">\(Y(\textbf{s})\)</span> and <span class="math inline">\(Y(t)\)</span>.</p>
+<p>So what does it mean for <span class="math inline">\(Y(\textbf{s})\)</span> to be self-replicating? <span class="math inline">\(Y(\textbf{s})\)</span> and <span class="math inline">\(Y(\textbf{s}+\textbf{h})\)</span> are random variables separated by the lag vector <span class="math inline">\(\textbf{h}\)</span>. As random variables they have a distribution, a mean, a variance, and so forth. <strong>Strict</strong> stationarity implies that the distribution is the same at all points, a condition more restrictive than what we need to make inferences about the random process. If we wish to estimate the covariance or correlation between two points of the process, then it would help if we can consider all pairs <span class="math inline">\((Y(\textbf{s}), Y(\textbf{s}+\textbf{h}))\)</span> to construct an estimator. But in order to do so, it must be true that <span class="math display">\[
+(Y(\textbf{s}_1), Y(\textbf{s}_1+\textbf{h}))
+\]</span> and <span class="math display">\[
+(Y(\textbf{s}_2), Y(\textbf{s}_2+\textbf{h}))
+\]</span> contribute the same information to the estimation. If that assumption does not hold, the autocorrelation function will not just be a function of <span class="math inline">\(\textbf{h}\)</span>, but it will depend on the location itself.</p>
+<p>Less restrictive than strict stationarity—but a sufficiently strong condition for our purposes—<strong>second-order stationarity</strong> of a stochastic process implies that <span class="math display">\[
+\begin{align*}
+\text{E}[Y(\textbf{s})] &amp;= \mu \\
+\text{Cov}[Y(\textbf{s}),Y(\textbf{s}+\textbf{h})] &amp;= C(\textbf{h})
+\end{align*}
+\]</span> The first property states that the mean is constant and does not depend on location. The second property states that the covariance function is a function of the lag <span class="math inline">\(\textbf{h}\)</span> but not of the location <span class="math inline">\(\textbf{s}\)</span>. In a second-order stationary random process absolute coordinates do not matter, the origin does not matter. For a time series that means you can talk about a difference of two days without worrying whether the first day was a Sunday or a Thursday.</p>
+<p>Stationarity assumptions are important in the analysis of correlated data. You can say that the <em>iid</em> assumption has been replaced with a second-order stationarity assumption. The assumption of a constant mean seems more restrictive than the existence of a covariance function invariant to location. How can we apply these assumptions to modeling the AAPL share prices?</p>
+<p>The statistical models entertained so far have focused on modeling the mean structure, <span class="math display">\[
+Y = f(x_1,x_2, \cdots,x_p,\theta_1,\cdots,\theta_k) + \epsilon
+\]</span> but implicitly we also modeled the random structure of <span class="math inline">\(\epsilon\)</span>. Assuming that <span class="math inline">\(\epsilon \textit{ iid } (0,\sigma^2)\)</span> is placing a model on the variance-covariance structure on the model errors. Modeling correlated data applies the same ideas. The changes in the mean of the target are captured by <span class="math inline">\(f(x_1,x_2, \cdots,x_p,\theta_1,\cdots,\theta_k)\)</span>. The model errors are assumed to follow a second-order stationarity process with some covariance function. The assumption of a constant (zero) mean for <span class="math inline">\(\epsilon\)</span> makes sense in this situation as much as it makes sense in the <em>iid</em> case.</p>
+</section>
+<section id="autocorrelation-functions" class="level3">
+<h3 class="anchored" data-anchor-id="autocorrelation-functions">Autocorrelation Functions</h3>
+<p>The autocorrelation function (or correlation function, for short) expresses the evolution of the correlation with increasing spatial or temporal separation of the observations. How does it relate to the covariance function <span class="math inline">\(C(\textbf{h})\)</span> or <span class="math inline">\(C(t)\)</span> of a second-order stationary process mentioned in the previous section?</p>
+<p>Let’s look at observations measured at times $t_1, , t_n.&nbsp;The covariance between observations at time <span class="math inline">\(t_i\)</span> and <span class="math inline">\(t_j\)</span> is <span class="math display">\[
+\text{Cov}[Y(t_i),Y(t_j)] = \text{E}[Y(t_i)Y(t_j)] - \text{E}[Y(t_i)]\text{E}[Y(t_j)]
+\]</span> This is simply the definition of a covariance. If <span class="math inline">\(Y(t)\)</span> is second-order stationary, then the means are the same and the covariance is only a function of <span class="math inline">\(|t_i - t_j|\)</span> but not of the absolute values <span class="math inline">\(t_i\)</span> or <span class="math inline">\(t_j\)</span>. The <strong>autocovariance</strong> function is <span class="math display">\[
+\text{Cov}[Y(t_i),Y(t_j)] = C(|t_i - t_j|)
+\]</span> When <span class="math inline">\(t_i = t_j\)</span>, at lag 0, this function is the variance of <span class="math inline">\(Y(t)\)</span>: <span class="math display">\[
+C(0) = \text{Cov}[Y(t_i),Y(t_i)] = \text{Var}[Y(t_i)]
+\]</span> Note that second-order stationarity implies the absence of an origin, if <span class="math inline">\(C(h)\)</span> does not depend on absolute coordinates <span class="math inline">\(C(0)\)</span> does not depend on absolute coordinates. The second-order stationary process has constant mean <strong>and</strong> constant variance.</p>
+<div class="definition">
+<div class="definition-header">
+<p>Definition: Autocorrelation Function</p>
+</div>
+<div class="definition-container">
+<p>The <strong>autocorrelation</strong> function at lag <span class="math inline">\(h\)</span> of a second-order stationary process is the ratio of the autocovariances at lag <span class="math inline">\(h\)</span> and at lag <span class="math inline">\(0\)</span> <span class="math display">\[
+R(h) = \frac{C(h)}{C(0)}
+\]</span></p>
+</div>
+</div>
+<p>Because of this relationship we can switch between the autocorrelation and the autocovariance function easily: <span class="math inline">\(C(h) = C(0)\times R(h)\)</span> and models can be specified in terms of either function.</p>
+<p>Models for autocorrelations parameterize <span class="math inline">\(R(h)\)</span>, usually in such a way that the correlations decay with increasing lag. Some common autocorelation models are the following:</p>
+<ol type="1">
+<li><p><strong>First-order autoregressive (AR(1)) model</strong> <span class="math display">\[R(h) = \rho^{|i-j|}\]</span></p></li>
+<li><p><strong>Continuous AR(1) (exponential) model</strong> <span class="math display">\[R(h) = \rho^{h} = \exp\left \{ - h/\phi \right \}\]</span></p></li>
+<li><p><strong>Gaussian model</strong> <span class="math display">\[R(h) = \exp\left \{ -h^2/\phi^2\right \}\]</span></p></li>
+<li><p><strong>Spherical model</strong> <span class="math display">\[R(h) = \left \{
+     \begin{array}{ll}
+       1- \frac{3}{2}\left(\frac{h}{\phi} \right) + \frac{1}{2}\left( \frac{h}{\phi}\right)^3 &amp; h \leq \phi \\
+       0 &amp; h &gt; \phi
+      \end{array}
+      \right .
+     \]</span></p></li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled" title="AR(1) Model">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+AR(1) Model
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The name “AR(1) model” is a shorthand for the autoregressive model of first order, a basic model in the study of time series data. Let <span class="math inline">\(\{Y(t): t=\cdots,-1,0,1,\cdots\}\)</span> be a time series of attribute <span class="math inline">\(Y\)</span> observed at times <span class="math inline">\(t=\cdots,-1,0,1,\cdots\)</span>. The autoregressive series of first order is generated according to <span class="math display">\[
+Y(t) = \rho Y(t-1) + \epsilon(t)
+\]</span> The <span class="math inline">\(\epsilon(t)\)</span> are uncorrelated random variables with mean 0 and variance <span class="math inline">\(\sigma^2_e\)</span>, also called the random shocks or innovations of the time series process. The innovation at time <span class="math inline">\(t\)</span> is not correlated with the past realizations, <span class="math inline">\(\text{Cov}[Y(t-s),\epsilon(t)] = 0, \forall s &gt; 0\)</span>, and the <span class="math inline">\(Y(t)\)</span> process has a constant mean <span class="math inline">\(\mu\)</span>. For <span class="math inline">\(\rho &gt; 0\)</span>, the AR(1) process has runs of positive and negative residuals that vary about <span class="math inline">\(\mu\)</span>. The length of the runs increases with <span class="math inline">\(\rho\)</span>.</p>
+<p>The recursive relationship built into the AR(1) model leads to a covariance model of the form <span class="math inline">\(C(h) = \rho C(h-1)\)</span> and ultimately <span class="math inline">\(C(h) = \rho^h C(0)\)</span>. The autocorrelation function of the AR(1) process is <span class="math inline">\(R(h) = \rho^h\)</span>.</p>
+</div>
+</div>
+</div>
+<p>The AR(1) model specifies correlation in terms of the positions <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> of observations in the observed sequence. The lag <span class="math inline">\(h\)</span> does not correspond to a difference in observation times in this model. When the observation times are equally spaced, this model is still appropriate and leads to a re-scaled estimate of <span class="math inline">\(\rho\)</span> compared to the continuous AR(1) model. For equally-spaced measurements, the possible lags are <span class="math inline">\(|t_i - t_j| = c|i-j|\)</span> for some factor <span class="math inline">\(c\)</span>. The correlation function of the AR(1) process is a step function, it does not decrease smoothly with <span class="math inline">\(h\)</span>. The correlation matrix of this process with 4 observations is <span class="math display">\[
+\left [\begin{matrix}
+   1   &amp; \rho   &amp; \rho^2 &amp; \rho^3 \\
+\rho   &amp; 1      &amp; \rho   &amp; \rho^2 \\
+\rho^2 &amp; \rho   &amp; 1      &amp; \rho   \\
+\rho^3 &amp; \rho^2 &amp; \rho   &amp; 1
+\end{matrix}\right]
+\]</span> The same matrix for the continuous AR(1) model is <span class="math display">\[
+\left [\begin{matrix}
+   1   &amp; \rho^{|t_1-t_2|}   &amp; \rho^{|t_1-t_3|} &amp; \rho^{|t_1-t_4} \\
+\rho^{|t_2-t_1|}   &amp; 1      &amp; \rho^{|t_2-t_3|}   &amp; \rho^{|t_2-t_4|} \\
+\rho^{|t_3-t_1|} &amp; \rho^{|t_3-t_2|}   &amp; 1      &amp; \rho^{|t_3-t_4|}   \\
+\rho^{|t_4-t_1|} &amp; \rho^{|t_4-t_2|} &amp; \rho^{|t_4-t_3|}   &amp; 1
+\end{matrix}\right]
+\]</span></p>
+<p>The continuous AR(1) model appears in two common parameterizations, <span class="math inline">\(\rho^h\)</span> and <span class="math inline">\(\exp\{-h/\phi\}\)</span>. The former is convenient because <span class="math inline">\(0 \le \rho \le 1\)</span> and has interpretation as a correlation coefficient. The second parameterization has nice numerical properties and you can easily convert between the two: <span class="math display">\[
+\begin{align*}
+\rho &amp;= e^{-1/\phi} \\
+\phi &amp;= \frac{-1}{\log \rho}
+\end{align*}
+\]</span> The “gaussian” model is not related to the Gaussian distribution, it gets its name from the term in the exponent that resembles (somewhat) the term in the Gaussian density. For a given value of <span class="math inline">\(\phi\)</span>, the exponential model decreases correlations initially more rapidly than the gaussian model but levels out sooner (<a href="#fig-autocorr-funcs" class="quarto-xref">Figure&nbsp;<span>28.8</span></a>).</p>
+<p>The spherical model is popular in the analysis of geospatial data. Unlike the exponential and the gaussian models, which do not reach <span class="math inline">\(R(h) = 0\)</span>, the spherical model has <span class="math inline">\(R(\phi) = 0\)</span>. The lag at which autocorrelations have become negligbile is called the <strong>range</strong> of the function. For the exponential and gaussian models the <em>practical</em> range is defined as the lag at which <span class="math inline">\(R(h) = 0.05\)</span>. Those values are <span class="math inline">\(3\phi\)</span> and <span class="math inline">\(\sqrt{3}\phi\)</span> for the exponential and gaussian models, respectively (<a href="#fig-autocorr-funcs" class="quarto-xref">Figure&nbsp;<span>28.8</span></a>).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-autocorr-funcs" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-autocorr-funcs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="corrdata_files/figure-html/fig-autocorr-funcs-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="quarto-lightbox-gallery-7"><img src="corrdata_files/figure-html/fig-autocorr-funcs-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-autocorr-funcs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.8: Correlation functions with <span class="math inline">\(\phi = 20\)</span>. Vertical reference lines are drawn at the respective practical range for the exponential and the gaussian models. The range of the spherical model is <span class="math inline">\(\phi = 20\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-corr-error-models" class="level2" data-number="28.3">
+<h2 data-number="28.3" class="anchored" data-anchor-id="sec-corr-error-models"><span class="header-section-number">28.3</span> Correlated Error Models</h2>
+<section id="setting-up-the-model" class="level3">
+<h3 class="anchored" data-anchor-id="setting-up-the-model">Setting up the Model</h3>
+<p>Correlated error models parameterize the variance-covariance matrix (covariance matrix, for short) of the model errors. In longitudinal, time series, or spatial applications, the autocorrelation or autocovariance functions are used to structure this matrix. Suppose the data are clustered, the index <span class="math inline">\(i\)</span> denotes the cluster, and <span class="math inline">\(\textbf{Y}_i\)</span> is the <span class="math inline">\((n_i \times 1)\)</span> vector of target values for the <span class="math inline">\(i\)</span><sup>th</sup> cluster. Clusters can be of different sizes, and there can be one or more clusters. In spatial data applications and in time series analysis it is common to treat the entire geospatial data set as a single cluster: all observations are correlated. In longitudinal applications clusters typically refer to the subjects of the study; the <code>apple</code> data is an example of that.</p>
+<p>If the basic model structure is that of a linear model, we can write the model for the <span class="math inline">\(i\)</span><sup>th</sup> cluster as <span id="eq-corr-error-model1"><span class="math display">\[
+\begin{align*}
+\textbf{Y}_i &amp;= \textbf{X}_i \boldsymbol{\beta}+ \boldsymbol{\epsilon}_i \quad i=1,\cdots,k\\
+\boldsymbol{\epsilon}_i &amp;\sim (\textbf{0},\textbf{V}_i) \\
+\text{Cov}[ \boldsymbol{\epsilon}_i,\boldsymbol{\epsilon}_j] &amp;= \textbf{0}\quad i \neq j
+\end{align*}
+\tag{28.2}\]</span></span></p>
+<p><span class="math inline">\(\textbf{V}_i\)</span> is the <span class="math inline">\((n_i \times n_i)\)</span> covariance matrix of the model errors for the <span class="math inline">\(i\)</span><sup>th</sup> cluster: <span class="math display">\[
+\textbf{V}_i = \left [
+    \begin{array}{cccc}
+    \text{Var}[\epsilon_{i1}] &amp; \text{Cov}[\epsilon_{i1},\epsilon_{i2}] &amp; \cdots &amp; \text{Cov}[\epsilon_{i1},\epsilon_{in_i}] \\
+    \text{Cov}[\epsilon_{i2},\epsilon_{i1}] &amp; \text{Var}[\epsilon_{i2}] &amp;  \cdots &amp; \text{Cov}[\epsilon_{i2},\epsilon_{in_i}] \\
+    \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+    \text{Cov}[\epsilon_{in_i},\epsilon_{i1}] &amp; \text{Cov}[\epsilon_{in_i},\epsilon_{i2}] &amp; \cdots &amp; \text{Var}[\epsilon_{in_i}]
+    \end{array}
+\right ]
+\]</span> The expression <span class="math inline">\(\text{Cov}[ \boldsymbol{\epsilon}_i,\boldsymbol{\epsilon}_j] = \textbf{0}, i \neq j\)</span>, in <a href="#eq-corr-error-model1" class="quarto-xref">Equation&nbsp;<span>28.2</span></a> states that data from different clusters are uncorrelated. If you were to write down the variance-covariance matrix of the entire data vector, where <span class="math inline">\(\textbf{Y}_1\)</span> is stacked on top of <span class="math inline">\(\textbf{Y}_2\)</span> and so on, the covariance matrix would be a block-diagonal matrix: <span class="math display">\[
+\textbf{V}= \text{Var}\left[\begin{array}{c} \textbf{Y}_1 \\ \textbf{Y}_2 \\ \vdots \\ \textbf{Y}_k \end{array} \right] =
+\left [ \begin{matrix}
+\textbf{V}_1  &amp; \textbf{0}&amp; \cdots \textbf{0}\\
+\textbf{0}&amp; \textbf{V}_2  &amp; \cdots \textbf{0}\\
+\vdots &amp; \vdots &amp; \ddots \textbf{0}\\
+\textbf{0}&amp; \textbf{0}&amp; \cdots \textbf{V}_k
+\end{matrix}\right]
+\]</span></p>
+<p>To reduce the number of unknown quantities in <span class="math inline">\(\textbf{V}_i\)</span>, it is assumed that the <span class="math inline">\(\boldsymbol{\epsilon}_i\)</span> are second-order stationary with autocovariance function <span class="math inline">\(C(h,\boldsymbol{\theta})\)</span>. The assumption about the error distribution now becomes <span class="math display">\[
+\boldsymbol{\epsilon}\sim (0,\textbf{V}_i(\boldsymbol{\theta}))
+\]</span> and the covariance matrix for the <span class="math inline">\(i\)</span><sup>th</sup> cluster is <span class="math display">\[
+\textbf{V}_i(\boldsymbol{\theta}) = \left [
+        \begin{array}{cccc}
+        C(0,\boldsymbol{\theta}) &amp; C(h_{12},\boldsymbol{\theta}) &amp; \cdots &amp; C(h_{1{n_i}},\boldsymbol{\theta}) \\
+        C(h_{21},\boldsymbol{\theta}) &amp; C(0,\boldsymbol{\theta}) &amp; \cdots &amp; C(h_{2{n_i}},\boldsymbol{\theta}) \\
+        \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+        C(h_{{n_i}1},\boldsymbol{\theta}) &amp; C(h_{{n_i}2,\boldsymbol{\theta}}) &amp;  \cdots &amp; C(0,\boldsymbol{\theta})
+        \end{array}
+\right ]
+\]</span></p>
+<p>The overall model now comprises two sets of parameters, <span class="math inline">\(\boldsymbol{\beta}\)</span> are the parameters of the mean function, <span class="math inline">\(\boldsymbol{\theta}\)</span> are the parameters of the covariance structure. The former (<span class="math inline">\(\boldsymbol{\beta}\)</span>) are called the <strong>fixed effects</strong> of the model, a term that will become clearer in <a href="mixed.html" class="quarto-xref"><span>Chapter 29</span></a>. The latter (<span class="math inline">\(\boldsymbol{\theta}\)</span>) are frequently called the <strong>covariance parameters</strong> of the model. We write <span class="math inline">\(\boldsymbol{\theta}\)</span> as a vector of parameters since it contains at least two quantities: a parameter related to the strength of the correlation and a scale parameter that measures the variance of the process (<span class="math inline">\(C(0)\)</span>). For example, if <span class="math inline">\(n_i = 4\)</span> and the covariance structure follows the exponential (=continuous AR(1)) model, the covariance matrix takes the following form with two parameters <span class="math inline">\(\boldsymbol{\theta}= [\sigma^2, \phi]\)</span>:</p>
+<p><span class="math display">\[
+\textbf{V}_i(\boldsymbol{\theta}) = \sigma^2 \left [ \begin{array}{cccc}
+    1                                     &amp; e^{-|t_{i1}-t_{i2}|/\phi} &amp; e^{-|t_{i1}-t_{i3}|/\phi} &amp; e^{-|t_{i1}-t_{i4}|/\phi} \\
+    e^{-|t_{i2}-t_{i1}|/\phi} &amp; 1                                     &amp; e^{-|t_{i2}-t_{i3}|/\phi} &amp; e^{-|t_{i2}-t_{i4}|/\phi} \\
+    e^{-|t_{i3}-t_{i1}|/\phi} &amp; e^{-|t_{i3}-t_{i2}|/\phi} &amp; 1                                     &amp; e^{-|t_{i3}-t_{i4}|/\phi} \\
+    e^{-|t_{i4}-t_{i1}|/\phi} &amp; e^{-|t_{i4}-t_{i2}|/\phi} &amp; e^{-|t_{i4}-t_{i3}|/\phi} &amp; 1
+    \end{array} \right ]
+\]</span></p>
+<p>Only 2 parameters are needed compared to a completely unstructured covariance matrix which has <span class="math inline">\(4 \times 5 / 2 = 10\)</span> unique elements.</p>
+</section>
+<section id="parameter-estimation" class="level3">
+<h3 class="anchored" data-anchor-id="parameter-estimation">Parameter Estimation</h3>
+<section id="estimating-the-fixed-effects" class="level4">
+<h4 class="anchored" data-anchor-id="estimating-the-fixed-effects">Estimating the fixed effects</h4>
+<p>Our correlated error model now takes the form <span class="math display">\[
+\begin{align*}
+\textbf{Y}_i &amp;= \textbf{X}_i \boldsymbol{\beta}+ \boldsymbol{\epsilon}_i \quad i=1,\cdots,k\\
+\boldsymbol{\epsilon}_i &amp;\sim (\textbf{0},\textbf{V}_i(\boldsymbol{\theta})) \\
+\text{Cov}[ \boldsymbol{\epsilon}_i,\boldsymbol{\epsilon}_j] &amp;= \textbf{0}\quad i \neq j
+\end{align*}
+\]</span></p>
+<p>How do we estimate the fixed-effects <span class="math inline">\(\boldsymbol{\beta}\)</span> and covariance parameters <span class="math inline">\(\boldsymbol{\theta}\)</span>? If <span class="math inline">\(\textbf{V}_i = \sigma^2\textbf{I}\)</span>, we are in the ordinary least squares situation and would estimate <span class="math inline">\(\boldsymbol{\beta}\)</span> as <span class="math display">\[
+\widehat{\boldsymbol{\beta}}_{OLS} = (\textbf{X}^\prime\textbf{X})^{-1}\textbf{X}^\prime\textbf{Y}=
+\left(\sum_{i=1}^k\textbf{X}_i^\prime\textbf{X}_i \right)^{-1}\sum_{i=1}^k\textbf{X}_i^\prime\textbf{Y}_i
+\]</span> This estimate of <span class="math inline">\(\boldsymbol{\beta}\)</span> does not involve the lonely covariance parameter <span class="math inline">\(\sigma^2\)</span>, which is quite remarkable, see <a href="estimation.html#sec-ols" class="quarto-xref"><span>Section 5.2.1</span></a>. Regardless of how variable the data are, we estimate the fixed effects coefficients the same way.</p>
+<p>In the correlated error model this no longer holds. The optimal estimator now is the <strong>generalized least squares</strong> estimator (<a href="estimation.html#sec-wls-gls" class="quarto-xref"><span>Section 5.2.2</span></a>) <span class="math display">\[
+\begin{align*}
+\widehat{\boldsymbol{\beta}}_{GLS} &amp;= \left(\textbf{X}^\prime\textbf{V}(\boldsymbol{\theta})^{-1}\textbf{X}\right)^{-1} \textbf{X}^\prime\textbf{V}(\boldsymbol{\theta})^{-1}\textbf{Y}\\
+&amp;= \left(\sum_{i=1}^k\textbf{X}_i^\prime\textbf{V}_i(\boldsymbol{\theta})^{-1}\textbf{X}_i \right)^{-1}\sum_{i=1}^k\textbf{X}_i^\prime\textbf{V}_i(\boldsymbol{\theta})^{-1}\textbf{Y}_i
+\end{align*}
+\]</span> If we know <span class="math inline">\(\boldsymbol{\theta}\)</span>, this estimator can be readily calculated. But if we do not know <span class="math inline">\(\boldsymbol{\theta}\)</span> we have a problem. In order to estimate <span class="math inline">\(\boldsymbol{\theta}\)</span>, one needs to know <span class="math inline">\(\boldsymbol{\beta}\)</span>, because we have to remove the mean function from the data in because the second-order process <span class="math inline">\(\boldsymbol{\epsilon}\)</span> has a constant (zero) mean. Removing the mean requires some estimate of <span class="math inline">\(\boldsymbol{\beta}\)</span>. But in order to estimate <span class="math inline">\(\boldsymbol{\beta}\)</span> we need to know <span class="math inline">\(\boldsymbol{\theta}\)</span>. This is somewhat of a cat-and-mouse game.</p>
+<p>The tension is resolved by the <strong>estimated generalized least squares</strong> principle. Given a consistent estimate of <span class="math inline">\(\boldsymbol{\theta}\)</span>, you compute the estimated GLS estimator <span class="math display">\[
+\begin{align*}
+\widehat{\boldsymbol{\beta}}_{EGLS} &amp;= (\textbf{X}^\prime\textbf{V}(\widehat{\boldsymbol{\theta}})^{-1}\textbf{X})^{-1}\textbf{X}^\prime\textbf{V}(\widehat{\boldsymbol{\theta}})^{-1}\textbf{Y}\\
+&amp;= \left(\sum_{i=1}^k\textbf{X}_i^\prime\textbf{V}_i(\widehat{\boldsymbol{\theta}})^{-1}\textbf{X}_i \right)^{-1}\sum_{i=1}^k\textbf{X}_i^\prime\textbf{V}_i(\widehat{\boldsymbol{\theta}})^{-1}\textbf{Y}_i
+\end{align*}
+\]</span></p>
+<p>We are almost there! We just need an estimate of the covariance parameters.</p>
+</section>
+<section id="estimating-the-covariance-parameters" class="level4">
+<h4 class="anchored" data-anchor-id="estimating-the-covariance-parameters">Estimating the covariance parameters</h4>
+<p>Many principles can be applied to derive estimates of <span class="math inline">\(\boldsymbol{\theta}\)</span> that can be plugged into the formula for the EGLS estimator of <span class="math inline">\(\boldsymbol{\beta}\)</span>. The usual approach is to estimate the covariance parameters <span class="math inline">\(\boldsymbol{\theta}\)</span> by a likelihood-based principle after adding a distributional assumption for the model errors:</p>
+<p><span id="eq-gauss-error-model"><span class="math display">\[
+\begin{align*}
+\textbf{Y}_i &amp;= \textbf{X}_i \boldsymbol{\beta}+ \boldsymbol{\epsilon}_i \quad i=1,\cdots,k\\
+\boldsymbol{\epsilon}_i &amp;\sim G(\textbf{0},\textbf{V}_i(\boldsymbol{\theta})) \\
+\text{Cov}[ \boldsymbol{\epsilon}_i,\boldsymbol{\epsilon}_j] &amp;= \textbf{0}\quad i \neq j
+\end{align*}
+\tag{28.3}\]</span></span></p>
+<p>This seems like a subtle change, we simply added the assumption that the errors are Gaussian distributed in <a href="#eq-gauss-error-model" class="quarto-xref">Equation&nbsp;<span>28.3</span></a>. It has significant implications. If <span class="math inline">\(\boldsymbol{\epsilon}_i\)</span> is a vector of Gaussian random variables, then, by the linearity property of Gaussian variables, <span class="math inline">\(\textbf{Y}_i\)</span> is also Gaussian distributed with mean <span class="math inline">\(\textbf{X}_i\boldsymbol{\beta}\)</span> and variance <span class="math inline">\(\textbf{V}_i\)</span> (<a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 4.7</span></a>).</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Keep in mind that adding a correlated error structure to your model invariably means that you make a Gaussian assumption for your data. This is implicit in algorithms that estimate the covariance parameters by the likelihood principle, whether that is maximum likelihood or restricted maximum likelihood. For example, the <code>gls</code> function in the <code>nlme</code> package in <code>R</code> estimates parameters by ML or REML.</p>
+</div>
+</div>
+<p>Two likelihood-based approaches are <strong>maximum likelihood</strong> (ML) and <strong>restricted maximum likelihood</strong> (REML). The former is the familiar principle that maximizes the distribution of <span class="math inline">\(\textbf{Y}\)</span> as a function of the parameters. Restricted maximum likelihood estimation does not seek the values that maximize the log likelihood of <span class="math inline">\(\textbf{Y}\)</span> but that of <span class="math inline">\(\textbf{K}\textbf{Y}\)</span>. The matrix <span class="math inline">\(\textbf{K}\)</span> is chosen so that <span class="math inline">\(\textbf{K}\textbf{X}= \textbf{0}\)</span>.</p>
+<p>ML and REML solve the problem of the dependency between <span class="math inline">\(\boldsymbol{\theta}\)</span> on <span class="math inline">\(\boldsymbol{\beta}\)</span> in different ways. With ML estimation in the Gaussian case you can apply a technique called <strong>profiling</strong> the likelihood to</p>
+<ul>
+<li>find an expression for <span class="math inline">\(\widehat{\boldsymbol{\beta}}\)</span> that depends on <span class="math inline">\(\boldsymbol{\theta}\)</span></li>
+<li>substitute this expression in the formula for the m log likelihood</li>
+<li>solve the resulting function–the profiled log likelihood function–which is now only a function of <span class="math inline">\(\boldsymbol{\theta}\)</span> for the covariance parameters, using numerical methods</li>
+</ul>
+<p>In REML estimation the fixed effects are removed from the log likelihood by the matrix <span class="math inline">\(\textbf{K}\)</span>, which causes <span class="math inline">\(\textbf{K}\textbf{Y}\)</span> to have mean <span class="math display">\[
+\text{E}[\textbf{K}\textbf{Y}] = \textbf{K}\text{E}[\textbf{Y}] = \textbf{K}\textbf{X}\boldsymbol{\beta}= \textbf{0}
+\]</span> The resulting REML log-likelihood is only a function of <span class="math inline">\(\boldsymbol{\theta}\)</span> and can be maximized by numerical methods. Once the REML estimator of <span class="math inline">\(\boldsymbol{\theta}\)</span> is obtained, <span class="math inline">\(\boldsymbol{\beta}\)</span> is computed as the EGLS estimate.</p>
+<p>Interestingly, the profiled estimate of <span class="math inline">\(\boldsymbol{\beta}\)</span> in ML estimation also has the form of a GLS estimate. On the surface, ML and REML estimates of <span class="math inline">\(\boldsymbol{\beta}\)</span> are very similar: <span class="math display">\[
+\begin{align*}
+\widehat{\boldsymbol{\beta}}_{ML} &amp;= \left(\textbf{X}^\prime\textbf{V}^{-1}(\widehat{\boldsymbol{\theta}}_{ML})\textbf{X}\right)^{-1} \textbf{X}^\prime\textbf{V}^{-1}(\widehat{\boldsymbol{\theta}}_{ML})\textbf{Y}\\
+\widehat{\boldsymbol{\beta}}_{REML} &amp;= \left(\textbf{X}^\prime\textbf{V}^{-1}(\widehat{\boldsymbol{\theta}}_{REML})\textbf{X}\right)^{-1} \textbf{X}^\prime\textbf{V}^{-1}(\widehat{\boldsymbol{\theta}}_{REML})\textbf{Y}
+\end{align*}
+\]</span> Both have the form of EGLS estimators with the respective estimates of the covariance parameters plugged into the evaluation of <span class="math inline">\(\textbf{V}(\boldsymbol{\theta})\)</span>. Which should you prefer?</p>
+<p>The relationship between ML and REML estimators of covariance parameters can be made more tangible by comparing them for a very simple model. Suppose <span class="math inline">\(Y_1, \cdots, Y_n\)</span> are a random sample from a G<span class="math inline">\((\mu,\sigma^2)\)</span> distribution. The maximum likelihood estimator of the variance <span class="math inline">\(\sigma^2\)</span> (<em>the</em> covariance parameter in this case) is <span class="math display">\[
+\widehat{\sigma}^2_{ML} = \frac{1}{n} \sum_{i=1}^n (Y_i - \overline{Y})^2
+\]</span> We know that this estimator is biased. It would be unbiased if <span class="math inline">\(\mu\)</span> were known, but since we substitute the estimate <span class="math inline">\(\overline{Y}\)</span> for <span class="math inline">\(\mu\)</span>, some bias is introduced. The REML estimator accounts for the fact that the mean is estimated by removing the mean from the (restricted) log likelihood and basing that function on <span class="math inline">\(n-1\)</span> rather than <span class="math inline">\(n\)</span> observations. The REML estimator of <span class="math inline">\(\sigma^2\)</span> is <span class="math display">\[
+\widehat{\sigma}^2_{REML} = \frac{1}{n-1} \sum_{i=1}^n (Y_i - \overline{Y})^2
+\]</span> and is unbiased. A similar effect takes place when instead of the log likelihood of <span class="math inline">\(\textbf{Y}\)</span> you consider the log likelihood of <span class="math inline">\(\textbf{K}\textbf{Y}\)</span>. The contrast matrix <span class="math inline">\(\textbf{K}\)</span> effectively reduces the <span class="math inline">\(n\)</span>-dimensional likelihood to a <span class="math inline">\(n-p\)</span> dimensional likelihood where <span class="math inline">\(p\)</span> is the number of parameters in the mean function. As a result, restricted maximum likelihood leads to less biased estimators of <span class="math inline">\(\boldsymbol{\theta}\)</span> compared to ML estimation which leads to less biased estimators of <span class="math inline">\(\boldsymbol{\beta}\)</span>–often, those estimators are unbiased. In general, ML estimates of covariance parameters have negative bias, they are smaller than the REML estimates.</p>
+<p>Should we thus prefer REML over ML estimation? It depends. Because the REML log likelihood does not contain information about the fixed effects, you <strong>cannot</strong> use the REML log-likelihood in a likelihood ratio test (LRT; see <a href="regdiscrete.html#sec-lrt" class="quarto-xref"><span>Section 11.4</span></a>) to test hypotheses about the <span class="math inline">\(\beta\)</span>s. You <strong>can</strong> use the REML log likelihood to test hypotheses about the elements of <span class="math inline">\(\boldsymbol{\theta}\)</span>. If you want to use the LRT to test hypotheses about <span class="math inline">\(\boldsymbol{\beta}\)</span> in a correlated error model, the estimation must be based on ML, not REML.</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Check the default estimation method of software for correlated error models. Because the covariance parameters are less biased, this is frequently REML estimation. The (log) likelihood reported cannot be used in LRTs about the fixed effects.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-apples-corr-errors" class="level3">
+<h3 class="anchored" data-anchor-id="sec-apples-corr-errors">Worked Example</h3>
+<div class="example">
+<div class="example-header">
+<p>Example: Apple Diameters (Cont’d)</p>
+</div>
+<div class="example-container">
+<p>Suppose we ignore the subsampling structure in the apple data for the time being and consider the data as comprising 80 clusters of longitudinal measurements–each of the 80 apples is one cluster.</p>
+<p>Because <code>appleid</code> is not unique within <code>Tree</code> id, we create a unique identifier for each apple by concatenating the apple id to the tree id. This will serve as the cluster id in the models.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>apples <span class="ot">&lt;-</span> apples <span class="sc">%&gt;%</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">TreeApp =</span> <span class="fu">paste</span>(<span class="fu">as.character</span>(Tree),<span class="st">"|"</span>,<span class="fu">as.character</span>(appleid)))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(apples)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Tree appleid measurement diameter TreeApp
+1    1       1           1     2.90   1 | 1
+2    1       1           2     2.90   1 | 1
+3    1       1           3     2.90   1 | 1
+4    1       1           4     2.93   1 | 1
+5    1       1           5     2.94   1 | 1
+6    1       1           6     2.94   1 | 1</code></pre>
+</div>
+</div>
+<p>You can fit linear models with correlated errors by restricted maximum likelihood (REML) or maximum likelihood (ML) with the <code>gls()</code> function in the <code>nlme</code> package in <code>R</code>.</p>
+<p>The following statements fit a linear model with continuous AR(1) errors for repeated measurements on apples by REML. The fixed-effects model is a linear regression of diameter on measurement occasion.</p>
+<p>The correlation model is <span class="math display">\[
+R(h) = \phi^h
+\]</span></p>
+<p>The expression <code>corCAR1(form = ~measurement | TreeApp)</code> specifies the correlation model and its formula. <code>form = ~measurement</code> specifies that the correlation is a function of the <code>measurement</code> variable. The variable specified after the vertical slash is the grouping variable that identifies the clusters. The observations that share the same value of <code>TreeApp</code> are considered members of the same group (cluster); the distance between their observations depends on the values of the <code>measurement</code> variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>gls_car1 <span class="ot">&lt;-</span> <span class="fu">gls</span>(diameter <span class="sc">~</span> measurement, </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>apples, </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">corCAR1</span>(<span class="at">form =</span> <span class="sc">~</span>measurement <span class="sc">|</span> TreeApp),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">na.action=</span>na.omit,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">method=</span><span class="st">"REML"</span>) <span class="co"># this is the default</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>gls_car1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized least squares fit by REML
+  Model: diameter ~ measurement 
+  Data: apples 
+  Log-restricted-likelihood: 946.0671
+
+Coefficients:
+(Intercept) measurement 
+ 2.82442419  0.02899978 
+
+Correlation Structure: Continuous AR(1)
+ Formula: ~measurement | TreeApp 
+ Parameter estimate(s):
+      Phi 
+0.9777128 
+Degrees of freedom: 451 total; 449 residual
+Residual standard error: 0.1052637 </code></pre>
+</div>
+</div>
+<p>The estimates of the fixed effects are <span class="math inline">\(\widehat{\boldsymbol{\beta}}_{REML}\)</span> = [2.82442, 0.029].</p>
+<p>The estimate of the correlation parameter is <span class="math inline">\(\widehat{\phi}_{REML}\)</span> = 0.9777</p>
+<p>The estimate of the error variance is <span class="math inline">\(\widehat{\sigma}^2_{REML}\)</span> = 0.1053^2 = 0.0111.</p>
+<p>The fitted model for measurement <span class="math inline">\(j\)</span> on apple <span class="math inline">\(i\)</span> <span class="math display">\[
+\widehat{y}_{ij} = \widehat{\beta}_0 + \widehat{\beta}_1x_{ij} = 2.8244 + 0.028999 \, x_{ij}
+\]</span> and the estimated covariance matrix is <span class="math display">\[
+\widehat{\text{Var}}[\textbf{Y}_i] = 0.1052^2 \times
+\left [ \begin{array}{cccccc}
+      1            &amp; 0.977^1 &amp; 0.977^2 &amp; 0.977^3 &amp; 0.977^4 &amp; 0.977^5 \\
+      0.977^1 &amp; 1            &amp; 0.977^1 &amp; 0.977^2 &amp; 0.977^3 &amp; 0.977^4 \\
+      0.977^2 &amp; 0.977^1 &amp; 1            &amp; 0.977^1 &amp; 0.977^2 &amp; 0.977^3 \\
+      0.977^3 &amp; 0.977^2 &amp; 0.977^1 &amp; 1            &amp; 0.977^1 &amp; 0.977^2 \\
+      0.977^4 &amp; 0.977^3 &amp; 0.977^2 &amp; 0.977^1 &amp; 1            &amp; 0.977^1 \\
+      0.977^5 &amp; 0.977^4 &amp; 0.977^3 &amp; 0.977^2 &amp; 0.977^1 &amp; 1            \\
+\end{array} \right ]
+\]</span> The autocorrelations between successive diameter measurements are very high.</p>
+<p>We can also fit the same autocovariance structure as an equivalent exponential model with <span class="math display">\[ R(h) = \exp(-h/\phi)\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gls_exp <span class="ot">&lt;-</span> <span class="fu">gls</span>(diameter <span class="sc">~</span> measurement, </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>apples, </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">corExp</span>(<span class="at">form =</span> <span class="sc">~</span>measurement <span class="sc">|</span> TreeApp),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">na.action=</span>na.omit,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">method=</span><span class="st">"REML"</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>gls_exp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized least squares fit by REML
+  Model: diameter ~ measurement 
+  Data: apples 
+  Log-restricted-likelihood: 946.0671
+
+Coefficients:
+(Intercept) measurement 
+ 2.82442419  0.02899978 
+
+Correlation Structure: Exponential spatial correlation
+ Formula: ~measurement | TreeApp 
+ Parameter estimate(s):
+   range 
+44.36699 
+Degrees of freedom: 451 total; 449 residual
+Residual standard error: 0.1052637 </code></pre>
+</div>
+</div>
+<p>The fixed-effects coefficients and the REML log-likelihood are the same as in the previous model. Note that <span class="math inline">\(\exp(-1/44.36699) = 0.97771\)</span>, the AR(1) coefficient from the <code>corCAR1</code> model.</p>
+<p>In this case, since the measurements are evenly spaced, the standard autoregressive correlation model (AR(1)) also gives the same results</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gls_ar1 <span class="ot">&lt;-</span> <span class="fu">gls</span>(diameter <span class="sc">~</span> measurement, </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>apples, </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">corAR1</span>(<span class="at">form =</span> <span class="sc">~</span>measurement <span class="sc">|</span> TreeApp),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">na.action=</span>na.omit,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">method=</span><span class="st">"REML"</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>gls_ar1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized least squares fit by REML
+  Model: diameter ~ measurement 
+  Data: apples 
+  Log-restricted-likelihood: 946.0671
+
+Coefficients:
+(Intercept) measurement 
+ 2.82442419  0.02899978 
+
+Correlation Structure: AR(1)
+ Formula: ~measurement | TreeApp 
+ Parameter estimate(s):
+      Phi 
+0.9777128 
+Degrees of freedom: 451 total; 449 residual
+Residual standard error: 0.1052637 </code></pre>
+</div>
+</div>
+<p>Note that the three models have the same REML log likelihood of 946.0671. The models are equivalent.</p>
+<p>Overlaying the fitted line on the trellis plots shows that we fit a marginal model–all apples share the same overall linear trend.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xyplot</span>(diameter <span class="sc">~</span> measurement <span class="sc">|</span> Tree, </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">data=</span>apples,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab=</span><span class="st">"Measurement index"</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab=</span><span class="st">"Diameter (inches)"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">type=</span><span class="fu">c</span>(<span class="st">"p"</span>),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">strip =</span> <span class="cf">function</span>(...) {</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>           <span class="fu">strip.default</span>(..., </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                         <span class="at">strip.names =</span><span class="fu">c</span>(T,T), </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                         <span class="at">strip.levels=</span><span class="fu">c</span>(T,T),</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>                         <span class="at">sep=</span><span class="st">" "</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>       },</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">as.table=</span><span class="cn">TRUE</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">panel=</span><span class="cf">function</span>(x,y,...) {</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>           <span class="fu">panel.xyplot</span>(x,y,...)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>           <span class="fu">panel.abline</span>(<span class="at">coef=</span>gls_car1<span class="sc">$</span>coefficients,<span class="at">col=</span><span class="st">"blue"</span>)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>           },</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">layout=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-apple-corr-error" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-apple-corr-error-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="corrdata_files/figure-html/fig-apple-corr-error-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="quarto-lightbox-gallery-8"><img src="corrdata_files/figure-html/fig-apple-corr-error-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-apple-corr-error-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.9: Fitted trend from correlated error models.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>A common linear trend over time applies to all apples (<a href="#fig-apple-corr-error" class="quarto-xref">Figure&nbsp;<span>28.9</span></a>). This trend works for some apples but the figure suggest for most apples a different intercept and/or a different slope. Accommodating such cluster-to-cluster variation is done efficiently with <strong>mixed models</strong> (<a href="mixed.html" class="quarto-xref"><span>Chapter 29</span></a>).</p>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;28.1: Correlated data mind map.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;28.2: Split-plot design.</span>
+<span class="glightbox-desc lightbox-desc-3">Figure&nbsp;28.3: Example of a clustered data structure. Observations from the same cluster are correlated, observations from different clusters are uncorrelated.</span>
+<span class="glightbox-desc lightbox-desc-4">Figure&nbsp;28.4: Trellis plot of the apple diameters for all ten trees.</span>
+<span class="glightbox-desc lightbox-desc-5">Figure&nbsp;28.5: Weekly AAPL close share prices from January 2010 through December 2023.</span>
+<span class="glightbox-desc lightbox-desc-6">Figure&nbsp;28.6: Empirical autocorrelations for lags 1–20 of AAPL weekly close prices between 2010 and 2023.</span>
+<span class="glightbox-desc lightbox-desc-7">Figure&nbsp;28.8: Correlation functions with <span class="math inline">\(\phi = 20\)</span>. Vertical reference lines are drawn at the respective practical range for the exponential and the gaussian models. The range of the spherical model is <span class="math inline">\(\phi = 20\)</span>.</span>
+<span class="glightbox-desc lightbox-desc-8">Figure&nbsp;28.9: Fitted trend from correlated error models.</span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-Schabenberger2001" class="csl-entry" role="listitem">
+Schabenberger, O., and Francis J. Pierce. 2001. <em>Contemporary Statistical Models for the Plant and Soil Sciences</em>. CRC Press, Boca Raton.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./gam.html" class="pagination-link" aria-label="Generalized Additive Models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./mixed.html" class="pagination-link" aria-label="Mixed Models for Longitudinal Data">
+        <span class="nav-page-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","loop":false,"closeEffect":"zoom","descPosition":"bottom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

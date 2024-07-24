@@ -1,0 +1,19 @@
+
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+
+# Regression Approach to Classification {#sec-class-reg}
+
+## Binary Data
+
+
+## Multinomial Data
+
+### Modeling Ordinal Data
+
+### Modeling Nominal Data
+

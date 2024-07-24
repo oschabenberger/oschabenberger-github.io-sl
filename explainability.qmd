@@ -1,0 +1,6 @@
+
+# Interpretability and Explainability {#sec-explain}
+
+
+![Model explainability mind map](images/ExplainabilityMindMap.png){#fig-explain-map .lightbox fig.align="center"}
+

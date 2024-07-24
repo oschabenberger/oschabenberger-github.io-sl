@@ -1,0 +1,265 @@
+# Bagging {#sec-bagging}
+
+## Relationship to Bootstrap
+
+Bagging is a general technique--like cross-validation--that can be applied to any learning method. It is particularly effective in ensembles of weak learners with high variability and low bias. The name is short for **b**ootstrap **agg**regat**ing** and describes its relationship to the bootstrap. Draw $B$ bootstrap samples from the dataframe with $n$ observations, fit a weak learner to each of the $B$ samples, and combine the individual predictions or classifications.
+
+In the regression case, the $B$ predictions are averaged, in the classification case the majority vote is taken to assign the predicted category.
+
+Not surprisingly, bagging is popular with decision trees, unbiased regression or classification methods that tend to have high variability. A single decision tree might have a large classification or prediction error, an ensemble of 500 trees can be a very precise predictor. Random forests (@sec-random-forest) are a special version of bagged trees.
+
+Bagging can be useful with other estimators.
+
+:::{.example}
+::::{.example-header}
+Example: Bagged Estimator based on 
+::::
+::::{.example-container}
+Suppose we have 100 observations from a G($\mu$,2) distribution. 
+
+We want to estimate the mean of the normal, so the sample mean 
+$$
+\overline{Y} = \frac{1}{n} \sum_{i=1}^n Y_i
+$$ 
+is the best estimator.
+
+We can get close to that estimator by bagging a highly variable estimator,
+say the average of the first three observations. if $Y_{(i)}$ denotes the $i$^th^ observation in the data set, then
+$$
+Y^* = \frac{1}{3} \sum_{i=1}^3 Y_{(i)}
+$$
+is also an unbiased estimator for $\mu$ and has standard  deviation
+$$ 
+\sqrt{\frac{\sigma^2}{3}} = 0.816
+$$
+compared to the standard deviation of the sample mean,
+$$ \sqrt{\frac{\sigma^2}{100}} = 0.1414
+$$
+
+$Y^*$ is more variable than $\overline{Y}$ and both are unbiased estimators. The precision of estimating $\mu$ based on $Y^*$ can be improved by bagging the estimator: rather than compute $Y^*$ once from the data, we compute it $B$ times based on bootstrap samples from the data and take the average of the bootstrapped estimates as our estimate of $\mu$.
+
+```{r}
+set.seed(542)
+n <- 100
+x <- rnorm(n, mean=0, sd=sqrt(2))
+
+bagger <- function(x,b=1000) {
+    n <- length(x)
+    sum_bs <- 0
+    sum_bs2 <- 0
+    for (i in 1:b) {
+        # Draw a bootstrap sample
+        bsample <- sample(n,n,replace=TRUE)
+        # Compute the estimator
+        est <- mean(x[bsample][1:3])
+        # Accumulate sum and sum of squared value of estimator
+        # so we can calculate mean and standard deviation later
+        sum_bs <- sum_bs + est
+        sum_bs2 <- sum_bs2 + est*est
+    }
+    # Compute mean and standard deviation of the estimator
+    mn = sum_bs / b
+    sdev = sqrt((sum_bs2 - sum_bs*sum_bs/b)/(b-1))
+    return (list(B=b, mean=mn, sd=sdev))
+}
+
+cat("The best estimate of mu is ", mean(x),"\n\n")
+l <- list()
+l[[length(l)+1]] <- bagger(x,b=10)
+l[[length(l)+1]] <- bagger(x,b=100)
+l[[length(l)+1]] <- bagger(x,b=1000)
+l[[length(l)+1]] <- bagger(x,b=10000)
+l[[length(l)+1]] <- bagger(x,b=25000)
+l[[length(l)+1]] <- bagger(x,b=50000)
+
+do.call(rbind.data.frame, l)
+```
+
+The `bagger` function returns the mean and standard deviation of the $B$ bootstrap estimates. Notice that by increasing $B$, the bagged estimate gets closer to the optimal estimator, $\overline{Y}$. The standard deviation of the bagged estimate stabilizes around 0.8, close to the theoretically expected value of $\sqrt{2/3} = 0.816$. Both quantities returned from `bagger` are becoming more accurate estimates as $B$ increases. The standard deviation of the bootstrap estimate does not go to zero as $B$ increases, it stabilizes at the standard deviation of the estimator. 
+::::
+:::
+
+## Bagged Trees {#sec-bagged-trees}
+
+@Breiman1996 introduced bootstrap aggregating (bagging) as a means to increase the accuracy of a predictor by applying the predictor to a sequence of **learning sets**, data sets of size $n$, and combining the results from the sets. In case of prediction the obvious choice is to average the predictions across the learning sets. In case of classification, Breiman recommends majority voting: classify an observation in each learning set and assign the most frequently chosen category as the overall classification.
+
+The learning sets are $B$ bootstrap samples drawn from the original data. Breiman notes
+
+>  "The vital element is the instability of the prediction method."
+
+If the different learning sets do not lead to changes in the predictors the aggregation will not be effective. This is where weak learners are important because they have high variability. There is a second situation where bagging will not be effective: if the method being bagged is already near the limits of accuracy achievable for that data set no amount of bootstrapping and bagging will help. 
+
+The most frequent application of bagging is with decision trees for either regression or classification. In a non-ensemble situation one would build one tree, first by growing it deep and then pruning it back. During bagging trees are not pruned, the volatility of deep trees is desirable.
+
+:::{.example}
+::::{.example-header}
+Example: Banana Quality
+::::
+::::{.example-container}
+The data for this example can be found on [kaggle](https://www.kaggle.com/datasets/l3llff/banana) and comprises observations on the quality of bananas ("Good", "Bad") and seven attributes (@fig-banana-data). The attributes are normalized although it is not clear how this was done. There are 4,000 training observations and 4,000 testing observations in separate data sets.
+
+```{r, warning=FALSE}
+library("duckdb")
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+ban_train <- dbGetQuery(con, "SELECT * FROM banana_train")
+ban_test <- dbGetQuery(con, "SELECT * FROM banana_test")
+
+ban_train$Quality <- as.factor(ban_train$Quality)
+ban_test$Quality <- as.factor(ban_test$Quality)
+
+dbDisconnect(con)
+```
+
+```{r, fig.align="center", out.width="90%"}
+#| fig.cap: Histograms of banana quality attributes (training data)
+#| label: fig-banana-data
+lattice::histogram(~ Size + Weight + Sweetness + Softness + HarvestTime
+                   + Ripeness + Acidity , 
+                   cex     =0.5,
+                   as.table=TRUE,
+                   par.strip.text=list(cex=0.75),
+                   xlab    ="",
+                   data    =ban_train)
+```
+
+We first build a regular classification tree for the training data and compute its confusion matrix for the test data.
+The tree is grown with the `tree::tree` function and its complexity is cross-validated (10-fold) based on the misclassification rate. 
+
+```{r Banana_pruned}
+library(tree)
+tree.ban <- tree(Quality ~ ., data=ban_train)
+summary(tree.ban)
+
+set.seed(123)
+cv.ban <- cv.tree(tree.ban, FUN=prune.misclass)
+
+cat("Optimial tree size after pruning: ",cv.ban$size[which.min(cv.ban$dev)],"\n")
+```
+
+It turns out that the size of the deep tree with 15 nodes is also the best size per cross-validation, so no further pruning is necessary and the tree can be used to predict the test data.
+
+``` {r, warning=FALSE}
+library(caret)
+
+tree.ban.pred <- predict(tree.ban, newdata=ban_test, type="class")
+
+tree.ban.cm <- confusionMatrix(tree.ban.pred,ban_test$Quality)
+tree.ban.cm
+```
+
+The decision tree achieves an accuracy of `{r} round(tree.ban.cm$overall[1]*100,3)`\% on the test data.
+
+To apply bagging we use the `randomForest` function in the package by the same name. As we will see shortly, bagging is a special case of a random forest where the `mtry` parameter is set to the number of input variables, here 7. By default, `randomForest` performs $B=500$ bootstrap samples, that is, it builds $500$ trees.
+
+```{r, warning=FALSE}
+library(randomForest)
+set.seed(6543)
+bag.ban <- randomForest(Quality ~ . , 
+                        data      =ban_train, 
+                        xtest     =ban_test[,-8],
+                        ytest     =ban_test[, 8],
+                        mtry      =7,
+                        importance=TRUE)
+
+bag.ban
+```
+
+When a test set is specified, `randomForest` returns two types of predicted values. 
+`bag.ban$predicted` are the out-of-bag predictions. Each observation is out-of-bag in about 1/3 of the trees built. 
+The majority vote across the $B/3$ classifications is the out-of-bag prediction for that observation. The predicted values based on the test data set are stored in `bag.ban$test$predicted`. Each observation in the test data set is passed through the 500 trees--the majority vote of the predicted quality is the overall prediction for that observation.
+
+The confusion matrices shown by `randomForest` can be reconstructed as follows:
+
+```{r}
+confusionMatrix(bag.ban$predicted,ban_train$Quality)
+
+bag.ban.cm <- confusionMatrix(bag.ban$test$predicted,ban_test$Quality)
+bag.ban.cm
+```
+
+The accuracy of the decision tree has increased from `{r} round(tree.ban.cm$overall[1]*100,3)`\% for the single tree to `{r} round(bag.ban.cm$overall[1]*100,3)`\% through bagging.
+::::
+:::
+
+As with all ensemble methods, interpretability of the results suffers when methods are combined. Decision trees are intrinsically interpretable and among the most easily understood algorithms. The visual of a tree describes how data flows through the algorithm and how it arrives at a prediction or classification (@fig-banana-singletree).
+
+```{r, fig.align="center", out.width="90%"}
+#| fig.cap: Decision tree for banana quality
+#| label: fig-banana-singletree
+#| lightbox:
+
+par(mar = c(2, 2, 1, 2))
+plot(tree.ban)
+text(tree.ban,cex=0.7)
+```
+
+With bagged trees we lose this interpretability; instead of a single tree the decision now depends on many trees and cannot be visualized in the same way. To help with the interpretation of bagged trees, the importance of the features can be calculated in various ways. One technique uses the Gini index, a measure of the node purity, another looks at the decrease in accuracy when the variable is permuted in the out-of-bag samples. Permutation breaks the relationship between the values of the variable and the target variable. A variable that changes the accuracy greatly when its values are permuted is an important variable for the tree.
+
+:::{.example}
+::::{.example-header}
+Example: Banana Quality (Cont'd)
+::::
+::::{.example-container}
+The variable importance for the banana quality based on bagging 500 trees is shown in @fig-banana-varimp-bagged.
+
+``` {r, fig.align="center", out.width="90%"}
+#| fig.cap: Variable importance plots for bagged trees.
+#| label: fig-banana-varimp-bagged
+importance(bag.ban)
+par(mar = c(2, 2, 0, 2))
+varImpPlot(bag.ban,main="")
+```
+
+::::
+:::
+
+Bagging is a powerful method to improve accuracy. In Breiman's words:
+
+> "Bagging goes a ways toward making a silk purse out of a sow's ear, especially if the sow's
+ear is twitchy. [...] What one loses, with the trees, is a simple and
+interpretable structure. What one gains is increased accuracy."
+
+
+## Random Forests {#sec-random-forest}
+
+Are there any other downsides to bagging, besides a loss of interpretability and an increased computational burden? Not really, but another issue deserves consideration: bootstrap samples are highly correlated. Two thirds of the observations are in the bootstrap samples making the data frames similar to each other. An input variable that dominates the model will tend to be the first variable on which the tree is split, leading to similar trees. This reduces the variability of the trees and reduces the effectiveness of the ensemble.
+
+How can we make the trees more volatile? @Breiman2001 advanced the concept of bagged trees through the introduction of **random forests**. The key innovation between bagged trees and random forests is that not all input variables are considered at each split of the tree. Instead, only a randomly selected set of predictors is considered, the set changes from split to split. The random split introduces more variability and allows non-dominant input variables to participate.
+
+In other aspects, random forests are constructed in the same way as bagged trees introduced in @sec-bagged-trees: $B$ trees are built based on $B$ bootstrap samples, the trees are built deep and not pruned.
+
+:::{.example}
+::::{.example-header}
+Example: Banana Quality (Cont'd)
+::::
+::::{.example-container}
+Fitting a random forest instead of bagging trees is simple based on the previous `R` code. Simply specify a value for the `mtry` parameter that is smaller than the number of input variables. By default, `randomForest` chooses $p/3$ candidate inputs at each split in regression trees and $\sqrt{p}$ candidate inputs in classification trees.
+
+```{r}
+set.seed(6543)
+rf.ban <- randomForest(Quality ~ . , 
+                       data =ban_train, 
+                       xtest=ban_test[,-8],
+                       ytest=ban_test[, 8])
+rf.ban
+```
+
+Only two of the seven inputs are considered at each split in the random forest compared to the bagged trees. The accuracy improves slightly from `{r} round(bag.ban.cm$overall[1]*100,3)`\% to `{r} (rf.ban$test$confusion[1,1]+rf.ban$test$confusion[2,2])/40`\%.
+::::
+:::
+
+It might seem counterintuitive that one can achieve a greater accuracy by "ignoring" five out of the seven input variables at each split. It turns out that the results are fairly insensitive to the number of inputs considered at each split. The important point is that not all inputs are considered at each split. In that case, one might as well choose a small number to speed up the computations.
+
+Bagged trees and random forests are easily parallelized, the $B$ trees can be trained independently. This is different from other ensemble techniques, for example, **boosting** that builds the ensemble sequentially. 
+Another advantage of bootstrap-based methods is that they do not overfit. Increasing $B$, the number of bootstrap samples, simply increases the number of trees but does not change the model complexity. 
+
+Cross-validation is not necessary with bootstrap-based methods because the out-of-bag error can be computed from the observations not in a particular bootstrap sample.
+
+Using a random selection of inputs at each split is one manifestation of "random" in random forests. Other variations of random forests take random linear combinations of inputs, randomizing the outputs in the training data or random set of weights. The important idea is to inject randomness into the system to create diversity.
+
+Random forests excel at reducing variability and there is some evidence that they also reduce bias. @Breiman2001 mentions that the mechanism by which forests reduce bias is not obvious. The bootstrap mechanism is inherently focused on reducing variability. A different class of ensemble methods was developed to attack both bias and variance simultaneously. In contrast to the random forest, these **boosting** techniques are based on sequentially changing the training data set or the model (@sec-boosting).
+
+A yet completely different approach is taken by Bayesian Model Averaging (BMA). In many situations there is no one clear winning model but a neighborhood of models that deserve consideration. Picking a single winner then seems not justified. Providing interpretations of a large number of models is also not advised. BMA combines many models to contribute to an overall prediction according to their proximity to the best-performing model (@sec-bma).
+
+
+

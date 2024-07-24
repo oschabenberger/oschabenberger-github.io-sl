@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 25&nbsp; Association Rules</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./glm.html" rel="next">
+<link href="./mbc.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./unsuper_intro.html">Unsupervised Learning</a></li><li class="breadcrumb-item"><a href="./arules.html"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">25.1</span> Introduction</a></li>
+  <li><a href="#association-rules-and-item-sets" id="toc-association-rules-and-item-sets" class="nav-link" data-scroll-target="#association-rules-and-item-sets"><span class="header-section-number">25.2</span> Association Rules and Item Sets</a>
+  <ul>
+  <li><a href="#support" id="toc-support" class="nav-link" data-scroll-target="#support">Support</a></li>
+  <li><a href="#confidence" id="toc-confidence" class="nav-link" data-scroll-target="#confidence">Confidence</a></li>
+  <li><a href="#lift" id="toc-lift" class="nav-link" data-scroll-target="#lift">Lift</a></li>
+  </ul></li>
+  <li><a href="#apriori-algorithm" id="toc-apriori-algorithm" class="nav-link" data-scroll-target="#apriori-algorithm"><span class="header-section-number">25.3</span> Apriori Algorithm</a>
+  <ul>
+  <li><a href="#example-analysis-with-arules" id="toc-example-analysis-with-arules" class="nav-link" data-scroll-target="#example-analysis-with-arules">Example Analysis with <code>arules</code></a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./unsuper_intro.html">Unsupervised Learning</a></li><li class="breadcrumb-item"><a href="./arules.html"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-arules" class="quarto-section-identifier"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/SomethingDifferent.jpeg" class="img-fluid figure-img" style="width:50.0%" data-fig.align="center"></p>
+<figcaption>And now for something completely different.</figcaption>
+</figure>
+</div>
+<section id="introduction" class="level2" data-number="25.1">
+<h2 data-number="25.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">25.1</span> Introduction</h2>
+<p>Like other unsupervised learning methods, Association Rule Mining (ARM) tries to learn aspects of the joint density <span class="math inline">\(p(\textbf{X})\)</span> of the data. It specifically asks if in regions of <span class="math inline">\(p(\textbf{X})\)</span> where the density is high, are certain values of <span class="math inline">\(X_j\)</span> associated with values of <span class="math inline">\(X_j\)</span> more frequently than one would expect under a completely random allocation? In other words, are there associations between the values that tell us something interesting about the joint distribution of the data?</p>
+<p>The most frequent form of ARM is <strong>market basket analysis</strong>, the name appeals to items a customer places in a shopping basket. <span class="math inline">\(X_1, \cdots, X_p\)</span> are the possible items offered for purchase, <span class="math inline">\(X_j \in \{0,1\}\)</span>. <span class="math inline">\(X_{ij}\)</span> takes on the value <span class="math inline">\(1\)</span> if the <span class="math inline">\(i\)</span><sup>th</sup> customer selects the <span class="math inline">\(j\)</span><sup>th</sup> item into their basket, <span class="math inline">\(0\)</span> otherwise. Market basket analysis is concerned with the properties of the <span class="math inline">\((n \times p)\)</span> matrix <span class="math inline">\(\textbf{X}\)</span> of zeros and ones, trying to understand with items are purchased together—the famous example is beer and diapers.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/AssociationRule_2.png" class="img-fluid figure-img" data-fig.align="center"></p>
+<figcaption>Market basket analysis. <a href="https://ai-ml-analytics.com/introduction-to-machine-learning-blog-1/">Source</a></figcaption>
+</figure>
+</div>
+<p>Some applications of ARM are</p>
+<ul>
+<li>Customer <strong>segmentation</strong>: grouping customers based on their buying behavior</li>
+<li>Retail <strong>allocation</strong>: which item should be on shelves and how should they be grouped</li>
+<li><strong>Recommender</strong> systems: cross-marketing of products</li>
+<li><strong>Survey analysis</strong>: which responses go together?</li>
+<li><strong>Precursor</strong> analytics: <span class="citation" data-cites="Borne_2021">Borne (<a href="references.html#ref-Borne_2021" role="doc-biblioref">2021</a>)</span> mentions this interesting application of ARM, where data are time stamped. The analysis seeks time lags at which the association strength peaks. Precursor analysis has found that solar storm events show the strongest geomagnetic effects 2–3 hours after the storm and that video cameras are bought 3 months after the purchase of a video (VHS) player.</li>
+</ul>
+<p>The approach to association rule mining is essentially <strong>mode hunting</strong>, looking for areas of the joint distribution with high densities and finding associations of items that are more frequent than expected if shopping baskets were filled at random. This is conceptually pretty simple, it is just a matter of counting.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Beers and Diapers</p>
+</div>
+<div class="example-container">
+<p><span class="citation" data-cites="Borne_2021">Borne (<a href="references.html#ref-Borne_2021" role="doc-biblioref">2021</a>)</span> cites beer–diaper association as the classic example of market basket analysis, although the particular example might be more legend than reality.</p>
+<p>Suppose that a retail store has 600,000 transactions (shopping baskets). 7,500 (1.25%) of the shopping baskets contain diapers, 60,000 (10%) of the baskets contain beer. So we know that a basket is 8 times more likely to contain beer than diapers. In order to analyze the association of beer and diapers we need to know how many of the baskets contain both. Suppose that number is 6000 (1%).</p>
+<p>If beer and diaper purchases were independent, then 10% of the diaper purchases would be accompanied by beer purchases, or, equivalently, 1.25% of beer buyers would pick up diapers. Either way, under independence of the two items we would expect <span class="math inline">\(600,000 \times 0.1 \times 0.0125 = 750\)</span> baskets with both beer and diapers. The actual number of baskets containing both is much higher.</p>
+<p>The ratio between what was observed and what was expected under independence is called the <strong>lift factor</strong>: <span class="math display">\[
+L = \frac{6000}{750} = 8
+\]</span></p>
+</div>
+</div>
+<p>Association rule mining is about finding associations that have a large lift factor. But that is not the only criterion by which associations are judged. A lift factor of 10 is very interesting when the items appear frequently in baskets, but not that interesting if they are purchased very rarely. In the former case one can focus promotional pricing on those items together whereas in the latter case this might not yield a lot of bang for the buck (literally).</p>
+<p>Finding meaningful associations can be challenging, since we are dealing with a <span class="math inline">\(p\)</span>-dimensional distribution and <span class="math inline">\(p\)</span> can be very large. Market basket analysis of Amazon.com involves more than 12 million products. The data are very sparse, many items are never purchased together. There is insufficient data to estimate proportions reliably. Also, we would not be interested only in associations between two items; what about sets of three or four or more items? We need a structured approach and simplify the procedure—this leads us down the path of <strong>item sets</strong>.</p>
+</section>
+<section id="association-rules-and-item-sets" class="level2" data-number="25.2">
+<h2 data-number="25.2" class="anchored" data-anchor-id="association-rules-and-item-sets"><span class="header-section-number">25.2</span> Association Rules and Item Sets</h2>
+<p>Items are collected in <strong>item sets</strong>, for example {<code>butter</code>, <code>bread</code>} is a two-item set and {<code>milk</code>} is a single-item set. <strong>Association rules</strong> display relationships among item sets, for example</p>
+<div style="text-align: center">
+<p>{<code>bread</code>, <code>butter</code>} <span class="math inline">\(\Rightarrow\)</span> {<code>jelly</code>}</p>
+</div>
+<p>The left hand side (lhs) of the rule is called the <strong>head</strong> or the <strong>antecedent</strong>, the right hand side (rhs) is called the <strong>body</strong> or the <strong>consequent</strong> of the rule. The rule is read as follows: if the head (lhs) occurs then the body (rhs) also occurs.</p>
+<p>The most important metrics by which to judge an association rule are its <strong>support</strong>, <strong>confidence</strong>, and <strong>lift</strong>.</p>
+<section id="support" class="level3">
+<h3 class="anchored" data-anchor-id="support">Support</h3>
+<p>Suppose we have <span class="math inline">\(n\)</span> transactions and a rule $A <span class="math inline">\(\Rightarrow\)</span> B$ where A and B are item sets. Let <span class="math inline">\(\#A\)</span> denote the number of times A occurs in the database and <span class="math inline">\(\#(A,B)\)</span> the number of times the the sets A and B occur together. For example, if A is a three-item set, then <span class="math inline">\(\#A\)</span> is the number of records where all three items are present. if B is a single-item set, then <span class="math inline">\(\#(A,B)\)</span> is the number of records where all four items are present.</p>
+<p>The <strong>support</strong> of the rule is the relative frequency with which head and body appear: <span class="math display">\[
+S(A \Rightarrow B) = \frac{\#(A,B)}{n}
+\]</span></p>
+</section>
+<section id="confidence" class="level3">
+<h3 class="anchored" data-anchor-id="confidence">Confidence</h3>
+<p>The <strong>confidence</strong> of the rule is the estimate of the conditional probability to find the body (the consequent) of the rule in transactions given that they contain the head (the antecedent):</p>
+<p><span class="math display">\[
+C(A \Rightarrow B) = \frac{\#(A,B)}{\#A}
+\]</span> It is a measure of predictability of the association between A and B.</p>
+<p>Support can be beneficial for finding the connection between products in comparison to the whole database, whereas confidence looks at the connection between item sets. A support threshold is often used to focus on those item sets that are interesting because they are frequent. For example, a support threshold of 0.2 implies that only item set that appear in at least 20% of the transactions are considered. The confidence, on the other hand, tells us how likely it is that B occurs every time A occurs.</p>
+<p>It is possible that confidence is high but support is low. For example, {<code>caviar</code>} <span class="math inline">\(\Rightarrow\)</span> {<code>vodka</code>} is a high-confidence rule, because given that caviar is purchased it is likely to be accompanied by a vodka purchase. It is a low-support rule because caviar is not purchased frequently. An algorithm that sets a support threshold might miss association rules with low-support and high confidence.</p>
+<p>A rule can have 100% confidence if the head requires the body—that is, every time the head occurs the body also occurs. For example, if opening a savings account requires having a checking account, then <span class="math display">\[
+C(\text{savings} \Rightarrow \text{checking}) = \frac{\#(\text{checking and savings})}{\#\text{savings}}=1
+\]</span> Knowing that a customer has a savings account, you can say with certainty that they also have a checking account. The body (checking account) is completely predictable from the head (savings account).</p>
+</section>
+<section id="lift" class="level3">
+<h3 class="anchored" data-anchor-id="lift">Lift</h3>
+<p>The <strong>lift</strong> of an association rule measured how much more likely the association is compared to independence of the items: <span class="math display">\[
+L(A \Rightarrow B) = n \frac{\#(A,B)}{\#A \#B} = \frac{C(A\Rightarrow B)}{S(B)}
+\]</span> The lift factor is an estimate of the ratio of the joint probabilities <span class="math display">\[
+\frac{\Pr(A,B)}{\Pr(A)\Pr(B)}
+\]</span></p>
+<ul>
+<li><p>When <span class="math inline">\(L(A \Rightarrow B) = 1\)</span>, A and B are not associated with each other (independent).</p></li>
+<li><p>When <span class="math inline">\(L(A\Rightarrow B) &gt; 1\)</span>, then A and B occur more frequently together than under a random selection of items—A and B have a positive association.</p></li>
+<li><p>When <span class="math inline">\(L(A \Rightarrow B) &lt; 1\)</span>, then A and B occur less frequently together than expected under a random selection of items—A and B have a negative association.</p></li>
+</ul>
+<div class="example">
+<div class="example-header">
+<p>Example</p>
+</div>
+<div class="example-container">
+<p>A supermarket has 80 shopping baskets, 60 of them contain bread, 50 contain peanut butter. 40 baskets contain both bread and peanut butter.</p>
+<ul>
+<li><strong>Support</strong> for {<code>bread</code>} = 60/80 = 0.75</li>
+<li><strong>Support</strong> for {<code>peanut butter</code>} = 50/80 = 0.625</li>
+<li><strong>Support</strong> for {<code>bread</code>, <code>peanut butter</code>} = 40/80 = 0.5</li>
+<li><strong>Confidence</strong> for rule {<code>bread</code>} <span class="math inline">\(\Rightarrow\)</span> {<code>peanut butter</code>} = 40/60 = 0.666</li>
+<li><strong>Lift</strong> for rule {<code>bread</code>} <span class="math inline">\(\Rightarrow\)</span> {<code>peanut butter</code>} = 80 x 40 / (60 x 50) = 1.06</li>
+</ul>
+</div>
+</div>
+<p>Another example calculation follows before we apply an efficient algorithm to find rules in a large database.</p>
+<div class="example">
+<div class="example-header">
+<p>Example</p>
+</div>
+<div class="example-container">
+<p>Suppose we have indicator variables <span class="math inline">\(X_1, \cdots, X_5\)</span> for five items and the following baskets</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Basket</th>
+<th style="text-align: center;"><span class="math inline">\(X_1\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(X_2\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(X_3\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(X_4\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(X_5\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table>
+<p>The next table shows support, confidence, and lift for a series of rules</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Rule</th>
+<th style="text-align: center;">Support</th>
+<th style="text-align: center;">Confidence</th>
+<th style="text-align: center;">Lift</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(X_1 \Rightarrow X_4\)</span></td>
+<td style="text-align: center;">2/5</td>
+<td style="text-align: center;">2/3</td>
+<td style="text-align: center;">10/9</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(X_3 \Rightarrow X_1\)</span></td>
+<td style="text-align: center;">2/5</td>
+<td style="text-align: center;">2/4</td>
+<td style="text-align: center;">5/6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(X_1 \Rightarrow X_3\)</span></td>
+<td style="text-align: center;">2/5</td>
+<td style="text-align: center;">2/3</td>
+<td style="text-align: center;">5/6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\((X_2,X_3) \Rightarrow X_4\)</span></td>
+<td style="text-align: center;">1/5</td>
+<td style="text-align: center;">1/3</td>
+<td style="text-align: center;">5/9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="apriori-algorithm" class="level2" data-number="25.3">
+<h2 data-number="25.3" class="anchored" data-anchor-id="apriori-algorithm"><span class="header-section-number">25.3</span> Apriori Algorithm</h2>
+<p>The math to compute support, confidence, and lift of rules is simple, it just means counting occurrences in a database of transactions. What makes ARM tricky is the large number of rules. For <span class="math inline">\(p\)</span> items, there are <span class="math inline">\(2^p-1\)</span> non-empty item sets. An algorithmic approach is needed to find <em>interesting</em> rules, especially when <span class="math inline">\(p\)</span> and <span class="math inline">\(n\)</span> are large.</p>
+<p>Also, we want to query the database with queries such as</p>
+<blockquote class="blockquote">
+<p>Find all rules that have “bagels” in the antecedent. Find all rules that have “sausage” in the antecedent and “mustard” in the consequent.</p>
+</blockquote>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When analyzing large databases of baskets, you will find a large number of spurious associations. Those occur when items appear together more frequently compared to independence, but only by chance. Suppose we apply a 5% significance rule, meaning that we declare associations as “significant” if they appear beyond the 95<sup>th</sup> percentile of the frequency distribution. A market basket analysis with 1,000,000 two-item sets in which there are no associations whatsoever will declare 50,000 associations as “significant” although none of them are relevant.</p>
+</div>
+</div>
+<p>The Apriori algorithm of <span class="citation" data-cites="Agrawal_etal_1993">Agrawal, Imieliński, and Swami (<a href="references.html#ref-Agrawal_etal_1993" role="doc-biblioref">1993</a>)</span> is based on setting a support threshold <span class="math inline">\(s\)</span> and a confidence threshold <span class="math inline">\(c\)</span>. Multiple passes over the data are made. In the first pass the support of single-item sets is computed and any items with <span class="math inline">\(S(A) &lt; s\)</span> are discarded. In the second pass the support of two-item sets is computed and any sets with <span class="math inline">\(S(A,B) &lt; s\)</span> are again discarded. This continues until all candidate rules in a pass have support less than <span class="math inline">\(s\)</span>.</p>
+<p>Based on the item sets determined so far, only those association rules are displayed for which the confidence exceeds the threshold <span class="math inline">\(c\)</span>.</p>
+<p>The Apriori algorithm makes it feasible to find relevant association rules in very large databases. It works because <span class="math inline">\(S(A,B) \le \min(S(A),S(B))\)</span>, in other words the support of any sets found on a subsequent pass cannot exceed the support of the subsets of the previous pass. However, the algorithm also has some disadvantages:</p>
+<ul>
+<li>It can create large candidate sets of rules and thus lead to many spurious rules.</li>
+<li>It requires a query engine to filter and summarize candidate item sets.</li>
+<li>It passes through the database multiple times, once for each cardinality of item sets.</li>
+<li>It is unlikely to find rules with high confidence and low support because items are filtered first based on the support threshold—only item sets that pass this threshold are considered in computing confidence, which is a measure comparing item sets.</li>
+</ul>
+<section id="example-analysis-with-arules" class="level3">
+<h3 class="anchored" data-anchor-id="example-analysis-with-arules">Example Analysis with <code>arules</code></h3>
+<div class="example">
+<div class="example-header">
+<p>Example: Grocery Shopping</p>
+</div>
+<div class="example-container">
+<p>The <code>apriori</code> function in the <code>arules</code> package in <code>R</code> performs association rule mining based on the Apriori algorithm. The input data to the function is an object of class <code>transactions</code>, which is based on a sparse matrix representation of item occurrences.</p>
+<p>We analyze here the <code>Groceries</code> data set that is part of the <code>arules</code> package. This data set contains 1 month (30 days) of real-world point-of-sale transaction data from a typical local grocery outlet. The data set contains 9835 transactions and the items are aggregated into 169 categories.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arules)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Groceries)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Groceries)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>transactions as itemMatrix in sparse format with
+ 9835 rows (elements/itemsets/transactions) and
+ 169 columns (items) and a density of 0.02609146 
+
+most frequent items:
+      whole milk other vegetables       rolls/buns             soda 
+            2513             1903             1809             1715 
+          yogurt          (Other) 
+            1372            34055 
+
+element (itemset/transaction) length distribution:
+sizes
+   1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16 
+2159 1643 1299 1005  855  645  545  438  350  246  182  117   78   77   55   46 
+  17   18   19   20   21   22   23   24   26   27   28   29   32 
+  29   14   14    9   11    4    6    1    1    1    1    3    1 
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  1.000   2.000   3.000   4.409   6.000  32.000 
+
+includes extended item information - examples:
+       labels  level2           level1
+1 frankfurter sausage meat and sausage
+2     sausage sausage meat and sausage
+3  liver loaf sausage meat and sausage</code></pre>
+</div>
+</div>
+<p>The data are very sparse, which is typical for these applications. Only 2.6% of the 9835 x 169 possible item–transaction combinations are non-zero. The most frequently item is <code>whole milk</code>, its support is 2513/9835 = 0.255516. There are 2159 single-item sets, 1643 two-item sets, and one 32-item set. The median item set size is 3.</p>
+<p>You can query the raw data for the transactions with the <code>inspect</code> function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">inspect</span>(Groceries[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    items                 
+[1] {citrus fruit,        
+     semi-finished bread, 
+     margarine,           
+     ready soups}         
+[2] {tropical fruit,      
+     yogurt,              
+     coffee}              
+[3] {whole milk}          </code></pre>
+</div>
+</div>
+<p>The first transaction involves four items, the second transaction two items, the third transaction was a purchase of <code>whole milk</code> alone.</p>
+<p>The <code>itemFrequencyPlot</code> function helps to inspect the frequency distribution of the items in the database. The following call requests the 20 items with the highest absolute frequency.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">itemFrequencyPlot</span>(Groceries,<span class="at">topN=</span><span class="dv">20</span>,<span class="at">type=</span><span class="st">"absolute"</span>,<span class="at">cex.names=</span><span class="fl">0.75</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="arules_files/figure-html/unnamed-chunk-3-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="arules_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<p>By default, the <code>apriori</code> function mines for rules with a support of <span class="math inline">\(s &gt; 0.1\)</span> and a confidence of <span class="math inline">\(c &gt; 0.8\)</span>. The following call changes these values. Based on the summary above, it should only find three rules in the database, based on single-item sets for <code>whole milk</code>, <code>other vegetables</code>, and <code>rolls/buns</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>rules <span class="ot">&lt;-</span> <span class="fu">apriori</span>(Groceries, </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parameter=</span><span class="fu">list</span>(<span class="at">support=</span><span class="fl">0.18</span>,<span class="at">conf=</span><span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Apriori
+
+Parameter specification:
+ confidence minval smax arem  aval originalSupport maxtime support minlen
+          0    0.1    1 none FALSE            TRUE       5    0.18      1
+ maxlen target  ext
+     10  rules TRUE
+
+Algorithmic control:
+ filter tree heap memopt load sort verbose
+    0.1 TRUE TRUE  FALSE TRUE    2    TRUE
+
+Absolute minimum support count: 1770 
+
+set item appearances ...[0 item(s)] done [0.00s].
+set transactions ...[169 item(s), 9835 transaction(s)] done [0.00s].
+sorting and recoding items ... [3 item(s)] done [0.00s].
+creating transaction tree ... done [0.00s].
+checking subsets of size 1 2 done [0.00s].
+writing ... [3 rule(s)] done [0.00s].
+creating S4 object  ... done [0.00s].</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">inspect</span>(rules)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    lhs    rhs                support   confidence coverage lift count
+[1] {}  =&gt; {rolls/buns}       0.1839349 0.1839349  1        1    1809 
+[2] {}  =&gt; {other vegetables} 0.1934926 0.1934926  1        1    1903 
+[3] {}  =&gt; {whole milk}       0.2555160 0.2555160  1        1    2513 </code></pre>
+</div>
+</div>
+<p>As expected, only three rules are found by the algorithm since only three single items exceed the support threshold of 0.18. It would have been possible to find rules based on two-item sets constructed from <code>whole milk</code>, <code>other vegetables</code> or <code>rolls\buns</code> on the second pass, but none of those combinations had support &gt; 0.18.</p>
+<p>The head of the rules is displayed as <code>lhs</code> and the body as <code>rhs</code> for the left hand side and right hand side of the rule, respectively. The <code>coverage</code> is the support of the <code>lhs</code> which shows that the set <code>{}</code> is to be interpreted as all transactions. That also explains why the <code>confidence</code> of the single-item rules is equal to their support.</p>
+<p>Changing the value for support to a smaller number generates more rules.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>rules <span class="ot">&lt;-</span> <span class="fu">apriori</span>(Groceries, </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parameter=</span><span class="fu">list</span>(<span class="at">support=</span><span class="fl">0.001</span>,<span class="at">conf=</span><span class="fl">0.8</span>),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control =</span> <span class="fu">list</span>(<span class="at">verbose=</span>F))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(rules)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>set of 410 rules
+
+rule length distribution (lhs + rhs):sizes
+  3   4   5   6 
+ 29 229 140  12 
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  3.000   4.000   4.000   4.329   5.000   6.000 
+
+summary of quality measures:
+    support           confidence        coverage             lift       
+ Min.   :0.001017   Min.   :0.8000   Min.   :0.001017   Min.   : 3.131  
+ 1st Qu.:0.001017   1st Qu.:0.8333   1st Qu.:0.001220   1st Qu.: 3.312  
+ Median :0.001220   Median :0.8462   Median :0.001322   Median : 3.588  
+ Mean   :0.001247   Mean   :0.8663   Mean   :0.001449   Mean   : 3.951  
+ 3rd Qu.:0.001322   3rd Qu.:0.9091   3rd Qu.:0.001627   3rd Qu.: 4.341  
+ Max.   :0.003152   Max.   :1.0000   Max.   :0.003559   Max.   :11.235  
+     count      
+ Min.   :10.00  
+ 1st Qu.:10.00  
+ Median :12.00  
+ Mean   :12.27  
+ 3rd Qu.:13.00  
+ Max.   :31.00  
+
+mining info:
+      data ntransactions support confidence
+ Groceries          9835   0.001        0.8
+                                                                                                  call
+ apriori(data = Groceries, parameter = list(support = 0.001, conf = 0.8), control = list(verbose = F))</code></pre>
+</div>
+</div>
+<p>This query generated 410 rules, four-item rules most frequent among them. Their confidence ranges from 0.8 to 1.0, their lift ranges from 3.131 to 11.235.</p>
+<p>The top 10 rules by decreasing lift are</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">digits=</span><span class="dv">5</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">DATAFRAME</span>(rules[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 41%">
+<col style="width: 18%">
+<col style="width: 7%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">LHS</th>
+<th style="text-align: left;">RHS</th>
+<th style="text-align: right;">support</th>
+<th style="text-align: right;">confidence</th>
+<th style="text-align: right;">coverage</th>
+<th style="text-align: right;">lift</th>
+<th style="text-align: right;">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">{liquor,red/blush wine}</td>
+<td style="text-align: left;">{bottled beer}</td>
+<td style="text-align: right;">0.00193</td>
+<td style="text-align: right;">0.90476</td>
+<td style="text-align: right;">0.00214</td>
+<td style="text-align: right;">11.2353</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">{curd,cereals}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">0.90909</td>
+<td style="text-align: right;">0.00112</td>
+<td style="text-align: right;">3.5579</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">{yogurt,cereals}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00173</td>
+<td style="text-align: right;">0.80952</td>
+<td style="text-align: right;">0.00214</td>
+<td style="text-align: right;">3.1682</td>
+<td style="text-align: right;">17</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">{butter,jam}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">0.83333</td>
+<td style="text-align: right;">0.00122</td>
+<td style="text-align: right;">3.2614</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">{soups,bottled beer}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00112</td>
+<td style="text-align: right;">0.91667</td>
+<td style="text-align: right;">0.00122</td>
+<td style="text-align: right;">3.5875</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">{napkins,house keeping products}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00132</td>
+<td style="text-align: right;">0.81250</td>
+<td style="text-align: right;">0.00163</td>
+<td style="text-align: right;">3.1798</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">{whipped/sour cream,house keeping products}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00122</td>
+<td style="text-align: right;">0.92308</td>
+<td style="text-align: right;">0.00132</td>
+<td style="text-align: right;">3.6126</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">{pastry,sweet spreads}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">0.90909</td>
+<td style="text-align: right;">0.00112</td>
+<td style="text-align: right;">3.5579</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">{turkey,curd}</td>
+<td style="text-align: left;">{other vegetables}</td>
+<td style="text-align: right;">0.00122</td>
+<td style="text-align: right;">0.80000</td>
+<td style="text-align: right;">0.00153</td>
+<td style="text-align: right;">4.1345</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">{rice,sugar}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00122</td>
+<td style="text-align: right;">1.00000</td>
+<td style="text-align: right;">0.00122</td>
+<td style="text-align: right;">3.9137</td>
+<td style="text-align: right;">12</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The association with the highest lift factor is the purchase of beer when the basket contains liquor and wine. The confidence of this transaction is very high, making beer purchase highly predictable from the presence of liquor and wine.</p>
+<p>The top 10 rules by decreasing confidence are</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>rules <span class="ot">&lt;-</span> <span class="fu">sort</span>(rules, <span class="at">by=</span><span class="st">"confidence"</span>, <span class="at">decreasing=</span><span class="cn">TRUE</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">DATAFRAME</span>(rules[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 45%">
+<col style="width: 16%">
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 7%">
+<col style="width: 5%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">LHS</th>
+<th style="text-align: left;">RHS</th>
+<th style="text-align: right;">support</th>
+<th style="text-align: right;">confidence</th>
+<th style="text-align: right;">coverage</th>
+<th style="text-align: right;">lift</th>
+<th style="text-align: right;">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">{rice,sugar}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00122</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.00122</td>
+<td style="text-align: right;">3.9137</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">16</td>
+<td style="text-align: left;">{canned fish,hygiene articles}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00112</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.00112</td>
+<td style="text-align: right;">3.9137</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">33</td>
+<td style="text-align: left;">{root vegetables,butter,rice}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">3.9137</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">60</td>
+<td style="text-align: left;">{root vegetables,whipped/sour cream,flour}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00173</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.00173</td>
+<td style="text-align: right;">3.9137</td>
+<td style="text-align: right;">17</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">62</td>
+<td style="text-align: left;">{butter,soft cheese,domestic eggs}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">3.9137</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">68</td>
+<td style="text-align: left;">{citrus fruit,root vegetables,soft cheese}</td>
+<td style="text-align: left;">{other vegetables}</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">5.1682</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">126</td>
+<td style="text-align: left;">{pip fruit,butter,hygiene articles}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">3.9137</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">133</td>
+<td style="text-align: left;">{root vegetables,whipped/sour cream,hygiene articles}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">3.9137</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">135</td>
+<td style="text-align: left;">{pip fruit,root vegetables,hygiene articles}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.00102</td>
+<td style="text-align: right;">3.9137</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">143</td>
+<td style="text-align: left;">{cream cheese ,domestic eggs,sugar}</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: right;">0.00112</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.00112</td>
+<td style="text-align: right;">3.9137</td>
+<td style="text-align: right;">11</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>You can limit the maximum length of rules generated with the <code>maxlen=</code> parameter. Setting the maximum length to 3 reduces the number of generated ruls to 29.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># setting max length of rules to 3</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>rules <span class="ot">&lt;-</span> <span class="fu">apriori</span>(Groceries, </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parameter =</span> <span class="fu">list</span>(<span class="at">supp=</span><span class="fl">0.001</span>, </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">conf=</span><span class="fl">0.8</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">maxlen=</span><span class="dv">3</span>),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control =</span> <span class="fu">list</span>(<span class="at">verbose=</span>F))</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(rules)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>set of 29 rules
+
+rule length distribution (lhs + rhs):sizes
+ 3 
+29 
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+      3       3       3       3       3       3 
+
+summary of quality measures:
+    support          confidence       coverage            lift      
+ Min.   :0.00102   Min.   :0.800   Min.   :0.00112   Min.   : 3.13  
+ 1st Qu.:0.00112   1st Qu.:0.812   1st Qu.:0.00122   1st Qu.: 3.26  
+ Median :0.00122   Median :0.846   Median :0.00153   Median : 3.61  
+ Mean   :0.00147   Mean   :0.861   Mean   :0.00173   Mean   : 4.00  
+ 3rd Qu.:0.00173   3rd Qu.:0.909   3rd Qu.:0.00214   3rd Qu.: 4.20  
+ Max.   :0.00254   Max.   :1.000   Max.   :0.00315   Max.   :11.24  
+     count     
+ Min.   :10.0  
+ 1st Qu.:11.0  
+ Median :12.0  
+ Mean   :14.5  
+ 3rd Qu.:17.0  
+ Max.   :25.0  
+
+mining info:
+      data ntransactions support confidence
+ Groceries          9835   0.001        0.8
+                                                                                                           call
+ apriori(data = Groceries, parameter = list(supp = 0.001, conf = 0.8, maxlen = 3), control = list(verbose = F))</code></pre>
+</div>
+</div>
+<p>An application of the querying engine is to target items. For example, if folks are buying whole milk, what are they also buying? Report the 5 associations with the highest lift:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>rules <span class="ot">&lt;-</span> <span class="fu">apriori</span>(<span class="at">data=</span>Groceries,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parameter=</span><span class="fu">list</span>(<span class="at">supp=</span><span class="fl">0.001</span>,<span class="at">conf=</span><span class="fl">0.15</span>,<span class="at">maxlen=</span><span class="dv">3</span>), </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">appearance=</span><span class="fu">list</span>(<span class="at">lhs=</span><span class="st">"whole milk"</span>,<span class="at">default=</span><span class="st">"rhs"</span>),</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control =</span> <span class="fu">list</span>(<span class="at">verbose=</span>F))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>rules <span class="ot">&lt;-</span> <span class="fu">sort</span>(rules, <span class="at">decreasing=</span><span class="cn">TRUE</span>,<span class="at">by=</span><span class="st">"lift"</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">DATAFRAME</span>(rules[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 17%">
+<col style="width: 25%">
+<col style="width: 10%">
+<col style="width: 14%">
+<col style="width: 11%">
+<col style="width: 9%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">LHS</th>
+<th style="text-align: left;">RHS</th>
+<th style="text-align: right;">support</th>
+<th style="text-align: right;">confidence</th>
+<th style="text-align: right;">coverage</th>
+<th style="text-align: right;">lift</th>
+<th style="text-align: right;">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: left;">{root vegetables}</td>
+<td style="text-align: right;">0.04891</td>
+<td style="text-align: right;">0.19140</td>
+<td style="text-align: right;">0.25552</td>
+<td style="text-align: right;">1.7560</td>
+<td style="text-align: right;">481</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: left;">{tropical fruit}</td>
+<td style="text-align: right;">0.04230</td>
+<td style="text-align: right;">0.16554</td>
+<td style="text-align: right;">0.25552</td>
+<td style="text-align: right;">1.5776</td>
+<td style="text-align: right;">416</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: left;">{yogurt}</td>
+<td style="text-align: right;">0.05602</td>
+<td style="text-align: right;">0.21926</td>
+<td style="text-align: right;">0.25552</td>
+<td style="text-align: right;">1.5717</td>
+<td style="text-align: right;">551</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">9</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: left;">{other vegetables}</td>
+<td style="text-align: right;">0.07483</td>
+<td style="text-align: right;">0.29288</td>
+<td style="text-align: right;">0.25552</td>
+<td style="text-align: right;">1.5136</td>
+<td style="text-align: right;">736</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">{whole milk}</td>
+<td style="text-align: left;">{rolls/buns}</td>
+<td style="text-align: right;">0.05663</td>
+<td style="text-align: right;">0.22165</td>
+<td style="text-align: right;">0.25552</td>
+<td style="text-align: right;">1.2050</td>
+<td style="text-align: right;">557</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><code>arulesViz::plot</code> has specialized plotting methods for association rules. <code>method="scatterplot"</code> requires two quality measures and shades the rules by a third variable (lift is the default). <code>method="matrix"</code> arranges the rules by antecedent (head, lhs) and consequent (body, rhs).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arulesViz)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>rules <span class="ot">&lt;-</span> <span class="fu">apriori</span>(Groceries, </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">parameter=</span><span class="fu">list</span>(<span class="at">support=</span><span class="fl">0.001</span>,<span class="at">conf=</span><span class="fl">0.5</span>),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">control =</span> <span class="fu">list</span>(<span class="at">verbose=</span>F))</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rules,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">method=</span><span class="st">"scatterplot"</span>,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">measure=</span><span class="fu">c</span>(<span class="st">"support"</span>,<span class="st">"confidence"</span>),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">shading=</span><span class="st">"lift"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="arules_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-Agrawal_etal_1993" class="csl-entry" role="listitem">
+Agrawal, Rakesh, Tomasz Imieliński, and Arun Swami. 1993. <span>“Mining Association Rules Between Sets of Items in Large Databases.”</span> In <em>Proceedings of the 1993 ACM SIGMOD International Conference on Management of Data</em>, 207–16. SIGMOD ’93. New York, NY, USA: Association for Computing Machinery. <a href="https://doi.org/10.1145/170035.170072">https://doi.org/10.1145/170035.170072</a>.
+</div>
+<div id="ref-Borne_2021" class="csl-entry" role="listitem">
+Borne, Kirk. 2021. <span>“Association Rule Mining — Not Your Typical ML Algorithm.”</span> <em>Medium</em>. <a href="https://medium.com/@kirk.borne/association-rule-mining-not-your-typical-ml-algorithm-97acda6b86c2">https://medium.com/@kirk.borne/association-rule-mining-not-your-typical-ml-algorithm-97acda6b86c2</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./mbc.html" class="pagination-link" aria-label="Model-based Clustering">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./glm.html" class="pagination-link" aria-label="Generalized Linear Models">
+        <span class="nav-page-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","descPosition":"bottom","selector":".lightbox","loop":false});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

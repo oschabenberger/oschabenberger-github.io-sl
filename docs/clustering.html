@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 23&nbsp; Cluster Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./mbc.html" rel="next">
+<link href="./pca.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./unsuper_intro.html">Unsupervised Learning</a></li><li class="breadcrumb-item"><a href="./clustering.html"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">23.1</span> Introduction</a></li>
+  <li><a href="#k-means-clustering" id="toc-k-means-clustering" class="nav-link" data-scroll-target="#k-means-clustering"><span class="header-section-number">23.2</span> <span class="math inline">\(K\)</span>-Means Clustering</a>
+  <ul>
+  <li><a href="#introduction-1" id="toc-introduction-1" class="nav-link" data-scroll-target="#introduction-1">Introduction</a></li>
+  <li><a href="#clustering-metrics" id="toc-clustering-metrics" class="nav-link" data-scroll-target="#clustering-metrics">Clustering Metrics</a></li>
+  <li><a href="#predicted-values" id="toc-predicted-values" class="nav-link" data-scroll-target="#predicted-values">Predicted Values</a></li>
+  <li><a href="#combining-k-means-and-pca" id="toc-combining-k-means-and-pca" class="nav-link" data-scroll-target="#combining-k-means-and-pca">Combining <span class="math inline">\(K\)</span>-Means and PCA</a></li>
+  <li><a href="#k-means-on-random-data" id="toc-k-means-on-random-data" class="nav-link" data-scroll-target="#k-means-on-random-data"><span class="math inline">\(K\)</span>-Means on Random Data</a></li>
+  </ul></li>
+  <li><a href="#hierarchical-clustering" id="toc-hierarchical-clustering" class="nav-link" data-scroll-target="#hierarchical-clustering"><span class="header-section-number">23.3</span> Hierarchical Clustering</a>
+  <ul>
+  <li><a href="#introduction-2" id="toc-introduction-2" class="nav-link" data-scroll-target="#introduction-2">Introduction</a></li>
+  <li><a href="#the-dendrogram" id="toc-the-dendrogram" class="nav-link" data-scroll-target="#the-dendrogram">The Dendrogram</a></li>
+  <li><a href="#cutting-the-dendrogram" id="toc-cutting-the-dendrogram" class="nav-link" data-scroll-target="#cutting-the-dendrogram">Cutting the Dendrogram</a></li>
+  <li><a href="#dissimilarity-and-linkage" id="toc-dissimilarity-and-linkage" class="nav-link" data-scroll-target="#dissimilarity-and-linkage">Dissimilarity and Linkage</a>
+  <ul class="collapse">
+  <li><a href="#dissimilarity-measures" id="toc-dissimilarity-measures" class="nav-link" data-scroll-target="#dissimilarity-measures">Dissimilarity measures</a></li>
+  <li><a href="#linkage-methods" id="toc-linkage-methods" class="nav-link" data-scroll-target="#linkage-methods">Linkage methods</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./unsuper_intro.html">Unsupervised Learning</a></li><li class="breadcrumb-item"><a href="./clustering.html"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-clustering" class="quarto-section-identifier"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="23.1">
+<h2 data-number="23.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">23.1</span> Introduction</h2>
+<p>The term <strong>cluster</strong> appears throughout data analytics in different contexts. In the analysis of correlated data a cluster is a group of observations that belong together and group membership is known a priori. For example, a subsample that is drawn from a larger sampling unit creates a hierarchy of sampling units. The longitudinal observations collected on a subject over time form a cluster of subject-specific data. The data from different subjects might be independent while the longitudinal observations within a cluster (a subject) are correlated.</p>
+<p>In unsupervised learning, a cluster is a group of observations that are somehow <em>similar</em>. Group membership is not known a priori and determining membership as well as the number of clusters is part of the analysis. Examples are</p>
+<ul>
+<li>Students that are similar with respect to STEM achievement scores</li>
+<li>Real estate properties that share similar property attributes</li>
+<li>Online shoppers with similar browsing and purchase history</li>
+</ul>
+<p>Cluster analysis seeks to find groups of data such that members within a group are similar to each other and members from different groups are dissimilar. It is an unsupervised method, there is no target variable, we simply are trying to find structure in the data. The number of clusters can be set a priori, for example in <span class="math inline">\(k\)</span>-means clustering, or be determined as part of analysis, as in hierarchical clustering.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Clustering Rows or Columns
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that we are looking for groups of “data”, we did not specify whether clustering applies to finding similar observations or similar features. Usually it is the former, and clustering columns versus rows can be performed by simply transposing the data. From here on we assume that clustering is seeking similar groups of observations.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Scaling and Centering
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Key to all clustering methods is some notion of similarity–or the opposite, dissimilarity–of data points. Measures of similarity (or dissimilarity) depend on a metric expressing <strong>distance</strong>. Squared Euclidean distance is a common choice, but other metrics such as the Manhattan (city-block) distance, correlation distance, or Gower’s distance are also important. Many distance measures depend on the units of measurement; variables with large values tend to dominate the distance calculations. It is highly recommended to scale data prior to cluster analysis to put features on equal footing.</p>
+<p>Scaling is often not applied to binary variables, for example, variables that result from coding factors as a series of 0/1 variables.</p>
+</div>
+</div>
+</section>
+<section id="k-means-clustering" class="level2" data-number="23.2">
+<h2 data-number="23.2" class="anchored" data-anchor-id="k-means-clustering"><span class="header-section-number">23.2</span> <span class="math inline">\(K\)</span>-Means Clustering</h2>
+<section id="introduction-1" class="level3">
+<h3 class="anchored" data-anchor-id="introduction-1">Introduction</h3>
+<p><span class="math inline">\(K\)</span>-means clustering is an intuitive method to cluster <span class="math inline">\(p\)</span> numeric input variables. The value <span class="math inline">\(K\)</span> is the number of clusters and is set a priori. If you perform a <span class="math inline">\(3\)</span>-means analysis, the algorithm will assign all observations to one of three clusters. If you perform a <span class="math inline">\(100\)</span>-means analysis, the algorithm will assign all observations to one of 100 clusters. Choosing the appropriate number of clusters for a data set uses <strong>scree plots</strong> similar to choosing the number of components in principal component analysis.</p>
+<p>The <span class="math inline">\(K\)</span>-means algorithm has the following properties:</p>
+<ul>
+<li>The analysis leads to <span class="math inline">\(K\)</span> clusters</li>
+<li>Every observation belongs to exactly one cluster</li>
+<li>No observation belongs to more than one cluster</li>
+</ul>
+<p>Finding the optimal partitioning of <span class="math inline">\(n\)</span> observations into <span class="math inline">\(K\)</span> groups is a formidable computational problem, there are approximately <span class="math inline">\(K^n\)</span> ways of partitioning the data. However, efficient algorithms exist to find at least a local solution to the global partitioning problem.</p>
+<p>To introduce some notation for <span class="math inline">\(K\)</span>-means clustering, let <span class="math inline">\(C_i\)</span> denote the set of observations assigned to cluster <span class="math inline">\(i=1,\cdots,K\)</span>. The <span class="math inline">\(K\)</span>-means properties imply that</p>
+<ul>
+<li><span class="math inline">\(C_1 \cup C_2 \cup \cdots \cup C_K = \{1,\cdots, n\}\)</span></li>
+<li><span class="math inline">\(C_i \cap C_j = \emptyset\)</span> if <span class="math inline">\(i \neq j\)</span></li>
+</ul>
+<p>The number of observations in cluster <span class="math inline">\(i\)</span> is called its <strong>cardinality</strong>, denoted <span class="math inline">\(|C_i|\)</span>.</p>
+<p>If squared Euclidean distance is the dissimilarity measure of choice, the distance between two data points is <span class="math display">\[
+d(\textbf{x}_i,\textbf{x}_j) = ||\textbf{x}_i - \textbf{x}_j||_2^2 = \sum_{m=1}^p \left ( x_{im} - x_{jm} \right )^2
+\]</span> The <strong>within-cluster variation</strong> in cluster <span class="math inline">\(k\)</span> is the average dissimilarity of the observations in <span class="math inline">\(C_k\)</span>: <span class="math display">\[
+W(C_k) = \frac{1}{|C_k|} \sum_{i,j \in C_k} ||\textbf{x}_i - \textbf{x}_j||_2^2
+\]</span> Let <span class="math inline">\(\overline{\textbf{x}}_k = [\overline{x}_{1k},\cdots,\overline{x}_{pk}]\)</span> be the vector of means of the inputs in the <span class="math inline">\(k\)</span><sup>th</sup> cluster. Finding the <span class="math inline">\(K\)</span>-means solution requires to find the cluster allocations such that <span class="math display">\[
+\min_{C_1,\cdots, C_k} \left \{ \sum_{k=1}^K W(C_k) \right \} \Longleftrightarrow
+\min_{C_1,\cdots, C_k} \left \{ \sum_{k=1}^K \sum_{i \in C_k} ||\textbf{x}_i - \overline{\textbf{x}}_k||_2 ^2 \right \}
+\]</span></p>
+<p>This states that the cluster assignment that minimizes the sum of the within-cluster dissimilarity is the same assignment that minimizes the distances of data points from the cluster centroid. This is how <span class="math inline">\(K\)</span>-means clustering gets its name; the cluster centroids are computed as the mean of the observations assigned to the cluster.</p>
+<p>The <strong>within-cluster sum of squares</strong> is the sum of the squared distances between the data points in a cluster and the cluster centroid. For cluster <span class="math inline">\(k\)</span> this sum of squares is <span class="math display">\[
+\text{SSW}_k = \frac{1}{2} W(C_k) = \sum_{i \in C_k} ||\textbf{x}_i - \overline{\textbf{x}}_k||_2 ^2
+\]</span> This quantity is also called the <strong>inertia</strong> of the cluster. The average inertia, <span class="math display">\[
+\frac{1}{|C_k|} \text{SSW}_k
+\]</span> is called the <strong>distortion</strong> of cluster <span class="math inline">\(k\)</span>.</p>
+<p>A (local) solution is found by iterating from an initial cluster assignment: given cluster centroids <span class="math inline">\(\overline{\textbf{x}}_k\)</span> assign each observation to the cluster whose center is closest. Following the assignment recompute the centers. Continue until the cluster assignment no longer changes. At the local solution no movement of a data point from one cluster to another will reduce the within-cluster sum of squares <span class="citation" data-cites="Hartigan1979">(<a href="references.html#ref-Hartigan1979" role="doc-biblioref">Hartigan and Wong 1979</a>)</span>.</p>
+<p>The initial cluster assignment is done by either assigning observations randomly to the <span class="math inline">\(k\)</span> clusters or by using <span class="math inline">\(k\)</span> randomly chosen observations as the initial cluster centroids.</p>
+<p>Because of this random element, and because the algorithm is not guaranteed to find a global solution, <span class="math inline">\(K\)</span>-means is typically run with multiple random starts, and the best solution is reported.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: <span class="math inline">\(K\)</span>-Means for Iris Data</p>
+</div>
+<div class="example-container">
+<p>To show the basic calculations in <span class="math inline">\(K\)</span>-means analysis, let’s first look at the familiar <code>Iris</code> data set. We have the luxury of knowing that the data set comprises three species, a <span class="math inline">\(3\)</span>-means analysis of the flower measurements should be interesting: does it recover the iris species?</p>
+<p>The <code>kmeans</code> function in <code>R</code> performs the <span class="math inline">\(K\)</span>-means analysis. By default, it uses he algorithm of <span class="citation" data-cites="Hartigan1979">Hartigan and Wong (<a href="references.html#ref-Hartigan1979" role="doc-biblioref">1979</a>)</span> with a single random start for the initial cluster assignment. Set <code>nstart=</code> to a larger number to increase the number of random starts. Because there are four inputs, <code>Sepal.Length</code>, <code>Sepal.Width</code>. <code>Petal.Length</code>, and <code>Petal.Width</code>, each observation and the centroids live in 4-dimensional space.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>iris_s <span class="ot">&lt;-</span> <span class="fu">scale</span>(iris[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>km <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(iris_s,<span class="at">centers=</span><span class="dv">3</span>,<span class="at">nstart=</span><span class="dv">50</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>km<span class="sc">$</span>size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 50 53 47</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>km<span class="sc">$</span>centers</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Sepal.Length Sepal.Width Petal.Length Petal.Width
+1  -1.01119138  0.85041372   -1.3006301  -1.2507035
+2  -0.05005221 -0.88042696    0.3465767   0.2805873
+3   1.13217737  0.08812645    0.9928284   1.0141287</code></pre>
+</div>
+</div>
+<p>The algorithm finds three clusters of sizes 50, 53, and 47. The centroid of the first cluster is at coordinate [-1.0112, 0.8504, -1.3006, -1.2507].</p>
+<p>The breakdown of the dissimilarities, the squared distances, in the data set is as follows.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>km<span class="sc">$</span>totss</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 596</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>km<span class="sc">$</span>betweenss</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 457.1116</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>km<span class="sc">$</span>tot.withinss</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 138.8884</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>km<span class="sc">$</span>withinss</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 47.35062 44.08754 47.45019</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>(km<span class="sc">$</span>tot.withinss<span class="sc">/</span>km<span class="sc">$</span>totss)<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 23.30342</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The total sum of squares does not depend on the number of clusters. For <span class="math inline">\(K=3\)</span>, it is allocated to 138.8884 sum of squares units within the clusters and 457.1116 between the clusters.</p>
+<p>The within-cluster sum of squares measures the average squared Euclidean distance between the points in a cluster and the cluster centroid. We can validate for any of the clusters as follows</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>withinss <span class="ot">&lt;-</span> <span class="cf">function</span>(x, center) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    tmp <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(x)),<span class="cf">function</span>(i) <span class="fu">sum</span>((x[i,]<span class="sc">-</span>center)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> (<span class="fu">sum</span>(tmp))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) {</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="fu">withinss</span>(iris_s[km<span class="sc">$</span>cluster<span class="sc">==</span>i,],km<span class="sc">$</span>center[i,]))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 47.35062
+[1] 44.08754
+[1] 47.45019</code></pre>
+</div>
+</div>
+<p>The distortions of the clusters are obtained by dividing the within-cluster sum of squares with the cluster sizes:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>km<span class="sc">$</span>withinss <span class="sc">/</span> km<span class="sc">$</span>size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9470124 0.8318405 1.0095786</code></pre>
+</div>
+</div>
+<p><a href="#fig-iris-kmeans" class="quarto-xref">Figure&nbsp;<span>23.1</span></a> shows the cluster assignment in a bivariate plot of two of the flower measurements. The colored cluster symbols are overlaid with the species. The three clusters track the species fairly well, in particular <em>I. setosa</em>. The boundaries of the other two clusters align fairly well with species, but there is considerable overlap.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-iris-kmeans" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-iris-kmeans-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="clustering_files/figure-html/fig-iris-kmeans-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="clustering_files/figure-html/fig-iris-kmeans-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-iris-kmeans-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.1: Results of 3-means clustering for Iris data. Clusters are identified through colors, species are identified with plotting symbols.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The separation of these clusters is probably better than <a href="#fig-iris-kmeans" class="quarto-xref">Figure&nbsp;<span>23.1</span></a> suggests, because two dimensions (<code>Petal.Width</code> and <code>Petal.Length</code>) are not represented in the figure.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>psym <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(iris<span class="sc">$</span>Species<span class="sc">==</span><span class="st">"setosa"</span>, <span class="dv">1</span>, </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">ifelse</span>(iris<span class="sc">$</span>Species<span class="sc">==</span><span class="st">"versicolor"</span> ,<span class="dv">2</span>,<span class="dv">3</span>))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>cm <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(km<span class="sc">$</span>cluster),<span class="fu">as.factor</span>(psym))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(cm<span class="sc">$</span>overall,<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+        0.8333         0.7500         0.7639         0.8891         0.3333 
+AccuracyPValue  McnemarPValue 
+        0.0000            NaN </code></pre>
+</div>
+</div>
+<p>The confusion matrix between species and cluster assignment has an accuracy of 83.3333%.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="math inline">\(K\)</span>-means analysis is generally susceptible to outliers, as they contribute large distances. Also, <span class="math inline">\(K\)</span>-means analysis is sensitive to perturbations of the data; when observations are added or deleted the results will change. Finally, <span class="math inline">\(K\)</span>-means is affected by the <strong>curse of dimensionality</strong> (@#sec-curse-dimensionality).</p>
+</div>
+</div>
+</section>
+<section id="clustering-metrics" class="level3">
+<h3 class="anchored" data-anchor-id="clustering-metrics">Clustering Metrics</h3>
+<p>To choose the appropriate number of clusters in <span class="math inline">\(K\)</span>-means clustering, we can apply various metrics that measure the tightness of the clusters and their separation. These metrics are plotted against the value of <span class="math inline">\(k\)</span> in a scree plot. We do not look for a minimum of the criteria, but the “knee” or “elbow” where the increase/decrease of the metric abruptly changes.</p>
+<p>The following criteria are commonly computed and plotted.</p>
+<ul>
+<li><p><strong>Inertia</strong>: this is the within-cluster sum of squares and measures the tightness of the clusters. It does not necessarily mean that clusters are well separated, it just means that the data points within the clusters are close to their centroid. The within-cluster sum of squares decreases as <span class="math inline">\(K\)</span> increases, more clusters will lead to less variability within the clusters. That is why we do not look for minima with these criteria.</p></li>
+<li><p><strong>Distortion</strong>: this is the average inertia within a cluster, obtained by dividing <span class="math inline">\(\text{SSW}_k\)</span> by the cluster cardinality.</p></li>
+<li><p><strong>Silhouette</strong> score: measures how similar a data point is to its own cluster compared to other clusters. While inertia is based only on distances of data points from <em>their</em> cluster center, the silhouette takes into account the distances between points in one cluster and the nearest cluster center. The score ranges from <span class="math inline">\(-1\)</span> to <span class="math inline">\(+1\)</span>; a high silhouette score means that we can easily tell the clusters apart–they are far from each other.</p></li>
+</ul>
+<p>Inertia and silhouette measure different things: the former captures the tightness of the clusters, the latter how far apart (distinguishable) the clusters are. You can have a good (low) inertia but a bad (low) silhouette score if the clusters overlap or sit on top of each other.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Silhouette Scores</p>
+</div>
+<div class="example-container">
+<p>You can calculate and/or visualize silhouette scores in <code>R</code> in several ways: using the <code>silhouette</code> function in the <code>cluster</code> library or the <code>fviz_nbclust</code> function in the <code>factoextra</code> package. <code>fviz_nbclust</code> supports additional metrics, for example <code>method="wss"</code> produced a scree plot of the within-cluster sum of squares (inertia).</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cluster)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">6345</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>silhouette_score <span class="ot">&lt;-</span> <span class="cf">function</span>(k){</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  kmns <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(iris_s, <span class="at">centers =</span> k, <span class="at">nstart=</span><span class="dv">50</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  ss <span class="ot">&lt;-</span> <span class="fu">silhouette</span>(kmns<span class="sc">$</span>cluster, <span class="fu">dist</span>(iris_s))</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(ss[, <span class="dv">3</span>])</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">10</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(k, </span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>     <span class="fu">sapply</span>(k, silhouette_score),</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">type=</span><span class="st">'b'</span>,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Number of clusters'</span>, </span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Average Silhouette Scores'</span>,<span class="at">bty=</span><span class="st">"l"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(factoextra)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_nbclust</span>(iris_s, kmeans, <span class="at">method=</span><span class="st">'silhouette'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_nbclust</span>(iris_s, kmeans, <span class="at">method=</span><span class="st">'wss'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The silhouette scores suggest <span class="math inline">\(k=2\)</span> and the inertia scree plot $k=$3–5.</p>
+</div>
+</div>
+</section>
+<section id="predicted-values" class="level3">
+<h3 class="anchored" data-anchor-id="predicted-values">Predicted Values</h3>
+<p>Although <span class="math inline">\(K\)</span>-means is an unsupervised learning method, we can use it to predict the cluster of a new observation. Calculate The distance of the coordinate of the new point to the cluster centers and assign the observation to the cluster whose center is closest. The cluster centroids serve as the predicted values. You can write a function in <code>R</code> that accomplishes that.</p>
+<p>If the data were centered and/or scaled in the <span class="math inline">\(K\)</span>-means analysis, make sure that the same treatment is applied before calculating distances to the cluster centroids.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>clusters <span class="ot">&lt;-</span> <span class="cf">function</span>(x, centers) {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute squared euclidean distance from </span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># each sample to each cluster center</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  tmp <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(x)),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                <span class="cf">function</span>(i) <span class="fu">apply</span>(centers, <span class="dv">1</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="cf">function</span>(v) <span class="fu">sum</span>((x[i, ]<span class="sc">-</span>v)<span class="sc">^</span><span class="dv">2</span>)))</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">max.col</span>(<span class="sc">-</span><span class="fu">t</span>(tmp))  <span class="co"># find index of min distance</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co"># two new observations</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>newx <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="st">"Sepal.Length"</span><span class="ot">=</span><span class="fu">c</span>(<span class="dv">4</span>  , <span class="dv">6</span>  ),</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Sepal.Width"</span> <span class="ot">=</span><span class="fu">c</span>(<span class="dv">2</span>  , <span class="dv">3</span>  ),</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Petal.Length"</span><span class="ot">=</span><span class="fu">c</span>(<span class="fl">1.5</span>, <span class="fl">1.3</span>),</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Petal.Width"</span> <span class="ot">=</span><span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.5</span>))</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#center and scales from training data</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>means <span class="ot">&lt;-</span> <span class="fu">attr</span>(iris_s,<span class="st">"scaled:center"</span>)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>scales <span class="ot">&lt;-</span> <span class="fu">attr</span>(iris_s,<span class="st">"scaled:scale"</span>)</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>pred_clus <span class="ot">&lt;-</span> <span class="fu">clusters</span>((newx<span class="sc">-</span>means)<span class="sc">/</span>scales,km<span class="sc">$</span>centers)</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>pred_clus</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the cluster centers as the predicted values</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>km<span class="sc">$</span>centers[pred_clus,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Sepal.Length Sepal.Width Petal.Length Petal.Width
+1    -1.011191  0.85041372   -1.3006301   -1.250704
+3     1.132177  0.08812645    0.9928284    1.014129</code></pre>
+</div>
+</div>
+</section>
+<section id="combining-k-means-and-pca" class="level3">
+<h3 class="anchored" data-anchor-id="combining-k-means-and-pca">Combining <span class="math inline">\(K\)</span>-Means and PCA</h3>
+<p><span class="math inline">\(K\)</span>-means analysis finds groups of observations that are similar to each other in the inputs as judged by a distance metric. Principal component analysis finds independent linear combinations of the inputs that explain substantial amounts of information. In the Iris example analyzed earlier, we used 4 input variables but plotted the cluster assignment for two of the variables, because visualization in more dimensions is difficult (<a href="#fig-iris-kmeans" class="quarto-xref">Figure&nbsp;<span>23.1</span></a>).</p>
+<p>There are two ways to combine PCA and <span class="math inline">\(K\)</span>-means:</p>
+<ol type="1">
+<li><p><strong>PCA after <span class="math inline">\(K\)</span>-means</strong>: Run a <span class="math inline">\(K\)</span>-means analysis on <span class="math inline">\(p\)</span> inputs, then calculate the first two principal components with the cluster assignment. This is a visualization techniques for clusters in high-dimensional data. It does not rectify the curse of dimensionality issue from which <span class="math inline">\(K\)</span>-means suffers as <span class="math inline">\(p\)</span> gets larger. When applied to visualize data in 2 dimensions, this technique reduces <span class="math inline">\(p(p-1)/2\)</span> scatterplots to a singple biplot based on the first 2 components.</p></li>
+<li><p><strong><span class="math inline">\(K\)</span>-means after PCA</strong>: Use PCA to reduce <span class="math inline">\(p\)</span> inputs to <span class="math inline">\(M &lt; p\)</span> principal components, then run a <span class="math inline">\(K\)</span>-means analysis to find clusters in the components. This approach eliminates the curse of dimensionality.</p></li>
+</ol>
+<!---
+It should be not too surprising when the optimal number of clusters is similar to the number of principal components chosen. The components measure perpendicular relationships in the data.
+--->
+<div class="example">
+<div class="example-header">
+<p>Example: Airbnb properties in Asheville, NC</p>
+</div>
+<div class="example-container">
+<p>The following data is Airbnb data about Asheville, NC. The data for this and other cities is available from http://insideairbnb.com/get-the-data/. We are using six numeric variables for the properties.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>airbnb <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM Asheville"</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>airbnb2 <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(airbnb[,<span class="fu">c</span>(<span class="st">"price"</span>,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"number_of_reviews"</span>,<span class="st">"minimum_nights"</span>,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"reviews_per_month"</span>,<span class="st">"availability_365"</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"calculated_host_listings_count"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><a href="#fig-asheville-data" class="quarto-xref">Figure&nbsp;<span>23.2</span></a> shows the distribution of prices as a function of the number of reviews. Many properties have accumulated hundreds of reviews over time. and most are toward the lower end of the price scale.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-asheville-data" class="quarto-figure quarto-figure-center quarto-float anchored" width="75%" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-asheville-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="clustering_files/figure-html/fig-asheville-data-1.png" id="fig-asheville-data" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-asheville-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.2
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The property with a rental price of more than $10,000 per day is a 1-bedroom, 1-bath guest suite in the middle of Asheville. The rental has a 2-night minimum and over 200 reviews. We are excluding this observation as an outlier.</p>
+<p>We now perform a <span class="math inline">\(K\)</span>-means analysis based on the first two principal components after limiting the data to properties with a daily rental price of less than $2,000.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>airbnb2 <span class="ot">&lt;-</span> airbnb2[airbnb2<span class="sc">$</span>price <span class="sc">&lt;</span> <span class="dv">2000</span>,]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>pca_asheville <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(airbnb2,<span class="at">retx=</span><span class="cn">TRUE</span>,<span class="at">scale.=</span><span class="cn">TRUE</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pca_asheville)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Importance of components:
+                          PC1    PC2    PC3    PC4    PC5    PC6
+Standard deviation     1.3779 1.1772 0.9687 0.8906 0.8262 0.5488
+Proportion of Variance 0.3164 0.2310 0.1564 0.1322 0.1138 0.0502
+Cumulative Proportion  0.3164 0.5474 0.7038 0.8360 0.9498 1.0000</code></pre>
+</div>
+</div>
+<p>We use the first three principal components for the subsequent <span class="math inline">\(K\)</span>-means analysis; they explain 70.383% of variability in the data.</p>
+<p>Based on the scree plot of the within-cluster sum of squares and the silhouette scores, <span class="math inline">\(K\)</span>=5 or <span class="math inline">\(K=6\)</span> seems like a reasonable number of clusters. The silhouette plot suggests <span class="math inline">\(K\)</span>=7 instead (<a href="#fig-asheville-silhouette" class="quarto-xref">Figure&nbsp;<span>23.3</span></a>). We compromise on <span class="math inline">\(K=6\)</span>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_nbclust</span>(pca_asheville<span class="sc">$</span>x[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], kmeans, <span class="at">method=</span><span class="st">'silhouette'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-asheville-silhouette" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-asheville-silhouette-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="clustering_files/figure-html/fig-asheville-silhouette-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-asheville-silhouette-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.3: Silhouette score and inertia scree plot.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_nbclust</span>(pca_asheville<span class="sc">$</span>x[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], kmeans, <span class="at">method=</span><span class="st">'wss'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<figcaption>Inertia scree plot.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>km <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(pca_asheville<span class="sc">$</span>x[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>],<span class="at">centers=</span><span class="dv">6</span>,<span class="at">nstart=</span><span class="dv">25</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggfortify)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(pca_asheville, </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">data=</span>airbnb2, </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">color=</span>km<span class="sc">$</span>cluster, </span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">size=</span><span class="fl">0.6</span>,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">loadings.label=</span><span class="cn">TRUE</span>, </span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">loadings.label.size =</span> <span class="dv">3</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">loadings=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="clustering_files/figure-html/unnamed-chunk-14-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="clustering_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Not surprisingly, the <code>reviews_per_month</code> and the <code>number_of_reviews</code> are highly correlated. The six clusters separate pretty well. There is some overlap between black and green clusters, but the display is missing one of the principal components. The PCA rotation shows that PC1 is dominated by review-related attributes and PC2 by availability of the property and the number of listings that a host has in Asheville. PC3 has negative scores for pricey properties.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>pca_asheville<span class="sc">$</span>rotation[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                      PC1        PC2         PC3
+price                           0.2902296  0.3294264 -0.62170726
+number_of_reviews              -0.6172910  0.1445229  0.12113455
+minimum_nights                  0.2131000 -0.4718076  0.53510059
+reviews_per_month              -0.6282131  0.2176421  0.03637559
+availability_365                0.1669516  0.5698854  0.42704350
+calculated_host_listings_count  0.2584232  0.5252157  0.35886561</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="k-means-on-random-data" class="level3">
+<h3 class="anchored" data-anchor-id="k-means-on-random-data"><span class="math inline">\(K\)</span>-Means on Random Data</h3>
+<p>Before we leave <span class="math inline">\(K\)</span>-means clustering, a word of caution. K-Means clustering will always find <span class="math inline">\(K\)</span> clusters even if the data have no structure. The following data perform a <span class="math inline">\(3\)</span>-means analysis on 100 observations on 5 inputs drawn randomly from a standard Gaussian distribution. The correlation analysis shows no (pairwise) relationship among the inputs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7654</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">500</span>,<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">nrow=</span><span class="dv">100</span>,<span class="at">ncol=</span><span class="dv">5</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cor</span>(x),<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        [,1]    [,2]    [,3]    [,4]    [,5]
+[1,]  1.0000 -0.1803 -0.0074  0.0591  0.0151
+[2,] -0.1803  1.0000 -0.1494 -0.0894  0.0121
+[3,] -0.0074 -0.1494  1.0000  0.0103 -0.0346
+[4,]  0.0591 -0.0894  0.0103  1.0000 -0.0004
+[5,]  0.0151  0.0121 -0.0346 -0.0004  1.0000</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>krand <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(x,<span class="at">centers=</span><span class="dv">3</span>,<span class="at">nstart=</span><span class="dv">20</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>krand<span class="sc">$</span>center</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        [,1]       [,2]        [,3]       [,4]        [,5]
+1 -0.8585193  0.7523440 -0.47938437  0.2871084  0.05588092
+2  0.4961648 -0.8522573  0.27922916  1.3559955 -0.03425393
+3  0.2284897 -0.3133494  0.05111486 -0.6513347 -0.11558704</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>krand<span class="sc">$</span>withinss</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  99.74124  92.39653 149.99366</code></pre>
+</div>
+</div>
+<p>To visualize, run a PCA and color the scores of the first two components with the cluster id. It appears that the algorithm found three somewhat distinct groups of observations. The cluster centroids are certainly quite different (<a href="#fig-kmeans-random" class="quarto-xref">Figure&nbsp;<span>23.4</span></a>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>pca <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(x,<span class="at">scale.=</span><span class="cn">TRUE</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>proj_means <span class="ot">&lt;-</span> <span class="fu">predict</span>(pca,<span class="at">newdata=</span>krand<span class="sc">$</span>centers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-kmeans-random" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-kmeans-random-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="clustering_files/figure-html/fig-kmeans-random-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-kmeans-random-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.4: The first two principal components for <span class="math inline">\(3\)</span>-means analysis on random data, <span class="math inline">\(p=5\)</span>. The diamonds are the cluster centroids.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>There is a clue that something is amiss.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>(krand<span class="sc">$</span>betweenss<span class="sc">/</span>krand<span class="sc">$</span>totss)<span class="sc">*</span><span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 29.14485</code></pre>
+</div>
+</div>
+<p>The variability between the clusters accounts for only 29.145% of the variation in the data. If grouping explains differences between the data points, this percentage should be much higher.</p>
+</section>
+</section>
+<section id="hierarchical-clustering" class="level2" data-number="23.3">
+<h2 data-number="23.3" class="anchored" data-anchor-id="hierarchical-clustering"><span class="header-section-number">23.3</span> Hierarchical Clustering</h2>
+<section id="introduction-2" class="level3">
+<h3 class="anchored" data-anchor-id="introduction-2">Introduction</h3>
+<p>In <span class="math inline">\(K\)</span>-means clustering you specify <span class="math inline">\(K\)</span>, find the clusters, and examine the results. Metrics such as inertia, distortion, or the silhouette score are used to find an appropriate value for <span class="math inline">\(K\)</span>. <strong>Hierarchical clustering</strong> (HC) is a clustering technique where you do not specify the number of clusters in advance. Instead, the entire data set is organized between two extremes:</p>
+<ul>
+<li>at the top, all observations belong to a single cluster</li>
+<li>at the bottom, each observations is in a cluster by itself</li>
+</ul>
+<p>If <span class="math inline">\(c\)</span> denotes the number of clusters in hierarchical clustering, HC offers you to choose <span class="math inline">\(1 \le c \le n\)</span>. Between the two extremes, <span class="math inline">\(c=1\)</span> and <span class="math inline">\(c=n\)</span> lie many configurations where observations are combined into groups based on similarity measures and rules for combining groups, called <strong>linkage</strong> methods. The choice is typically made based on heuristics such as a visual inspection of the <strong>dendrogram</strong>, an upside-down tree display of the cluster arrangements (<a href="#fig-hc-example" class="quarto-xref">Figure&nbsp;<span>23.5</span></a>). Algorithms exist that try to automate and optimize the determination of <span class="math inline">\(c\)</span> based on criteria such as inertia.</p>
+<div id="fig-hc-example" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hc-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/Dendrogram_annotated.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/Dendrogram_annotated.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hc-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.5: Example of a dendrogram in hierarchical clustering
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="the-dendrogram" class="level3">
+<h3 class="anchored" data-anchor-id="the-dendrogram">The Dendrogram</h3>
+<p>Hierarchical clustering is popular because of the dendrogram, an intuitive representation of structure in the data. A word of caution is in order, however: just like <span class="math inline">\(K\)</span>-means clustering will find <span class="math inline">\(K\)</span> clusters–whether they exist or not–hierarchical clustering will organize the observations hierarchically in the dendrogram–whether a hierarchy makes sense or not.</p>
+<p>At the lowest level of the dendrogram are the <strong>leaves</strong>, corresponding to observations. As you move up the tree, those merge into <strong>branches</strong>. Observations fuse first into groups, later on observations or groups merge with other groups. A common mistake in interpreting dendrograms is to assume similarity is greatest when observations are close to each other on the horizontal axis when fused. Observations are more similar if they are fused <u>lower</u> on the tree. The further up on the tree you go before merging branches, the more <strong>dissimilar</strong> are the members of the branches.</p>
+<p>In <a href="#fig-dendrogram-example" class="quarto-xref">Figure&nbsp;<span>23.6</span></a>, observations 11 and 4 near the right edge of the tree appear “close” along the horizontal axis. Since they merge much higher up on the tree, these observations are more dissimilar as, for example, observations 23 and 25, which merge early on. Based on where they merge, observation 11 is no more similar to #4 than it is to observations 23, 25, 10, and 15.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-dendrogram-example" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dendrogram-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="clustering_files/figure-html/fig-dendrogram-example-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4"><img src="clustering_files/figure-html/fig-dendrogram-example-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dendrogram-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.6: Example of a dendrogram in hierarchical clustering.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The name hierarchical clustering stems from the fact that clusters lower on the tree (near the bottom) are necessarily contained in clusters higher up on the tree (near the top), since clusters are formed by merging or splitting. This hierarchical arrangement can be unrealistic. <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">2021, 523</a>)</span> give the following example</p>
+<ul>
+<li>Suppose you have data on men and women from three countries.</li>
+<li>The best division into three groups might be by country.</li>
+<li>The best division into two groups might be by gender.</li>
+</ul>
+<p>The best division into three groups does not result from taking the two gender groups and splitting one of those.</p>
+<p>There are two general approaches to construct a dendrogram.</p>
+<ul>
+<li><p>The <strong>agglomerative</strong> (bottom-up) approach starts with <span class="math inline">\(c=n\)</span> clusters at the bottom of the dendrogram, where each observation is a separate cluster, and merges observations and branches based on their similarity. The pair chosen for merging at any stage consists of the least dissimilar (most similar) groups.</p></li>
+<li><p>The <strong>divisive</strong> (top-down) approach starts at the trunk (the top) of the tree with a single cluster that contains all observations. Moving down the tree, branches are split into clusters to produce groups with the largest between-group dissimilarity (least similar clusters).</p></li>
+</ul>
+</section>
+<section id="cutting-the-dendrogram" class="level3">
+<h3 class="anchored" data-anchor-id="cutting-the-dendrogram">Cutting the Dendrogram</h3>
+<p>It is best to interpret the dendrogram as a data summary, not as a confirmatory tool. Based on the dendrogram you can choose any number of clusters. The typical approach is called <strong>cutting the tree</strong>, whereby you choose a particular height on the dendrogram and draw a line across. Depending on where you draw the line you end up with a different number of clusters (<a href="#fig-dendrogram-cut" class="quarto-xref">Figure&nbsp;<span>23.7</span></a>). The number of clusters corresponds to the number of vertical lines the cut intersects.</p>
+<div id="fig-dendrogram-cut" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dendrogram-cut-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/Dendrogram_cut.png" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="quarto-lightbox-gallery-5"><img src="images/Dendrogram_cut.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dendrogram-cut-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.7: Dendrogram cut at different heights
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="dissimilarity-and-linkage" class="level3">
+<h3 class="anchored" data-anchor-id="dissimilarity-and-linkage">Dissimilarity and Linkage</h3>
+<p>Before we can construct a dendrogram, we need to decide on two more things (besides whether the approach is top-down or bottom-up): a measure of dissimilarity and a rule on which groups are to be merged. These choices have profound effect on the resulting dendrogram, more so than the choice between top-down or bottom-up approach.</p>
+<section id="dissimilarity-measures" class="level4">
+<h4 class="anchored" data-anchor-id="dissimilarity-measures">Dissimilarity measures</h4>
+<p>Let <span class="math inline">\(x_{ij}\)</span> denote the measurements for <span class="math inline">\(i=1,\cdots, n\)</span> observations on <span class="math inline">\(j=1,\cdots, p\)</span> inputs (variables). As before, the vector of inputs for the <span class="math inline">\(i\)</span><sup>th</sup> observation is denoted <span class="math inline">\(\textbf{x}_i = [x_{i1},\cdots, x_{ip}]\)</span>.</p>
+<p>The <strong>dissimilarity (distance) matrix</strong> <span class="math inline">\(\textbf{D}\)</span> for the data is an <span class="math inline">\((n \times n)\)</span> matrix with typical element <span class="math display">\[
+    D(\textbf{x}_i,\textbf{x}_{i^\prime}) = \sum_{j=1}^p w_j \, d_j(x_{ij},x_{i^\prime j})
+\]</span> The <span class="math inline">\(w_j\)</span> are weights associated with the <span class="math inline">\(j\)</span><sup>th</sup> attribute, <span class="math inline">\(\sum_{j=1}^p w_j = 1\)</span>. <span class="math inline">\(d_j(x_{ij},x_{i^\prime j})\)</span> measures the dissimilarity between any two observations for the <span class="math inline">\(j\)</span><sup>th</sup> attribute.</p>
+<p>A number of dissimilarity measures are used, depending on the type of variable and the application. For quantitative variables, the following are most popular:</p>
+<ul>
+<li><p><strong>Squared Euclidean distance</strong> <span class="math display">\[d_j(x_{ij},x_{i^\prime j}) = (x_{ij} - x_{i^\prime j})^2\]</span> Probably the most frequent choice, but it is sensitive to large distances due to squaring.</p></li>
+<li><p><strong>Absolute distance</strong>, also called “Manhattan” or city-block distance <span class="math display">\[d_j(x_{ij},x_{i^\prime j}) = |x_{ij} - x_{i^\prime j}|\]</span> Absolute distance is more robust to large differences compared to dissimilarity based on Euclidean distance.</p></li>
+<li><p><strong>Correlation-based distance</strong> <span class="math display">\[
+      d_j(x_{ij},x_{i^\prime j}) = 1- \rho(\textbf{x}_i,\textbf{x}_{i^\prime})  = 1- \frac{\sum_j (x_{ij}-\overline{x}_i) (x_{i^\prime j} - \overline{x}_{i^\prime})}
+      {\sqrt{\sum_j (x_{ij}-\overline{x}_i)^2 \, (x_{i^\prime j} - \overline{x}_{i^\prime})^2 }}
+\]</span> with <span class="math inline">\(\overline{x}_i = 1/p \sum_j x_{ij}\)</span>.</p></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that <span class="math inline">\(\rho(\textbf{x}_i, \textbf{x}_{i^\prime})\)</span> does <strong>not</strong> measure the correlation between two variables across a set of <span class="math inline">\(n\)</span> observations–that would be the familiar way to calculate and interpret a correlation coefficient. <span class="math inline">\(\rho(\textbf{x}_i, \textbf{x}_{i^\prime})\)</span> is the correlation between two observations across <span class="math inline">\(p\)</span> attributes.</p>
+</div>
+</div>
+<div class="example">
+<div class="example-header">
+<p>Example: Effect of Distance Metrics</p>
+</div>
+<div class="example-container">
+<p>We use a simple data set with observations on the shopping behavior of four imaginary shoppers. Frank, Betsy, Julian, and Lisa make purchases of 5 possible items. The values for the item attributes are the number of times the item was purchased.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">shopper=</span><span class="fu">c</span>(<span class="st">"Frank"</span>,<span class="st">"Besty"</span>,<span class="st">"Julian"</span>,<span class="st">"Lisa"</span>),</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">item1=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">item2=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">1</span>),</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">item3=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">item4=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">item5=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>                 )</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  shopper item1 item2 item3 item4 item5
+1   Frank     0     0     1     1     2
+2   Besty     1     0     1     3     0
+3  Julian     0     4     0     0     1
+4    Lisa     0     1     0     1     1</code></pre>
+</div>
+</div>
+<p>First, let’s calculate various distance metrics. These are represented as matrices of distances between the data points. The function <code>dist()</code> returns the lower triangular matrix of pairwise distances</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dist</span>(df[,<span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>],<span class="at">method=</span><span class="st">"manhattan"</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    1  2  3</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  5      </span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 3  7 10   </span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 4  3  6  4</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dist</span>(df[,<span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>],<span class="at">method=</span><span class="st">"euclidean"</span>)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="do">##          1        2        3</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 3.000000                  </span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 4.358899 5.291503         </span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 1.732051 2.828427 3.162278</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>dist</code> function excludes the diagonal entries of the distance matrix by default, these are known to be zero. Because the input values are integers in this example, the city-block distances are also integers.</p>
+<p>The correlation-based distances can be calculated with <code>factoextra::get_dist()</code>. This function adds methods for correlations based on Pearson (<code>method="pearson"</code>), Spearman (<code>method="spearman"</code>) or Kendall (<code>method="kendall"</code>). The variables can be centered and scaled with <code>stand=TRUE</code> (<code>stand=FALSE</code> is the default).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">t</span>(df[,<span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           [,1]       [,2]       [,3]      [,4]
+[1,]  1.0000000  0.0000000 -0.3450328 0.3273268
+[2,]  0.0000000  1.0000000 -0.5892557 0.0000000
+[3,] -0.3450328 -0.5892557  1.0000000 0.5270463
+[4,]  0.3273268  0.0000000  0.5270463 1.0000000</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_dist</span>(df[,<span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>],<span class="at">method=</span><span class="st">"pearson"</span>,<span class="at">stand=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          1         2         3
+2 1.0000000                    
+3 1.3450328 1.5892557          
+4 0.6726732 1.0000000 0.4729537</code></pre>
+</div>
+</div>
+<p>The correlation-based dissimilarity is not equal to the correlation among the item purchases, it is one minus the correlation of the item purchases for each shopper.</p>
+<p>The <code>cluster::daisy()</code> function can compute Euclidean, Manhattan, and Gower’s distance matrices. More on Gower’s distance after the example.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">daisy</span>(df[,<span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>],<span class="at">metric=</span><span class="st">"manhattan"</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Dissimilarities :</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    1  2  3</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  5      </span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 3  7 10   </span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 4  3  6  4</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Metric :  manhattan </span></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of objects : 4</span></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a><span class="fu">daisy</span>(df[,<span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>],<span class="at">metric=</span><span class="st">"euclidean"</span>)</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Dissimilarities :</span></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a><span class="do">##          1        2        3</span></span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 3.000000                  </span></span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 4.358899 5.291503         </span></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 1.732051 2.828427 3.162278</span></span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Metric :  euclidean </span></span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of objects : 4</span></span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a><span class="fu">daisy</span>(df[,<span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>],<span class="at">metric=</span><span class="st">"gower"</span>)</span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Dissimilarities :</span></span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a><span class="do">##           1         2         3</span></span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 0.5333333                    </span></span>
+<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 0.5666667 0.9000000          </span></span>
+<span id="cb43-24"><a href="#cb43-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 0.3500000 0.6833333 0.2166667</span></span>
+<span id="cb43-25"><a href="#cb43-25" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb43-26"><a href="#cb43-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Metric :  mixed ;  Types = I, I, I, I, I </span></span>
+<span id="cb43-27"><a href="#cb43-27" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of objects : 4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s construct the dendrograms for the data based on Euclidean and Pearson correlation distance matrices using the <code>hclust</code> function. The input to <code>hclust</code> is a distance (dissimilarity) matrix as produced by <code>dist()</code>, <code>get_dist()</code>, <code>daisy()</code>. The actual values of the variables are no longer needed once the dissimilarities are calculated.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>h1 <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">dist</span>(df[,<span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>]))</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>h2 <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">get_dist</span>(df[,<span class="dv">2</span><span class="sc">:</span><span class="dv">6</span>],<span class="at">method=</span><span class="st">"pearson"</span>))</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">cex=</span><span class="fl">0.7</span>) </span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mai=</span><span class="fu">c</span>(<span class="fl">0.6</span>,<span class="fl">0.6</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>))</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(h1,<span class="at">labels=</span>df[,<span class="dv">1</span>],<span class="at">sub=</span><span class="st">""</span>,<span class="at">xlab=</span><span class="st">"Shoppers"</span>,<span class="at">main=</span><span class="st">"Euclidean Dist."</span>)</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(h2,<span class="at">labels=</span>df[,<span class="dv">1</span>],<span class="at">sub=</span><span class="st">""</span>,<span class="at">xlab=</span><span class="st">"Shoppers"</span>,<span class="at">main=</span><span class="st">"Correlation"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Choosing Euclidean distance groups together users who bought few items, because they appear as similar (close). Frank and Lisa bought 4 and 3 items, respectively. Betsy and Julian purchased 5 items. Choosing correlation-based distance groups users who bought items together. For example, Julian and Lisa bought items 2 and 5 together, Frank and Betsy purchased items 3 and 4 together.</p>
+</div>
+</div>
+<p>The distance metrics discussed so far are not appropriate for categorical variables (nominal or ordinal) because differences between values are not defined. A four-star rating is not twice as much as a two-star rating and the “distance” between a one- and two-star rating is not the same as that between a four- and five-star rating.</p>
+<p>Still, for an ordinal variable with <span class="math inline">\(M\)</span> categories it is not uncommon to replace the label for category <span class="math inline">\(j\)</span> with <span class="math display">\[
+\frac{j-1/2}{M}
+\]</span> and treat this as a quantitative score. With nominal variables it is common to assign a simple loss value depending on whether the values of two variables are the same (loss = 0) or different (loss=1).</p>
+<p>What should we do when the inputs are of mixed type, for example, <span class="math inline">\(x_1\)</span> is continuous, <span class="math inline">\(x_2\)</span> is binary, and <span class="math inline">\(x_3\)</span> is nominal? <span class="citation" data-cites="Gower1971">Gower (<a href="references.html#ref-Gower1971" role="doc-biblioref">n.d.</a>)</span> introduced a similarity metric to compute distances in this case, known as Gower’s distance. Suppose there are no missing values. Gower’s <strong>similarity coefficient</strong> is <span class="math display">\[
+S(\textbf{x}_i,\textbf{x}_{i^\prime}) = \frac{1}{p}\sum_{j=1}^p s_{ii^\prime j}
+\]</span> The <span class="math inline">\(s_{ii^\prime j}\)</span> is the <strong>score</strong> between observations <span class="math inline">\(i\)</span> and <span class="math inline">\(i^\prime\)</span> for variable <span class="math inline">\(j\)</span>; The scores range <span class="math inline">\(0 \leq s_{ii^\prime j} \leq 1\)</span> and are calculated as follows:</p>
+<ul>
+<li><p>qualitative attributes: 0/1 loss</p></li>
+<li><p>quantitative attritbutes: <span class="math display">\[
+s_{i i^\prime j} = 1 - \frac{x_{ij} - x_{i^\prime j}}{R_j}
+\]</span> where <span class="math inline">\(R_j\)</span> is the range (max-min) for the <span class="math inline">\(j\)</span><sup>th</sup> variable. The Gower similarity coefficient has the following properties:</p></li>
+<li><p><span class="math inline">\(0 \leq S(\textbf{x}_i, \textbf{x}_{i^\prime}) \leq 1\)</span></p></li>
+<li><p><span class="math inline">\(S(\textbf{x}_i, \textbf{x}_{i^\prime}) = 0 \Rightarrow\)</span> records differ maximally</p></li>
+<li><p><span class="math inline">\(S(\textbf{x}_i, \textbf{x}_{i^\prime}) = 1 \Rightarrow\)</span> records do not differ</p></li>
+</ul>
+<p>For purposes of clustering, the dissimilarity measure based on Gower’s distance is <span class="math inline">\(1 - S(\textbf{x}_i, \textbf{x}_{i^\prime})\)</span>. This is implemented in the <code>daisy</code> function of the <code>cluster</code> package in <code>R</code>.</p>
+</section>
+<section id="linkage-methods" class="level4">
+<h4 class="anchored" data-anchor-id="linkage-methods">Linkage methods</h4>
+<p><span class="math inline">\(D(\textbf{x}_i,\textbf{x}_{i^\prime})\)</span> measures the dissimilarity between two data points. In order to move up (or down) the tree in hierarchical clustering we also need to determine how to measure the similarity/dissimilarity between groups of points. Suppose <span class="math inline">\(G\)</span> and <span class="math inline">\(H\)</span> present two clusters and <span class="math inline">\(D(G,H)\)</span> is the dissimilarity between the two, some function of the dissimilarity of the points in the clusters. The decision rule that determines how to merge (or split) clusters is called <strong>linkage</strong>. The three most common linkage methods are</p>
+<ul>
+<li><p><strong>Single linkage</strong>: <span class="math inline">\(D(G,H) = \min D(\textbf{x}_i,\textbf{x}_{i^\prime}), i \in G, i^\prime \in H\)</span></p></li>
+<li><p><strong>Complete linkage</strong>: <span class="math inline">\(D(G,H) = \max D(\textbf{x}_i,\textbf{x}_{i^\prime}), i \in G, i^\prime \in H\)</span></p></li>
+<li><p><strong>Average linkage</strong>: <span class="math inline">\(D(G,H) = \text{ave} D(\textbf{x}_i,\textbf{x}_{i^\prime}), i \in G, i^\prime \in H\)</span></p></li>
+</ul>
+<p>The agglomerative clustering algorithm merges the cluster with the smallest linkage value.</p>
+<p>When clusters separate well, the choice of linkage is not that important. Otherwise, linkage can have substantial impact on the outcome of hierarchical clustering. Single linkage is know to cause <em>chaining</em>, combining observations that are linked by a series of close observations. Complete linkage tends to produce compact clusters, but observations can end up being closer to members of other clusters than to members of their own cluster. Average linkage is a compromise, but is not invariant to transformations of the dissimilarities. Centroid linkage uses distances between centroids of the clusters (<a href="#fig-linkage-types" class="quarto-xref">Figure&nbsp;<span>23.8</span></a>).</p>
+<div id="fig-linkage-types" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-linkage-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/LinkageTypes.png" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="quarto-lightbox-gallery-6"><img src="images/LinkageTypes.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-linkage-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.8: Some linkage types in hierarchical clustering.
+</figcaption>
+</figure>
+</div>
+<div class="example">
+<div class="example-header">
+<p>Example: Hierarchical Cluster Analysis for Glaucoma Data.</p>
+</div>
+<div class="example-container">
+<p>What can we learn about the 98 subjects in the <code>Glaucoma</code> data set who had glaucomatous eyes by way of hierarchical cluster analysis? The following statements create a data frame from the DuckDB table, filter the glaucotamous cases, remove <code>Glaucoma</code> column and scale the remaining 62 variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>glauc <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM Glaucoma"</span>)</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>glauc <span class="ot">&lt;-</span> glauc <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Glaucoma<span class="sc">==</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(Glaucoma)) <span class="sc">%&gt;%</span> </span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We first perform agglomerative clustering with correlation-based dissimilarity and complete linkage.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>hc <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">get_dist</span>(glauc,<span class="at">method=</span><span class="st">"pearson"</span>),<span class="at">method=</span><span class="st">"complete"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>merge</code> matrix on the <code>hclust</code> output object describes the <span class="math inline">\(n-1\)</span> steps in which the observations/clusters were merged. Negative numbers refer to observations, positive numbers refer to clusters formed at that stage.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>hc<span class="sc">$</span>merge[<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      [,1] [,2]
+ [1,]  -34  -41
+ [2,]   -4  -73
+ [3,]  -16  -95
+ [4,]  -58  -93
+ [5,]  -72  -90
+ [6,]  -24  -70
+ [7,]  -76    1
+ [8,]   -6  -75
+ [9,]  -51    2
+[10,]  -43  -45
+[11,]  -27  -55
+[12,]   -9  -79
+[13,]  -20  -65
+[14,]  -19  -56
+[15,]  -15  -71
+[16,]  -29  -81
+[17,]   -7   12
+[18,]  -30  -57
+[19,]  -17  -54
+[20,]  -23  -25
+[21,]  -80    7
+[22,]  -61  -68
+[23,]    4    5
+[24,]    3   14
+[25,]  -13  -60</code></pre>
+</div>
+</div>
+<p>The first merge combines observations #34 and #41 into a group of two. The next merge combines #4 and #73 into another group of two. At the seventh merge, observation #76 is combined with the group created at the first merge. This cluster now contains observations [34, 41, 76]. The first time two groups are being merged is at step 23: the groups consisting of observations [58, 93] and [72, 90] are combined into a cluster of 4.</p>
+<p>The <code>height</code> vector is a vector of <span class="math inline">\(n-1\)</span> values of the height criterion; the actual values depend on the linkage method. For this analysis, the first 25 heights at which merges occurred are as follows:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>hc<span class="sc">$</span>height[<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 0.1022034 0.1031823 0.1144513 0.1331928 0.1349688 0.1386951 0.1487625
+ [8] 0.1510436 0.1540351 0.1547025 0.1657972 0.1679269 0.1770342 0.1806037
+[15] 0.1838289 0.1868672 0.2097274 0.2276110 0.2467682 0.2477665 0.2543348
+[22] 0.2682308 0.2684616 0.2737816 0.2779692</code></pre>
+</div>
+</div>
+<p>The dendrogram for this analysis is plotted in <a href="#fig-glaucoma-dendro1" class="quarto-xref">Figure&nbsp;<span>23.9</span></a> along with the bounding boxes for 4 and 8 clusters. The cut for the larger number of clusters occurs lower at the tree.</p>
+<div class="cell" data-layout-align="center" data-out.with="90%">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hc, <span class="at">cex=</span><span class="fl">0.5</span>, <span class="at">main=</span><span class="st">""</span>,)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rect.hclust</span>(hc,<span class="at">k=</span><span class="dv">4</span>)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rect.hclust</span>(hc,<span class="at">k=</span><span class="dv">8</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-glaucoma-dendro1" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-glaucoma-dendro1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="clustering_files/figure-html/fig-glaucoma-dendro1-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="quarto-lightbox-gallery-7"><img src="clustering_files/figure-html/fig-glaucoma-dendro1-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-glaucoma-dendro1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.9: Dendrogram for partial glaucoma data with correlation-based dissimilarity and complete linkage.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The sizes of the four clusters are as follows:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">cutree</span>(hc,<span class="at">k=</span><span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 1  2  3  4 
+37 26 20 15 </code></pre>
+</div>
+</div>
+<p>Changing the linkage method to single demonstrates the <em>chaining</em> effect on the dendrogram (<a href="#fig-glaucoma-dendro2" class="quarto-xref">Figure&nbsp;<span>23.10</span></a>). Identifying a reasonable number of clusters is more difficult.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>hc_s <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">get_dist</span>(glauc,<span class="at">method=</span><span class="st">"pearson"</span>),<span class="at">method=</span><span class="st">"single"</span>)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hc_s, <span class="at">cex=</span><span class="fl">0.5</span>,<span class="at">main=</span><span class="st">""</span>)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rect.hclust</span>(hc_s,<span class="at">k=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-glaucoma-dendro2" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-glaucoma-dendro2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="clustering_files/figure-html/fig-glaucoma-dendro2-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="quarto-lightbox-gallery-8"><img src="clustering_files/figure-html/fig-glaucoma-dendro2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-glaucoma-dendro2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.10: Dendrogram for partial glaucoma data, single linkage.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>If you create a dendrogram object from the <code>hclust</code> results, a number of plotting functions are available to visualize the dendrogram in interesting ways. For example:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>hc.dend <span class="ot">&lt;-</span> <span class="fu">as.dendrogram</span>(hc) <span class="co"># create dendrogram object</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dendextend<span class="sc">::</span><span class="fu">color_branches</span>(hc.dend,<span class="at">k=</span><span class="dv">4</span>),<span class="at">leaflab=</span><span class="st">"none"</span>,<span class="at">horiz=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_dend</span>(hc.dend,<span class="at">k=</span><span class="dv">4</span>,<span class="at">horiz=</span><span class="cn">TRUE</span>,<span class="at">cex=</span><span class="fl">0.4</span>,<span class="at">palette=</span><span class="st">"aaas"</span>,<span class="at">type=</span><span class="st">"rectangle"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-35-2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_dend</span>(hc.dend,<span class="at">k=</span><span class="dv">4</span>,<span class="at">cex=</span><span class="fl">0.4</span>,<span class="at">palette=</span><span class="st">"aaas"</span>,<span class="at">type=</span><span class="st">"circular"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-35-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_dend</span>(hc.dend,<span class="at">k=</span><span class="dv">4</span>,<span class="at">cex=</span><span class="fl">0.4</span>,<span class="at">palette=</span><span class="st">"aaas"</span>,<span class="at">type=</span><span class="st">"phylogenic"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="clustering_files/figure-html/unnamed-chunk-35-4.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;23.1: Results of 3-means clustering for Iris data. Clusters are identified through colors, species are identified with plotting symbols.</span>
+<span class="glightbox-desc lightbox-desc-3">Figure&nbsp;23.5: Example of a dendrogram in hierarchical clustering</span>
+<span class="glightbox-desc lightbox-desc-4">Figure&nbsp;23.6: Example of a dendrogram in hierarchical clustering.</span>
+<span class="glightbox-desc lightbox-desc-5">Figure&nbsp;23.7: Dendrogram cut at different heights</span>
+<span class="glightbox-desc lightbox-desc-6">Figure&nbsp;23.8: Some linkage types in hierarchical clustering.</span>
+<span class="glightbox-desc lightbox-desc-7">Figure&nbsp;23.9: Dendrogram for partial glaucoma data with correlation-based dissimilarity and complete linkage.</span>
+<span class="glightbox-desc lightbox-desc-8">Figure&nbsp;23.10: Dendrogram for partial glaucoma data, single linkage.</span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-Gower1971" class="csl-entry" role="listitem">
+Gower, J. C. n.d. <span>“A General Coefficient of Similarity and Some of Its Properties.”</span> <em>Biometrics</em> 27 (4): 857–71.
+</div>
+<div id="ref-Hartigan1979" class="csl-entry" role="listitem">
+Hartigan, J. A., and M. A. Wong. 1979. <span>“Algorithm AS 136: A k-Means Clustering Algorithm.”</span> <em>Journal of the Royal Statistical Society. Series C (Applied Statistics)</em> 28 (1): 100–108.
+</div>
+<div id="ref-James2013_ISLR2" class="csl-entry" role="listitem">
+James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2021. <em>An Introduction to Statistical Learning: With Applications in r, 2nd Ed.</em> Springer. <a href="https://www.statlearning.com/">https://www.statlearning.com/</a>.
+</div>
+</div>
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./pca.html" class="pagination-link" aria-label="Principal Component Analysis (PCA)">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./mbc.html" class="pagination-link" aria-label="Model-based Clustering">
+        <span class="nav-page-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"descPosition":"bottom","closeEffect":"zoom","openEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

@@ -1,0 +1,619 @@
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+# Linear Algebra Review {#sec-linear-algebra}
+
+## Basics
+
+Command of linear algebra is essential in data science, models and estimators are often expressed in terms of tensors, matrices, and vectors. Using scalar-based arithmetic becomes tedious very quickly as models become more complex. For example, the simple linear regression model and a straight line through the intercept model can be written as
+
+$$Y_{i} = \beta_{0} + \beta_{1}x_{i} + \epsilon_{i}$$
+
+$$Y_{i} = \beta_{1}x_{i} + \epsilon_{i}$$
+
+Using scalar algebra, the estimates of the slope are quite different:
+
+$${\widehat{\beta}}_{1} = \frac{\left( \sum_{i = 1}^{n}{\left( y_{i} - \overline{y} \right)\left( x_{i} - \overline{x} \right)} \right)}{\sum_{i = 1}^{n}\left( x_{i} - \overline{x} \right)^{2}}$$
+
+$${\widehat{\beta}}_{1} = \frac{\left( \sum_{i = 1}^{n}{y_{i}x_{i}} \right)}{\sum_{i = 1}^{n}x_{i}^{2}}$$
+
+The formulas get messier as we add another input variable to the model. Using matrix---vector notation, the estimator of all the regression coefficients takes the same form, regardless of the size of the model:
+
+$$\widehat{\bbeta} = \left( \bX^{\prime}\bX \right)^{- 1}\bX^{\prime}\bY$$
+
+A scalar is a single real number, a vector is an array of scalars arranged in a single column (a column vector) or a row (a row vector). A matrix is a two-dimensional array of scalars, a tensor is a multi-dimensional array.
+
+The **order** of a vector or matrix is specified as (rows x columns) and is sometimes used as a subscript for clarity. For example,$\bA_{(3 \times 5)}$ denotes a matrix with 3 rows and 5 columns. It can be viewed as a concatenation} of five $(3 \times 1)$ column vectors:
+
+$$\bA_{(3 \times 5)}=\begin{bmatrix}
+\begin{matrix}
+1 \\
+1 \\
+1
+\end{matrix} & \begin{matrix}
+9.0 \\
+3.2 \\
+4.1
+\end{matrix} & \begin{matrix}
+\begin{matrix}
+6.2 \\
+1.4 \\
+ - 0.6
+\end{matrix} & \begin{matrix}
+1 \\
+0 \\
+0
+\end{matrix} & \begin{matrix}
+0 \\
+1 \\
+0
+\end{matrix}
+\end{matrix}
+\end{bmatrix}$$
+
+$\ba_{1} = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}\ \ \ \ \ \ba_{2} = \begin{bmatrix} 9.0 \\ 3.2 \\ 4.1 \end{bmatrix}\ \ \ \ \ba_{3} = \begin{bmatrix} 6.2 \\ 1.4 \\ - 0.6 \end{bmatrix}\ \ \ \ \ \ba_{4} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}\ \ \ \ \ \ba_{5} = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}$.
+
+A matrix with as many rows as columns is called a **square** matrix.
+
+Bold symbols are common, lowercase for vectors and uppercase for matrices, but there are some exceptions. When dealing with vectors of random variables, bold uppercase notation is used for a vector of random variables and bold lowercase notation is used for a vector of the realized values. For example, if $Y_{1},\cdots,Y_{n}$ is a random sample of size $n$, the vector of random variables is
+
+$$\bY_{(n \times 1)} = \begin{bmatrix}
+Y_{1} \\
+ \vdots \\
+Y_{n}
+\end{bmatrix}$$
+
+and the vector of realized values is
+
+$$\by_{(n \times 1)} = \begin{bmatrix}
+y_{1} \\
+ \vdots \\
+y_{n}
+\end{bmatrix}$$
+
+The difference is significant because $\bY$ is a random variable and $\by$ is a vector of constants. $\bY$ has a multi-variate distribution with mean and variance, $\by$ is just a vector of numbers.
+
+We follow the convention that all vectors are column vectors, so that $\by_{(n)}$ serves as a shorthand for $\by_{(n \times 1)}$.
+
+The typical element of a matrix is written as a scalar with subscripts that refer to rows and columns. For example, the statement
+
+$$\bA = \left\lbrack a_{ij} \right\rbrack$$
+
+says that matrix $\bA$ consists of the scalars $a_{ij}$; for example, $a_{23}$ is the scalar in row 2, column 3 of the matrix.
+
+## Special Matrices
+
+A few special matrices, common in statistics and machine learning are
+
+-   $\bone_{n} = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix}$, the **unit** vector of size $n$; all its elements are 1.
+
+-   $\bzero_{n} = \begin{bmatrix} 0 \\ \vdots \\ 0 \end{bmatrix}$, the **zero** vector of size $n$; all its elements are 0.
+
+-   $\bzero_{(n \times k)} = \begin{bmatrix} 0 & 0 & 0 \\ \vdots & \cdots & \vdots \\ 0 & 0 & 0 \end{bmatrix}$, the **zero** matrix of order $(n \times k)$. All its elements are 0.
+
+-   $\bJ_{(n \times k)} = \begin{bmatrix} 1 & 1 & 1 \\ \vdots & \cdots & \vdots \\ 1 & 1 & 1 \end{bmatrix}$, the **unit** matrix of size $(n \times k)$. All its elements are 1.
+
+-   $\bI_{n} = \begin{bmatrix} 1 & 0 & 0 \\ 0 & \ddots & 0 \\ 0 & 0 & 1 \end{bmatrix}$, the **identity** matrix of size $(n \times n)$ with 1s on the diagonal and 0s elsewhere.
+
+If the order of these matrices is obvious from the context, the subscripts tend to be omitted.
+
+## Basic Operations on Matrices and Vectors
+
+The basic operations on matrices and vectors are addition, subtraction, multiplication, transposition, and inversion. These are standard operations in manipulating matrix and vector equations. Decompositions such as Cholesky roots, eigenvalue and singular value decompositions are more advanced operations that are important in solving estimation problems in statistics.
+
+### Transpose
+
+The **transpose** of a matrix is obtained by exchanging rows and columns. If $a_{ij}$ is the element in row $i$, column $j$ of matrix $\bA$, the transpose of $\bA$, denoted $\bA^\prime$, has typical element $a_{ji}$. In case of the $(3\  \times 5)$ matrix shown previously, its transpose is
+
+$$\bA^\prime_{(5 \times 3)} = \begin{bmatrix}
+\begin{matrix}
+1 \\
+9.0 \\
+\begin{matrix}
+6.2 \\
+1 \\
+0
+\end{matrix}
+\end{matrix} & \begin{matrix}
+1 \\
+3.2 \\
+\begin{matrix}
+1.4 \\
+0 \\
+1
+\end{matrix}
+\end{matrix} & \begin{matrix}
+1 \\
+4.1 \\
+\begin{matrix}
+ - 0.6 \\
+0 \\
+0
+\end{matrix}
+\end{matrix}
+\end{bmatrix}$$
+
+The transpose of a column vector is a row vector:
+
+$$\ba^{\prime} = \begin{bmatrix}
+a_{1} \\
+ \vdots \\
+a_{n}
+\end{bmatrix}^\prime = \left\lbrack a_{1},\cdots,a_{n} \right\rbrack$$
+
+Transposing a transpose produces the original matrix, $\left( \bA^{\prime} \right)^{\prime}\ = \bA$.
+
+A matrix is **symmetric** if it is equal to its transpose, $\bA^\prime = \bA$. Symmetric matrices are square matrices (same numbers of rows and columns). The matrices $\bA^\prime\bA$ and $\bA \bA^\prime$ are always symmetric. A symmetric matrix whose off-diagonal elements are zero is called a **diagonal** matrix.
+
+### Addition and Subtraction
+
+The **sum** (**difference**) of two matrices is the matrix of the elementwise sums (differences) of their elements. These operations require that the matrices being summed or subtracted have the same order:
+
+$$\bA_{(n \times k)} + \bB_{(n \times k)} = \left\lbrack a_{ij} + b_{ij} \right\rbrack$$
+
+$$\bA_{(n \times k)} - \bB_{(n \times k)} = \left\lbrack a_{ij} - b_{ij} \right\rbrack$$
+
+Suppose, for example, that $\bA = \begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}$ and $\bB =\begin{bmatrix} - 1 & - 2 & - 3 \\ - 4 & - 5 & - 6 \end{bmatrix}$. Then,
+
+$$\bA + \bB = \begin{bmatrix}
+0 & 0 & 0 \\
+0 & 0 & 0
+\end{bmatrix}$$
+
+$$\bA - \bB = \begin{bmatrix}
+2 & 4 & 6 \\
+8 & 10 & 12
+\end{bmatrix}$$
+
+Since addition (subtraction) are elementwise operations, they can be combined with transposition:
+
+$$\left( \bA + \bB \right)^\prime = \bA^{\prime} + \bB^{\prime}$$
+
+### Multiplication
+
+Two matrices conform for addition (subtraction) if they have the same order, that is, the same number of rows and columns. Multiplication of matrices requires a different type of conformity; two matrices $\bA$ and $\bB$ can be multiplied as $\text{AB}$ (or $\bA\text{×}\bB$), if the number of columns in $\bA$ equals the number of columns in $\bB$. We say that in the product $\bA\text{×}\bB$, $\bA$ is post-multiplied by $\bB$ or that $\bA$ is multiplied into $\bB$. The result of multiplying a $(n \times k)$ matrix into a $(k \times p)$ matrix is a $(n \times p)$ matrix.
+
+Before examining the typical elements in the result of multiplication, let's look at a special case, the **inner product** of two $(k \times 1)$ vectors $\bA$ and $\bB$, also called the **dot product** or the **scalar product**, is the result of multiplying the transpose of $\bA$ into $\bB$, a scalar value
+
+$$\bA^\prime\bB = \left\lbrack a_{1}, \cdots,a_{k} \right\rbrack\begin{bmatrix}
+b_{1} \\
+ \vdots \\
+b_{k}
+\end{bmatrix} = a_{1}b_{1} + \cdots a_{k}b_{k} = \sum_{i = 1}^{k}{a_{i}b_{i}}$$
+
+The square root of the dot product of a vector with itself is the Euclidean ${(L}_{2})$ **norm** of the vector,
+
+$$\left| \left| \ba \right| \right| = \sqrt{\ba^\prime\ba} = \sum_{i = 1}^{k}a_{i}^{2}$$
+
+The $L_{2}$ norm plays an important role as a loss function in statistical models. The vector for which the norm is calculated is then often a vector of model errors.
+
+Now let's return to the problem of multiplying the $(n \times k)$ matrix $\bA$ into the $(k \times p)$ matrix $\bB$ and introduce one more piece of notation: the $i$^th^ row of $\bA$ is denoted $\mathbf{\alpha}_{i}$ and the $j$^th^ column of $\bB$ is denoted $\bB_{j}$. Now we can finally write the product $\bA\text{×}\bB$ as a matrix whose typical element is the inner product of $\mathbf{\alpha}_{i}$ and $\bB_{j}$:
+
+$$\bA_{(n \times k)} \times \bB_{(k \times p)} = \left\lbrack \balpha_{i}^\prime\ \bb_{j} \right\rbrack_{(n \times p)}\ $$
+
+As an example, let $\bA = \begin{bmatrix} 1 & 2 & 0 \\ 3 & 1 & - 3 \\ 4 & 1 & 2 \end{bmatrix}$ and $\bB = \begin{bmatrix} 1 & 0 \\ 2 & 3 \\ 2 & 1 \end{bmatrix}$. The product $\bA\times\bB$ is a $(3 \times 2)$ matrix with elements
+
+$$\bA\times\bB = \begin{bmatrix}
+1 \times 1 + 2 \times 2 + 0 \times 2 & 1 \times 0 + 2 \times 3 + 0 \times 1 \\
+3 \times 1 + 1 \times 2 - 3 \times 2 & 3 \times 0 + 1 \times 3 - 3 \times 1 \\
+4 \times 1 + 1 \times 2 + 2 \times 2 & 4 \times 0 + 1 \times 3 + 2 \times 1
+\end{bmatrix} = \begin{bmatrix}
+5 & 6 \\
+ - 1 & 0 \\
+10 & 5
+\end{bmatrix}$$
+
+Here are a few helpful rules for matrix multiplication:
+
+1.  $c\bA = \left\lbrack ca_{ij} \right\rbrack$
+
+2.  $c\left( \bA + \bB \right) = c\bA + c\bB$
+
+3.  $\bC\left( \bA + \bB \right) = \bC\bA + \bC\bB$
+
+4.  $\left( \bA\bB \right)\bC = \bA(\bB\bC)$
+
+5.  $\left( \bA + \bB \right)\left( \bC + \mathbf{D} \right) = \bA\bC + \bA\mathbf{D} + \mathbf{BC} + \mathbf{BD}$
+
+6.  $\left( \bA\bB \right)^\prime = \bB^\prime\bA^\prime$
+
+7.  $\left( c\bA \right)^\prime = c\bA^\prime$
+
+### Inversion and Rank
+
+In scalar algebra, division and multiplication are inverse operations, dividing a non-zero scalar by itself yields the multiplicative identity: $\frac{a}{a} = 1$. What is the equivalent of this operation for matrices? First, inversion of a matrix does not reduce it to a scalar, the multiplicative identity for matrices is the identity matrix $\bI$, a diagonal matrix with 1s on the diagonal. Second, the inversion is only defined for square matrices. If $\bA$ is an $(n \times n)$ matrix, the matrix $\bB$ for which
+
+$$\bA\bB = \bI$$
+
+is called the **inverse** of $\bA$, denoted as $\bA^{- 1}$.
+
+Inverse matrices do not have to exist, even for square matrices. If $\bA$ has an inverse matrix, then $\bA$ is called a **non-singular** matrix. In that case, $\bA^{- 1}\bA = \bA\bA^{- 1} = \text{I}$.
+
+For the inverse of a square matrix to exist, for the matrix to be non-singular, the matrix must be of full **rank**. The rank of a matrix, denoted $r(\bA)$, is the number of its linearly independent columns. What does that mean? Suppose we are dealing with a $(n \times k)$ matrix $\bB$ and its column vectors are $\bB_{1},\cdots,\bB_{k}$. A linear combination of the columns of $\bB$ is
+
+$$c_{1}\bb_{1} + c_{2}\bb_{2} + \cdots + c_{k}\bb_{k} = q$$
+
+If you can find a set of scalars $c_{1},\cdots,c_{k}$ such that $q = 0$, then the columns of $\bB$ are linearly dependent. If the only set of scalars that yields $q = 0$ is
+
+$$c_{1} = c_{2} = \cdots = c_{k} = 0$$
+
+then the columns of $\bB$ are not linearly dependent and the rank of $\bB$ is $k$.
+
+Here are a few more useful results about the rank of a matrix:
+
+1.  $r\left( \bA \right) = r\left( \bA^\prime \right) = r\left( \bA^\prime\bA \right) = r\left( \bA\bA^{\prime} \right)$
+
+2.  $r\left( \bA\bB \right) \leq \min\left\{ r\left( \bA \right),r\left( \bB \right) \right\}$
+
+3.  $r\left( \bA + \bB \right) \leq r\left( \bA \right) + r(\bB)$
+
+The first two results are particularly important in statistical models. In models with linear structures, it is common to collect the $p$ input variables in a linear model, including the intercept as a column of ones, into a matrix $\bX_{(n\  \times p + 1)}$:
+
+$$\bX_{(n\  \times p + 1)} = \begin{bmatrix}
+1 & x_{11} & \begin{matrix}
+\cdots & x_{1p}
+\end{matrix} \\
+ \vdots & \vdots & \begin{matrix}
+ \ddots & \vdots 
+\end{matrix} \\
+1 & x_{n1} & \begin{matrix}
+\cdots & x_{np}
+\end{matrix}
+\end{bmatrix}$$
+
+Suppose we want to solve the linear system $\bY = \bX\bc$ for $\bc$. Start by pre-multiplying both sides of the equation with the transpose of $\bX$:
+
+$$\bX^{\prime}\bY = \bX^{\prime}\bX\bc$$
+
+If we had an inverse of $\bX^\prime\bX$, then we can now pre-multiply both sides with that inverse and isolate $\text{c}$:
+
+$${\left( \bXpX \right)^{\mathbf{- 1}}\bX}^{\prime}\bY = \left( \bXpX \right)^{-1}\bXpX\bc = \bI\bc = \bc$$
+
+We have a solution to the system, namely ${\bc=\left( \bXpX \right)}^{- 1}\bX^{\prime}\bY$, only if the inverse $\left( \bXpX \right)^{-1}$ exists. And that requires this $(p + 1) \times (p + 1)$ matrix is of full rank $r\left( \left( \bXpX \right)^{- 1} \right) = p + 1$. This, in turn is equivalent to saying that $\bX$ has full rank $p + 1$ because of property (i).
+
+Here are some useful results about inverse matrices:
+
+1.  $\left( \bA^{- 1} \right)^\prime = \left( \bA^\prime \right)^{- 1}$
+
+2.  $\left( \bA^{- 1} \right)^{- 1} = \bA$
+
+3.  $\left( \bA\bB \right)^{- 1} = \bB^{-1}\bA^{-1}$
+
+4.  $r\left( \bA^{- 1} \right) = r(\bA)$
+
+If the matrix $\bX$ is of less than full rank, it is called a **rank-deficient** matrix. Can we still solve the linear system $\bY = \bX\bc$? Not by using a (regular) inverse matrix, but there is a way out, by using a **generalized inverse** matrix. If a matrix $\bA^{-}$ can be found that satisfies
+
+$$\bA\bA^{-}\bA = \bA$$
+
+then it is called the generalized inverse (or pseudo-inverse or g-inverse) of $\bA$. Suppose we can find such a generalized inverse $\left( \bX^{\prime}\bX \right)^{-}$f or $\bX^\prime\bX$. What if we use that in the solution of the linear system,
+
+$$\bc = {\left( \bX^{\prime}\bX \right)^{-}\bX}^{\prime}\bY$$
+
+Unfortunately, whereas regular inverses are unique, there are (infinitely) many generalized inverses that satisfy the condition $(\bXpX)\left( \bXpX \right)^{-}\bXpX = \bXpX$. So, there will be infinitely many possible solutions to the linear system. Fortunately, it turns out that generalized inverses have some nice properties, for example, $\bX\left( \bXpX \right)^{-}\bX$ is invariant to the choice of the generalized inverse. Even if the solution $\bc$ is not unique, $\bX\bc$ is unique. This result is important in linear models with rank-deficient design matrices, a condition that is common when the model contains classification variables. While the parameter estimates in such a model are not unique, because we need to use a generalized inverse to derive the estimates, the predicted values are the same, no matter which generalized inverse we choose.
+
+### Determinant
+
+The rank reduces a matrix to a single scalar value, the number of linearly independent columns of the matrix. Another value that reduces a square matrix to a single scalar is the determinant, written as $det(\bA)$ or $|\bA|$. The determinant has a geometric interpretation which is not that relevant for our discussion. What matters more is that the determinant appears frequently in expressions of multivariate probability distributions and knowing how to manipulate the determinants.
+
+1.  $|\bA| = |\bA^\prime|$
+
+2.  $|\bI| = 1$
+
+3.  $\left| c\bA \right| = c^{n}\mathbf{|A}\mathbf{|}$
+
+4.  If $\bA$ is singular, then $\left| \bA \right| = 0$
+
+5.  If each element of a row (column) of $\bA$ is zero, then $\left| \bA \right| = 0$
+
+6.  If two rows (column) of $\bA$ are identical, then $\left| \bA \right| = 0$
+
+7.  $\left| \bA\bB \right| = \left| \bA \right|\ \left| \bB \right|$
+
+8.  $\left| \bA^{- 1} \right| = 1/|\bA|$
+
+9.  If $\bA$ is a triangular matrix, then $|\bA| = \prod_{i = 1}^{n}a_{ii}$
+
+10. If $\bA$ is a diagonal matrix, then $|\bA| = \prod_{i = 1}^{n}a_{ii}$
+
+### Trace
+
+The trace operator, $tr(\bA)$, applies only to square matrices. The trace of an $\bA_{(n \times n)}$ matrix is the sum of its diagonal elements:
+
+$$tr\left( \bA \right) = \sum_{i = 1}^{n}a_{ii}$$
+
+The trace plays an important role in statistics in determining expected values of quadratic forms of random variables, for example, sums of squares in linear models. An important property of the trace is its invariance under cyclic permutations,
+
+$$tr\left( \mathbf{ABC} \right) = tr\left( \mathbf{BCA} \right) = tr(\mathbf{CAB})$$
+
+provided the matrices conform to multiplication.
+
+Some other useful properties of the trace are
+
+1.  $tr\left( \bA + \bB \right) = tr\left( \bA \right) + tr\left( \bB \right)$
+
+2.  $tr\left( \bA \right) = tr\left( \bA^\prime \right)$
+
+3.  $\bY^\prime\text{Ay} = tr\left( \bY^\prime\text{Ay} \right)$
+
+4.  $tr\left( c\bA \right) = c \times tr\left( \bA \right)$
+
+5.  $tr\left( \bA \right) = r(\bA)$ if $\bA$ is symmetric and idempotent ($\bA\bA = \bA$ and $\bA = \bA^\prime$)
+
+## Random Vectors
+
+If the elements of a vector are random variables, the vector object itself is a random variable. You can think of random vectors as a convenient mechanism to collect random variables. Suppose we draw a random sample $Y_{1},\cdots,Y_{n}$, then we can collect the $n$ random variables in a single random vector
+
+$$\bY = \begin{bmatrix}
+Y_{1} \\
+ \vdots \\
+Y_{n}
+\end{bmatrix}$$
+
+### Expected Value
+
+Since each $Y_{i}$ has a probability distribution, a mean (expected value) $\Exp\left\lbrack Y_{i} \right\rbrack$, a variance $\Var\left\lbrack Y_{i} \right\rbrack$, and so forth, the same applies to their collection. The expected value (mean) of a random vector is the vector of the expected values of its elements:
+
+$$\Exp\left\lbrack \bY \right\rbrack = \begin{bmatrix}
+\Exp\left\lbrack Y_{1} \right\rbrack \\
+ \vdots \\
+\Exp\left\lbrack Y_{n} \right\rbrack
+\end{bmatrix}$$
+
+Suppose that $\bA,\ \bB,\ \bc$ are matrices and vectors of constants, respectively, and that $\bY$ and $\mathbf{U}$ are random vectors. The following are useful expectation operations in this situations:
+
+1.  $\Exp\left\lbrack \bA \right\rbrack = \bA$
+
+2.  $\Exp\left\lbrack \mathbf{AYB} + \mathbf{C} \right\rbrack = \bA\Exp\left\lbrack \bY \right\rbrack\bB + \bC$
+
+3.  $\Exp\left\lbrack \mathbf{AY} + \mathbf{c} \right\rbrack = \bA\Exp\left\lbrack \bY \right\rbrack + \bc$
+
+4.  $\Exp\left\lbrack \mathbf{AY} + \mathbf{BU} \right\rbrack = \bA\Exp\left\lbrack \bY \right\rbrack + \bB\ \Exp\lbrack\mathbf{U}\rbrack$
+
+### Covariance Matrix
+
+While the distribution of $Y_{i}$ is univariate, $\bY$ has a multivariate ($n$-variate) distribution. The mean of the distribution is represented by a vector. The variance of the distribution is represented by a matrix, the **variance-covariance matrix**, a special case of a **covariance** matrix.
+
+The covariance matrix between random vectors $\bY_{(k \times 1)}$ and $\mathbf{U}_{(p \times 1)}$ is a $(k \times p)$ matrix whose typical elements are the covariances between the elements of $\bY$ and $\mathbf{U}$:
+
+$$\Cov\left\lbrack \bY,\mathbf{U} \right\rbrack = \left\lbrack \Cov(Y_{i},U_{j}) \right\rbrack$$
+
+The covariance matrix can be written in terms of expected values of $\bY$, $\mathbf{U}$, and $\bY\mathbf{U}^\prime$
+
+$$\Cov\left\lbrack \bY,\mathbf{U} \right\rbrack = \Exp\left\lbrack \left( \bY - \Exp\lbrack\bY\rbrack \right)\left( \mathbf{U} - \Exp\left\lbrack \mathbf{U} \right\rbrack \right)^\prime \right\rbrack = \Exp\left\lbrack \bY\mathbf{U}^\prime \right\rbrack - \Exp\left\lbrack \bY \right\rbrack \Exp\left\lbrack \mathbf{U} \right\rbrack^{\prime}$$
+
+Some useful rules to manipulate covariance matrices are:
+
+1.  $\Cov\left\lbrack \mathbf{AY},\mathbf{U} \right\rbrack = \bA\Cov\lbrack\bY,\mathbf{U}\rbrack$
+
+2.  $\Cov\left\lbrack \bY,\mathbf{BU} \right\rbrack = \Cov\left\lbrack \bY,\mathbf{U} \right\rbrack\bB^\prime$
+
+3.  $\Cov\left\lbrack \mathbf{AY},\mathbf{BU} \right\rbrack = \bA\Cov\left\lbrack \bY,\mathbf{U} \right\rbrack\ \bB^\prime$
+
+4.  $\Cov\left\lbrack a\bY + b\mathbf{U},c\mathbf{W} + d\bV \right\rbrack = ac\Cov\left\lbrack \bY,\mathbf{W} \right\rbrack + bc\Cov\left\lbrack \mathbf{U},\mathbf{W} \right\rbrack + ad\Cov\left\lbrack \bY,\bV \right\rbrack + bd\Cov\lbrack\mathbf{U},\bV\rbrack$
+
+### Variance-covariance Matrix
+
+The variance-covariance matrix (or **variance matrix** for short) of a random vector $\bY$ is the covariance matrix of $\bY$ with itself.
+
+$$\Var\left\lbrack \bY \right\rbrack = \Cov\left\lbrack \bY,\bY \right\rbrack = \Exp\left\lbrack \left( \bY - \Exp\lbrack\bY\rbrack \right)\left( \bY -\Exp\left\lbrack \bY \right\rbrack \right)^\prime \right\rbrack = \Exp\left\lbrack \bY\bY^\prime \right\rbrack - \Exp\left\lbrack \bY \right\rbrack \Exp\left\lbrack \bY \right\rbrack^{\prime}$$
+
+The diagonal entries of the variance-covariance matrix contain the variances of the $Y_{i}$. The off-diagonal cells contain the covariances $\Cov\left\lbrack Y_{i},Y_{j} \right\rbrack$. If the variance matrix is diagonal, the elements of random vector $\bY$ are uncorrelated. Two random vectors $\bY$ and $\mathbf{U}$ are uncorrelated if their variance matrix is block-diagonal:
+
+$$\Var\begin{bmatrix}
+\bY_{1} \\
+\bY_{2}
+\end{bmatrix} = \begin{bmatrix}
+\Var\lbrack\bY_{2}\rbrack & \bzero \\
+\bzero & \Var\lbrack\bY_{1}\rbrack
+\end{bmatrix}$$
+
+A very special variance-covariance matrix in statistical models is the scaled identity matrix, $\sigma^{2}\bI$. This is the variance matrix of uncorrelated observations drawn from the same distribution---a common assumption for the error terms in models.
+
+The rules for working with covariances extend to working with variance matrices:
+
+1.  $\Var\left\lbrack \mathbf{AY} \right\rbrack = \bA\ \Var\left\lbrack \bY \right\rbrack\bA^\prime$
+
+2.  $\Var\left\lbrack \bY + \bA \right\rbrack = \Var\lbrack\bY\rbrack$
+
+3.  $\Var\left\lbrack \bA^\prime\bY \right\rbrack = \bA^\prime\Var\left\lbrack \bY \right\rbrack\bA$
+
+4.  $\Var\left\lbrack a\bY \right\rbrack = a^{2}\Var\lbrack\bY\rbrack$
+
+5.  $\Var\left\lbrack a\bY + b\mathbf{U} \right\rbrack = a^{2}\Var\left\lbrack \bY \right\rbrack + b^{2}\Var\left\lbrack \mathbf{U} \right\rbrack + 2ab\ \Cov\lbrack\bY,\mathbf{U}\rbrack$
+
+Finally, an important result about expected values of quadratic forms, heavily used to in decomposing variability is
+
+$$\Exp\left\lbrack \bY^\prime\mathbf{AY} \right\rbrack = tr\left( \bA\Var\left\lbrack \bY \right\rbrack \right) + \Exp\left\lbrack \bY \right\rbrack^\prime\bA\ \Exp\lbrack\bY\rbrack$$
+
+## Matrix Differentiation {#sec-matrix-differentiation}
+
+Estimation of parameters in statistical models often requires minimization or maximization of an objective function. For example, the ordinary least squares (OLS) principle finds the OLS estimator as the function of the data that minimizes the error sum of squares of the model. Maximum likelihood finds estimators of the parameters as the functions of the data that maximizes the joint likelihood (the joint distribution function) of the data.
+
+The parameters of the models appear as elements of vectors and matrices. Finding estimators of the parameters thus requires calculus on vectors and matrices. Consider matrix $\bA$, whose elements depend on a scalar parameter $\theta$, $\bA = \left\lbrack a_{ij}(\theta) \right\rbrack$. The derivative of $\bA$ with respect to $\theta$ is the matrix of the derivatives of the typical elements $a_{ij}(\theta)$ with respect to $\theta$. We write this formally as
+
+$$\frac{\partial\bA}{\partial\theta} = \left\lbrack \frac{\partial a_{ij}(\theta)}{\partial\theta} \right\rbrack$$
+
+The derivative of a function $f(\btheta)$ with respect to the vector $\btheta_{(p \times 1)}$ is the vector of the partial derivatives of the function
+
+$$\frac{\partial f\left( \btheta \right)}{\partial\btheta} = \begin{bmatrix}
+\frac{\partial f\left( \btheta \right)}{\partial\theta_{1}} \\
+ \vdots \\
+\frac{\partial f\left( \btheta \right)}{\partial\theta_{p}}
+\end{bmatrix}$$
+
+Here are some useful results from vector and matrix calculus where $\bA$ and $\bB$ are functions of $\theta$ and vector $\bX$ does not depend on $\theta$:
+
+1.  $\frac{{\partial ln}\left| \bA \right|}{\partial\theta} = \frac{1}{\left| \bA \right|}\frac{\partial\left| \bA \right|}{\partial\theta} = tr\left( \bA^{- 1}\frac{\partial\bA}{\partial\theta} \right)$
+
+2.  $\frac{\partial\bA^{- 1}}{\partial\theta} = - \bA^{- 1}\frac{\partial\bA}{\partial\theta\ }\bA^{- 1}$
+
+3.  $\frac{\partial tr\left( \mathbf{AB} \right)}{\partial\theta} = tr\left( \frac{\mathbf{\partial}\bA}{\partial\theta}\bB \right) + tr\left( \bA\frac{\mathbf{\partial}\bB}{\partial\theta} \right)$
+
+4.  $\frac{\partial\bX^\prime\bA^{- 1}\bX}{\partial\theta} = - \bX^\prime\bA^{- 1}\frac{\partial\bA}{\partial\theta}\bA^{- 1}\bX$
+
+5.  $\frac{\partial\bX^{\prime}\mathbf{Ax}}{\partial\bX} = 2\mathbf{Ax}$
+
+6.  $\frac{\partial\bX^\prime\bA}{\partial\bX} = \frac{\partial\bA^\prime\bX}{\partial\bX} = \bA$
+
+## Idempotent Matrices  {#sec-idempotent}
+
+A matrix is called **idempotent** if multiplying the matrix by itself yields the matrix–$\bA\bA = \bA$. Because $\bA$ must conform to itself for multiplication, idempotent matrices are square matrices. Idempotent matrices that are also symmetric play an important role in statistical estimation. Idempotent matrices are **projection** matrices, that means they map a vector from a space to a sub-space.
+Symmetric idempotent matrices are orthogonal projection matrices.
+
+Among some of the interesting properties of idempotent matrices are the following:
+
+1. The trace of an idempotent matrix is equal to its rank.
+
+2. The trace of an idempotent matrix is an integer. 
+
+3. The eigenvalues of an idempotent matrix are either 0 or 1.
+
+### Projections
+
+For example, suppose we want to find a solution for $\bbeta$ in the linear model $\bY_{(n \times 1)} = \bX\bbeta_{(p + 1 \times 1)} + \mathbf{\epsilon}$. The vector $\bY$ is a vector in $n$-dimensional space $\mathbb{R}^{n}$ and the model places a restriction on the predicted values $\widehat{\bY} = \bX\widehat{\bbeta}$: the predicted values are confined to a $(p + 1)$-dimensional sub-space of $\mathbb{R}^{n}$. Regardless of how we choose the estimator $\widehat{\bbeta}$, we are dealing with projecting vector $\bY$ onto a sub-space of $\mathbb{R}^{n}$.
+
+We can thus think of the problem of finding the best estimator in this model as the problem of finding the best projection onto the space generated by the columns of $\bX$. In that case, why not choose the projection that minimizes the distance between the observed values $\bY$ and the predicted values $\widehat{\bY}$. This is achieved by projecting $\bY$ perpendicular (orthogonal) onto the sub-space generated by $\bX$. In other words, our solution is the vector $\widehat{\bbeta}$ that satisfies
+
+$$\left( \bY - \bX\widehat{\bbeta} \right)^\prime\bX\widehat{\bbeta} = 0$$
+
+Multiplying out and rearranging terms yields
+
+$${\widehat{\bbeta}}^{\prime}\bX^{\prime}\bY = {\widehat{\bbeta}}^{\prime}\bXpX\widehat{\bbeta}$$
+
+which implies that
+
+$$\bX^{\prime}\bY = \bXpX\widehat{\bbeta}$$
+
+If $\bX$ is of full column rank, then $\left( \bXpX \right)^{- 1}$ exists and we can solve:
+
+$$\widehat{\bbeta}=\left( \bXpX \right)^{- 1}\bX^{\prime}\bY$$
+
+### The "Hat" Matrix {#sec-hat-matrix}
+
+The ordinary least squares estimator is the orthogonal projection of $\bY$ onto the sub-space created by the columns of $\bX$. To see the projection matrix at work, compute the predicted values, $\bX\widehat{\bbeta}$:
+
+$$\bX\widehat{\bbeta}=\bX\left( \bX^{\prime}\bX \right)^{- 1}\bX^{\prime}\bY = \widehat{\bY}$$
+
+The matrix $\bX\left( \bXpX \right)^{- 1}\bX^{\prime}$ has a very special role in regression analysis, it is often called the "hat" matrix and denoted $\bH$, because pre-multiplying $\bY$ with $\bH$ puts the hats on $\bY$:
+
+$$\bH\bY = \widehat{\bY}$$
+
+Let's verify that $\bH$ is indeed a projection matrix, which requires that $\bH\bH = \bH$:
+
+$$\bH\bH = \bX\left( \bXpX \right)^{- 1}\bX^{\prime} \times \bX\left( \bXpX \right)^{-1}\bX^\prime=\bX\left( \bXpX \right)^{- 1}\bX^{\prime} = \bH$$
+
+Matrices with the property that $\bH\bH = \bH$ are called **idempotent** matrices, these are projection matrices. If, in addition, $\bH$ is symmetric, $\bH^\prime = \bH$, the matrix is called symmetric idempotent---these are orthogonal projection matrices. (An idempotent matrix that is not symmetric is called an oblique projector.)
+
+The hat matrix in the regression model is a symmetric idempotent matrix.
+
+Here are some results about (symmetric) idempotent matrices that come in handy when working out the properties of estimators in regression-type models:
+
+1.  Projection matrices are typically not of full rank. If an $(n \times n)$ idempotent matrix is of rank $n$, then it is the identity matrix $\bI$.
+
+2.  If $\bA$ is (symmetric) idempotent, then $\bI - \bA$ is (symmetric) idempotent.
+
+3.  If $\mathbf{P}$ is non-singular, then $\mathbf{PA}\mathbf{P}^{-1}$ is an idempotent matrix.
+
+You can use these properties to show that in the linear regression model with uncorrelated errors and equal variance the variance matrix of the model residuals $\bY - \widehat{\bY}$ is
+
+$$\Var\left\lbrack \bY - \widehat{\bY} \right\rbrack = \sigma^{2}(\bI - \bH)$$
+
+### A Special Case
+
+Consider the special case where $\bX = \bone_{n}$, a column vector of ones. The corresponding linear model is $\bY = \bone\beta + \bepsilon$, an intercept-only model. The hat matrix for this model is
+
+$$\bone\left( \bone^{\prime}\bone \right)^{- 1}\bone^\prime = \frac{1}{n}\bone\bone^\prime = \frac{1}{n}\bJ = \begin{bmatrix}
+\frac{1}{n} & \cdots & \frac{1}{n} \\
+ \vdots & \ddots & \vdots \\
+\frac{1}{n} & \cdots & \frac{1}{n}
+\end{bmatrix}
+$$a matrix filled with $\frac{1}{n}$. The projection of $\bY$ onto the space generated by $\bone_{n}$ is
+
+$$\frac{1}{n}\mathbf{JY} = \begin{bmatrix}
+\overline{Y} \\
+ \vdots \\
+\overline{Y}
+\end{bmatrix}$$
+
+The predicted values are all the same, the sample mean. In other words, $\beta = \overline{Y}$. Since the projector is idempotent, deriving the variance of the predicted value in the *iid* case is simple:
+
+$$\Var\left\lbrack \bH\bY \right\rbrack = \bH\text{Var}\left\lbrack \bY \right\rbrack\bH^\prime = \sigma^{2}\bH\bH^{\prime} = \sigma^{2}\bH = \sigma^{2}\frac{1}{n}\bJ=\begin{bmatrix}
+\frac{\sigma^{2}}{n} & \cdots & \frac{\sigma^{2}}{n} \\
+ \vdots & \ddots & \vdots \\
+\frac{\sigma^{2}}{n} & \cdots & \frac{\sigma^{2}}{n}
+\end{bmatrix}$$
+
+## Multivariate Gaussian Distribution {#sec-multi-gaussian}
+
+### Definition
+
+A scalar random variable $Y$ has a **Gaussian** distribution function with mean $\mu$ and variance $\sigma^{2}$ if its probability density function is given by
+
+$$f(y) = \frac{1}{\sqrt{2\pi\sigma^{2}}}\exp\left\{ - \frac{1}{2\sigma^{2}}(y - \mu)^{2} \right\}$$
+
+We also say that $Y$ is **normally** distributed with mean $\mu$ and variance $\sigma^{2}$. The shorthand expressions $Y \sim G(\mu,\sigma^{2})$ or $Y \sim N(\mu,\sigma^{2})$ are common.
+
+The generalization from a scalar random variable $Y$ to a random vector $\bY_{(n \times 1)}$ with a **multivariate Gaussian** distribution is as follows. $\bY_{(n \times 1)}$ has a multivariate Gaussian (normal) distribution with mean $\bmu$ and variance matrix $\bV$, if its density is given by
+
+$$f\left( \bY \right)=\frac{\left| \bV \right|^{- 1/2}}{(2\pi)^{\frac{n}{2}}}\exp\left\{ - \frac{1}{2}\left( \bY - \bmu \right)^\prime\bV^{- 1}\left( \bY - \bmu \right) \right\}$$
+
+This is denoted with the shorthand $\bY \sim G_{n}(\bmu,\bV)$ or $\bY \sim N_{n}(\bmu,\bV\)$. If the dimension of the distribution is clear from context, the subscript $n$ can be omitted. A special case is the **standard** multivariate Gaussian distribution with mean $\bzero$ and variance matrix $\bI$ :
+
+$$f\left( \bY \right)=\frac{1}{(2\pi)^{\frac{n}{2}}}\exp\left\{ - \frac{1}{2}\bY^{\prime}\bY \right\} = \frac{1}{(2\pi)^{\frac{n}{2}}}\exp\left\{ - \frac{1}{2}\sum_{i}^{n}y_{i}^{2} \right\}$$
+
+But this is just the product of the $n$ univariate densities of $N(0,1)$ random variables:
+
+$$f\left( \bY \right) = f\left( y_{1} \right) \times \cdots \times f\left( y_{n} \right)$$
+
+where
+
+$$f\left( y_{i} \right) = \frac{1}{(2\pi)^{1/2}}\exp\left\{ - \frac{1}{2}y^{2} \right\}$$
+
+If the variance matrix is diagonal---that is, the $Y_{i}$ are uncorrelated---the multivariate normal distribution is the product of the univariate distributions. The random variables are independent.
+
+### Properties
+
+Gaussian distributions have amazing (magical) properties.
+
+#### Linear combinations are Gaussian
+
+For example, a linear combination of Gaussian random variables also follows a Gaussian distribution. Formally, this can be expressed as follows: if $\bY \sim G_{n}\left( \bmu,\bV \right)$ and $\bA$ and $\bB$ are a matrix and vector of constants (not random variables), respectively, then $\mathbf{AY} + \bB$ follows a $G(\bA\bmu,\mathbf{AVA})$ distribution.
+
+A special case of this result is that if $\bY \sim G_{n}\left( \bmu,\bV \right)$, $\bY - \bmu$ has a $G\left( 0,\bV \right)$ distribution.
+
+Because a linear function of a Gaussian random variable is Gaussian distributed, you can define all multivariate Gaussian distributions as linear transformations of the standard multivariate Gaussian distribution. If $\bZ \sim G_{n}(\bzero,\bI)$, and $\bV = \bC^\prime\bC$, then $\bY = \mathbf{C}^\prime\bZ + \bmu$ has a $G(\bmu,\bV)$ distribution.
+
+#### Zero covariance implies independence
+
+Another unusual property of Gaussian random variables is that if they are uncorrelated, they are also stochastically independent. We derived this above for the special case of $\bY \sim G(\bzero,\sigma^{2}\bI)$.
+
+You cannot in general conclude that random variables are independent based on their lack of correlation. For Gaussian random variables you can. This result can be extended to Gaussian random vectors. Suppose $\bY_{(n \times 1)} \sim G(\bmu,\ \bV)$ is partitioned into two sub-vectors of size $s$ and $k$, where $n = s + k$. Then we can similarly partition the mean vector and variance matrix:
+
+$$\bY_{(n \times 1)} = \begin{bmatrix}
+\bY_{1(s \times 1)} \\
+\bY_{2(k \times 1)}
+\end{bmatrix},\ \ \bmu = \begin{bmatrix}
+\bmu_{1} \\
+\bmu_{2}
+\end{bmatrix},\ \ \ \ \ \ \bV = \begin{bmatrix}
+\bV_{11} & \bV_{12} \\
+\bV_{21} & \bV_{22}
+\end{bmatrix}$$
+
+If $\bV_{12} = \bzero$, then $\bY_{1}$ and $\bY_{2}$ are independent. Also, each partition is Gaussian distributed, for example, $\bY_{1} \sim G(\bmu_{1},\ \bV_{11})$. We call the distribution of $\bY_{1}$ the marginal distribution.
+
+It follows immediately that each element of $\bY$ follows a (univariate) Gaussian distribution, $Y_{i} \sim G(\mu_{i},V_{ii})$---all marginal univariate distributions are Gaussian.
+
+#### Conditionals are Gaussian}
+
+The conditional distribution of $\bY_{1}$ given $\bY_{2}$ is also a Gaussian distribution, specifically:
+
+$$\bY_{1}|\bY_{2} \sim G\left( \bmu_{1}\mathbf{+}\bV_{12}\bV_{22}^{- 1}\left( \bY_{2} - \bmu_{2} \right),\ \bV_{11} - \bV_{12}\bV_{22}^{- 1}\bV_{12}^\prime \right)$$
+
+This result plays an important role when predicting Gaussian random variables, for example in mixed models.
+
+Notice that the variance matrix of the conditional distribution does not depend on the particular value $\bY_{2} = \bY_{2}$ on which the distribution is conditioned. However, the mean of the conditional distribution does depend on $\bY_{2}$ unless $\bV_{12} = \bzero$, a condition established earlier for independence of $\bY_{1}$ and $\bY_{2}$.
+

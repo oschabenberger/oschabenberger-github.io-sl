@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 20&nbsp; Bayesian Model Averaging</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./unsuper_intro.html" rel="next">
+<link href="./boosting.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ensemble_intro.html">Ensemble Methods</a></li><li class="breadcrumb-item"><a href="./bma.html"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#bayesian-inference" id="toc-bayesian-inference" class="nav-link active" data-scroll-target="#bayesian-inference"><span class="header-section-number">20.1</span> Bayesian Inference</a>
+  <ul>
+  <li><a href="#bayes-rule" id="toc-bayes-rule" class="nav-link" data-scroll-target="#bayes-rule">Bayes’ Rule</a></li>
+  <li><a href="#inference-about-boldsymboltheta" id="toc-inference-about-boldsymboltheta" class="nav-link" data-scroll-target="#inference-about-boldsymboltheta">Inference about <span class="math inline">\(\boldsymbol{\theta}\)</span></a></li>
+  </ul></li>
+  <li><a href="#introducing-model-uncertainty" id="toc-introducing-model-uncertainty" class="nav-link" data-scroll-target="#introducing-model-uncertainty"><span class="header-section-number">20.2</span> Introducing Model Uncertainty</a>
+  <ul>
+  <li><a href="#sec-bayes-factors-bic" id="toc-sec-bayes-factors-bic" class="nav-link" data-scroll-target="#sec-bayes-factors-bic">Bayes Factors and BIC</a></li>
+  </ul></li>
+  <li><a href="#bma-for-regression-models" id="toc-bma-for-regression-models" class="nav-link" data-scroll-target="#bma-for-regression-models"><span class="header-section-number">20.3</span> BMA for Regression Models</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ensemble_intro.html">Ensemble Methods</a></li><li class="breadcrumb-item"><a href="./bma.html"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-bma" class="quarto-section-identifier"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>When we develop a model based on <span class="math inline">\(p\)</span> potential inputs <span class="math inline">\(x_1, \cdots, x_p\)</span>, we do not know a priori what the final model will look like. Within the same model family, for example, linear models or generalized linear models, there are many candidate models, some of which will perform similarly. Even if there is an overall “winner” among the <span class="math inline">\(2^p\)</span> potential candidates, other models might outperform the “best” model based on other metrics than the one chosen for model selection. Some models might be close to the “best” model in terms of the chosen performance metric.</p>
+<p>In other words, there is <strong>uncertainty</strong> associated with the models themselves. If we choose a single winner then we are ignoring other models that are also defensible. If we try to incorporate all competitive models in our interpretation, the conclusions of data analysis become unwieldy. No one wants to hear about the best 25 models, especially if they lead to conflicting conclusions. Imagine a treatment effect is not significant in the best-fitting model and significant in a slightly inferior model. Different feature selection methods (<a href="regfeature.html#sec-feature-select" class="quarto-xref"><span>Section 9.1</span></a>) will likely lead to different models, all of which are defensible. Backward and forward selection, for example, find different “winners” among different subsets of all possible models.</p>
+<p>What should we do?</p>
+<p><span class="citation" data-cites="Raftery1995">Raftery (<a href="references.html#ref-Raftery1995" role="doc-biblioref">1995</a>)</span> introduced in the context of social science research the idea of <strong>Bayesian Model Averaging</strong> (BMA), taking into account the inherent uncertainty in models. The implementation of BMA is fairly straightforward, made easy by use of BIC, the Bayesian Information Criterion, and quantities based on that. To understand BMA, we need to take a quick detour into the Bayesian approach to statistical inference.</p>
+<section id="bayesian-inference" class="level2" data-number="20.1">
+<h2 data-number="20.1" class="anchored" data-anchor-id="bayesian-inference"><span class="header-section-number">20.1</span> Bayesian Inference</h2>
+<p>The Bayesian paradigm is arguably the more natural paradigm to draw conclusions about the world, compared to the frequentist approach that has permeated this material so far. A frequentist interprets probabilities as a long-run average of sample proportions: if a coin lands on “Head” 45 times out of 100 tosses, the frequentist estimate of the probability of “Head” is 45/100 = 0.45. In Bayesian statistics, probabilities reflect the degree of belief that something will occur. Furthermore, in Bayesian statistic, there are no parameters in the sense of the frequentist view. Parameters are random variables as well.</p>
+<p>Suppose we observe data <span class="math inline">\(\textbf{Y}\)</span> and its distribution depends on a parameter vector <span class="math inline">\(\boldsymbol{\theta}\)</span>. The data we observe is a realization of the distribution <span class="math inline">\(p(\textbf{Y}|\boldsymbol{\theta})\)</span>, known as the <strong>likelihood</strong> of the data. The likelihood is the probability of observing the data given that <span class="math inline">\(\boldsymbol{\theta}\)</span> is the true parameter. The goal of the inference, whether the viewpoint is frequentist or Bayesian, is to learn something about <span class="math inline">\(\boldsymbol{\theta}\)</span>. If <span class="math inline">\(\boldsymbol{\theta}\)</span> is a constant, then what we need to do is to estimate its value based on the data. This is the frequentist approach used so far. The OLS estimator in a linear model, <span class="math display">\[
+\widehat{\boldsymbol{\theta}} = (\textbf{X}^\prime\textbf{X})^{-1}\textbf{X}^\prime\textbf{Y}
+\]</span> is an example of a (frequentist) estimator.</p>
+<section id="bayes-rule" class="level3">
+<h3 class="anchored" data-anchor-id="bayes-rule">Bayes’ Rule</h3>
+<p>If <span class="math inline">\(\boldsymbol{\theta}\)</span> is a random variable then we need to consider its distribution rather than trying to find a point estimator. But which distribution should we consider? We can look at <span class="math inline">\(p(\boldsymbol{\theta})\)</span> and at <span class="math inline">\(p(\boldsymbol{\theta}| \textbf{Y})\)</span>. The former is known as the <strong>prior</strong> distribution, reflecting our belief about <span class="math inline">\(\boldsymbol{\theta}\)</span> <strong>before</strong> we have seen any data. The latter, <span class="math inline">\(p(\boldsymbol{\theta}| \textbf{Y})\)</span> is known as the <strong>posterior</strong> distribution, reflecting our belief in <span class="math inline">\(\boldsymbol{\theta}\)</span> <strong>after</strong> having seen the data.</p>
+<p>To get from <span class="math inline">\(p(\textbf{Y}|\boldsymbol{\theta})\)</span> to <span class="math inline">\(p(\boldsymbol{\theta}| \textbf{Y})\)</span> we have to reverse the conditioning. This can be done with <strong>Bayes’ Rule</strong>: <span class="math display">\[
+p(\boldsymbol{\theta}|\textbf{Y}) = \frac{p(\textbf{Y},\boldsymbol{\theta})}{p(\textbf{Y})} = \frac{p(\textbf{Y}|\boldsymbol{\theta}) p(\boldsymbol{\theta})}{\int p(\textbf{Y}| \boldsymbol{\theta}) p(\boldsymbol{\theta}) d\boldsymbol{\theta}}
+\]</span> The first fraction is simply the definition of a <strong>conditional probability</strong>, the ratio of the joint probability divided by the marginal probability of the conditioning event (here, the data). The second fraction expresses the joint probability in the numerator as the product of a conditional and a marginal probability, this time using the reverse condition and the prior distribution. The integral in the denominator computes the marginal distribution of <span class="math inline">\(\textbf{Y}\)</span> by integrating over the distribution of <span class="math inline">\(\boldsymbol{\theta}\)</span>; this term can be thought of as a normalizing constant to ensure we get a proper probability. The magic is in the numerator, we can write <span class="math display">\[
+p(\boldsymbol{\theta}|\textbf{Y}) \propto p(\textbf{Y}|\boldsymbol{\theta}) p(\boldsymbol{\theta})
+\]</span></p>
+<p>The posterior distribution is proportional to the likelihood times the prior distribution.</p>
+<p>Our prior beliefs about the world, before seeing any data, are represented by <span class="math inline">\(p(\boldsymbol{\theta})\)</span>. After we collected data about the world that follows the distribution <span class="math inline">\(p(\textbf{Y}|\boldsymbol{\theta})\)</span> we update our beliefs. This makes a lot of sense and reflects how most of us make decisions and draw conclusions. We have a notion and based on evidence we update our belief–at least that is how it is supposed to work.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Are trains on time?</p>
+</div>
+<div class="example-container">
+<p>Suppose you need to catch a train at the station. Your prior belief that the train is late is <span class="math inline">\(p(\theta) = 0.25\)</span>: a quarter of the time the train you need to catch will be late. When you arrive at the train station you see that all the other trains are running late today. Based on this new information, <span class="math inline">\(p(Y|\theta)\)</span>, you update your belief; the posterior probability of your train running late is now <span class="math inline">\(p(\theta) &gt; 0.25\)</span>.</p>
+</div>
+</div>
+<p>To paraphrase L. J. Savage,</p>
+<blockquote class="blockquote">
+<p><em>You are either Bayesian or irrational.</em></p>
+</blockquote>
+</section>
+<section id="inference-about-boldsymboltheta" class="level3">
+<h3 class="anchored" data-anchor-id="inference-about-boldsymboltheta">Inference about <span class="math inline">\(\boldsymbol{\theta}\)</span></h3>
+<p>The posterior distribution <span class="math inline">\(p(\boldsymbol{\theta}| \textbf{Y})\)</span> contains all information we need to make statements about the parameters. For example, to compute the Bayesian equivalent of a point estimate, standard error, and confidence interval for one of the parameters, <span class="math inline">\(\theta_1\)</span> say, we first derive the posterior of <span class="math inline">\(\theta_1\)</span> by integrating out the other parameters: <span class="math display">\[
+p(\theta_1 | \textbf{Y}) = \int \cdots \int p(\boldsymbol{\theta}| \textbf{y}) d\theta_2 d\theta_3 \cdots d\theta_p
+\]</span> The square root of the variance of <span class="math inline">\(p(\theta_1|\textbf{Y})\)</span> is the standard error, the 0.25 and 0.975 quantiles are the 95% confidence bounds, and the mode or mean of the posterior serves as the point estimate.</p>
+</section>
+</section>
+<section id="introducing-model-uncertainty" class="level2" data-number="20.2">
+<h2 data-number="20.2" class="anchored" data-anchor-id="introducing-model-uncertainty"><span class="header-section-number">20.2</span> Introducing Model Uncertainty</h2>
+<p>How do we bring uncertainty about models, not just about parameters, into this picture? Suppose we have <span class="math inline">\(K\)</span> candidate models, <span class="math inline">\(f_1, \cdots, f_K\)</span> and can quantify our prior belief in the models. Without any additional information the prior belief might be “uninformative”, all models have the same prior probability. The posterior probability of the parameters, <span class="math inline">\(p(\boldsymbol{\theta}|\textbf{Y})\)</span> can now be written as <span class="math display">\[
+p(\boldsymbol{\theta}| \textbf{Y}) = \sum_{k=1}^K p(\boldsymbol{\theta}, f_k | \textbf{Y}) = \sum_{k=1}^K p(\boldsymbol{\theta}| \textbf{Y}, f_k) p(f_k|\textbf{Y})
+\]</span> integrating over the distribution of the models. The posterior is updated after evaluating the models against data.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Are trains on time?</p>
+</div>
+<div class="example-container">
+<p>This example draws on <span class="citation" data-cites="Hinneetal2020">Hinne et al. (<a href="references.html#ref-Hinneetal2020" role="doc-biblioref">2020</a>)</span>. Suppose you are at the train station and the train is running late. Should you continue to wait or consider an alternative mode of transportation?</p>
+<p>There are different models about the world, with different consequences for the length of delay <span class="math inline">\(t\)</span>:</p>
+<ul>
+<li><span class="math inline">\(f_1\)</span>: the railroad company went bankrupt overnight and abruptly stopped operations; <span class="math inline">\(t\)</span> is very large, months to years.</li>
+<li><span class="math inline">\(f_2\)</span>: railroad workers went on strike; <span class="math inline">\(t\)</span> is large, weeks to months.</li>
+<li><span class="math inline">\(f_3\)</span>: a railroad accident occurred; <span class="math inline">\(t\)</span> is large, hours to days.</li>
+<li><span class="math inline">\(f_4\)</span>: bad weather slowed down the train; <span class="math inline">\(t\)</span> is short, minutes.</li>
+<li><span class="math inline">\(f_5\)</span>: loading and unloading passengers at the previous station took longer than anticipated; <span class="math inline">\(t\)</span> is very short, seconds to minutes.</li>
+</ul>
+<p>The decision about choosing alternative transportation or waiting for the train to arrive depends on the probability of <span class="math inline">\(f_j\)</span> and the distribution of the delays, <span class="math inline">\(p(t|f_j)\)</span>. We are interested in the overall distribution of the delay time, weighted by the likelihoods of the different models <span class="math inline">\(f_1, \cdots, f_4\)</span>.</p>
+<ul>
+<li><span class="math inline">\(p(t|f_j)\)</span> is the distribution of delay times if <span class="math inline">\(f_j\)</span> is the reason for the delay.</li>
+<li><span class="math inline">\(p(f_j)\)</span> is our prior belief that <span class="math inline">\(f_j\)</span> occurs in the absence of additional information (when we leave the house in the morning).</li>
+<li><span class="math inline">\(p(f_j|\textbf{Y})\)</span> is the posterior belief that <span class="math inline">\(f_j\)</span> occurs after receiving information, for example, listening to a station announcement or a weather report.</li>
+<li><span class="math inline">\(p(t|\textbf{Y})\)</span> is the distribution of the delay after receiving information and averaging across the possible reasons for the delay.</li>
+</ul>
+<p>Incorporating model uncertainty means taking into account all possible states of the world, weighted by the likelihood of their occurrence. The prior belief about <span class="math inline">\(f_j\)</span> will differ from one person to another and that will affect the ultimate decision about choosing alternate transportation. If you wake up in the morning convinced that there will be either a strike or a railroad accident, you will feel differently about traveling by train than the optimist who believes nothing can slow them down.</p>
+</div>
+</div>
+<section id="sec-bayes-factors-bic" class="level3">
+<h3 class="anchored" data-anchor-id="sec-bayes-factors-bic">Bayes Factors and BIC</h3>
+<p>The posterior distributions of the models, <span class="math inline">\(p(f_k|\textbf{Y})\)</span> are updated versions of our beliefs once we have seen data. You might not give the possibility of a railroad strike much credence one you learner that the morning did not mention any strike. The extent to which the data support one model over the other is expressed by the ratio of posterior probabilities <span class="math display">\[
+\frac{p(f_j|\textbf{Y})}{p(f_k|\textbf{Y})}
+\]</span> This ratio is called the <strong>posterior odds</strong> for <span class="math inline">\(f_j\)</span> versus <span class="math inline">\(f_k\)</span>. But <span class="math inline">\(p(f_j|\textbf{Y}) = p(\textbf{Y}|f_j)p(f_j)/p(\textbf{Y})\)</span> and the posterior odds expand to <span class="math display">\[
+\frac{p(f_j|\textbf{Y})}{p(f_k|\textbf{Y})} = \frac{p(\textbf{Y}|f_j)}{p(\textbf{Y}|f_k)} \, \frac{p(f_j)}{p(f_k)}
+\]</span> The first term on the right hand side is called a <strong>Bayes factor</strong>; a measure of the strength of evidence for <span class="math inline">\(f_j\)</span> over <span class="math inline">\(f_k\)</span>: how much more likely is the observed data under the model <span class="math inline">\(f_j\)</span> versus the model <span class="math inline">\(f_k\)</span>. In the situation where all models are equally likely a priori, <span class="math inline">\(p(f_j) = 1/K\)</span>, the Bayes factor <span class="math inline">\(B_{jk}\)</span> is equal to the posterior odds: <span class="math display">\[
+B_{jk} = \frac{p(f_j|\textbf{Y})}{p(f_k|\textbf{Y})}
+\]</span></p>
+<p>To judge the strength of evidence of one model against another, thresholds like the following are in use</p>
+<ul>
+<li><span class="math inline">\(1 \le B_{jk} \le 3\)</span>: <span class="math inline">\(f_j\)</span> is slightly better than <span class="math inline">\(f_k\)</span> but deserves no more than a “bare mention”.</li>
+<li><span class="math inline">\(3 \le B_{jk} \le 10\)</span>: there is some evidence for <span class="math inline">\(f_j\)</span> over <span class="math inline">\(f_k\)</span>.</li>
+<li><span class="math inline">\(10 \le B_{jk} \le 100\)</span>: there is strong evidence for <span class="math inline">\(f_j\)</span> over <span class="math inline">\(f_k\)</span>.</li>
+<li><span class="math inline">\(B_{jk} &gt; 100\)</span>: <span class="math inline">\(f_j\)</span> is decisively better than <span class="math inline">\(f_k\)</span>.</li>
+</ul>
+<p>The calculation of the distribution of the data for a particular model, <span class="math inline">\(p(\textbf{Y}|f_j)\)</span> is tricky, we have to integrate over the distribution of the parameters under the model. Fortunately, this can be approximated as <span class="math display">\[
+\log p(\textbf{Y}|f_j) \approx \log p(\textbf{Y}|\boldsymbol{\theta}_j) - \frac{p_j}{2}\log n
+\]</span> The first term on the right hand side is simply the likelihood under model <span class="math inline">\(f_j\)</span> and <span class="math inline">\(p_j\)</span> denotes the number of parameters in the model. Minus twice the value of that approximation is known as the <strong>Bayesian Information Criterion</strong> (BIC). <span class="math display">\[
+\text{BIC}_j = -2\log p(\textbf{Y}| \boldsymbol{\theta}_j) + p_j \log n
+\]</span> It is used to select among competing models based on the maximized likelihood with a penalty term <span class="math inline">\((p/2 \log n)\)</span> that protects against overfitting. When comparing models, those with smaller BIC values are preferred.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>BIC can also be defined as the negative, <span class="math inline">\(\text{BIC}^*_j = 2\log p(\textbf{Y}|\boldsymbol{\theta}_j) - p_j\log n\)</span>. <span class="math inline">\(\text{BIC}_j\)</span> is interpreted in a <strong>smaller-is-better</strong> sense. <span class="math inline">\(\text{BIC}^*_j\)</span> is interpreted in a <strong>larger-is-better</strong> sense. Always check which version of BIC is reported by software to ensure correct interpretation.</p>
+</div>
+</div>
+<p>BIC is easy to calculate and helpful to approximate Bayes factors and posterior odds <span class="math display">\[
+2 \log B_{jk} = \log p(\textbf{Y}| f_j) - \log p(\textbf{Y}| f_k) \approx \text{BIC}_k - \text{BIC}_j
+\]</span></p>
+<p><span class="citation" data-cites="Raftery1995">(<a href="references.html#ref-Raftery1995" role="doc-biblioref">Raftery 1995, 139</a>)</span> gives ranges for strength of evidence for one model over another based on the BIC difference:</p>
+<ul>
+<li><span class="math inline">\(0 \le \Delta\text{BIC} \le 2\)</span>: weak evidence for <span class="math inline">\(f_j\)</span> over <span class="math inline">\(f_k\)</span>.</li>
+<li><span class="math inline">\(2 \le \Delta\text{BIC} \le 6\)</span>: positive evidence for <span class="math inline">\(f_j\)</span> over <span class="math inline">\(f_k\)</span>.</li>
+<li><span class="math inline">\(6 \le \Delta\text{BIC} \le 10\)</span>: strong evidence for <span class="math inline">\(f_j\)</span> over <span class="math inline">\(f_k\)</span>.</li>
+<li><span class="math inline">\(\Delta\text{BIC} &gt; 10\)</span>: very strong evidence for <span class="math inline">\(f_j\)</span> over <span class="math inline">\(f_k\)</span>.</li>
+</ul>
+<p>In the case of a uniform prior for the models, <span class="math inline">\(p(f_j) = 1/K\)</span>, the posterior probabilities can be approximated as <span class="math display">\[
+p(f_j | \textbf{Y}) \approx \frac{\exp\left\{ -\frac{1}{2} \text{BIC}_j\right\}} {\sum_{k=1}^K \exp \left\{-\frac{1}{2}\text{BIC}_k\right\}}
+\]</span></p>
+<p>We now have the ingredients to define the Bayesian Model Averaging procedure for regression models.</p>
+</section>
+</section>
+<section id="bma-for-regression-models" class="level2" data-number="20.3">
+<h2 data-number="20.3" class="anchored" data-anchor-id="bma-for-regression-models"><span class="header-section-number">20.3</span> BMA for Regression Models</h2>
+<p>Suppose we have <span class="math inline">\(p\)</span> candidate input variables in a linear model family <span class="math inline">\(\textbf{Y}= \textbf{X}\boldsymbol{\beta}+ \boldsymbol{\epsilon}\)</span>. <span class="math inline">\(2^p\)</span> possible models that can be formed based on the presence and absence of the <span class="math inline">\(p\)</span> inputs. (This does not count interactions and transformations of the <span class="math inline">\(p\)</span> variables.)</p>
+<p>If the model errors are Gaussian distributed, we can calculate the BIC for each model and approximate posterior probabilities and Bayes factors. Instead of selecting one model as best, a larger number of models is evaluated and the models are ranked according to BIC. However, <span class="math inline">\(2^p\)</span> is often larger than what we can and should accommodate, so the following selection rules apply: a reduced set of good candidate models is selected according to the leaps-and-bound algorithm. Within the set of models returned by the leaps-and-bound algorithm only those models are considered whose posterior probability is within a certain neighborhood of the model with the best BIC value. This neighborhood is called <strong>Occam’s window</strong> and is expressed as a ratio. For example, an <strong>Occam’s ratio</strong> of 20 means that models whose posterior probability is less than 1/20 of the posterior probability of the model with the best BIC are excluded.</p>
+<p>The models within Occam’s window are the set of models over which predictions are averaged, weighted by their posterior probabilities. This shows us that BMA is an ensemble procedure. If there are <span class="math inline">\(K\)</span> models within Occam’s window, the predicted value at <span class="math inline">\(\textbf{x}_0\)</span> is <span class="math display">\[
+\widehat{y}(\textbf{x}_0) = \sum_{k=1}^K \widehat{p}(f_k | \textbf{Y}) \, \textbf{x}_{0k}^\prime\widehat{\boldsymbol{\beta}}_k
+\]</span> and <span class="math inline">\(\textbf{x}_{0k}\)</span> is the set of inputs in the <span class="math inline">\(k\)</span><sup>th</sup> model, <span class="math inline">\(\widehat{\boldsymbol{\beta}}_k\)</span> is the vector of coefficient estimates in the <span class="math inline">\(k\)</span><sup>th</sup> model.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Crime Rates Data</p>
+</div>
+<div class="example-container">
+<p>This example uses the <code>UScrime</code> data from the <code>MASS</code> library in <code>R</code>. The data set represents aggregate data on 47 states in the U.S. for 1960. In addition to the target variable, the rate of crimes per person in a particularly category, the data set contains information about income equality, GDP, population, education, unemployment, prison population, police expenditures, and demographics.</p>
+<p>Bayesian model averaging for linear regression models can be performed with the <code>bicreg</code> function in the <code>BMA</code> library. <code>bicreg</code> uses the leaps all-subset algorithm to select variables into the models. By default, up to <code>nbest=150</code> models of each size are being considered. <code>nbest</code> is not the total number of models being averaged, but the max number of models of any size returned by leaps.</p>
+<p>The <code>OR</code> parameter specifies the maximum ratio for excluding models in Occam’s window. A model that is not at least within 1/OR of the BIC of the best model is excluded from consideration.</p>
+<p><code>bicreg</code> uses the smaller-is-better formulation for BIC.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(BMA)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(UScrime)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> UScrime[,<span class="sc">-</span><span class="dv">16</span>]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">log</span>(UScrime[,<span class="dv">16</span>])</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>x[,<span class="sc">-</span><span class="dv">2</span>]<span class="ot">&lt;-</span> <span class="fu">log</span>(x[,<span class="sc">-</span><span class="dv">2</span>])  <span class="co"># log transform all except binary indicator in second col</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>crimeBMA <span class="ot">&lt;-</span> <span class="fu">bicreg</span>(x,y, <span class="at">OR=</span><span class="dv">20</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(crimeBMA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+bicreg(x = x, y = y, OR = 20)
+
+
+  115  models were selected
+ Best  5  models (cumulative posterior probability =  0.2039 ): 
+
+           p!=0    EV        SD       model 1    model 2    model 3  
+Intercept  100.0  -23.45301  5.58897  -22.63715  -24.38362  -25.94554
+M           97.3    1.38103  0.53531    1.47803    1.51437    1.60455
+So          11.7    0.01398  0.05640      .          .          .    
+Ed         100.0    2.12101  0.52527    2.22117    2.38935    1.99973
+Po1         72.2    0.64849  0.46544    0.85244    0.91047    0.73577
+Po2         32.0    0.24735  0.43829      .          .          .    
+LF           6.0    0.01834  0.16242      .          .          .    
+M.F          7.0   -0.06285  0.46566      .          .          .    
+Pop         30.1   -0.01862  0.03626      .          .          .    
+NW          88.0    0.08894  0.05089    0.10888    0.08456    0.11191
+U1          15.1   -0.03282  0.14586      .          .          .    
+U2          80.7    0.26761  0.19882    0.28874    0.32169    0.27422
+GDP         31.9    0.18726  0.34986      .          .        0.54105
+Ineq       100.0    1.38180  0.33460    1.23775    1.23088    1.41942
+Prob        99.2   -0.24962  0.09999   -0.31040   -0.19062   -0.29989
+Time        43.7   -0.12463  0.17627   -0.28659      .       -0.29682
+                                                                     
+nVar                                      8          7          9    
+r2                                      0.842      0.826      0.851  
+BIC                                   -55.91243  -55.36499  -54.69225
+post prob                               0.062      0.047      0.034  
+           model 4    model 5  
+Intercept  -22.80644  -24.50477
+M            1.26830    1.46061
+So             .          .    
+Ed           2.17788    2.39875
+Po1          0.98597      .    
+Po2            .        0.90689
+LF             .          .    
+M.F            .          .    
+Pop         -0.05685      .    
+NW           0.09745    0.08534
+U1             .          .    
+U2           0.28054    0.32977
+GDP            .          .    
+Ineq         1.32157    1.29370
+Prob        -0.21636   -0.20614
+Time           .          .    
+                               
+nVar           8          7    
+r2           0.838      0.823  
+BIC        -54.60434  -54.40788
+post prob    0.032      0.029  </code></pre>
+</div>
+</div>
+<p>Of the 150 models returned by the leaps algorithm, 115 were selected within Occam’s ratio of 1/20. The best model has a BIC of -55.9124 and a posterior probability of 0.0619. The posterior probability of the final model within Occam’s window is <code>crimeBMA$postprob[115]</code> = 0.0031.</p>
+<p>The column <code>EV</code> displays the posterior means (expected values) of the model coefficients, averaged across the 115 models. The <code>p!=0</code> column displays the proportion of models that include the particular input. For example, the intercept is included in all models, 100% of the models include the <code>So</code> variable.</p>
+<p>Only five of the 115 models are shown on the output, information on all models can be retrieved from the return object of <code>bicreg</code>.</p>
+<p>The <span class="math inline">\(R^2\)</span> values of the models are also shown in the third row from the bottom of the output. Notice that the best model according to BIC does not have the highest <span class="math inline">\(R^2\)</span> and the model with a higher <span class="math inline">\(R^2\)</span> does not necessarily have a higher posterior probability.</p>
+<p>The <code>predict</code> function computes statistics based on the posterior distribution of the model. The predicted values are calculated as the means of the posterior distribution, averaging all 115 models. Because we are computing summary statistics of the posterior distribution, standard deviation and quantiles are also immediately accessible.</p>
+<p>Here are the means, standard deviations, and 0.1, 0.5, 0.9 quantiles for the first 10 observations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(crimeBMA,x[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$mean
+       1        2        3        4        5        6        7        8 
+6.670113 7.353431 6.156241 7.682876 7.056718 6.493145 6.793854 7.280225 
+       9       10 
+6.618132 6.592609 
+
+$sd
+        1         2         3         4         5         6         7         8 
+0.2073859 0.2075745 0.2134277 0.2128672 0.2116684 0.2122920 0.2238612 0.2118520 
+        9        10 
+0.2069795 0.2070578 
+
+$quantiles
+        0.1      0.5      0.9
+1  6.401775 6.670140 6.938417
+2  7.084600 7.353481 7.622198
+3  5.872708 6.156290 6.439704
+4  7.400362 7.683734 7.964283
+5  6.777767 7.056512 7.335936
+6  6.212531 6.493102 6.773818
+7  6.484452 6.795024 7.101686
+8  7.000573 7.280314 7.559749
+9  6.350878 6.618084 6.885448
+10 6.325123 6.592608 6.860097</code></pre>
+</div>
+</div>
+<p>To validate the computation of a predicted value as a weighted average of predictions, where the weights are the posterior probabilities, we can extract the coefficients of the 115 models with <code>crimeBMA$ols</code>, multiply those into the <span class="math inline">\(\textbf{X}\)</span> matrix and compute the weighted average:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The predicted values for the first ten obs from all models</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pred_1_10 <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(crimeBMA<span class="sc">$</span>ols) <span class="sc">%*%</span> <span class="fu">as.matrix</span>(<span class="fu">t</span>(<span class="fu">cbind</span>(<span class="dv">1</span>,x[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,])))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The final predicted value is weighted by the posterior probabilities</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>crimeBMA<span class="sc">$</span>postprob <span class="sc">%*%</span> pred_1_10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            1        2        3        4        5        6        7        8
+[1,] 6.670113 7.353431 6.156241 7.682876 7.056718 6.493145 6.793854 7.280225
+            9       10
+[1,] 6.618132 6.592609</code></pre>
+</div>
+</div>
+<p>The <code>plot</code> function produces a series of plots of the posterior distributions for the coefficients (<a href="#fig-bma-post" class="quarto-xref">Figure&nbsp;<span>20.1</span></a>). The height of the vertical line at zero indicates the probability that the coefficient is zero. The non-zero probability is scaled so that the maximum of the distribution equals the complement of the height of the line. Coefficients that appear in almost all models have a very short vertical line at zero.</p>
+<div id="fig-bma-post" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bma-post-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(crimeBMA,<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>),<span class="at">include.intercept=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="bma_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="bma_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="bma_files/figure-html/unnamed-chunk-4-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-bma-post-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20.1
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-bma-imageplot" class="quarto-xref">Figure&nbsp;<span>20.2</span></a> shows an image plot of the selected models. The <code>order=probne0</code> option requests that the variables are shown in the order of their probability of inclusion in the model. Variables near the top of the image have the highest inclusion probability (appear in most or all models).</p>
+<p>There are three colors in the image, one color for a positive coefficient (red), one color for a negative coefficient (blue), and one color indicating absence from the model. The width of the bars is proportional to the posterior probability of the models.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">imageplot.bma</span>(crimeBMA,<span class="at">order=</span><span class="st">"probne0"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-bma-imageplot" class="quarto-figure quarto-figure-center quarto-float anchored" width="90%" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bma-imageplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="bma_files/figure-html/fig-bma-imageplot-1.png" id="fig-bma-imageplot" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-bma-imageplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20.2
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-Hinneetal2020" class="csl-entry" role="listitem">
+Hinne, Max, Quentin F. Gronau, Don van den Bergh, and Eric-Jan Wagenmakers. 2020. <span>“A Conceptual Introduction to Bayesian Model Averaging.”</span> <em>Advances in Methods and Practices in Psychological Science</em> 3 (2): 200–215. <a href="https://doi.org/10.1177/2515245919898657">https://doi.org/10.1177/2515245919898657</a>.
+</div>
+<div id="ref-Raftery1995" class="csl-entry" role="listitem">
+Raftery, Adrian E. 1995. <span>“Bayesian Model Selection in Social Research.”</span> <em>Sociological Methodology</em> 25: 111–63.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./boosting.html" class="pagination-link" aria-label="Boosting">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./unsuper_intro.html" class="pagination-link" aria-label="Introduction to Unsupervised Learning">
+        <span class="nav-page-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

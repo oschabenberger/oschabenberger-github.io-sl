@@ -1,0 +1,102 @@
+project:
+  type: book
+
+book:
+  title: "Statistical Learning"
+  subtitle: "with R and Python"
+  author: "Oliver Schabenberger"
+  date: "7/10/2024"
+  reader-mode: true
+
+  page-footer:
+    left: |
+      Statistical Learning by Oliver Schabenberger
+    right: |
+      This book was built with <a href="https://quarto.org/">Quarto</a>.
+  cover-image: cover.png
+
+  chapters:
+    - index.qmd
+    - intro.qmd
+
+    - part: "Foundation"
+      chapters:
+        - statmodels.qmd
+        - biasvariance.qmd
+        - linalg.qmd
+        - estimation.qmd 
+        - learningtypes.qmd
+
+    - part: "Supervised Learning I: Regression"
+      chapters:
+         - regintro.qmd
+         - regglobal.qmd
+         - regfeature.qmd
+         - regnlr.qmd 
+         - regdiscrete.qmd
+         - reglocal.qmd
+
+    - part: "Supervised Learning II: Classification"
+      chapters:
+        - class_reg.qmd
+        - discriminant.qmd
+        - naivebayes.qmd
+        - supportvectors.qmd
+    
+    - part: "Decision Trees"
+#        - decisiontrees.qmd
+    
+    - part: "Ensemble Methods"
+      chapters:
+         - ensemble_intro.qmd
+         - bagging.qmd
+         - boosting.qmd
+         - bma.qmd
+#        - stacking.qmd
+
+    - part: "Unsupervised Learning"
+      chapters:
+        - unsuper_intro.qmd
+        - pca.qmd
+        - clustering.qmd
+        - mbc.qmd
+        - arules.qmd
+
+    - part: "Supervised Learning III: Advanced Topics"
+      chapters:
+         - glm.qmd
+         - gam.qmd
+         - corrdata.qmd
+         - mixed.qmd
+
+    - part: "Neural Networks and Deep Learning"
+      chapters:
+        - ann.qmd
+        - training_ann.qmd
+        - ann_R.qmd
+        - deeplearning.qmd
+    
+    - part: "Explainability"
+      chapters:
+        - explainability.qmd
+        
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+        light: [cosmo,customstyle.scss]
+        dark: [slate,customstyle.scss]
+ #   embed-resources: true
+    smooth-scroll: true
+    number-sections: true
+    number-depth: 2
+    toc-depth: 4
+    toc-expand: 2
+    pdf:
+    documentclass: scrreprt
+#    include-in-header: latexmacros.tex
+
+# editor: visual

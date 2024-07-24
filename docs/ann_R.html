@@ -1,0 +1,2445 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 32&nbsp; Neural Networks in R (with Keras)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./deeplearning.html" rel="next">
+<link href="./training_ann.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ann.html">Neural Networks and Deep Learning</a></li><li class="breadcrumb-item"><a href="./ann_R.html"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">32.1</span> Introduction</a></li>
+  <li><a href="#running-keras-in-r" id="toc-running-keras-in-r" class="nav-link" data-scroll-target="#running-keras-in-r"><span class="header-section-number">32.2</span> Running Keras in <code>R</code></a>
+  <ul>
+  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
+  <li><a href="#keras-basics" id="toc-keras-basics" class="nav-link" data-scroll-target="#keras-basics">Keras Basics</a>
+  <ul class="collapse">
+  <li><a href="#defining-the-network" id="toc-defining-the-network" class="nav-link" data-scroll-target="#defining-the-network">Defining the network</a></li>
+  <li><a href="#setting-up-the-optimization" id="toc-setting-up-the-optimization" class="nav-link" data-scroll-target="#setting-up-the-optimization">Setting up the optimization</a></li>
+  <li><a href="#fitting-the-model" id="toc-fitting-the-model" class="nav-link" data-scroll-target="#fitting-the-model">Fitting the model</a></li>
+  <li><a href="#random-numbers" id="toc-random-numbers" class="nav-link" data-scroll-target="#random-numbers">Random numbers</a></li>
+  </ul></li>
+  <li><a href="#mnist-image-classification" id="toc-mnist-image-classification" class="nav-link" data-scroll-target="#mnist-image-classification">MNIST Image Classification</a>
+  <ul class="collapse">
+  <li><a href="#setup-the-data" id="toc-setup-the-data" class="nav-link" data-scroll-target="#setup-the-data">Setup the data</a></li>
+  <li><a href="#multi-layer-neural-network" id="toc-multi-layer-neural-network" class="nav-link" data-scroll-target="#multi-layer-neural-network">Multi layer neural network</a></li>
+  <li><a href="#multinomial-logistic-regression" id="toc-multinomial-logistic-regression" class="nav-link" data-scroll-target="#multinomial-logistic-regression">Multinomial logistic regression</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ann.html">Neural Networks and Deep Learning</a></li><li class="breadcrumb-item"><a href="./ann_R.html"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="32.1">
+<h2 data-number="32.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">32.1</span> Introduction</h2>
+<p>Working with neural networks in <code>R</code> can be a bit challenging. For one, there are many packages available that can train ANNs, see <a href="#tbl-ann-R-packages" class="quarto-xref">Table&nbsp;<span>32.1</span></a> for some examples. The packages vary greatly in capabilities and syntax.</p>
+<p>Several frameworks for ANNs and deep learning exist. <a href="https://www.tensorflow.org/">TensorFlow</a>, <a href="https://learn.microsoft.com/en-us/archive/msdn-magazine/2017/july/machine-learning-introduction-to-the-microsoft-cntk-v2-0-library">Microsoft CNTK</a>, <a href="https://pytorch.org/">PyTorch</a>, and <a href="https://pypi.org/project/Theano/">Theano</a> are among the most important ones.</p>
+<div id="tbl-ann-R-packages" class="striped quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ann-R-packages-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;32.1: Some <code>R</code> packages for neural network analysis.
+</figcaption>
+<div aria-describedby="tbl-ann-R-packages-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 65%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Package</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>nnet</code></td>
+<td>Feed-forward neural networks with a single hidden layer, and for multinomial log-linear models</td>
+</tr>
+<tr class="even">
+<td><code>neuralnet</code></td>
+<td>Training of neural networks using backpropagation</td>
+</tr>
+<tr class="odd">
+<td><code>tensorflow</code></td>
+<td>Interface to TensorFlow, a free and open-source software library for machine learning and artificial intelligence</td>
+</tr>
+<tr class="even">
+<td><code>darch</code></td>
+<td>Deep architectures and Restricted Boltzmann Machines</td>
+</tr>
+<tr class="odd">
+<td><code>deepnet</code></td>
+<td>Deep learning toolkit</td>
+</tr>
+<tr class="even">
+<td><code>deepr</code></td>
+<td>Streamlines training, tuning, and predicting for deep learning based on <code>darch</code> and <code>deepnet</code></td>
+</tr>
+<tr class="odd">
+<td><code>rnn</code></td>
+<td>Recurrent Neural Networks (RNN)</td>
+</tr>
+<tr class="even">
+<td><code>torch</code></td>
+<td>Tensors and neural networks with GPU acceleration; similar to Pytorch</td>
+</tr>
+<tr class="odd">
+<td><code>keras</code></td>
+<td>Interface to the Python deep learning library Keras</td>
+</tr>
+<tr class="even">
+<td><code>kerasR</code></td>
+<td>Interface to the Python deep learning library Keras</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p><a href="https://keras.io/">Keras</a> has emerged as an important API (Application Programming Interface) for deep learning. It provides a consistent interface on top of JAX, TensorFlow, or PyTorch. While TensorFlow is very powerful, the learning curve can be steep and you tend to write a lot of code. On the other hand, you have complete control over the types of models you build and train with TensorFlow. That makes Keras so relevant: you can tap into the capabilities of TensorFlow with a simpler API.</p>
+<p>The drawback of using Keras and other deep learning frameworks in <code>R</code> is that they are written in Python. Tools from the modern machine learning toolbox tend to be written in Python. The <code>keras</code> package in <code>R</code> is not an implementation of Keras in <code>R</code>, it is an R-based API that calls into the Keras Python code. And that code calls into Tensorflow, or whatever deep learning framework Keras is running on.</p>
+<p>To use <code>keras</code> in <code>R</code>, you thus need to manage a Python distribution, manage Python packages, and deal with the idiosyncrasies of function interfaces between programming languages. For example, you will have to deal with Python error messages bubbling up to the <code>R</code> session. Fortunately, some of the headaches of running Python from <code>R</code> are mitigated by the <code>reticulate</code> package which provides the <code>R</code> interface to Python.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>KerasR</code> package is not the same as the <code>keras</code> package in <code>R</code>. Both packages provide an API for Keras and the API of <code>KerasR</code> is closer to the Python syntax. That makes switching between <code>R</code> and Python for deep learning easier. However, the <code>keras</code> package supports piping of operations similar to the <code>dplyr</code> package. I find working with <code>keras</code> simple because neural networks can be build by piping layer definitions. After all, that is how neural networks work: the output of one layer is input to the next layer.</p>
+</div>
+</div>
+<p>We will be using the <code>keras</code> package in <code>R</code>. It uses the TensorFlow framework under the cover by default.</p>
+</section>
+<section id="running-keras-in-r" class="level2" data-number="32.2">
+<h2 data-number="32.2" class="anchored" data-anchor-id="running-keras-in-r"><span class="header-section-number">32.2</span> Running Keras in <code>R</code></h2>
+<section id="installation" class="level3">
+<h3 class="anchored" data-anchor-id="installation">Installation</h3>
+<p>As mentioned earlier, running <code>keras</code> requires a Python distribution. In addition, you need to install the Keras and TensorFlow Python libraries. The preferred Python installation in this case is conda-based. Good instructions for installing TensorFlow, Keras, and the Python runtime at once—depending on whether you have a prior conda installation—can be found <a href="https://hastie.su.domains/ISLR2/keras-instructions.html">here</a>.</p>
+<p>In the situation without prior conda installation, these commands will install everything you need (do this once in your environment):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"keras"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">install_miniconda</span>()</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>keras<span class="sc">::</span><span class="fu">install_keras</span>(<span class="at">method=</span><span class="st">"conda"</span>, <span class="at">python_version=</span><span class="st">"3.11"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then, in an <code>R</code> session that runs <code>keras</code> do the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(keras)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">use_condaenv</span>(<span class="at">condaenv =</span> <span class="st">"r-tensorflow"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>"r-tensorflow"</code> conda environment was installed during the previous step.</p>
+</section>
+<section id="keras-basics" class="level3">
+<h3 class="anchored" data-anchor-id="keras-basics">Keras Basics</h3>
+<p>Training a neural network with <code>keras</code> involves three steps:</p>
+<ol type="1">
+<li><p>Defining the network</p></li>
+<li><p>Setting up the optimization</p></li>
+<li><p>Fitting the model</p></li>
+</ol>
+<p>Not until the third step does the algorithm get in contact with actual data. However, we need to know some things about the data in order to define the network in step 1: the dimensions of the input and output.</p>
+<section id="defining-the-network" class="level4">
+<h4 class="anchored" data-anchor-id="defining-the-network">Defining the network</h4>
+<p>The most convenient way of specifying a multi layer neural network is by adding layers sequentially, from the input layer to the output layer. These starts with a call to <code>keras_model_sequential()</code>. Suppose we want to predict a continuous response (regression application) based on inputs <span class="math inline">\(x_1, \cdots, x_{20}\)</span> with one hidden layer and dropout regularization.</p>
+<p>The following statements define the model sequentially:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>firstANN <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">layer_dense</span>(<span class="at">units      =</span><span class="dv">50</span>, </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">activation =</span><span class="st">"relu"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">input_shape=</span><span class="dv">20</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                ) <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">layer_dropout</span>(<span class="at">rate=</span><span class="fl">0.4</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">layer_dense</span>(<span class="at">units=</span><span class="dv">1</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">name =</span><span class="st">"Output"</span>)             </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>layer_dense()</code> adds a fully connected layer to the networks, the <code>units=</code> option specifies the number of neurons in the layer. The <code>input_shape=</code> option is specified only for the first layer in the network. In summary, the hidden layer receives 20 inputs and has 50 output units (neurons) and ReLU activation. The output from the hidden layer is passed on (piped) to a dropout layer with a dropout rate of <span class="math inline">\(\phi = 0.4\)</span>. The result of the dropout layer is passed on to another fully connected layer with a single neuron. This is the output layer of the network. In other words, the last layer in the sequence is automatically the output layer. Since we are in a regression context to predict a numeric target variable, there is only one output unit in the final layer. If this was a classification problem with <span class="math inline">\(5\)</span> categories, the last layer would have 5 units.</p>
+<p>You can assign a name to each layer with the <code>name=</code> option, this makes it easier to identify the layers in output. If you do not specify a name, Keras will assign a name that combines a description of the layer type with a numerical index (not always). The numeric indices can be confusing because they depend on counters internal to the Python code. Assigning an explicit name is recommended practice.</p>
+<p>The <code>activation=</code> option specifies the activation function <span class="math inline">\(\sigma()\)</span> for the hidden layers and the output function <span class="math inline">\(g()\)</span> for the output layer. The default is the identity (“linear”) activation, <span class="math inline">\(\sigma(x) = x\)</span>. This default is appropriate for the output layer in a regression application. For the hidden layer we choose the ReLU activation.</p>
+<p>To see the list of activation functions supported by <code>keras</code> (Keras), type</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>?keras<span class="sc">::</span>acti</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>at the console prompt.</p>
+<p>The basic neural network is now defined and we can find out how many parameters it entails.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(firstANN)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "sequential"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ dense (Dense)                      (None, 50)                      1050        
+ dropout (Dropout)                  (None, 50)                      0           
+ Output (Dense)                     (None, 1)                       51          
+================================================================================
+Total params: 1101 (4.30 KB)
+Trainable params: 1101 (4.30 KB)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<p>With 20 inputs and 50 neurons, the first layer has 50 x 21 = 1050 parameters (20 slopes and an intercept for each output neuron). The dropout layer does not add any parameters to the estimation, it chooses output neurons of the previous layer at random and sets their activation to zero. The 50 neurons (some with activation set randomly to zero) are the input to the final layer, adding fifty weights (slopes) and one bias (intercept). The total number of parameters of this neural network is 1,101.</p>
+</section>
+<section id="setting-up-the-optimization" class="level4">
+<h4 class="anchored" data-anchor-id="setting-up-the-optimization">Setting up the optimization</h4>
+<p>The second step in training a model in Keras is to specify the particulars of the optimization with the <code>keras::compile()</code> function (which actually calls <code>keras::compile.keras.engine.training.Model</code>). Typical specifications include the loss functions, the type of optimization algorithm, and the metrics evaluated by the model during training.</p>
+<p>The following function call uses the RMSProp algorithm with mean-squared error loss function to estimate the parameters of the network. During training, the mean absolute error is also monitored in addition to the mean squared error.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>firstANN <span class="sc">%&gt;%</span> <span class="fu">compile</span>(<span class="at">loss=</span><span class="st">"mse"</span>,                         <span class="co"># see keras$losses$</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">optimizer=</span><span class="fu">optimizer_rmsprop</span>(),      <span class="co"># see keras$optimizers$</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">metrics=</span><span class="fu">list</span>(<span class="st">"mean_absolute_error"</span>) <span class="co"># see keras$metrics$</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Depending on your environment, not all optimization algorithms are supported.</p>
+</section>
+<section id="fitting-the-model" class="level4">
+<h4 class="anchored" data-anchor-id="fitting-the-model">Fitting the model</h4>
+<p>The last step in training the network is to connect the defined and compiled model with training—and possibly test—data.</p>
+<p>For this example we use the <code>Hitters</code> data from the ISLR2 package. This is a data set with 322 observations of major league baseball players from the 1986 and 1987 seasons. The following code removes observations with missing values from the data frame, defines a vector of ids for the test data (1/3 of the observations) and computes a scaled and centered model matrix using all 20 input variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>Gitters <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(Hitters)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(Gitters)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>ntest <span class="ot">&lt;-</span> <span class="fu">trunc</span>(n <span class="sc">/</span> <span class="dv">3</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>testid <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, ntest)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">scale</span>(<span class="fu">model.matrix</span>(Salary <span class="sc">~</span> . <span class="sc">-</span> <span class="dv">1</span>, <span class="at">data =</span> Gitters))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> Gitters<span class="sc">$</span>Salary</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that the model contains several factors (<code>League</code>, <code>Division</code>, <code>NewLeague</code>) whose levels are encoded as binary variables in the model matrix. One could exclude those from scaling and centering as they already are in the proper range. In a regression model you would not want to scale these variables to preserve the interpretation of their coefficients. In a neural network interpretation of the model coefficients is not important and we include all columns of the model matrix in the scaling operation.</p>
+<p>The following code fits the model to the training data (<code>-testid</code>) using 20 <strong>epochs</strong> and a minibatch size of 32. That means the gradient is computed based on 32 randomly chosen observations in each step of the stochastic gradient descent algorithm. Since there are 176 training observations it takes <span class="math inline">\(176/32=5.5\)</span> SGD steps to process all <span class="math inline">\(n\)</span> observations. This is known as an <strong>epoch</strong> and is akin to the concept of an <strong>iteration</strong> in numerical optimization: a full pass through the data. The fundamental difference between an epoch and an iteration lies in the fact that updates of the parameters occur after each gradient computation. In a full iteration, there is one update after the pass through the entire data. In SGD with minibatch, there are multiple updates of the parameters, one for each minibatch.</p>
+<p>Running 200 epochs with a batch size of 32 and a training set size of 176 results in 200 * 5.5 = 1,100 gradient evaluations.</p>
+<p>The <code>validation_data=</code> option lists the test data for the training. The objective function and metrics specified in the <code>compile</code> command earlier are computed at each epoch for the training and the test data if the latter is specified. If you do not have a validation data set, you can specify <code>validation_split=</code> and request that a fraction of the training data is held back for validation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> firstANN <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fit</span>(x[<span class="sc">-</span>testid, ], </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        y[<span class="sc">-</span>testid  ], </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">epochs=</span><span class="dv">200</span>, </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">batch_size=</span><span class="dv">32</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">validation_data=</span><span class="fu">list</span>(x[testid, ], y[testid])</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/200
+6/6 - 1s - loss: 457485.4688 - mean_absolute_error: 533.9009 - val_loss: 556234.5625 - val_mean_absolute_error: 539.8822 - 572ms/epoch - 95ms/step
+Epoch 2/200
+6/6 - 0s - loss: 457012.5938 - mean_absolute_error: 533.7325 - val_loss: 555950.4375 - val_mean_absolute_error: 539.8307 - 64ms/epoch - 11ms/step
+Epoch 3/200
+6/6 - 0s - loss: 457058.6250 - mean_absolute_error: 533.7330 - val_loss: 555647.7500 - val_mean_absolute_error: 539.7861 - 49ms/epoch - 8ms/step
+Epoch 4/200
+6/6 - 0s - loss: 456497.9062 - mean_absolute_error: 533.5406 - val_loss: 555372.3125 - val_mean_absolute_error: 539.7413 - 49ms/epoch - 8ms/step
+Epoch 5/200
+6/6 - 0s - loss: 456515.2188 - mean_absolute_error: 533.5658 - val_loss: 555098.0000 - val_mean_absolute_error: 539.6979 - 49ms/epoch - 8ms/step
+Epoch 6/200
+6/6 - 0s - loss: 456133.4688 - mean_absolute_error: 533.3720 - val_loss: 554844.8125 - val_mean_absolute_error: 539.6517 - 49ms/epoch - 8ms/step
+Epoch 7/200
+6/6 - 0s - loss: 455970.7188 - mean_absolute_error: 533.4154 - val_loss: 554561.3750 - val_mean_absolute_error: 539.6050 - 49ms/epoch - 8ms/step
+Epoch 8/200
+6/6 - 0s - loss: 455700.9062 - mean_absolute_error: 533.3095 - val_loss: 554326.5000 - val_mean_absolute_error: 539.5524 - 48ms/epoch - 8ms/step
+Epoch 9/200
+6/6 - 0s - loss: 455620.9688 - mean_absolute_error: 533.2648 - val_loss: 554026.8750 - val_mean_absolute_error: 539.5015 - 48ms/epoch - 8ms/step
+Epoch 10/200
+6/6 - 0s - loss: 455273.7188 - mean_absolute_error: 533.1612 - val_loss: 553760.6250 - val_mean_absolute_error: 539.4495 - 48ms/epoch - 8ms/step
+Epoch 11/200
+6/6 - 0s - loss: 455318.8125 - mean_absolute_error: 533.1827 - val_loss: 553463.1875 - val_mean_absolute_error: 539.3954 - 48ms/epoch - 8ms/step
+Epoch 12/200
+6/6 - 0s - loss: 454924.4688 - mean_absolute_error: 532.9325 - val_loss: 553170.7500 - val_mean_absolute_error: 539.3386 - 47ms/epoch - 8ms/step
+Epoch 13/200
+6/6 - 0s - loss: 454618.0000 - mean_absolute_error: 532.8945 - val_loss: 552861.1875 - val_mean_absolute_error: 539.2806 - 49ms/epoch - 8ms/step
+Epoch 14/200
+6/6 - 0s - loss: 454338.5312 - mean_absolute_error: 532.7811 - val_loss: 552564.4375 - val_mean_absolute_error: 539.2188 - 48ms/epoch - 8ms/step
+Epoch 15/200
+6/6 - 0s - loss: 454394.3125 - mean_absolute_error: 532.8310 - val_loss: 552267.2500 - val_mean_absolute_error: 539.1575 - 48ms/epoch - 8ms/step
+Epoch 16/200
+6/6 - 0s - loss: 453923.1875 - mean_absolute_error: 532.7867 - val_loss: 552001.5625 - val_mean_absolute_error: 539.0928 - 49ms/epoch - 8ms/step
+Epoch 17/200
+6/6 - 0s - loss: 453993.5938 - mean_absolute_error: 532.6656 - val_loss: 551688.2500 - val_mean_absolute_error: 539.0270 - 48ms/epoch - 8ms/step
+Epoch 18/200
+6/6 - 0s - loss: 453538.8750 - mean_absolute_error: 532.4808 - val_loss: 551323.0625 - val_mean_absolute_error: 538.9622 - 48ms/epoch - 8ms/step
+Epoch 19/200
+6/6 - 0s - loss: 453260.3750 - mean_absolute_error: 532.3486 - val_loss: 550988.8750 - val_mean_absolute_error: 538.8925 - 48ms/epoch - 8ms/step
+Epoch 20/200
+6/6 - 0s - loss: 452913.6875 - mean_absolute_error: 532.2740 - val_loss: 550657.5000 - val_mean_absolute_error: 538.8175 - 48ms/epoch - 8ms/step
+Epoch 21/200
+6/6 - 0s - loss: 452661.9688 - mean_absolute_error: 532.0447 - val_loss: 550324.8750 - val_mean_absolute_error: 538.7437 - 49ms/epoch - 8ms/step
+Epoch 22/200
+6/6 - 0s - loss: 452886.8750 - mean_absolute_error: 532.2856 - val_loss: 550005.5000 - val_mean_absolute_error: 538.6691 - 49ms/epoch - 8ms/step
+Epoch 23/200
+6/6 - 0s - loss: 452173.1875 - mean_absolute_error: 531.9966 - val_loss: 549634.8125 - val_mean_absolute_error: 538.5840 - 49ms/epoch - 8ms/step
+Epoch 24/200
+6/6 - 0s - loss: 452291.7188 - mean_absolute_error: 532.0027 - val_loss: 549281.0000 - val_mean_absolute_error: 538.5037 - 49ms/epoch - 8ms/step
+Epoch 25/200
+6/6 - 0s - loss: 451811.4062 - mean_absolute_error: 531.8300 - val_loss: 548953.8125 - val_mean_absolute_error: 538.4205 - 48ms/epoch - 8ms/step
+Epoch 26/200
+6/6 - 0s - loss: 451490.0938 - mean_absolute_error: 531.8033 - val_loss: 548544.7500 - val_mean_absolute_error: 538.3344 - 48ms/epoch - 8ms/step
+Epoch 27/200
+6/6 - 0s - loss: 450789.3125 - mean_absolute_error: 531.4407 - val_loss: 548094.3125 - val_mean_absolute_error: 538.2455 - 53ms/epoch - 9ms/step
+Epoch 28/200
+6/6 - 0s - loss: 451051.5312 - mean_absolute_error: 531.6373 - val_loss: 547726.8750 - val_mean_absolute_error: 538.1595 - 48ms/epoch - 8ms/step
+Epoch 29/200
+6/6 - 0s - loss: 450260.6875 - mean_absolute_error: 531.2198 - val_loss: 547315.4375 - val_mean_absolute_error: 538.0692 - 48ms/epoch - 8ms/step
+Epoch 30/200
+6/6 - 0s - loss: 449951.9688 - mean_absolute_error: 531.0558 - val_loss: 546898.7500 - val_mean_absolute_error: 537.9756 - 49ms/epoch - 8ms/step
+Epoch 31/200
+6/6 - 0s - loss: 449248.8125 - mean_absolute_error: 530.5360 - val_loss: 546473.7500 - val_mean_absolute_error: 537.8780 - 49ms/epoch - 8ms/step
+Epoch 32/200
+6/6 - 0s - loss: 449442.8125 - mean_absolute_error: 530.9008 - val_loss: 546059.8125 - val_mean_absolute_error: 537.7800 - 49ms/epoch - 8ms/step
+Epoch 33/200
+6/6 - 0s - loss: 449080.0000 - mean_absolute_error: 530.9127 - val_loss: 545558.6250 - val_mean_absolute_error: 537.6791 - 49ms/epoch - 8ms/step
+Epoch 34/200
+6/6 - 0s - loss: 448982.7812 - mean_absolute_error: 530.8730 - val_loss: 545116.2500 - val_mean_absolute_error: 537.5797 - 48ms/epoch - 8ms/step
+Epoch 35/200
+6/6 - 0s - loss: 448276.0312 - mean_absolute_error: 530.5655 - val_loss: 544658.8750 - val_mean_absolute_error: 537.4775 - 49ms/epoch - 8ms/step
+Epoch 36/200
+6/6 - 0s - loss: 448184.3750 - mean_absolute_error: 530.3160 - val_loss: 544151.9375 - val_mean_absolute_error: 537.3763 - 48ms/epoch - 8ms/step
+Epoch 37/200
+6/6 - 0s - loss: 447283.0312 - mean_absolute_error: 530.0479 - val_loss: 543653.6875 - val_mean_absolute_error: 537.2744 - 48ms/epoch - 8ms/step
+Epoch 38/200
+6/6 - 0s - loss: 447802.1250 - mean_absolute_error: 530.0522 - val_loss: 543147.7500 - val_mean_absolute_error: 537.1700 - 48ms/epoch - 8ms/step
+Epoch 39/200
+6/6 - 0s - loss: 446526.9688 - mean_absolute_error: 530.1268 - val_loss: 542601.8125 - val_mean_absolute_error: 537.0590 - 48ms/epoch - 8ms/step
+Epoch 40/200
+6/6 - 0s - loss: 446769.4688 - mean_absolute_error: 529.9188 - val_loss: 542075.0625 - val_mean_absolute_error: 536.9474 - 48ms/epoch - 8ms/step
+Epoch 41/200
+6/6 - 0s - loss: 445810.5000 - mean_absolute_error: 529.4910 - val_loss: 541619.1875 - val_mean_absolute_error: 536.8336 - 47ms/epoch - 8ms/step
+Epoch 42/200
+6/6 - 0s - loss: 445510.5312 - mean_absolute_error: 529.3601 - val_loss: 541137.3125 - val_mean_absolute_error: 536.7322 - 48ms/epoch - 8ms/step
+Epoch 43/200
+6/6 - 0s - loss: 444333.1250 - mean_absolute_error: 528.8745 - val_loss: 540628.3750 - val_mean_absolute_error: 536.6161 - 48ms/epoch - 8ms/step
+Epoch 44/200
+6/6 - 0s - loss: 445130.5312 - mean_absolute_error: 529.2018 - val_loss: 540097.1875 - val_mean_absolute_error: 536.5027 - 49ms/epoch - 8ms/step
+Epoch 45/200
+6/6 - 0s - loss: 443957.4062 - mean_absolute_error: 528.8849 - val_loss: 539546.3125 - val_mean_absolute_error: 536.3857 - 48ms/epoch - 8ms/step
+Epoch 46/200
+6/6 - 0s - loss: 444731.3750 - mean_absolute_error: 528.9911 - val_loss: 538978.3750 - val_mean_absolute_error: 536.2693 - 49ms/epoch - 8ms/step
+Epoch 47/200
+6/6 - 0s - loss: 443134.2812 - mean_absolute_error: 528.3932 - val_loss: 538452.3125 - val_mean_absolute_error: 536.1509 - 49ms/epoch - 8ms/step
+Epoch 48/200
+6/6 - 0s - loss: 443644.9688 - mean_absolute_error: 528.8935 - val_loss: 537888.6250 - val_mean_absolute_error: 536.0362 - 49ms/epoch - 8ms/step
+Epoch 49/200
+6/6 - 0s - loss: 441988.7188 - mean_absolute_error: 528.0367 - val_loss: 537324.8750 - val_mean_absolute_error: 535.9197 - 48ms/epoch - 8ms/step
+Epoch 50/200
+6/6 - 0s - loss: 442733.8750 - mean_absolute_error: 528.3267 - val_loss: 536779.8125 - val_mean_absolute_error: 535.8062 - 48ms/epoch - 8ms/step
+Epoch 51/200
+6/6 - 0s - loss: 442874.2812 - mean_absolute_error: 528.4522 - val_loss: 536263.5000 - val_mean_absolute_error: 535.6962 - 48ms/epoch - 8ms/step
+Epoch 52/200
+6/6 - 0s - loss: 441270.9062 - mean_absolute_error: 527.5215 - val_loss: 535635.9375 - val_mean_absolute_error: 535.5753 - 48ms/epoch - 8ms/step
+Epoch 53/200
+6/6 - 0s - loss: 440656.3750 - mean_absolute_error: 527.6580 - val_loss: 535076.4375 - val_mean_absolute_error: 535.4568 - 48ms/epoch - 8ms/step
+Epoch 54/200
+6/6 - 0s - loss: 440467.9062 - mean_absolute_error: 527.5101 - val_loss: 534476.3750 - val_mean_absolute_error: 535.3364 - 48ms/epoch - 8ms/step
+Epoch 55/200
+6/6 - 0s - loss: 440273.9688 - mean_absolute_error: 527.3442 - val_loss: 533889.6250 - val_mean_absolute_error: 535.2109 - 47ms/epoch - 8ms/step
+Epoch 56/200
+6/6 - 0s - loss: 439423.1875 - mean_absolute_error: 527.1060 - val_loss: 533238.0000 - val_mean_absolute_error: 535.0841 - 47ms/epoch - 8ms/step
+Epoch 57/200
+6/6 - 0s - loss: 438590.4062 - mean_absolute_error: 526.7805 - val_loss: 532599.7500 - val_mean_absolute_error: 534.9627 - 49ms/epoch - 8ms/step
+Epoch 58/200
+6/6 - 0s - loss: 438826.7812 - mean_absolute_error: 526.6954 - val_loss: 532011.7500 - val_mean_absolute_error: 534.8461 - 47ms/epoch - 8ms/step
+Epoch 59/200
+6/6 - 0s - loss: 439589.1250 - mean_absolute_error: 527.3502 - val_loss: 531388.6250 - val_mean_absolute_error: 534.7247 - 48ms/epoch - 8ms/step
+Epoch 60/200
+6/6 - 0s - loss: 438015.8750 - mean_absolute_error: 526.8344 - val_loss: 530798.4375 - val_mean_absolute_error: 534.6039 - 48ms/epoch - 8ms/step
+Epoch 61/200
+6/6 - 0s - loss: 437611.2188 - mean_absolute_error: 526.6870 - val_loss: 530136.3750 - val_mean_absolute_error: 534.4799 - 48ms/epoch - 8ms/step
+Epoch 62/200
+6/6 - 0s - loss: 437227.8750 - mean_absolute_error: 526.4876 - val_loss: 529476.8750 - val_mean_absolute_error: 534.3451 - 48ms/epoch - 8ms/step
+Epoch 63/200
+6/6 - 0s - loss: 435335.3750 - mean_absolute_error: 526.0125 - val_loss: 528834.4375 - val_mean_absolute_error: 534.2217 - 48ms/epoch - 8ms/step
+Epoch 64/200
+6/6 - 0s - loss: 437240.1250 - mean_absolute_error: 526.1225 - val_loss: 528234.3750 - val_mean_absolute_error: 534.1041 - 48ms/epoch - 8ms/step
+Epoch 65/200
+6/6 - 0s - loss: 435793.8750 - mean_absolute_error: 525.6494 - val_loss: 527631.6875 - val_mean_absolute_error: 533.9839 - 48ms/epoch - 8ms/step
+Epoch 66/200
+6/6 - 0s - loss: 434587.5312 - mean_absolute_error: 525.4125 - val_loss: 527017.2500 - val_mean_absolute_error: 533.8610 - 48ms/epoch - 8ms/step
+Epoch 67/200
+6/6 - 0s - loss: 433927.1250 - mean_absolute_error: 525.2905 - val_loss: 526306.5625 - val_mean_absolute_error: 533.7381 - 49ms/epoch - 8ms/step
+Epoch 68/200
+6/6 - 0s - loss: 433943.0938 - mean_absolute_error: 525.2654 - val_loss: 525614.6875 - val_mean_absolute_error: 533.6157 - 47ms/epoch - 8ms/step
+Epoch 69/200
+6/6 - 0s - loss: 432894.2812 - mean_absolute_error: 524.7710 - val_loss: 524865.9375 - val_mean_absolute_error: 533.4894 - 49ms/epoch - 8ms/step
+Epoch 70/200
+6/6 - 0s - loss: 431612.6250 - mean_absolute_error: 523.7491 - val_loss: 524169.9688 - val_mean_absolute_error: 533.3649 - 47ms/epoch - 8ms/step
+Epoch 71/200
+6/6 - 0s - loss: 432343.0000 - mean_absolute_error: 524.7369 - val_loss: 523498.0312 - val_mean_absolute_error: 533.2441 - 48ms/epoch - 8ms/step
+Epoch 72/200
+6/6 - 0s - loss: 433602.8750 - mean_absolute_error: 525.1149 - val_loss: 522775.3125 - val_mean_absolute_error: 533.1186 - 48ms/epoch - 8ms/step
+Epoch 73/200
+6/6 - 0s - loss: 432440.8750 - mean_absolute_error: 524.1406 - val_loss: 522112.2188 - val_mean_absolute_error: 532.9865 - 49ms/epoch - 8ms/step
+Epoch 74/200
+6/6 - 0s - loss: 431584.1875 - mean_absolute_error: 524.1512 - val_loss: 521469.5938 - val_mean_absolute_error: 532.8621 - 49ms/epoch - 8ms/step
+Epoch 75/200
+6/6 - 0s - loss: 429183.7188 - mean_absolute_error: 522.8130 - val_loss: 520666.9375 - val_mean_absolute_error: 532.7305 - 74ms/epoch - 12ms/step
+Epoch 76/200
+6/6 - 0s - loss: 429006.9062 - mean_absolute_error: 523.5437 - val_loss: 519933.1875 - val_mean_absolute_error: 532.6069 - 48ms/epoch - 8ms/step
+Epoch 77/200
+6/6 - 0s - loss: 429606.0000 - mean_absolute_error: 523.2466 - val_loss: 519223.3438 - val_mean_absolute_error: 532.4750 - 48ms/epoch - 8ms/step
+Epoch 78/200
+6/6 - 0s - loss: 429011.6250 - mean_absolute_error: 523.4173 - val_loss: 518531.9062 - val_mean_absolute_error: 532.3516 - 48ms/epoch - 8ms/step
+Epoch 79/200
+6/6 - 0s - loss: 428181.8125 - mean_absolute_error: 522.9471 - val_loss: 517783.1875 - val_mean_absolute_error: 532.2147 - 48ms/epoch - 8ms/step
+Epoch 80/200
+6/6 - 0s - loss: 427594.3125 - mean_absolute_error: 522.7690 - val_loss: 517009.3750 - val_mean_absolute_error: 532.0886 - 47ms/epoch - 8ms/step
+Epoch 81/200
+6/6 - 0s - loss: 428301.0938 - mean_absolute_error: 523.1135 - val_loss: 516273.0938 - val_mean_absolute_error: 531.9650 - 47ms/epoch - 8ms/step
+Epoch 82/200
+6/6 - 0s - loss: 427174.8750 - mean_absolute_error: 522.5493 - val_loss: 515559.4375 - val_mean_absolute_error: 531.8412 - 47ms/epoch - 8ms/step
+Epoch 83/200
+6/6 - 0s - loss: 427791.0312 - mean_absolute_error: 523.1491 - val_loss: 514884.1875 - val_mean_absolute_error: 531.7188 - 47ms/epoch - 8ms/step
+Epoch 84/200
+6/6 - 0s - loss: 424829.1250 - mean_absolute_error: 521.8710 - val_loss: 514093.9375 - val_mean_absolute_error: 531.5948 - 48ms/epoch - 8ms/step
+Epoch 85/200
+6/6 - 0s - loss: 426383.5938 - mean_absolute_error: 522.4290 - val_loss: 513315.9062 - val_mean_absolute_error: 531.4646 - 48ms/epoch - 8ms/step
+Epoch 86/200
+6/6 - 0s - loss: 424315.3750 - mean_absolute_error: 521.2327 - val_loss: 512521.8438 - val_mean_absolute_error: 531.3323 - 49ms/epoch - 8ms/step
+Epoch 87/200
+6/6 - 0s - loss: 423356.1250 - mean_absolute_error: 521.6562 - val_loss: 511672.0938 - val_mean_absolute_error: 531.1974 - 48ms/epoch - 8ms/step
+Epoch 88/200
+6/6 - 0s - loss: 424195.1250 - mean_absolute_error: 522.2168 - val_loss: 510971.6250 - val_mean_absolute_error: 531.0746 - 47ms/epoch - 8ms/step
+Epoch 89/200
+6/6 - 0s - loss: 422593.8125 - mean_absolute_error: 520.7958 - val_loss: 510187.0000 - val_mean_absolute_error: 530.9398 - 48ms/epoch - 8ms/step
+Epoch 90/200
+6/6 - 0s - loss: 422888.7188 - mean_absolute_error: 521.2501 - val_loss: 509388.3125 - val_mean_absolute_error: 530.8076 - 47ms/epoch - 8ms/step
+Epoch 91/200
+6/6 - 0s - loss: 422022.7812 - mean_absolute_error: 520.8831 - val_loss: 508576.5625 - val_mean_absolute_error: 530.6753 - 47ms/epoch - 8ms/step
+Epoch 92/200
+6/6 - 0s - loss: 421870.5000 - mean_absolute_error: 520.5410 - val_loss: 507731.7812 - val_mean_absolute_error: 530.5358 - 47ms/epoch - 8ms/step
+Epoch 93/200
+6/6 - 0s - loss: 419793.0938 - mean_absolute_error: 519.8242 - val_loss: 506949.5625 - val_mean_absolute_error: 530.4028 - 47ms/epoch - 8ms/step
+Epoch 94/200
+6/6 - 0s - loss: 421177.9688 - mean_absolute_error: 520.9564 - val_loss: 506044.7812 - val_mean_absolute_error: 530.2607 - 48ms/epoch - 8ms/step
+Epoch 95/200
+6/6 - 0s - loss: 420752.0000 - mean_absolute_error: 520.2206 - val_loss: 505368.8750 - val_mean_absolute_error: 530.1380 - 48ms/epoch - 8ms/step
+Epoch 96/200
+6/6 - 0s - loss: 417234.3750 - mean_absolute_error: 518.0733 - val_loss: 504552.0312 - val_mean_absolute_error: 530.0032 - 47ms/epoch - 8ms/step
+Epoch 97/200
+6/6 - 0s - loss: 417830.3125 - mean_absolute_error: 519.8641 - val_loss: 503715.5000 - val_mean_absolute_error: 529.8578 - 48ms/epoch - 8ms/step
+Epoch 98/200
+6/6 - 0s - loss: 414964.9688 - mean_absolute_error: 518.6200 - val_loss: 502906.8438 - val_mean_absolute_error: 529.7230 - 47ms/epoch - 8ms/step
+Epoch 99/200
+6/6 - 0s - loss: 416062.5312 - mean_absolute_error: 517.4937 - val_loss: 501993.7812 - val_mean_absolute_error: 529.5771 - 47ms/epoch - 8ms/step
+Epoch 100/200
+6/6 - 0s - loss: 416179.6250 - mean_absolute_error: 517.9955 - val_loss: 501161.4375 - val_mean_absolute_error: 529.4435 - 48ms/epoch - 8ms/step
+Epoch 101/200
+6/6 - 0s - loss: 415173.3125 - mean_absolute_error: 518.1228 - val_loss: 500338.4688 - val_mean_absolute_error: 529.3065 - 47ms/epoch - 8ms/step
+Epoch 102/200
+6/6 - 0s - loss: 415005.4688 - mean_absolute_error: 518.7928 - val_loss: 499467.4062 - val_mean_absolute_error: 529.1696 - 47ms/epoch - 8ms/step
+Epoch 103/200
+6/6 - 0s - loss: 415271.6875 - mean_absolute_error: 518.6572 - val_loss: 498705.8750 - val_mean_absolute_error: 529.0397 - 48ms/epoch - 8ms/step
+Epoch 104/200
+6/6 - 0s - loss: 413493.9688 - mean_absolute_error: 517.7533 - val_loss: 497831.2500 - val_mean_absolute_error: 528.8984 - 48ms/epoch - 8ms/step
+Epoch 105/200
+6/6 - 0s - loss: 413054.8125 - mean_absolute_error: 517.6936 - val_loss: 497010.2188 - val_mean_absolute_error: 528.7661 - 48ms/epoch - 8ms/step
+Epoch 106/200
+6/6 - 0s - loss: 414808.8750 - mean_absolute_error: 518.4620 - val_loss: 496164.7500 - val_mean_absolute_error: 528.6240 - 48ms/epoch - 8ms/step
+Epoch 107/200
+6/6 - 0s - loss: 412671.6250 - mean_absolute_error: 517.0864 - val_loss: 495278.0312 - val_mean_absolute_error: 528.4829 - 48ms/epoch - 8ms/step
+Epoch 108/200
+6/6 - 0s - loss: 408545.2812 - mean_absolute_error: 515.0051 - val_loss: 494344.0938 - val_mean_absolute_error: 528.3340 - 48ms/epoch - 8ms/step
+Epoch 109/200
+6/6 - 0s - loss: 411059.2188 - mean_absolute_error: 516.8981 - val_loss: 493405.9688 - val_mean_absolute_error: 528.1849 - 47ms/epoch - 8ms/step
+Epoch 110/200
+6/6 - 0s - loss: 412906.0312 - mean_absolute_error: 517.2230 - val_loss: 492583.3438 - val_mean_absolute_error: 528.0444 - 47ms/epoch - 8ms/step
+Epoch 111/200
+6/6 - 0s - loss: 412742.0938 - mean_absolute_error: 518.7832 - val_loss: 491795.0000 - val_mean_absolute_error: 527.9065 - 48ms/epoch - 8ms/step
+Epoch 112/200
+6/6 - 0s - loss: 408908.7188 - mean_absolute_error: 515.2658 - val_loss: 490865.4688 - val_mean_absolute_error: 527.7557 - 47ms/epoch - 8ms/step
+Epoch 113/200
+6/6 - 0s - loss: 409336.0312 - mean_absolute_error: 516.5523 - val_loss: 490010.2188 - val_mean_absolute_error: 527.6125 - 48ms/epoch - 8ms/step
+Epoch 114/200
+6/6 - 0s - loss: 410982.5000 - mean_absolute_error: 517.3329 - val_loss: 489188.0312 - val_mean_absolute_error: 527.4767 - 48ms/epoch - 8ms/step
+Epoch 115/200
+6/6 - 0s - loss: 407357.8125 - mean_absolute_error: 515.8965 - val_loss: 488257.0625 - val_mean_absolute_error: 527.3271 - 49ms/epoch - 8ms/step
+Epoch 116/200
+6/6 - 0s - loss: 403963.8125 - mean_absolute_error: 514.3325 - val_loss: 487423.4062 - val_mean_absolute_error: 527.1873 - 49ms/epoch - 8ms/step
+Epoch 117/200
+6/6 - 0s - loss: 406982.2812 - mean_absolute_error: 515.8250 - val_loss: 486562.8125 - val_mean_absolute_error: 527.0425 - 50ms/epoch - 8ms/step
+Epoch 118/200
+6/6 - 0s - loss: 404286.0312 - mean_absolute_error: 513.4154 - val_loss: 485621.3438 - val_mean_absolute_error: 526.8925 - 50ms/epoch - 8ms/step
+Epoch 119/200
+6/6 - 0s - loss: 404807.1875 - mean_absolute_error: 515.0090 - val_loss: 484719.5312 - val_mean_absolute_error: 526.7465 - 48ms/epoch - 8ms/step
+Epoch 120/200
+6/6 - 0s - loss: 406934.1875 - mean_absolute_error: 516.0468 - val_loss: 483915.7188 - val_mean_absolute_error: 526.6075 - 49ms/epoch - 8ms/step
+Epoch 121/200
+6/6 - 0s - loss: 406695.8750 - mean_absolute_error: 515.0157 - val_loss: 483045.0938 - val_mean_absolute_error: 526.4658 - 50ms/epoch - 8ms/step
+Epoch 122/200
+6/6 - 0s - loss: 400326.3750 - mean_absolute_error: 511.6181 - val_loss: 481993.2500 - val_mean_absolute_error: 526.3031 - 52ms/epoch - 9ms/step
+Epoch 123/200
+6/6 - 0s - loss: 401062.5938 - mean_absolute_error: 514.4370 - val_loss: 481180.2188 - val_mean_absolute_error: 526.1631 - 53ms/epoch - 9ms/step
+Epoch 124/200
+6/6 - 0s - loss: 402099.4688 - mean_absolute_error: 512.5457 - val_loss: 480381.4688 - val_mean_absolute_error: 526.0251 - 49ms/epoch - 8ms/step
+Epoch 125/200
+6/6 - 0s - loss: 402728.0938 - mean_absolute_error: 514.7766 - val_loss: 479426.8125 - val_mean_absolute_error: 525.8704 - 49ms/epoch - 8ms/step
+Epoch 126/200
+6/6 - 0s - loss: 401431.5312 - mean_absolute_error: 514.4150 - val_loss: 478490.2188 - val_mean_absolute_error: 525.7148 - 49ms/epoch - 8ms/step
+Epoch 127/200
+6/6 - 0s - loss: 403058.9062 - mean_absolute_error: 514.8116 - val_loss: 477691.6875 - val_mean_absolute_error: 525.5714 - 48ms/epoch - 8ms/step
+Epoch 128/200
+6/6 - 0s - loss: 397587.6875 - mean_absolute_error: 511.2323 - val_loss: 476729.9688 - val_mean_absolute_error: 525.4164 - 48ms/epoch - 8ms/step
+Epoch 129/200
+6/6 - 0s - loss: 397578.4688 - mean_absolute_error: 511.2543 - val_loss: 475829.4688 - val_mean_absolute_error: 525.2661 - 48ms/epoch - 8ms/step
+Epoch 130/200
+6/6 - 0s - loss: 398211.8750 - mean_absolute_error: 512.3758 - val_loss: 474914.1562 - val_mean_absolute_error: 525.1146 - 48ms/epoch - 8ms/step
+Epoch 131/200
+6/6 - 0s - loss: 394772.5312 - mean_absolute_error: 510.1483 - val_loss: 473854.8438 - val_mean_absolute_error: 524.9456 - 47ms/epoch - 8ms/step
+Epoch 132/200
+6/6 - 0s - loss: 394988.1250 - mean_absolute_error: 510.1992 - val_loss: 472970.3125 - val_mean_absolute_error: 524.7963 - 48ms/epoch - 8ms/step
+Epoch 133/200
+6/6 - 0s - loss: 400527.0938 - mean_absolute_error: 513.5870 - val_loss: 472075.7812 - val_mean_absolute_error: 524.6448 - 48ms/epoch - 8ms/step
+Epoch 134/200
+6/6 - 0s - loss: 395998.5000 - mean_absolute_error: 511.0858 - val_loss: 471163.2188 - val_mean_absolute_error: 524.4897 - 48ms/epoch - 8ms/step
+Epoch 135/200
+6/6 - 0s - loss: 400195.7188 - mean_absolute_error: 513.3775 - val_loss: 470267.7188 - val_mean_absolute_error: 524.3337 - 47ms/epoch - 8ms/step
+Epoch 136/200
+6/6 - 0s - loss: 395695.9688 - mean_absolute_error: 510.9134 - val_loss: 469365.8750 - val_mean_absolute_error: 524.1886 - 48ms/epoch - 8ms/step
+Epoch 137/200
+6/6 - 0s - loss: 393009.9688 - mean_absolute_error: 510.2986 - val_loss: 468454.6562 - val_mean_absolute_error: 524.0339 - 49ms/epoch - 8ms/step
+Epoch 138/200
+6/6 - 0s - loss: 393429.6250 - mean_absolute_error: 510.0918 - val_loss: 467559.8125 - val_mean_absolute_error: 523.8829 - 48ms/epoch - 8ms/step
+Epoch 139/200
+6/6 - 0s - loss: 394601.1250 - mean_absolute_error: 510.8286 - val_loss: 466583.9688 - val_mean_absolute_error: 523.7209 - 48ms/epoch - 8ms/step
+Epoch 140/200
+6/6 - 0s - loss: 393109.9688 - mean_absolute_error: 512.2590 - val_loss: 465706.4688 - val_mean_absolute_error: 523.5696 - 47ms/epoch - 8ms/step
+Epoch 141/200
+6/6 - 0s - loss: 394231.9062 - mean_absolute_error: 507.8921 - val_loss: 464866.7500 - val_mean_absolute_error: 523.4196 - 47ms/epoch - 8ms/step
+Epoch 142/200
+6/6 - 0s - loss: 391880.3125 - mean_absolute_error: 510.9390 - val_loss: 463948.3125 - val_mean_absolute_error: 523.2618 - 48ms/epoch - 8ms/step
+Epoch 143/200
+6/6 - 0s - loss: 391216.6875 - mean_absolute_error: 509.8468 - val_loss: 462986.4688 - val_mean_absolute_error: 523.1024 - 47ms/epoch - 8ms/step
+Epoch 144/200
+6/6 - 0s - loss: 391363.4688 - mean_absolute_error: 507.3570 - val_loss: 462094.8438 - val_mean_absolute_error: 522.9490 - 48ms/epoch - 8ms/step
+Epoch 145/200
+6/6 - 0s - loss: 390790.5938 - mean_absolute_error: 510.4445 - val_loss: 461131.0312 - val_mean_absolute_error: 522.7884 - 48ms/epoch - 8ms/step
+Epoch 146/200
+6/6 - 0s - loss: 390164.1875 - mean_absolute_error: 510.2100 - val_loss: 460186.6562 - val_mean_absolute_error: 522.6225 - 48ms/epoch - 8ms/step
+Epoch 147/200
+6/6 - 0s - loss: 385403.8125 - mean_absolute_error: 506.9644 - val_loss: 459094.0625 - val_mean_absolute_error: 522.4486 - 48ms/epoch - 8ms/step
+Epoch 148/200
+6/6 - 0s - loss: 387631.9062 - mean_absolute_error: 508.2806 - val_loss: 458272.8125 - val_mean_absolute_error: 522.2977 - 47ms/epoch - 8ms/step
+Epoch 149/200
+6/6 - 0s - loss: 383393.0938 - mean_absolute_error: 506.2577 - val_loss: 457338.8438 - val_mean_absolute_error: 522.1354 - 52ms/epoch - 9ms/step
+Epoch 150/200
+6/6 - 0s - loss: 383613.7812 - mean_absolute_error: 508.2752 - val_loss: 456450.2500 - val_mean_absolute_error: 521.9789 - 51ms/epoch - 9ms/step
+Epoch 151/200
+6/6 - 0s - loss: 387019.4062 - mean_absolute_error: 509.0276 - val_loss: 455539.3125 - val_mean_absolute_error: 521.8168 - 51ms/epoch - 8ms/step
+Epoch 152/200
+6/6 - 0s - loss: 385485.8750 - mean_absolute_error: 506.2011 - val_loss: 454594.1250 - val_mean_absolute_error: 521.6538 - 47ms/epoch - 8ms/step
+Epoch 153/200
+6/6 - 0s - loss: 384779.5938 - mean_absolute_error: 509.6053 - val_loss: 453655.1250 - val_mean_absolute_error: 521.4848 - 48ms/epoch - 8ms/step
+Epoch 154/200
+6/6 - 0s - loss: 385296.8125 - mean_absolute_error: 506.7779 - val_loss: 452730.4375 - val_mean_absolute_error: 521.3199 - 47ms/epoch - 8ms/step
+Epoch 155/200
+6/6 - 0s - loss: 383817.2188 - mean_absolute_error: 506.2994 - val_loss: 451753.2812 - val_mean_absolute_error: 521.1516 - 46ms/epoch - 8ms/step
+Epoch 156/200
+6/6 - 0s - loss: 380768.7500 - mean_absolute_error: 506.2523 - val_loss: 450907.6875 - val_mean_absolute_error: 520.9950 - 47ms/epoch - 8ms/step
+Epoch 157/200
+6/6 - 0s - loss: 384562.2188 - mean_absolute_error: 507.9794 - val_loss: 450024.1875 - val_mean_absolute_error: 520.8355 - 48ms/epoch - 8ms/step
+Epoch 158/200
+6/6 - 0s - loss: 380327.0000 - mean_absolute_error: 504.8807 - val_loss: 449075.3125 - val_mean_absolute_error: 520.6662 - 47ms/epoch - 8ms/step
+Epoch 159/200
+6/6 - 0s - loss: 380698.2188 - mean_absolute_error: 505.4790 - val_loss: 448129.3438 - val_mean_absolute_error: 520.5078 - 47ms/epoch - 8ms/step
+Epoch 160/200
+6/6 - 0s - loss: 378137.9062 - mean_absolute_error: 504.6651 - val_loss: 447162.9062 - val_mean_absolute_error: 520.3377 - 48ms/epoch - 8ms/step
+Epoch 161/200
+6/6 - 0s - loss: 379313.1875 - mean_absolute_error: 503.0475 - val_loss: 446215.8125 - val_mean_absolute_error: 520.1719 - 47ms/epoch - 8ms/step
+Epoch 162/200
+6/6 - 0s - loss: 379600.4062 - mean_absolute_error: 506.5595 - val_loss: 445342.6250 - val_mean_absolute_error: 520.0154 - 48ms/epoch - 8ms/step
+Epoch 163/200
+6/6 - 0s - loss: 383757.3750 - mean_absolute_error: 506.1641 - val_loss: 444463.8125 - val_mean_absolute_error: 519.8550 - 48ms/epoch - 8ms/step
+Epoch 164/200
+6/6 - 0s - loss: 378602.7500 - mean_absolute_error: 504.5053 - val_loss: 443493.1875 - val_mean_absolute_error: 519.6782 - 47ms/epoch - 8ms/step
+Epoch 165/200
+6/6 - 0s - loss: 376802.6875 - mean_absolute_error: 504.9055 - val_loss: 442639.7188 - val_mean_absolute_error: 519.5275 - 48ms/epoch - 8ms/step
+Epoch 166/200
+6/6 - 0s - loss: 380361.5938 - mean_absolute_error: 506.7639 - val_loss: 441713.6562 - val_mean_absolute_error: 519.3549 - 49ms/epoch - 8ms/step
+Epoch 167/200
+6/6 - 0s - loss: 379292.0312 - mean_absolute_error: 505.1688 - val_loss: 440925.5312 - val_mean_absolute_error: 519.2058 - 49ms/epoch - 8ms/step
+Epoch 168/200
+6/6 - 0s - loss: 379847.1250 - mean_absolute_error: 506.1571 - val_loss: 440016.0000 - val_mean_absolute_error: 519.0338 - 49ms/epoch - 8ms/step
+Epoch 169/200
+6/6 - 0s - loss: 374859.9062 - mean_absolute_error: 503.1670 - val_loss: 439222.2500 - val_mean_absolute_error: 518.8809 - 48ms/epoch - 8ms/step
+Epoch 170/200
+6/6 - 0s - loss: 373963.7188 - mean_absolute_error: 505.6071 - val_loss: 438312.3750 - val_mean_absolute_error: 518.7128 - 48ms/epoch - 8ms/step
+Epoch 171/200
+6/6 - 0s - loss: 370545.6250 - mean_absolute_error: 503.7125 - val_loss: 437380.8750 - val_mean_absolute_error: 518.5459 - 51ms/epoch - 8ms/step
+Epoch 172/200
+6/6 - 0s - loss: 370445.6250 - mean_absolute_error: 500.3293 - val_loss: 436488.5000 - val_mean_absolute_error: 518.3718 - 62ms/epoch - 10ms/step
+Epoch 173/200
+6/6 - 0s - loss: 379055.5938 - mean_absolute_error: 507.1311 - val_loss: 435661.9375 - val_mean_absolute_error: 518.2170 - 54ms/epoch - 9ms/step
+Epoch 174/200
+6/6 - 0s - loss: 369977.4375 - mean_absolute_error: 500.9925 - val_loss: 434786.1250 - val_mean_absolute_error: 518.0488 - 52ms/epoch - 9ms/step
+Epoch 175/200
+6/6 - 0s - loss: 375810.5312 - mean_absolute_error: 505.9774 - val_loss: 433914.3125 - val_mean_absolute_error: 517.8840 - 49ms/epoch - 8ms/step
+Epoch 176/200
+6/6 - 0s - loss: 368161.8125 - mean_absolute_error: 497.5037 - val_loss: 432968.7500 - val_mean_absolute_error: 517.7111 - 49ms/epoch - 8ms/step
+Epoch 177/200
+6/6 - 0s - loss: 375699.2812 - mean_absolute_error: 506.2407 - val_loss: 432158.5625 - val_mean_absolute_error: 517.5455 - 49ms/epoch - 8ms/step
+Epoch 178/200
+6/6 - 0s - loss: 370304.8750 - mean_absolute_error: 501.2383 - val_loss: 431203.2500 - val_mean_absolute_error: 517.3763 - 48ms/epoch - 8ms/step
+Epoch 179/200
+6/6 - 0s - loss: 371369.8750 - mean_absolute_error: 501.0780 - val_loss: 430354.1562 - val_mean_absolute_error: 517.2101 - 48ms/epoch - 8ms/step
+Epoch 180/200
+6/6 - 0s - loss: 374566.2188 - mean_absolute_error: 505.3540 - val_loss: 429557.2500 - val_mean_absolute_error: 517.0467 - 48ms/epoch - 8ms/step
+Epoch 181/200
+6/6 - 0s - loss: 371009.8750 - mean_absolute_error: 501.9899 - val_loss: 428647.7812 - val_mean_absolute_error: 516.8704 - 47ms/epoch - 8ms/step
+Epoch 182/200
+6/6 - 0s - loss: 362227.5000 - mean_absolute_error: 501.5237 - val_loss: 427674.4688 - val_mean_absolute_error: 516.6857 - 48ms/epoch - 8ms/step
+Epoch 183/200
+6/6 - 0s - loss: 364142.6875 - mean_absolute_error: 500.4909 - val_loss: 426836.5000 - val_mean_absolute_error: 516.5157 - 47ms/epoch - 8ms/step
+Epoch 184/200
+6/6 - 0s - loss: 361447.9688 - mean_absolute_error: 496.5044 - val_loss: 425986.4375 - val_mean_absolute_error: 516.3405 - 48ms/epoch - 8ms/step
+Epoch 185/200
+6/6 - 0s - loss: 368348.5625 - mean_absolute_error: 503.4016 - val_loss: 425138.6562 - val_mean_absolute_error: 516.1652 - 48ms/epoch - 8ms/step
+Epoch 186/200
+6/6 - 0s - loss: 368482.4688 - mean_absolute_error: 498.4663 - val_loss: 424338.7500 - val_mean_absolute_error: 515.9973 - 47ms/epoch - 8ms/step
+Epoch 187/200
+6/6 - 0s - loss: 365630.4375 - mean_absolute_error: 499.2942 - val_loss: 423554.8438 - val_mean_absolute_error: 515.8364 - 47ms/epoch - 8ms/step
+Epoch 188/200
+6/6 - 0s - loss: 371474.0312 - mean_absolute_error: 504.9439 - val_loss: 422835.7812 - val_mean_absolute_error: 515.6812 - 47ms/epoch - 8ms/step
+Epoch 189/200
+6/6 - 0s - loss: 363700.6875 - mean_absolute_error: 498.7305 - val_loss: 421928.4062 - val_mean_absolute_error: 515.5038 - 48ms/epoch - 8ms/step
+Epoch 190/200
+6/6 - 0s - loss: 367167.8125 - mean_absolute_error: 499.7858 - val_loss: 421121.6562 - val_mean_absolute_error: 515.3382 - 47ms/epoch - 8ms/step
+Epoch 191/200
+6/6 - 0s - loss: 366326.0312 - mean_absolute_error: 499.8334 - val_loss: 420198.4688 - val_mean_absolute_error: 515.2708 - 48ms/epoch - 8ms/step
+Epoch 192/200
+6/6 - 0s - loss: 368887.6250 - mean_absolute_error: 502.4799 - val_loss: 419454.4375 - val_mean_absolute_error: 515.2084 - 47ms/epoch - 8ms/step
+Epoch 193/200
+6/6 - 0s - loss: 366183.5625 - mean_absolute_error: 501.3491 - val_loss: 418727.5938 - val_mean_absolute_error: 515.1463 - 47ms/epoch - 8ms/step
+Epoch 194/200
+6/6 - 0s - loss: 358301.0000 - mean_absolute_error: 499.1162 - val_loss: 417852.5938 - val_mean_absolute_error: 515.0863 - 47ms/epoch - 8ms/step
+Epoch 195/200
+6/6 - 0s - loss: 363665.0625 - mean_absolute_error: 498.3564 - val_loss: 417018.2188 - val_mean_absolute_error: 515.0211 - 47ms/epoch - 8ms/step
+Epoch 196/200
+6/6 - 0s - loss: 362186.5000 - mean_absolute_error: 499.2928 - val_loss: 416164.6562 - val_mean_absolute_error: 514.9539 - 47ms/epoch - 8ms/step
+Epoch 197/200
+6/6 - 0s - loss: 361194.0312 - mean_absolute_error: 494.5461 - val_loss: 415360.8750 - val_mean_absolute_error: 514.8926 - 48ms/epoch - 8ms/step
+Epoch 198/200
+6/6 - 0s - loss: 357170.6562 - mean_absolute_error: 497.1844 - val_loss: 414618.6562 - val_mean_absolute_error: 514.8275 - 48ms/epoch - 8ms/step
+Epoch 199/200
+6/6 - 0s - loss: 361477.9688 - mean_absolute_error: 498.1729 - val_loss: 413783.5312 - val_mean_absolute_error: 514.7684 - 47ms/epoch - 8ms/step
+Epoch 200/200
+6/6 - 0s - loss: 369230.5312 - mean_absolute_error: 502.3360 - val_loss: 413012.9688 - val_mean_absolute_error: 514.6928 - 48ms/epoch - 8ms/step</code></pre>
+</div>
+</div>
+<p>Keras reports for each epoch the value of the loss metric (mean squared error) for the training and validation data and the monitored metrics (mean absolute error) for the validation data. As you can see from the lengthy output, all criteria are still decreasing after 200 epochs. It is helpful to view the epoch history graphically. If you run the code in an interactive environment (e.g., RStudio), the epoch history is displayed and updated live. You can always plot the epoch <code>history</code> with the <code>plot</code> command:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history, <span class="at">smooth=</span><span class="cn">FALSE</span>)  <span class="co"># see ?plot.keras_training_history for doc</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-hitters-ann-200" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hitters-ann-200-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="ann_R_files/figure-html/fig-hitters-ann-200-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="ann_R_files/figure-html/fig-hitters-ann-200-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hitters-ann-200-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32.1: Epoch history for the first 200 epochs.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>All criteria are steadily declining and have not leveled out after 200 epochs (<a href="#fig-hitters-ann-200" class="quarto-xref">Figure&nbsp;<span>32.1</span></a>). As expected, the mean squared error and mean absolute error are higher in the validation data than in the training data. This is not always the case when training neural networks. Maybe surprisingly, after about 75 epochs the metrics are showing more variability from epoch to epoch in the training data than in the validation data. Also, there is no guarantee that criteria decrease monotonically, the mean squared error of epoch <span class="math inline">\(t\)</span> can be higher than that of epoch <span class="math inline">\(t-1\)</span>. We are looking for the results to settle down and stabilize before calling the optimization completed. More epochs need to be run in this example. Fortunately, you can continue where the previous run has left off. The following code trains the network for another 100 epochs:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>firstANN <span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fit</span>(x[<span class="sc">-</span>testid, ], </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        y[<span class="sc">-</span>testid], </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">epochs=</span><span class="dv">100</span>, </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">batch_size=</span><span class="dv">32</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">validation_data=</span> <span class="fu">list</span>(x[testid, ], y[testid])</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/100
+6/6 - 0s - loss: 365147.2812 - mean_absolute_error: 500.5816 - val_loss: 412237.0625 - val_mean_absolute_error: 514.6265 - 71ms/epoch - 12ms/step
+Epoch 2/100
+6/6 - 0s - loss: 352661.9688 - mean_absolute_error: 492.8665 - val_loss: 411403.5312 - val_mean_absolute_error: 514.5582 - 48ms/epoch - 8ms/step
+Epoch 3/100
+6/6 - 0s - loss: 352364.2188 - mean_absolute_error: 491.5524 - val_loss: 410641.7500 - val_mean_absolute_error: 514.4878 - 47ms/epoch - 8ms/step
+Epoch 4/100
+6/6 - 0s - loss: 355729.1562 - mean_absolute_error: 494.7828 - val_loss: 409885.0000 - val_mean_absolute_error: 514.4188 - 48ms/epoch - 8ms/step
+Epoch 5/100
+6/6 - 0s - loss: 365818.4375 - mean_absolute_error: 501.9479 - val_loss: 409168.0312 - val_mean_absolute_error: 514.3528 - 47ms/epoch - 8ms/step
+Epoch 6/100
+6/6 - 0s - loss: 349382.9688 - mean_absolute_error: 488.6680 - val_loss: 408416.5625 - val_mean_absolute_error: 514.2808 - 47ms/epoch - 8ms/step
+Epoch 7/100
+6/6 - 0s - loss: 355590.9375 - mean_absolute_error: 493.4650 - val_loss: 407645.3438 - val_mean_absolute_error: 514.2089 - 47ms/epoch - 8ms/step
+Epoch 8/100
+6/6 - 0s - loss: 361538.9375 - mean_absolute_error: 495.9058 - val_loss: 406840.3750 - val_mean_absolute_error: 514.1394 - 47ms/epoch - 8ms/step
+Epoch 9/100
+6/6 - 0s - loss: 354905.2812 - mean_absolute_error: 494.1031 - val_loss: 406076.3125 - val_mean_absolute_error: 514.0757 - 47ms/epoch - 8ms/step
+Epoch 10/100
+6/6 - 0s - loss: 355141.2188 - mean_absolute_error: 496.5707 - val_loss: 405251.8125 - val_mean_absolute_error: 514.0060 - 47ms/epoch - 8ms/step
+Epoch 11/100
+6/6 - 0s - loss: 360287.0625 - mean_absolute_error: 499.7583 - val_loss: 404540.6875 - val_mean_absolute_error: 513.9391 - 47ms/epoch - 8ms/step
+Epoch 12/100
+6/6 - 0s - loss: 356302.6875 - mean_absolute_error: 497.9318 - val_loss: 403791.3438 - val_mean_absolute_error: 513.8746 - 46ms/epoch - 8ms/step
+Epoch 13/100
+6/6 - 0s - loss: 357275.2812 - mean_absolute_error: 492.0284 - val_loss: 403167.7812 - val_mean_absolute_error: 513.8085 - 47ms/epoch - 8ms/step
+Epoch 14/100
+6/6 - 0s - loss: 352448.7812 - mean_absolute_error: 492.6255 - val_loss: 402360.5000 - val_mean_absolute_error: 513.7416 - 47ms/epoch - 8ms/step
+Epoch 15/100
+6/6 - 0s - loss: 352926.4688 - mean_absolute_error: 493.7325 - val_loss: 401717.7500 - val_mean_absolute_error: 513.6746 - 47ms/epoch - 8ms/step
+Epoch 16/100
+6/6 - 0s - loss: 355062.3750 - mean_absolute_error: 494.5887 - val_loss: 401133.9688 - val_mean_absolute_error: 513.6116 - 47ms/epoch - 8ms/step
+Epoch 17/100
+6/6 - 0s - loss: 353299.6562 - mean_absolute_error: 491.3240 - val_loss: 400411.5000 - val_mean_absolute_error: 513.5388 - 47ms/epoch - 8ms/step
+Epoch 18/100
+6/6 - 0s - loss: 351772.0938 - mean_absolute_error: 492.9532 - val_loss: 399808.6562 - val_mean_absolute_error: 513.4797 - 46ms/epoch - 8ms/step
+Epoch 19/100
+6/6 - 0s - loss: 358504.1562 - mean_absolute_error: 497.4082 - val_loss: 399221.0625 - val_mean_absolute_error: 513.4129 - 48ms/epoch - 8ms/step
+Epoch 20/100
+6/6 - 0s - loss: 351850.2812 - mean_absolute_error: 492.9138 - val_loss: 398511.3438 - val_mean_absolute_error: 513.3474 - 48ms/epoch - 8ms/step
+Epoch 21/100
+6/6 - 0s - loss: 354975.7500 - mean_absolute_error: 492.6649 - val_loss: 397977.7500 - val_mean_absolute_error: 513.2744 - 48ms/epoch - 8ms/step
+Epoch 22/100
+6/6 - 0s - loss: 356554.0312 - mean_absolute_error: 496.7834 - val_loss: 397285.0000 - val_mean_absolute_error: 513.2042 - 48ms/epoch - 8ms/step
+Epoch 23/100
+6/6 - 0s - loss: 355069.9688 - mean_absolute_error: 497.6052 - val_loss: 396709.3750 - val_mean_absolute_error: 513.1379 - 47ms/epoch - 8ms/step
+Epoch 24/100
+6/6 - 0s - loss: 360197.5312 - mean_absolute_error: 499.8509 - val_loss: 396175.4375 - val_mean_absolute_error: 513.0699 - 48ms/epoch - 8ms/step
+Epoch 25/100
+6/6 - 0s - loss: 355621.2188 - mean_absolute_error: 496.0405 - val_loss: 395548.1250 - val_mean_absolute_error: 512.9991 - 55ms/epoch - 9ms/step
+Epoch 26/100
+6/6 - 0s - loss: 346483.5312 - mean_absolute_error: 490.1424 - val_loss: 394840.4688 - val_mean_absolute_error: 512.9238 - 51ms/epoch - 8ms/step
+Epoch 27/100
+6/6 - 0s - loss: 352016.6250 - mean_absolute_error: 495.5812 - val_loss: 394214.9062 - val_mean_absolute_error: 512.8500 - 49ms/epoch - 8ms/step
+Epoch 28/100
+6/6 - 0s - loss: 349055.1562 - mean_absolute_error: 492.9431 - val_loss: 393611.7188 - val_mean_absolute_error: 512.7806 - 48ms/epoch - 8ms/step
+Epoch 29/100
+6/6 - 0s - loss: 345397.0000 - mean_absolute_error: 487.8767 - val_loss: 393016.4688 - val_mean_absolute_error: 512.7134 - 48ms/epoch - 8ms/step
+Epoch 30/100
+6/6 - 0s - loss: 348977.6250 - mean_absolute_error: 493.7151 - val_loss: 392429.5625 - val_mean_absolute_error: 512.6425 - 48ms/epoch - 8ms/step
+Epoch 31/100
+6/6 - 0s - loss: 343733.0312 - mean_absolute_error: 490.8257 - val_loss: 391816.0938 - val_mean_absolute_error: 512.5631 - 48ms/epoch - 8ms/step
+Epoch 32/100
+6/6 - 0s - loss: 351393.3125 - mean_absolute_error: 495.8878 - val_loss: 391259.7188 - val_mean_absolute_error: 512.4988 - 47ms/epoch - 8ms/step
+Epoch 33/100
+6/6 - 0s - loss: 345034.9688 - mean_absolute_error: 492.0683 - val_loss: 390664.7500 - val_mean_absolute_error: 512.4360 - 47ms/epoch - 8ms/step
+Epoch 34/100
+6/6 - 0s - loss: 349037.9688 - mean_absolute_error: 494.6681 - val_loss: 390088.5000 - val_mean_absolute_error: 512.3613 - 47ms/epoch - 8ms/step
+Epoch 35/100
+6/6 - 0s - loss: 352525.3750 - mean_absolute_error: 492.0183 - val_loss: 389614.3438 - val_mean_absolute_error: 512.2913 - 47ms/epoch - 8ms/step
+Epoch 36/100
+6/6 - 0s - loss: 358342.1875 - mean_absolute_error: 498.3113 - val_loss: 389096.2812 - val_mean_absolute_error: 512.2263 - 47ms/epoch - 8ms/step
+Epoch 37/100
+6/6 - 0s - loss: 354527.9375 - mean_absolute_error: 494.6120 - val_loss: 388541.4375 - val_mean_absolute_error: 512.1465 - 47ms/epoch - 8ms/step
+Epoch 38/100
+6/6 - 0s - loss: 344763.5938 - mean_absolute_error: 489.4366 - val_loss: 387999.0000 - val_mean_absolute_error: 512.0748 - 47ms/epoch - 8ms/step
+Epoch 39/100
+6/6 - 0s - loss: 349956.7188 - mean_absolute_error: 491.4189 - val_loss: 387446.0625 - val_mean_absolute_error: 512.0015 - 49ms/epoch - 8ms/step
+Epoch 40/100
+6/6 - 0s - loss: 341134.4062 - mean_absolute_error: 487.4668 - val_loss: 386876.9688 - val_mean_absolute_error: 511.9369 - 48ms/epoch - 8ms/step
+Epoch 41/100
+6/6 - 0s - loss: 340737.7812 - mean_absolute_error: 485.1160 - val_loss: 386323.9688 - val_mean_absolute_error: 511.8690 - 48ms/epoch - 8ms/step
+Epoch 42/100
+6/6 - 0s - loss: 339247.1562 - mean_absolute_error: 488.8567 - val_loss: 385773.0625 - val_mean_absolute_error: 511.7968 - 47ms/epoch - 8ms/step
+Epoch 43/100
+6/6 - 0s - loss: 353175.9062 - mean_absolute_error: 496.2742 - val_loss: 385293.6875 - val_mean_absolute_error: 511.7213 - 47ms/epoch - 8ms/step
+Epoch 44/100
+6/6 - 0s - loss: 344642.7812 - mean_absolute_error: 489.1848 - val_loss: 384797.4688 - val_mean_absolute_error: 511.6382 - 47ms/epoch - 8ms/step
+Epoch 45/100
+6/6 - 0s - loss: 343377.4375 - mean_absolute_error: 489.1048 - val_loss: 384203.2500 - val_mean_absolute_error: 511.5628 - 48ms/epoch - 8ms/step
+Epoch 46/100
+6/6 - 0s - loss: 335861.0625 - mean_absolute_error: 485.3740 - val_loss: 383631.0000 - val_mean_absolute_error: 511.5005 - 47ms/epoch - 8ms/step
+Epoch 47/100
+6/6 - 0s - loss: 347670.0000 - mean_absolute_error: 488.8091 - val_loss: 383123.6562 - val_mean_absolute_error: 511.4334 - 47ms/epoch - 8ms/step
+Epoch 48/100
+6/6 - 0s - loss: 354496.6875 - mean_absolute_error: 496.0715 - val_loss: 382678.3438 - val_mean_absolute_error: 511.3720 - 47ms/epoch - 8ms/step
+Epoch 49/100
+6/6 - 0s - loss: 343049.0000 - mean_absolute_error: 489.1631 - val_loss: 382123.1562 - val_mean_absolute_error: 511.3002 - 48ms/epoch - 8ms/step
+Epoch 50/100
+6/6 - 0s - loss: 344196.3125 - mean_absolute_error: 491.1617 - val_loss: 381631.5625 - val_mean_absolute_error: 511.2227 - 48ms/epoch - 8ms/step
+Epoch 51/100
+6/6 - 0s - loss: 345819.5938 - mean_absolute_error: 493.3412 - val_loss: 381126.7188 - val_mean_absolute_error: 511.1531 - 47ms/epoch - 8ms/step
+Epoch 52/100
+6/6 - 0s - loss: 343258.0000 - mean_absolute_error: 491.5183 - val_loss: 380606.8125 - val_mean_absolute_error: 511.0843 - 47ms/epoch - 8ms/step
+Epoch 53/100
+6/6 - 0s - loss: 339856.4688 - mean_absolute_error: 488.3695 - val_loss: 380086.8125 - val_mean_absolute_error: 511.0190 - 47ms/epoch - 8ms/step
+Epoch 54/100
+6/6 - 0s - loss: 345488.7812 - mean_absolute_error: 486.7297 - val_loss: 379583.0938 - val_mean_absolute_error: 510.9410 - 47ms/epoch - 8ms/step
+Epoch 55/100
+6/6 - 0s - loss: 334950.1250 - mean_absolute_error: 486.4966 - val_loss: 379164.7812 - val_mean_absolute_error: 510.8683 - 47ms/epoch - 8ms/step
+Epoch 56/100
+6/6 - 0s - loss: 343321.5625 - mean_absolute_error: 487.1029 - val_loss: 378707.2188 - val_mean_absolute_error: 510.7993 - 47ms/epoch - 8ms/step
+Epoch 57/100
+6/6 - 0s - loss: 327086.1562 - mean_absolute_error: 480.1974 - val_loss: 378169.4688 - val_mean_absolute_error: 510.7734 - 47ms/epoch - 8ms/step
+Epoch 58/100
+6/6 - 0s - loss: 345492.2500 - mean_absolute_error: 487.9813 - val_loss: 377800.2188 - val_mean_absolute_error: 510.7345 - 47ms/epoch - 8ms/step
+Epoch 59/100
+6/6 - 0s - loss: 345000.0312 - mean_absolute_error: 490.4059 - val_loss: 377452.3750 - val_mean_absolute_error: 510.6983 - 47ms/epoch - 8ms/step
+Epoch 60/100
+6/6 - 0s - loss: 344065.2812 - mean_absolute_error: 491.7959 - val_loss: 377054.2188 - val_mean_absolute_error: 510.6671 - 47ms/epoch - 8ms/step
+Epoch 61/100
+6/6 - 0s - loss: 337943.3750 - mean_absolute_error: 489.6431 - val_loss: 376586.6250 - val_mean_absolute_error: 510.6451 - 48ms/epoch - 8ms/step
+Epoch 62/100
+6/6 - 0s - loss: 353420.6250 - mean_absolute_error: 495.8584 - val_loss: 376206.6562 - val_mean_absolute_error: 510.6125 - 47ms/epoch - 8ms/step
+Epoch 63/100
+6/6 - 0s - loss: 344302.1562 - mean_absolute_error: 488.3867 - val_loss: 375778.5625 - val_mean_absolute_error: 510.5884 - 46ms/epoch - 8ms/step
+Epoch 64/100
+6/6 - 0s - loss: 346805.7812 - mean_absolute_error: 490.4602 - val_loss: 375465.5312 - val_mean_absolute_error: 510.5543 - 47ms/epoch - 8ms/step
+Epoch 65/100
+6/6 - 0s - loss: 348484.1875 - mean_absolute_error: 490.5179 - val_loss: 375136.8125 - val_mean_absolute_error: 510.5180 - 47ms/epoch - 8ms/step
+Epoch 66/100
+6/6 - 0s - loss: 342843.5938 - mean_absolute_error: 489.4226 - val_loss: 374814.0938 - val_mean_absolute_error: 510.4752 - 46ms/epoch - 8ms/step
+Epoch 67/100
+6/6 - 0s - loss: 342405.4375 - mean_absolute_error: 484.1535 - val_loss: 374394.6875 - val_mean_absolute_error: 510.4484 - 47ms/epoch - 8ms/step
+Epoch 68/100
+6/6 - 0s - loss: 344752.2188 - mean_absolute_error: 487.1465 - val_loss: 374075.3125 - val_mean_absolute_error: 510.4011 - 47ms/epoch - 8ms/step
+Epoch 69/100
+6/6 - 0s - loss: 344365.9062 - mean_absolute_error: 491.4438 - val_loss: 373779.4688 - val_mean_absolute_error: 510.3520 - 47ms/epoch - 8ms/step
+Epoch 70/100
+6/6 - 0s - loss: 353265.5938 - mean_absolute_error: 495.0637 - val_loss: 373409.0000 - val_mean_absolute_error: 510.3306 - 47ms/epoch - 8ms/step
+Epoch 71/100
+6/6 - 0s - loss: 346546.1562 - mean_absolute_error: 484.8041 - val_loss: 373145.5312 - val_mean_absolute_error: 510.2782 - 47ms/epoch - 8ms/step
+Epoch 72/100
+6/6 - 0s - loss: 353810.4688 - mean_absolute_error: 494.6914 - val_loss: 372801.2500 - val_mean_absolute_error: 510.2430 - 47ms/epoch - 8ms/step
+Epoch 73/100
+6/6 - 0s - loss: 347741.8750 - mean_absolute_error: 487.9662 - val_loss: 372506.5000 - val_mean_absolute_error: 510.2077 - 47ms/epoch - 8ms/step
+Epoch 74/100
+6/6 - 0s - loss: 335327.8750 - mean_absolute_error: 487.6101 - val_loss: 372173.8750 - val_mean_absolute_error: 510.1863 - 49ms/epoch - 8ms/step
+Epoch 75/100
+6/6 - 0s - loss: 343958.7812 - mean_absolute_error: 486.1572 - val_loss: 371840.4062 - val_mean_absolute_error: 510.1588 - 47ms/epoch - 8ms/step
+Epoch 76/100
+6/6 - 0s - loss: 349545.0312 - mean_absolute_error: 495.0938 - val_loss: 371490.0938 - val_mean_absolute_error: 510.1177 - 47ms/epoch - 8ms/step
+Epoch 77/100
+6/6 - 0s - loss: 341628.2500 - mean_absolute_error: 485.1312 - val_loss: 371236.4062 - val_mean_absolute_error: 510.0791 - 47ms/epoch - 8ms/step
+Epoch 78/100
+6/6 - 0s - loss: 339422.7188 - mean_absolute_error: 486.5622 - val_loss: 370870.5938 - val_mean_absolute_error: 510.0569 - 47ms/epoch - 8ms/step
+Epoch 79/100
+6/6 - 0s - loss: 334078.9688 - mean_absolute_error: 485.8403 - val_loss: 370502.6562 - val_mean_absolute_error: 510.0260 - 47ms/epoch - 8ms/step
+Epoch 80/100
+6/6 - 0s - loss: 332196.0938 - mean_absolute_error: 481.1454 - val_loss: 370140.4062 - val_mean_absolute_error: 509.9970 - 48ms/epoch - 8ms/step
+Epoch 81/100
+6/6 - 0s - loss: 349069.1875 - mean_absolute_error: 494.0684 - val_loss: 369870.4062 - val_mean_absolute_error: 509.9668 - 49ms/epoch - 8ms/step
+Epoch 82/100
+6/6 - 0s - loss: 342388.4688 - mean_absolute_error: 489.4974 - val_loss: 369560.9688 - val_mean_absolute_error: 509.9343 - 47ms/epoch - 8ms/step
+Epoch 83/100
+6/6 - 0s - loss: 344220.2188 - mean_absolute_error: 486.9444 - val_loss: 369336.5625 - val_mean_absolute_error: 509.8904 - 47ms/epoch - 8ms/step
+Epoch 84/100
+6/6 - 0s - loss: 336571.6875 - mean_absolute_error: 483.4425 - val_loss: 369048.0000 - val_mean_absolute_error: 509.8582 - 47ms/epoch - 8ms/step
+Epoch 85/100
+6/6 - 0s - loss: 335537.4062 - mean_absolute_error: 486.6262 - val_loss: 368736.5625 - val_mean_absolute_error: 509.8304 - 53ms/epoch - 9ms/step
+Epoch 86/100
+6/6 - 0s - loss: 344480.9688 - mean_absolute_error: 489.2449 - val_loss: 368478.9375 - val_mean_absolute_error: 509.7903 - 67ms/epoch - 11ms/step
+Epoch 87/100
+6/6 - 0s - loss: 339064.9375 - mean_absolute_error: 488.7478 - val_loss: 368207.8750 - val_mean_absolute_error: 509.7499 - 51ms/epoch - 8ms/step
+Epoch 88/100
+6/6 - 0s - loss: 334850.7188 - mean_absolute_error: 482.8951 - val_loss: 367892.9688 - val_mean_absolute_error: 509.7192 - 50ms/epoch - 8ms/step
+Epoch 89/100
+6/6 - 0s - loss: 328820.3750 - mean_absolute_error: 476.0215 - val_loss: 367594.3125 - val_mean_absolute_error: 509.6896 - 49ms/epoch - 8ms/step
+Epoch 90/100
+6/6 - 0s - loss: 346116.7500 - mean_absolute_error: 489.2402 - val_loss: 367342.6875 - val_mean_absolute_error: 509.6405 - 48ms/epoch - 8ms/step
+Epoch 91/100
+6/6 - 0s - loss: 343033.5625 - mean_absolute_error: 486.9976 - val_loss: 367028.0938 - val_mean_absolute_error: 509.5864 - 48ms/epoch - 8ms/step
+Epoch 92/100
+6/6 - 0s - loss: 341928.2188 - mean_absolute_error: 484.0636 - val_loss: 366817.1875 - val_mean_absolute_error: 509.5502 - 47ms/epoch - 8ms/step
+Epoch 93/100
+6/6 - 0s - loss: 343058.8750 - mean_absolute_error: 485.1991 - val_loss: 366525.1875 - val_mean_absolute_error: 509.5214 - 47ms/epoch - 8ms/step
+Epoch 94/100
+6/6 - 0s - loss: 346277.7188 - mean_absolute_error: 486.9332 - val_loss: 366253.1562 - val_mean_absolute_error: 509.4857 - 47ms/epoch - 8ms/step
+Epoch 95/100
+6/6 - 0s - loss: 337786.0312 - mean_absolute_error: 482.0085 - val_loss: 365971.3438 - val_mean_absolute_error: 509.4608 - 47ms/epoch - 8ms/step
+Epoch 96/100
+6/6 - 0s - loss: 343570.8750 - mean_absolute_error: 486.1084 - val_loss: 365783.7188 - val_mean_absolute_error: 509.4071 - 47ms/epoch - 8ms/step
+Epoch 97/100
+6/6 - 0s - loss: 331375.5312 - mean_absolute_error: 478.2584 - val_loss: 365521.2500 - val_mean_absolute_error: 509.3850 - 48ms/epoch - 8ms/step
+Epoch 98/100
+6/6 - 0s - loss: 336183.9375 - mean_absolute_error: 485.2026 - val_loss: 365233.8438 - val_mean_absolute_error: 509.3587 - 49ms/epoch - 8ms/step
+Epoch 99/100
+6/6 - 0s - loss: 344662.2812 - mean_absolute_error: 484.0164 - val_loss: 364978.8125 - val_mean_absolute_error: 509.3232 - 48ms/epoch - 8ms/step
+Epoch 100/100
+6/6 - 0s - loss: 339747.3750 - mean_absolute_error: 486.5609 - val_loss: 364726.5938 - val_mean_absolute_error: 509.2812 - 48ms/epoch - 8ms/step</code></pre>
+</div>
+</div>
+<hr>
+<p>When training models this way you keep your eyes on the epoch history to study the behavior of the loss function and other metrics on training and test data sets. You have to make a judgement call as to when the optimization has stabilized and further progress is minimal. Alternatively, you can install a function that stops the optimization when certain conditions are met.</p>
+<p>This is done in the following code with the <code>callback_early_stopping</code> callback function (not run here). The options of the early stopping function ask it to monitor the loss function on the validation data and stop the optimization when the criterion fails to decrease (<code>mode="min"</code>) over 10 epochs (<code>patience=10</code>). Any change of the monitored metric has to be at least 0.1 in magnitude to qualify as an improvement (<code>min_delta=.1</code>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>early_stopping <span class="ot">&lt;-</span> <span class="fu">callback_early_stopping</span>(<span class="at">monitor =</span> <span class="st">'val_loss'</span>, </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">patience =</span> <span class="dv">10</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">min_delta =</span> .<span class="dv">1</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">mode=</span><span class="st">"min"</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>firstANN <span class="sc">%&gt;%</span> </span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fit</span>(x[<span class="sc">-</span>testid, ], </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        y[<span class="sc">-</span>testid], </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">epochs=</span><span class="dv">400</span>, </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">batch_size=</span><span class="dv">32</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">validation_data=</span> <span class="fu">list</span>(x[testid, ], y[testid])</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">callbacks=</span><span class="fu">c</span>(early_stopping)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To see a list of all Keras callback functions type</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>?keras<span class="sc">::</span>call</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>at the console prompt.</p>
+<hr>
+<p>Finally, we predict from the final model, and evaluate its performance on the test data. Due to the use of random elements in the fit (stochastic gradient descent, random dropout, …), the results vary slightly with each fit. Unfortunately the <code>set.seed()</code> function does not ensure identical results (since the fitting is done in <code>python</code>), so your results will differ slightly.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>predvals <span class="ot">&lt;-</span> <span class="fu">predict</span>(firstANN, x[testid, ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3/3 - 0s - 42ms/epoch - 14ms/step</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">abs</span>(y[testid] <span class="sc">-</span> predvals))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 509.2813</code></pre>
+</div>
+</div>
+</section>
+<section id="random-numbers" class="level4">
+<h4 class="anchored" data-anchor-id="random-numbers">Random numbers</h4>
+<p>An aspect of Keras that can be befuddling to <code>R</code> users is lack of control over the random mechanisms during training. Neural networks rely on random numbers for picking starting values, selecting observations into mini batches, selecting neurons in dropout layers, etc.</p>
+<p>Since the code executes in Python, the <code>set.seed()</code> operation does not have the intended effect of fixing the sequence of generated random numbers. The underlying Python code relies on the NumPy random number generator. TensorFlow has its own random number generator on top of that. Python code that uses Keras with the TensorFlow backend needs to set the seed for the NumPy and the TensorFlow generator to obtain reproducible results:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>from numpy.random import seed</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>seed(1)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>from tensorflow import set_random_seed</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>set_random_seed(2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>R</code> user is unfortunately out of luck.</p>
+<p>If it is any consolation, running Keras in Python might still generate non-reproducible results. You might also need to set the seed in the <code>random</code> Python library. Multi-threading operations on CPUs—and GPUs in particular—can produce a non-deterministic order of operations.</p>
+<p>One recommendation to deal with non-deterministic results is training the model several times and averaging the results, essentially ensembling them. When a single training run takes several hours, doing it thirty times is not practical.</p>
+</section>
+</section>
+<section id="mnist-image-classification" class="level3">
+<h3 class="anchored" data-anchor-id="mnist-image-classification">MNIST Image Classification</h3>
+<p>We now return to the MNIST image classification data introduced in <a href="ann.html#sec-mnist-first-look" class="quarto-xref"><span>Section 30.4</span></a>. Recall that the data comprise 60,000 training images and 10,000 test images of handwritten digits (0–9). Each image has 28 x 28 pixels recording a grayscale value.</p>
+<p>The MNIST data is provided by Keras:</p>
+<section id="setup-the-data" class="level4">
+<h4 class="anchored" data-anchor-id="setup-the-data">Setup the data</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mnist <span class="ot">&lt;-</span> <span class="fu">dataset_mnist</span>()</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>x_train <span class="ot">&lt;-</span> mnist<span class="sc">$</span>train<span class="sc">$</span>x</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>g_train <span class="ot">&lt;-</span> mnist<span class="sc">$</span>train<span class="sc">$</span>y</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>x_test <span class="ot">&lt;-</span> mnist<span class="sc">$</span>test<span class="sc">$</span>x</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>g_test <span class="ot">&lt;-</span> mnist<span class="sc">$</span>test<span class="sc">$</span>y</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(x_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 60000    28    28</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(x_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10000    28    28</code></pre>
+</div>
+</div>
+<p>The images are stored as a three-dimensional array, and need to be reshaped into a matrix. For classification tasks with <span class="math inline">\(k\)</span> categories, Keras expects as the target values a matrix of <span class="math inline">\(k\)</span> columns. Column <span class="math inline">\(k\)</span> contains ones in the rows for observations where the observed category is <span class="math inline">\(k\)</span>, and zeros otherwise. This is called one-hot encoding of the target variable. Luckily, <code>keras</code> has built-in functions that handle both tasks for us.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>x_train <span class="ot">&lt;-</span> <span class="fu">array_reshape</span>(x_train, <span class="fu">c</span>(<span class="fu">nrow</span>(x_train), <span class="dv">784</span>))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>x_test  <span class="ot">&lt;-</span> <span class="fu">array_reshape</span>(x_test, <span class="fu">c</span>(<span class="fu">nrow</span>(x_test), <span class="dv">784</span>))</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>y_train <span class="ot">&lt;-</span> <span class="fu">to_categorical</span>(g_train, <span class="dv">10</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>y_test  <span class="ot">&lt;-</span> <span class="fu">to_categorical</span>(g_test, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s look at the one-hot encoding of the target data. <code>g_test</code> contains the value of the digit from 0–9. <code>y_test</code> is a matrix with 10 columns, each column corresponds to one digit. If observation <span class="math inline">\(i\)</span> represents digit <span class="math inline">\(j\)</span> then there is a 1 in row <span class="math inline">\(i\)</span>, column <span class="math inline">\(j+1\)</span> of the encoded matrix. For example, for the first twenty images:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>g_test[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 7 2 1 0 4 1 4 9 5 9 0 6 9 0 1 5 9 7 3 4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>y_test[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+ [1,]    0    0    0    0    0    0    0    1    0     0
+ [2,]    0    0    1    0    0    0    0    0    0     0
+ [3,]    0    1    0    0    0    0    0    0    0     0
+ [4,]    1    0    0    0    0    0    0    0    0     0
+ [5,]    0    0    0    0    1    0    0    0    0     0
+ [6,]    0    1    0    0    0    0    0    0    0     0
+ [7,]    0    0    0    0    1    0    0    0    0     0
+ [8,]    0    0    0    0    0    0    0    0    0     1
+ [9,]    0    0    0    0    0    1    0    0    0     0
+[10,]    0    0    0    0    0    0    0    0    0     1
+[11,]    1    0    0    0    0    0    0    0    0     0
+[12,]    0    0    0    0    0    0    1    0    0     0
+[13,]    0    0    0    0    0    0    0    0    0     1
+[14,]    1    0    0    0    0    0    0    0    0     0
+[15,]    0    1    0    0    0    0    0    0    0     0
+[16,]    0    0    0    0    0    1    0    0    0     0
+[17,]    0    0    0    0    0    0    0    0    0     1
+[18,]    0    0    0    0    0    0    0    1    0     0
+[19,]    0    0    0    1    0    0    0    0    0     0
+[20,]    0    0    0    0    1    0    0    0    0     0</code></pre>
+</div>
+</div>
+<p>Let’s look at the matrix of inputs. The next array shows the 28 x 28 - 784 input columns for the third image. The values are grayscale values between 0 and 255.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>x_test[<span class="dv">3</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+ [19]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+ [37]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+ [55]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+ [73]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+ [91]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[109]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[127]   0   0  38 254 109   0   0   0   0   0   0   0   0   0   0   0   0   0
+[145]   0   0   0   0   0   0   0   0   0   0   0   0  87 252  82   0   0   0
+[163]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[181]   0   0   0   0 135 241   0   0   0   0   0   0   0   0   0   0   0   0
+[199]   0   0   0   0   0   0   0   0   0   0   0   0   0  45 244 150   0   0
+[217]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[235]   0   0   0   0   0  84 254  63   0   0   0   0   0   0   0   0   0   0
+[253]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 202 223  11
+[271]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[289]   0   0   0   0   0   0  32 254 216   0   0   0   0   0   0   0   0   0
+[307]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0  95 254
+[325] 195   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[343]   0   0   0   0   0   0   0   0 140 254  77   0   0   0   0   0   0   0
+[361]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0  57
+[379] 237 205   8   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[397]   0   0   0   0   0   0   0   0   0 124 255 165   0   0   0   0   0   0
+[415]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[433]   0 171 254  81   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[451]   0   0   0   0   0   0   0   0   0   0  24 232 215   0   0   0   0   0
+[469]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[487]   0   0 120 254 159   0   0   0   0   0   0   0   0   0   0   0   0   0
+[505]   0   0   0   0   0   0   0   0   0   0   0   0 151 254 142   0   0   0
+[523]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[541]   0   0   0   0 228 254  66   0   0   0   0   0   0   0   0   0   0   0
+[559]   0   0   0   0   0   0   0   0   0   0   0   0   0  61 251 254  66   0
+[577]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[595]   0   0   0   0   0 141 254 205   3   0   0   0   0   0   0   0   0   0
+[613]   0   0   0   0   0   0   0   0   0   0   0   0   0   0  10 215 254 121
+[631]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[649]   0   0   0   0   0   0   5 198 176  10   0   0   0   0   0   0   0   0
+[667]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[685]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[703]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[721]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[739]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[757]   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+[775]   0   0   0   0   0   0   0   0   0   0</code></pre>
+</div>
+</div>
+<p>Finally, prior to training the network, we scale the input values to lie between 0–1.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>x_train <span class="ot">&lt;-</span> x_train <span class="sc">/</span> <span class="dv">255</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>x_test  <span class="ot">&lt;-</span> x_test <span class="sc">/</span> <span class="dv">255</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The target variable does not need to be scaled, the one-hot encoding together with the use of a softmax output function ensures that the output for each category is a value between 0 and 1, and that they sum to 1 across the 10 categories. We will interpret them as predicted probabilities that an observed image is assigned to a particular digit.</p>
+<p>To classify the MNIST images we consider two types of neural networks in the remainder of this chapter: a multi layer ANN and a network without a hidden layer. The latter is a multi category perceptron and very similar to a multinomial logistic regression model.</p>
+</section>
+<section id="multi-layer-neural-network" class="level4">
+<h4 class="anchored" data-anchor-id="multi-layer-neural-network">Multi layer neural network</h4>
+<p>We now train the network shown in <a href="ann.html#fig-mnist-2-layer" class="quarto-xref">Figure&nbsp;<span>30.14</span></a>, an ANN with two hidden layers. We also add dropout regularization layers after each fully connected hidden layer. The first layer specifies the input shape of 28 x 28 = 784. It has 128 neurons and ReLU activation. Why? Because. This is followed by a first dropout layer with rate <span class="math inline">\(\phi_1 = 0.3\)</span>, another fully connected hidden layer with 64 nodes and hyperbolic tangent activation function, a second dropout layer with rate <span class="math inline">\(\phi_2 = 0.2\)</span>, and a final softmax output layer. Why? Because.</p>
+<section id="setup-the-network" class="level5">
+<h5 class="anchored" data-anchor-id="setup-the-network">Setup the network</h5>
+<p>The following statements set up the network in <code>keras</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>modelnn <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">layer_dense</span>(<span class="at">units=</span><span class="dv">128</span>,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">activation=</span><span class="st">"relu"</span>,</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">input_shape=</span><span class="dv">784</span>,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">name=</span><span class="st">"FirstHidden"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">layer_dropout</span>(<span class="at">rate=</span><span class="fl">0.3</span>,</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">name=</span><span class="st">"FirstDropOut"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">layer_dense</span>(<span class="at">units=</span><span class="dv">64</span>,</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">activation=</span><span class="st">"tanh"</span>,</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">name=</span><span class="st">"SecondHidden"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">layer_dropout</span>(<span class="at">rate=</span><span class="fl">0.2</span>,</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">name=</span><span class="st">"SecondDropOut"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">layer_dense</span>(<span class="at">units=</span><span class="dv">10</span>, </span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>                <span class="at">activation=</span><span class="st">"softmax"</span>,</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">name=</span><span class="st">"Output"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>summary()</code> function let’s us inspect whether we got it all right.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelnn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "sequential_1"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ FirstHidden (Dense)                (None, 128)                     100480      
+ FirstDropOut (Dropout)             (None, 128)                     0           
+ SecondHidden (Dense)               (None, 64)                      8256        
+ SecondDropOut (Dropout)            (None, 64)                      0           
+ Output (Dense)                     (None, 10)                      650         
+================================================================================
+Total params: 109386 (427.29 KB)
+Trainable params: 109386 (427.29 KB)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<p>The total number of parameters in this network is 109,386, a sizeable network but not a huge network.</p>
+</section>
+<section id="set-up-the-optimization" class="level5">
+<h5 class="anchored" data-anchor-id="set-up-the-optimization">Set up the optimization</h5>
+<p>Next, we add details to the model to specify the fitting algorithm. We fit the model by minimizing the categorical cross-entropy function and monitor the classification accuracy during the iterations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>modelnn <span class="sc">%&gt;%</span> <span class="fu">compile</span>(<span class="at">loss=</span><span class="st">"categorical_crossentropy"</span>,</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">optimizer=</span><span class="fu">optimizer_rmsprop</span>(), </span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">metrics=</span><span class="fu">c</span>(<span class="st">"accuracy"</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="fit-the-model" class="level5">
+<h5 class="anchored" data-anchor-id="fit-the-model">Fit the model</h5>
+<p>We are ready to go. The final step is to supply training data, and fit the model. With a batch size of 128 observations, each epoch corresponds to 60,000 / 128 = 469 gradient evaluations.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> modelnn <span class="sc">%&gt;%</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>      <span class="fu">fit</span>(x_train, </span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>          y_train, </span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">epochs=</span><span class="dv">20</span>, </span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">batch_size=</span><span class="dv">128</span>,</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">validation_data=</span> <span class="fu">list</span>(x_test, y_test),</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>          )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/20
+469/469 - 6s - loss: 0.4495 - accuracy: 0.8677 - val_loss: 0.2422 - val_accuracy: 0.9303 - 6s/epoch - 12ms/step
+Epoch 2/20
+469/469 - 5s - loss: 0.2955 - accuracy: 0.9133 - val_loss: 0.1979 - val_accuracy: 0.9430 - 5s/epoch - 10ms/step
+Epoch 3/20
+469/469 - 5s - loss: 0.2618 - accuracy: 0.9229 - val_loss: 0.1786 - val_accuracy: 0.9493 - 5s/epoch - 10ms/step
+Epoch 4/20
+469/469 - 5s - loss: 0.2455 - accuracy: 0.9279 - val_loss: 0.1720 - val_accuracy: 0.9508 - 5s/epoch - 10ms/step
+Epoch 5/20
+469/469 - 5s - loss: 0.2338 - accuracy: 0.9306 - val_loss: 0.1654 - val_accuracy: 0.9517 - 5s/epoch - 10ms/step
+Epoch 6/20
+469/469 - 5s - loss: 0.2259 - accuracy: 0.9340 - val_loss: 0.1570 - val_accuracy: 0.9522 - 5s/epoch - 10ms/step
+Epoch 7/20
+469/469 - 5s - loss: 0.2178 - accuracy: 0.9361 - val_loss: 0.1525 - val_accuracy: 0.9555 - 5s/epoch - 11ms/step
+Epoch 8/20
+469/469 - 5s - loss: 0.2155 - accuracy: 0.9365 - val_loss: 0.1508 - val_accuracy: 0.9566 - 5s/epoch - 11ms/step
+Epoch 9/20
+469/469 - 5s - loss: 0.2104 - accuracy: 0.9376 - val_loss: 0.1446 - val_accuracy: 0.9582 - 5s/epoch - 10ms/step
+Epoch 10/20
+469/469 - 5s - loss: 0.2061 - accuracy: 0.9385 - val_loss: 0.1480 - val_accuracy: 0.9565 - 5s/epoch - 10ms/step
+Epoch 11/20
+469/469 - 5s - loss: 0.2031 - accuracy: 0.9395 - val_loss: 0.1412 - val_accuracy: 0.9614 - 5s/epoch - 10ms/step
+Epoch 12/20
+469/469 - 5s - loss: 0.2009 - accuracy: 0.9407 - val_loss: 0.1419 - val_accuracy: 0.9598 - 5s/epoch - 10ms/step
+Epoch 13/20
+469/469 - 5s - loss: 0.2006 - accuracy: 0.9403 - val_loss: 0.1386 - val_accuracy: 0.9613 - 5s/epoch - 11ms/step
+Epoch 14/20
+469/469 - 5s - loss: 0.1934 - accuracy: 0.9435 - val_loss: 0.1400 - val_accuracy: 0.9605 - 5s/epoch - 10ms/step
+Epoch 15/20
+469/469 - 5s - loss: 0.1953 - accuracy: 0.9421 - val_loss: 0.1414 - val_accuracy: 0.9596 - 5s/epoch - 11ms/step
+Epoch 16/20
+469/469 - 5s - loss: 0.1935 - accuracy: 0.9420 - val_loss: 0.1344 - val_accuracy: 0.9605 - 5s/epoch - 11ms/step
+Epoch 17/20
+469/469 - 5s - loss: 0.1901 - accuracy: 0.9430 - val_loss: 0.1340 - val_accuracy: 0.9625 - 5s/epoch - 10ms/step
+Epoch 18/20
+469/469 - 5s - loss: 0.1893 - accuracy: 0.9439 - val_loss: 0.1358 - val_accuracy: 0.9637 - 5s/epoch - 11ms/step
+Epoch 19/20
+469/469 - 5s - loss: 0.1881 - accuracy: 0.9448 - val_loss: 0.1372 - val_accuracy: 0.9627 - 5s/epoch - 11ms/step
+Epoch 20/20
+469/469 - 5s - loss: 0.1911 - accuracy: 0.9437 - val_loss: 0.1356 - val_accuracy: 0.9612 - 5s/epoch - 11ms/step</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history, <span class="at">smooth =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="ann_R_files/figure-html/mnist_data_fit-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="ann_R_files/figure-html/mnist_data_fit-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<p>After about 10 epochs the training and validation accuracy are stabilizing although the loss continues to decrease. Interestingly, the accuracy and loss in the 10,000 image validation set is better than in the 60,000 image training data set. Considering that the grayscale values are entered into this neural network as 784 numeric input variables without taking into account any spatial arrangement of the pixels on the image, a classification accuracy of 96% on unseen images is quite good. Whether that is sufficient depends on the application.</p>
+<p>As we will see in <a href="deeplearning.html" class="quarto-xref"><span>Chapter 33</span></a>, neural networks that specialize in the processing of grid-like data such as images easily improve on this performance.</p>
+</section>
+<section id="calculate-predicted-categories" class="level5">
+<h5 class="anchored" data-anchor-id="calculate-predicted-categories">Calculate predicted categories</h5>
+<p>To calculate the predicted categories for the images in the test data set, we use the <code>predict</code> function. The result of that operation is a vector of 10 predicted <em>probabilities</em> for each observation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>predvals <span class="ot">&lt;-</span> modelnn <span class="sc">%&gt;%</span> <span class="fu">predict</span>(x_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>313/313 - 0s - 403ms/epoch - 1ms/step</code></pre>
+</div>
+</div>
+<p>For the first image, the probabilities that its digit belongs to any of the 10 classes is given by this vector</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(predvals[<span class="dv">1</span>,],<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.9999 0.0000 0.0000</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which.max</span>(predvals[<span class="dv">1</span>,])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8</code></pre>
+</div>
+</div>
+<p>The maximum probability is 0.9999 in position 8. The image is classified as a “7” (the digits are 0-based).</p>
+<p><code>keras</code> provides the convenience function <code>k_argmax()</code> to perform this operation; it returns the index of the maximum value:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>predcl <span class="ot">&lt;-</span> modelnn <span class="sc">%&gt;%</span> <span class="fu">predict</span>(x_test) <span class="sc">%&gt;%</span> <span class="fu">k_argmax</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>313/313 - 0s - 361ms/epoch - 1ms/step</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>(predcl[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 7 2 1 0 4 1 4 9 6 9 0 6 9 0 1 5 9 7 3 4 9 6 6 5 4 0 7 4 0 1 3 1 3 0 7 2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>g_test[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 7 2 1 0 4 1 4 9 5 9 0 6 9 0 1 5 9 7 3 4 9 6 6 5 4 0 7 4 0 1 3 1 3 4 7 2</code></pre>
+</div>
+</div>
+<p>Only one of the images among the first 20 has been misclassified. The ninth image was labeled as a “5” but has been predicted as a “4”. Looking at the softmax probabilities for image #34, two categories have a sizable probability: the algorithm is not quite sure whether the image depicts a “5” or a “6”.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(predvals[<span class="dv">34</span>,],<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 0.4134 0.0000 0.0184 0.0000 0.2629 0.0803 0.2214 0.0004 0.0015 0.0016</code></pre>
+</div>
+</div>
+<p>We can visualize the data with the <code>image</code> function. The next code segment does this for the first and ninth observations.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the digits</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>plotIt <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">id=</span><span class="dv">1</span>) {</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    im <span class="ot">&lt;-</span> mnist<span class="sc">$</span>test<span class="sc">$</span>x[id,,]</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>    im <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(im, <span class="dv">2</span>, rev)) </span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">image</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">28</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">28</span>, </span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>          im, </span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">col=</span><span class="fu">gray</span>((<span class="dv">0</span><span class="sc">:</span><span class="dv">255</span>)<span class="sc">/</span><span class="dv">255</span>), </span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">xaxt=</span><span class="st">'n'</span>, </span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">main=</span><span class="fu">paste</span>(<span class="st">"Image label: "</span>,</span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>                     g_test[id], </span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>                     <span class="st">" Predicted: "</span>, </span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">as.numeric</span>(predcl[id])))</span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-15"><a href="#cb54-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plotIt</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ann_R_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotIt</span>(<span class="dv">34</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ann_R_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We see why predicting image #34 correctly could be challenging. That is one ugly “4”.</p>
+</section>
+</section>
+<section id="multinomial-logistic-regression" class="level4">
+<h4 class="anchored" data-anchor-id="multinomial-logistic-regression">Multinomial logistic regression</h4>
+<p>A 96% accuracy is impressive, but maybe it is not good enough. In applications where the consequences of errors are high, this accuracy might be insufficient. Suppose we are using the trained network to recognize written digits on personal checks. Getting 400 out of 10,000 digits wrong would be unacceptable. Banks would deposit incorrect amounts all the time.</p>
+<p>If that is the application for the trained algorithm, we should consider other models for these data. This raises an interesting question: how much did we gain by adding the layers of the network? If this is an effective strategy to increase accuracy then we could consider adding more layers. If not, then maybe we need to research an entirely different network architecture.</p>
+<p>Before trying deeper alternatives we can establish one performance benchmark by removing the hidden layers and training what essentially is a single layer <strong>perceptron</strong> (<a href="ann.html#sec-ann-intro" class="quarto-xref"><span>Section 30.1</span></a>). This model has an input layer and an output layer. In terms of the <code>keras</code> syntax it is specified with a single layer:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>modellr <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">layer_dense</span>(<span class="at">input_shape=</span><span class="dv">784</span>, </span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">units=</span><span class="dv">10</span>,</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">activation=</span><span class="st">"softmax"</span>)</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modellr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model: "sequential_2"
+________________________________________________________________________________
+ Layer (type)                       Output Shape                    Param #     
+================================================================================
+ dense_1 (Dense)                    (None, 10)                      7850        
+================================================================================
+Total params: 7850 (30.66 KB)
+Trainable params: 7850 (30.66 KB)
+Non-trainable params: 0 (0.00 Byte)
+________________________________________________________________________________</code></pre>
+</div>
+</div>
+<p>This is essentially a multinomial logistic regression model with a 10-category target variable and 784 input variables. The model is much smaller than the previous network (it has <em>only</em> 7,850 parameters) but is huge if we think of it as a multinomial logistic regression model. Many software packages for multinomial regression would struggle to fit a model of this size. When articulated as a neural network, training such a model is actually a breeze.</p>
+<p>We proceed just as before.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>modellr <span class="sc">%&gt;%</span> <span class="fu">compile</span>(<span class="at">loss =</span> <span class="st">"categorical_crossentropy"</span>,</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">optimizer =</span> <span class="fu">optimizer_rmsprop</span>(), </span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">"accuracy"</span>))</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> modellr <span class="sc">%&gt;%</span> <span class="fu">fit</span>(x_train, </span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>                y_train, </span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">epochs=</span><span class="dv">20</span>,</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">batch_size=</span><span class="dv">128</span>,</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">validation_data=</span><span class="fu">list</span>(x_test, y_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/20
+469/469 - 4s - loss: 0.6095 - accuracy: 0.8461 - val_loss: 0.3414 - val_accuracy: 0.9085 - 4s/epoch - 9ms/step
+Epoch 2/20
+469/469 - 4s - loss: 0.3310 - accuracy: 0.9089 - val_loss: 0.3000 - val_accuracy: 0.9175 - 4s/epoch - 8ms/step
+Epoch 3/20
+469/469 - 4s - loss: 0.3022 - accuracy: 0.9161 - val_loss: 0.2858 - val_accuracy: 0.9190 - 4s/epoch - 8ms/step
+Epoch 4/20
+469/469 - 4s - loss: 0.2882 - accuracy: 0.9194 - val_loss: 0.2799 - val_accuracy: 0.9212 - 4s/epoch - 8ms/step
+Epoch 5/20
+469/469 - 4s - loss: 0.2800 - accuracy: 0.9220 - val_loss: 0.2767 - val_accuracy: 0.9229 - 4s/epoch - 8ms/step
+Epoch 6/20
+469/469 - 4s - loss: 0.2749 - accuracy: 0.9240 - val_loss: 0.2742 - val_accuracy: 0.9245 - 4s/epoch - 8ms/step
+Epoch 7/20
+469/469 - 4s - loss: 0.2707 - accuracy: 0.9244 - val_loss: 0.2714 - val_accuracy: 0.9248 - 4s/epoch - 9ms/step
+Epoch 8/20
+469/469 - 4s - loss: 0.2676 - accuracy: 0.9262 - val_loss: 0.2699 - val_accuracy: 0.9259 - 4s/epoch - 8ms/step
+Epoch 9/20
+469/469 - 4s - loss: 0.2649 - accuracy: 0.9270 - val_loss: 0.2704 - val_accuracy: 0.9255 - 4s/epoch - 9ms/step
+Epoch 10/20
+469/469 - 4s - loss: 0.2629 - accuracy: 0.9276 - val_loss: 0.2705 - val_accuracy: 0.9246 - 4s/epoch - 8ms/step
+Epoch 11/20
+469/469 - 4s - loss: 0.2611 - accuracy: 0.9287 - val_loss: 0.2682 - val_accuracy: 0.9272 - 4s/epoch - 8ms/step
+Epoch 12/20
+469/469 - 4s - loss: 0.2597 - accuracy: 0.9287 - val_loss: 0.2719 - val_accuracy: 0.9267 - 4s/epoch - 8ms/step
+Epoch 13/20
+469/469 - 4s - loss: 0.2581 - accuracy: 0.9294 - val_loss: 0.2686 - val_accuracy: 0.9258 - 4s/epoch - 9ms/step
+Epoch 14/20
+469/469 - 4s - loss: 0.2572 - accuracy: 0.9301 - val_loss: 0.2687 - val_accuracy: 0.9276 - 4s/epoch - 8ms/step
+Epoch 15/20
+469/469 - 4s - loss: 0.2563 - accuracy: 0.9305 - val_loss: 0.2690 - val_accuracy: 0.9260 - 4s/epoch - 9ms/step
+Epoch 16/20
+469/469 - 4s - loss: 0.2552 - accuracy: 0.9314 - val_loss: 0.2692 - val_accuracy: 0.9279 - 4s/epoch - 8ms/step
+Epoch 17/20
+469/469 - 4s - loss: 0.2544 - accuracy: 0.9315 - val_loss: 0.2679 - val_accuracy: 0.9278 - 4s/epoch - 8ms/step
+Epoch 18/20
+469/469 - 4s - loss: 0.2536 - accuracy: 0.9320 - val_loss: 0.2678 - val_accuracy: 0.9277 - 4s/epoch - 8ms/step
+Epoch 19/20
+469/469 - 4s - loss: 0.2531 - accuracy: 0.9323 - val_loss: 0.2695 - val_accuracy: 0.9273 - 4s/epoch - 8ms/step
+Epoch 20/20
+469/469 - 4s - loss: 0.2521 - accuracy: 0.9319 - val_loss: 0.2724 - val_accuracy: 0.9268 - 4s/epoch - 8ms/step</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history, <span class="at">smooth =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="ann_R_files/figure-html/mnist_percep_fit-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="ann_R_files/figure-html/mnist_percep_fit-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Even with just a single layer, the model performs quite well, its accuracy is around 92%. Adding the additional layer in the previous ANN did improve the accuracy. On the other hand, it took more than 100,000 extra parameters to move from 92% to 96% accuracy.</p>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;32.1: Epoch history for the first 200 epochs.</span>
+</div>
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./training_ann.html" class="pagination-link" aria-label="Training Neural Networks">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./deeplearning.html" class="pagination-link" aria-label="Deep Learning">
+        <span class="nav-page-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","loop":false,"selector":".lightbox","openEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

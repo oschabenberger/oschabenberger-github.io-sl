@@ -1,0 +1,2677 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 11&nbsp; Discrete Target Variables</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./reglocal.html" rel="next">
+<link href="./regnlr.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./regintro.html">Supervised Learning I: Regression</a></li><li class="breadcrumb-item"><a href="./regdiscrete.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">11.1</span> Introduction</a></li>
+  <li><a href="#modeling-binary-data" id="toc-modeling-binary-data" class="nav-link" data-scroll-target="#modeling-binary-data"><span class="header-section-number">11.2</span> Modeling Binary Data</a>
+  <ul>
+  <li><a href="#logistic-regression" id="toc-logistic-regression" class="nav-link" data-scroll-target="#logistic-regression">Logistic Regression</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
+  <li><a href="#from-regression-to-classification" id="toc-from-regression-to-classification" class="nav-link" data-scroll-target="#from-regression-to-classification">From Regression to Classification</a>
+  <ul class="collapse">
+  <li><a href="#confusion-matrix" id="toc-confusion-matrix" class="nav-link" data-scroll-target="#confusion-matrix">Confusion matrix</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#modeling-counts" id="toc-modeling-counts" class="nav-link" data-scroll-target="#modeling-counts"><span class="header-section-number">11.3</span> Modeling Counts</a>
+  <ul>
+  <li><a href="#binomial-regression" id="toc-binomial-regression" class="nav-link" data-scroll-target="#binomial-regression">Binomial Regression</a></li>
+  <li><a href="#poisson-regression" id="toc-poisson-regression" class="nav-link" data-scroll-target="#poisson-regression">Poisson Regression</a></li>
+  </ul></li>
+  <li><a href="#sec-lrt" id="toc-sec-lrt" class="nav-link" data-scroll-target="#sec-lrt"><span class="header-section-number">11.4</span> Log-likelihood, Deviance, and the Likelihood-ratio Test</a></li>
+  <li><a href="#working-with-offsets" id="toc-working-with-offsets" class="nav-link" data-scroll-target="#working-with-offsets"><span class="header-section-number">11.5</span> Working with Offsets</a></li>
+  <li><a href="#sec-zero-inflation" id="toc-sec-zero-inflation" class="nav-link" data-scroll-target="#sec-zero-inflation"><span class="header-section-number">11.6</span> Zero-inflated Models</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./regintro.html">Supervised Learning I: Regression</a></li><li class="breadcrumb-item"><a href="./regdiscrete.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">11.1</span> Introduction</h2>
+<p>The classical linear model (<a href="regglobal.html" class="quarto-xref"><span>Chapter 8</span></a>) is appropriate when the mean function is linear in the parameters and the errors are uncorrelated with constant variance. The error conditions are met in a random sample from a Gaussian distribution. It does not take much to shake the foundation of the classical model. For example, when the target variable is the time until a manufactured item fails, the exponential or Weibull distribution is more appropriate than the Gaussian and the assumption of constant variance no longer holds. A characteristic of these distributions is a dependence of the variance on the mean. A random variable <span class="math inline">\(Y\)</span> has an exponential distribution if its density function is given by <span class="math display">\[
+f(y) = \left \{ \begin{array}{ll}\lambda e^{-\lambda y} &amp; y \ge 0 \\ 0 &amp; y &lt; 0 \end{array} \right .
+\]</span> The mean and variance are <span class="math inline">\(\text{E}[Y] = 1/\lambda\)</span> and <span class="math inline">\(\text{Var}[Y] = 1/\lambda^2 = 1/\text{E}[Y]^2\)</span>. If the mean changes, for example as a function of inputs, the variance will change as well.</p>
+<p>Also, the support of the exponential random variable is different from the Gaussian. The former takes on non-negative values (the time lapsed between telephone calls cannot be negative) whereas the Gaussian takes on values from <span class="math inline">\(-\infty\)</span> to <span class="math inline">\(+\infty\)</span>. A linear model for the mean function is probably a bad idea because there is no guarantee that predicted values <span class="math inline">\(\widehat{y} = \textbf{x}^\prime \widehat{\boldsymbol{\beta}}\)</span> are non-negative. To ensure that predicted values comply with the support of the random variable, a transformation such as <span class="math display">\[
+\widehat{y} = \exp\{ \textbf{x}^\prime \widehat{\boldsymbol{\beta}} \}
+\]</span> might be useful. The linear predictor <span class="math inline">\(\widehat{\eta} = \textbf{x}^\prime\widehat{\boldsymbol{\beta}}\)</span> can now take on values between <span class="math inline">\(-\infty\)</span> and <span class="math inline">\(+\infty\)</span> and the predicted values obey <span class="math inline">\(\widehat{y} \ge 0\)</span>. But the exponential transformation made the model for the mean <strong>nonlinear</strong> in the parameters. By considering a different distribution for the target variable, the classical linear model framework breaks down quickly–even for a continuous random variable like the time between some events.</p>
+<p>When the target variable is discrete–rather than continuous–the linear model breaks down in the same way, the consequences for sticking with the classical linear model framework are more severe, however.</p>
+<p>Recall from <a href="statmodels.html#sec-target-variables" class="quarto-xref"><span>Section 2.2.0.4</span></a> that target variables are categorized as <strong>continuous</strong> or <strong>discrete</strong> depending on whether the number of possible values is countable. Discrete variables, with countable support, are further categorized into <strong>count</strong> variables and <strong>categorical</strong> variables. The value of a count variable is an integer that indicates how many times something occurred. The value of a categorical variable is a label that describes a state. For example, the number of vehicle accidents per hour is a count variable, the make of the vehicle involved in the accidents is a categorical variable.</p>
+<p>In this chapter we consider regression models for discrete random variables: binary variables that take on two values, ordinal and nominal variables that take on more than two values and true count variables. The discussion will be somewhat <em>informal</em>. The models will be re-introduced and discussed more formally in a later chapter under the umbrella of <strong>generalized linear models</strong> (GLMs, <a href="glm.html" class="quarto-xref"><span>Chapter 26</span></a>).</p>
+<p>How does the failure time example in this introduction relate to modeling discrete targets? If the time between events has an exponential distribution, the number of events that occur within a unit of time–a count variable–has a Poisson distribution. Both distributions are members of a special family of probability distributions, known as the <strong>exponential family</strong>. GLMs are statistical models for target variables that have a distribution in the exponential family—more details in <a href="glm.html#sec-glm-Pexpo" class="quarto-xref"><span>Section 26.2</span></a>.</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Do not confuse the exponential distribution with the exponential family of distributions.</p>
+<p>The term <em>exponential</em> in the family of distributions comes from a particular way of writing the mass or density function, using exponentiation, see <a href="glm.html#sec-glm-Pexpo" class="quarto-xref"><span>Section 26.2</span></a>. Many distributions can be written that way, including the exponential density shown earlier. The exponential distribution is one member of the exponential family, other members include the Binary, Binomial, Negative Binomial, Poisson, Gaussian, Beta, and Gamma distributions.</p>
+</div>
+</div>
+</section>
+<section id="modeling-binary-data" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="modeling-binary-data"><span class="header-section-number">11.2</span> Modeling Binary Data</h2>
+<p>A categorical variable is called <strong>binary</strong> if it takes on two possible values. The two states (or classes) are sometimes referred to as “success” and “failure”, we prefer to use the generic terms “event” and “non-event”. When modeling the recurrence of cancer, it is best not to refer to the event being modeled as a “success”. The states are coded numerically as <span class="math inline">\((1,0)\)</span> or <span class="math inline">\((-1,1)\)</span>. The former is common in regression modeling and the state coded as 1 is the event of interest. Coding the states as <span class="math inline">\(-1\)</span> and <span class="math inline">\(1\)</span> can be useful in classification models.</p>
+<p>A binary random variable takes on the values 1 and 0 with probabilities <span class="math inline">\(\pi\)</span> and <span class="math inline">\(1-\pi\)</span>, respectively. The probability mass function can be written conveniently as <span class="math display">\[
+\Pr(Y=y) = \pi^y \, (1-\pi)^{(1-y)}
+\]</span></p>
+<p>It is easy to show that <span class="math inline">\(\text{E}[Y] = \pi\)</span> and <span class="math inline">\(\text{Var}[Y] = \pi(1-\pi)\)</span>. The model for the mean function of a binary target variable must be suitable for a probability. If the model has a linear predictor component <span class="math inline">\(\eta = \textbf{x}^\prime\boldsymbol{\beta}\)</span>, some transformation is needed to map between <span class="math display">\[-\infty &lt; \eta &lt; \infty\]</span> and <span class="math display">\[0 \le \pi \le 1\]</span></p>
+<p>This transformation, when applied to the mean, is called the <strong>link</strong> function. The inverse transformation, the <strong>inverse link</strong> function, is applied to the linear predictor</p>
+<p><span class="math display">\[\begin{align*}
+    g(\pi) &amp;= \eta \\
+    \pi &amp;= g^{-1}(\eta)    
+\end{align*}\]</span></p>
+<section id="logistic-regression" class="level3">
+<h3 class="anchored" data-anchor-id="logistic-regression">Logistic Regression</h3>
+<p>Where do we find functions that can be used as link/inverse link functions? One place to look are the cumulative distribution functions of random variables that are defined on <span class="math inline">\(-\infty &lt; x &lt; \infty\)</span>. For example, take the c.d.f. of the logistic distribution <span class="math display">\[F(x) = \Pr(X \le x) = \frac{1}{1-\exp\{-(x-\mu)/\phi\}} \quad -\infty &lt; x &lt; \infty\]</span></p>
+<p><span class="math inline">\(\mu\)</span> and <span class="math inline">\(\phi\)</span> are the mean and scale parameter of the logistic distribution. The standard logistic has <span class="math inline">\(\mu=0\)</span> and <span class="math inline">\(\sigma=1\)</span> and c.d.f. <span class="math display">\[
+F(x) = \frac{1}{1+e^{-x}}
+\]</span> The inverse operation, to compute the value of <span class="math inline">\(x\)</span> associated with a cumulative probability <span class="math inline">\(p\)</span>, is the quantile function. For the standard logistic distribution the quantile function is <span class="math display">\[
+Q(p) = \log \left(\frac{p}{1-p} \right)
+\]</span> This quantile function is known as the <strong>logit</strong>.</p>
+<div class="definition">
+<div class="definition-header">
+<p>Definition: Logistic Regression</p>
+</div>
+<div class="definition-container">
+<p>A <strong>logistic regression</strong> model is a generalized linear model for Binary data with linear predictor <span class="math inline">\(\eta = \textbf{x}^\prime \boldsymbol{\beta}\)</span> and logit link function <span class="math display">\[
+\log\left(\frac{\text{E}[Y|\textbf{x}]}{1-\text{E}[Y|\textbf{x}]} \right) = \eta = \textbf{x}^\prime\boldsymbol{\beta}
+\]</span> <span class="math display">\[
+\text{E}[Y|\textbf{x}] = \frac{1}{1+\exp\{-\eta\}}=\frac{1}{1+\exp\{-\textbf{x}^\prime\boldsymbol{\beta}\}}
+\]</span></p>
+</div>
+</div>
+<p>The logit link function is a convenient choice for modeling binary data, it is symmetric about zero, has a simple expression and its inverse can be computed easily. With a logit link the coefficients have a simple and appealing interpretation in terms of log odds ratios (see below). Many other functions could serve as link functions. For example, if <span class="math inline">\(\phi(x)\)</span> is the c.d.f. of a standard Gaussian random variable, the quantile function <span class="math inline">\(\phi^{-1}(p)\)</span> can be used as a link function. This configuration is called **probit* regression. Logistic and Gaussian c.d.f. and quantile function have similar shapes (<a href="#fig-logistic-standnormal" class="quarto-xref">Figure&nbsp;<span>11.1</span></a>), computations of the Gaussian probabilities and quantiles is numerically much more involved, requiring approximations.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-logistic-standnormal" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-logistic-standnormal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="regdiscrete_files/figure-html/fig-logistic-standnormal-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-logistic-standnormal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.1: Logistic (dashed) and standard normal (solid) distribution functions.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The term logistic regression is often used for any general linear model for binary data, regardless of which link function is used. Other link functions than the logit and probit you might encounter are the log-log and complementary log-log links. These are similar in shape to the logit link but are not symmetric about zero.</p>
+</div>
+</div>
+<div class="example">
+<div class="example-header">
+<p>Example: Credit Default–ISLR</p>
+</div>
+<div class="example-container">
+<p>The <code>Default</code> data is part of the <code>ISLR2</code> library <span class="citation" data-cites="James2013_ISLR2">(<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">James et al. 2021</a>)</span>, a simulated data set with ten thousand observations. The target variable is <code>default</code>, whether a customer defaulted on their credit card debt. Input variables include a factor that indicates student status, account balance and income information.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  default student   balance    income
+1      No      No  729.5265 44361.625
+2      No     Yes  817.1804 12106.135
+3      No      No 1073.5492 31767.139
+4      No      No  529.2506 35704.494
+5      No      No  785.6559 38463.496
+6      No     Yes  919.5885  7491.559</code></pre>
+</div>
+</div>
+<p>The <code>default</code> target variable is a factor. It can be passed directly to the <code>glm</code> function, which models the first level of the factor as the non-event and all other levels are considered events. It is thus important to know how the factor levels are ordered:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(Default<span class="sc">$</span>default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Factor w/ 2 levels "No","Yes": 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+</div>
+</div>
+<p>If you wish to work with the underlying values of the factor, use the <code>unclass</code> function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(<span class="fu">unclass</span>(Default<span class="sc">$</span>default))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2</code></pre>
+</div>
+</div>
+<p>Next, we split the data into a train and test data set using a 90:10 split.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">765</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(Default)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>testset <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">sample</span>(n,n<span class="sc">*</span><span class="fl">0.1</span>))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> Default[testset,]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> Default[<span class="sc">-</span>testset,]</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9000</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1000</code></pre>
+</div>
+</div>
+<p>Working with binary data is easier in some ways compared to continuous response data and trickier in other ways. The following plot shows the responses (coded Default=1, non-Default=0) against the income input.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(train<span class="sc">$</span>income,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">ifelse</span>(train<span class="sc">$</span>default<span class="sc">==</span><span class="st">"No"</span>,<span class="dv">0</span>,<span class="dv">1</span>), </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">"Credit default: Yes = 1"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">"Income"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">col=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>)[<span class="fu">unclass</span>(train<span class="sc">$</span>student)],<span class="at">yaxt=</span><span class="st">"n"</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>, <span class="at">at =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">by =</span> <span class="dv">1</span>), <span class="at">las=</span><span class="dv">2</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"left"</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">"Non-student"</span>,<span class="st">"Student"</span>),<span class="at">fill=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="regdiscrete_files/figure-html/default_plot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>What do we learn from this plot? Students have lower incomes that non-students but are students more likely to default on credit card debt? It is difficult to discern too much from a plot that shows only two response values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">Student=</span>Default<span class="sc">$</span>student,<span class="at">Default=</span>Default<span class="sc">$</span>default)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       Default
+Student   No  Yes
+    No  6850  206
+    Yes 2817  127</code></pre>
+</div>
+</div>
+<p>Cross-tabulating student status and default status shows that the proportion of defaults is higher among students (0.0431) than among non-students (0.0292).</p>
+<p>The logistic regression of <code>default</code> on all input variables is performed with the <code>glm</code> function in <code>R</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>log_reg <span class="ot">&lt;-</span> <span class="fu">glm</span>(default <span class="sc">~</span> ., <span class="at">data=</span>train, <span class="at">family=</span>binomial)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(log_reg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = default ~ ., family = binomial, data = train)
+
+Coefficients:
+              Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -1.106e+01  5.252e-01 -21.060   &lt;2e-16 ***
+studentYes  -6.098e-01  2.530e-01  -2.410    0.016 *  
+balance      5.811e-03  2.491e-04  23.323   &lt;2e-16 ***
+income       5.038e-06  8.731e-06   0.577    0.564    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 2617.1  on 8999  degrees of freedom
+Residual deviance: 1398.0  on 8996  degrees of freedom
+AIC: 1406
+
+Number of Fisher Scoring iterations: 8</code></pre>
+</div>
+</div>
+<p>The Binary distribution is a special case of the Binomial distribution: the sum of <span class="math inline">\(n\)</span> independent Bernoulli(<span class="math inline">\(\pi\)</span>) experiments is a Binomial(<span class="math inline">\(n,\pi\)</span>) random variable. <code>family=binomial</code> covers both Binary and Binomial cases. The default link function for the binomial family in <code>R</code> is the logit. A probit regression would use <code>family=binomial(link="probit")</code>.</p>
+<p>How do we use the coefficients in the output to make predictions? Consider a student with $20,000 income and a credit card balance of $1,500. How likely are they to default?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>new_x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">student=</span><span class="st">"Yes"</span>,<span class="at">balance=</span><span class="dv">1500</span>,<span class="at">income=</span><span class="dv">20000</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>pred_linp <span class="ot">&lt;-</span> <span class="fu">predict</span>(log_reg,<span class="at">newdata=</span>new_x,<span class="at">type=</span><span class="st">"link"</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>pred_mean <span class="ot">&lt;-</span> <span class="fu">predict</span>(log_reg,<span class="at">newdata=</span>new_x,<span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Predicted linear predictor :"</span>, pred_linp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Predicted linear predictor : -2.852752</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Predicted probability to default: "</span>, pred_mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Predicted probability to default:  0.05453925</code></pre>
+</div>
+</div>
+<p>The <code>predict</code> function for a generalized linear model takes a <code>type=</code> argument that determines the kind of prediction. The default is <code>type="link"</code> for a prediction on the scale of the linear predictor: <span class="math inline">\(\widehat{\eta} = \textbf{x}^\prime\widehat{\boldsymbol{\beta}}\)</span>. To obtain a prediction on the inverse link scale, the scale of the mean response, use <code>type="response"</code>. The following calculations verify:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>linp <span class="ot">=</span> <span class="fu">coef</span>(log_reg)[<span class="dv">1</span>] <span class="sc">+</span> <span class="fu">coef</span>(log_reg)[<span class="dv">2</span>] <span class="sc">+</span> <span class="dv">1500</span><span class="sc">*</span><span class="fu">coef</span>(log_reg)[<span class="dv">3</span>] <span class="sc">+</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>       <span class="dv">20000</span><span class="sc">*</span><span class="fu">coef</span>(log_reg)[<span class="dv">4</span>]</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">=</span> <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span><span class="sc">+</span><span class="fu">exp</span>(<span class="sc">-</span>linp))</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Predicted linear predictor :"</span>, linp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Predicted linear predictor : -2.852752</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Predicted probability to default: "</span>, prob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Predicted probability to default:  0.05453925</code></pre>
+</div>
+</div>
+<p>The predicted proportion of students with an account balance of $1,500 and an income of $20,000 is <code>{r}round(prob,5)</code>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It is easy to forget for which scale predictions are calculated–different software implementations have different defaults. In the previous example it was obvious that the negative value -2.8528 is not estimating a probability. How about the following prediction?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(log_reg,<span class="at">newdata=</span><span class="fu">data.frame</span>(<span class="at">student=</span><span class="st">"No"</span>,<span class="at">balance=</span><span class="dv">2000</span>,<span class="at">income=</span><span class="dv">20000</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        1 
+0.6623438 </code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation">Interpretation</h3>
+<p>The sign of the coefficient tells us whether the predicted probability increases. It is important to check which of the two binary states is being modeled. If the target variable is a factor, <code>glm</code> in <code>R</code> models the second level of the factor–<code>default="Yes"</code> in our example. The probability of credit card default thus increases with account balance and income and is lower if <code>student = "Yes</code> compared to <code>student = "No"</code>.</p>
+<p>In the classical linear model the coefficients measure the change in the mean response if the associated input variable increases in value by one unit and all other inputs are held constant. In the logistic regression model, because of the involvement of the link function, such an interpretation applies to the link scale. In other words, the coefficient <span class="math inline">\(\widehat{\beta}_2 =\)</span> 0.0058 for <code>balance</code> measures the change <strong>in logits</strong> when the account balance increases by one dollar. Because the logistic function is nonlinear the effect of an input on the predicted mean, the probability to default, is also nonlinear. The effect of <span class="math inline">\(\beta_j\)</span> on the probability is greater when the linear predictor is near zero where the logistic function has the greatest slope.</p>
+<p>The <strong>odds</strong> <span class="math inline">\(O(\eta)\)</span> are defined as the ratio of event and non-events for the value of the linear predictor: <span class="math display">\[
+O(\eta) = \frac{\pi(\eta)}{1-\pi(\eta)} = e^\eta
+\]</span> The <strong>odds ratio</strong> compares the odds for two different linear predictors <span class="math display">\[
+OR(\eta_1,\eta_2) = \frac{O(\eta_1)}{O(\eta_2)}=\exp\{\eta_1 - \eta_2\}
+\]</span> <span class="math inline">\(OR(\eta_1,\eta_2)\)</span> measures how much the odds have changed from <span class="math inline">\(\eta_1\)</span> to <span class="math inline">\(\eta_2\)</span>. These comparisons are particularly meaningful if the linear predictors differ in an effect we wish to test. For example, if <span class="math inline">\(\eta_1\)</span> is the linear predictor for a student and <span class="math inline">\(\eta_2\)</span> is the linear predictor for a student (with the same income and account balance), then exponentiating $_2 = $ 0.0058 gives the odds ratio for student status.</p>
+<p>We have finally established that the logistic regression coefficients are interpreted as changes in the <strong>log odds ratios</strong>–this holds only for the logit link.</p>
+</section>
+<section id="from-regression-to-classification" class="level3">
+<h3 class="anchored" data-anchor-id="from-regression-to-classification">From Regression to Classification</h3>
+<p>Classification methods assign observations to categories. Any statistical method that yields probabilities can be used as a classifier. The difference between the two is in the statements</p>
+<blockquote class="blockquote">
+<p><em>The predicted probability of a student with $x account balance and $$xx income to default is …</em></p>
+</blockquote>
+<blockquote class="blockquote">
+<p><em>A student with $x account balance and $$xx income to default is classified as a (non-)defaulter</em></p>
+</blockquote>
+<p>All we need to turn the predictions from a logistic regression model into a classification model is a rule that assigns predictions to events or non-events based on the predicted probabilities. The <strong>cutoff</strong> <span class="math inline">\(c = 0.5\)</span> is common and is known as the <strong>Bayes classifier</strong>. If a predicted probability is greater than 0.5 it is classified as an event, otherwise it is classified as a non-event. More generally, the Bayes classifier is the rule that assigns the category for which the predicted probability is highest. With two categories, this is equivalent to classifying an event if the predicted probability exceeds 0.5. The Bayes classifier is optimal in that it has the smallest probability of a misclassification.</p>
+<section id="confusion-matrix" class="level4">
+<h4 class="anchored" data-anchor-id="confusion-matrix">Confusion matrix</h4>
+<div class="definition">
+<div class="definition-header">
+<p>Definition: Confusion Matrix</p>
+</div>
+<div class="definition-container">
+<p>The confusion matrix is the cross-classification between the observed and the predicted categories in a classification problem. If there are two categories, the confusion matrix is a 2 x 2 matrix.</p>
+<p>The cells of the matrix contain the number of data points that fall into the cross-classification when the model’s decision rule is applied to <span class="math inline">\(n\)</span> observations. If one of the categories is labeled positive and the other is labeled negative, the cells give the number of true positive (TP), true negative (TN), false positive (FP), and false negative (FN) predictions.</p>
+<p>The following table shows the layout of a typical confusion matrix for a 2-category classification problem. A false positive prediction, for example, is to predict a positive (“Yes”) result when the true state (the observed state) was negative. A false negative result arises when the decision rule assigns a “No” to an observation with a positive (“Yes”) state.</p>
+<table class="table">
+<caption>Confusion matrix for a classification problem with two states.</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;">Observed Category</th>
+<th style="text-align: center;"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Predicted Category</strong></td>
+<td style="text-align: center;"><strong>Yes (Positive)</strong></td>
+<td style="text-align: center;"><strong>No (Negative)</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Yes (Positive)</strong></td>
+<td style="text-align: center;">True Positive (TP)</td>
+<td style="text-align: center;">False Positive (FP)</td>
+</tr>
+<tr class="odd">
+<td><strong>No (Negative)</strong></td>
+<td style="text-align: center;">False Negative (FN)</td>
+<td style="text-align: center;">True Negative (TN)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>A number of statistics are calculated based on the cells in the confusion matrix.</p>
+<table class="table">
+<caption>Statistics calculated from a 2 x 2 confusion matrix.</caption>
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 50%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Statistic</strong></td>
+<td><strong>Expression</strong></td>
+<td><strong>Notes</strong></td>
+</tr>
+<tr class="even">
+<td><strong>False Positive Rate (FPR)</strong></td>
+<td>FP / (FP + TN)</td>
+<td>The rate of the true negative cases that were predicted to be positive</td>
+</tr>
+<tr class="odd">
+<td><strong>False Negative Rate (FNR)</strong></td>
+<td>FN / (TP + FN)</td>
+<td>The rate of the true positive cases that were predicted to be negative</td>
+</tr>
+<tr class="even">
+<td><strong>Sensitivity</strong></td>
+<td>TP / (TP + FN) = 1 – FNR</td>
+<td>This is the true positive rate; also called <strong>Recall</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Specificity</strong></td>
+<td>TN / (FP + TN) = 1— FPR</td>
+<td>This is the true negative rate</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>Accuracy</strong></td>
+<td>(TP + TN) / (TP + TN + FP + FN)</td>
+<td>Overall proportion of correct classifications</td>
+</tr>
+<tr class="even">
+<td><strong>Misclassification rate</strong></td>
+<td>(FP + FN) / (TP + TN + FP + FN)</td>
+<td>Overall proportion of incorrect classifications, 1 – Accuracy</td>
+</tr>
+<tr class="odd">
+<td><strong>Precision</strong></td>
+<td>TP / (TP + FP)</td>
+<td>Ratio of true positives to anything predicted as positive</td>
+</tr>
+<tr class="even">
+<td><strong>Detection Rate</strong></td>
+<td>TP / (TP + TN + FP + FN)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>No Information Rate</strong></td>
+<td><span class="math inline">\(\frac{\max(TP+FN,FP+TN)}{TP+TN+FP+FN}\)</span></td>
+<td>The proportion of observations in the larger observed class</td>
+</tr>
+</tbody>
+</table>
+<p>The model accuracy is measured by the ratio of observations that were correctly classified, the sum of the diagonal cells divided by the total number of observations. The misclassification rate, another common performance measure is the complement of the accuracy.</p>
+<p>The sensitivity is the ratio of true positives to what should have been predicted as positive. The specificity is the ratio of true negatives to what should have been predicted as negative. They are <strong>not</strong> complements of each other; they are calculated with different denominators.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Credit Default–ISLR (Cont’d)</p>
+</div>
+<div class="example-container">
+<p>With the logistic regression model fitted to the training data we can compute the confusion matrix for the test data. If the application of the logistic regression is classification, metrics based on confusion statistics for test data are a good method for judging the performance of the model.</p>
+<p>The following statements apply the Bayes classification rule to the test data and call the <code>confusionMatrix</code> function in the <code>caret</code> package. The option <code>positive="Yes"</code> is used to identify the level of the factor considers the “positive” level for the calculation of the statistics. This will not affect the overall confusion matrix but will affect the interpretation of sensitivity, specificity and others. By default, the function uses the first level of a factor as the “positive” result.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>predicted_prob_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(log_reg, <span class="at">newdata=</span>test, <span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>classify_test <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">ifelse</span>(predicted_prob_test <span class="sc">&gt;</span> <span class="fl">0.5</span>,<span class="st">"Yes"</span>,<span class="st">"No"</span>))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(classify_test,test<span class="sc">$</span>default, <span class="at">positive=</span><span class="st">"Yes"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction  No Yes
+       No  958  26
+       Yes   7   9
+                                         
+               Accuracy : 0.967          
+                 95% CI : (0.954, 0.9772)
+    No Information Rate : 0.965          
+    P-Value [Acc &gt; NIR] : 0.407906       
+                                         
+                  Kappa : 0.3384         
+                                         
+ Mcnemar's Test P-Value : 0.001728       
+                                         
+            Sensitivity : 0.2571         
+            Specificity : 0.9927         
+         Pos Pred Value : 0.5625         
+         Neg Pred Value : 0.9736         
+             Prevalence : 0.0350         
+         Detection Rate : 0.0090         
+   Detection Prevalence : 0.0160         
+      Balanced Accuracy : 0.6249         
+                                         
+       'Positive' Class : Yes            
+                                         </code></pre>
+</div>
+</div>
+</div>
+</div>
+<p>Probably the most frequently used confusion statistic is accuracy, the overall proportion of predicting correctly. The problem with focusing solely on accuracy is that the two possible errors, false positives and false negatives might not be of equal consequence. For example, it might not matter how accurate a model is unless it achieves a certain sensitivity—the ability to correctly identify positives.</p>
+<p>The following table arranges the results in the format of the definition.</p>
+<table class="table">
+<caption>Confusion matrix for test data in credit default example.</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;">Observed Category</th>
+<th style="text-align: center;"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Predicted Category</strong></td>
+<td style="text-align: center;"><strong>Yes (Positive)</strong></td>
+<td style="text-align: center;"><strong>No (Negative)</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Yes (Positive)</strong></td>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">7</td>
+</tr>
+<tr class="odd">
+<td><strong>No (Negative)</strong></td>
+<td style="text-align: center;">26</td>
+<td style="text-align: center;">958</td>
+</tr>
+</tbody>
+</table>
+<p>The classification has an accuracy of 96.7%, which seems impressive. Its false positive and false negative rates are very different, however: FPR = 0.0073, FNR = 0.7429. The model is much less likely to predict a “Yes” when the true state is “No”, than it is to predict a “No” when the true state is “Yes”. Whether we can accept a model with such low sensitivity (100 – 74.29) = 25.71% is questionable, despite the high accuracy. An evaluation of this model should consider whether the two errors, false positive and false negative predictions, are of equal importance and consequence.</p>
+<p>It is also noteworthy that the accuracy of 96.7% is not as impressive if you check the no-information rate of the data. The proportion of observations in the larger observed class is (958 + 7)/1,000 = 0.965. The accuracy of the decision rule is only slightly larger. In other words, if you were to take a naïve approach and predict all observations as “No” without looking at the data, that naïve decision rule would have an accuracy of 96.5%.</p>
+</section>
+</section>
+</section>
+<section id="modeling-counts" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="modeling-counts"><span class="header-section-number">11.3</span> Modeling Counts</h2>
+<p>Count targets, where the possible values of the response variables are countable, <span class="math inline">\(0, 1, 2, \cdots\)</span>, arise in many situations. Two situations, which reflect different distributional properties, are</p>
+<ul>
+<li><p><strong>Counts out of a total</strong>. We are counting the number of event occurrences out of a total number of experiments. The support for these counts has an upper limit and the counts can be expressed as proportions. For example, the number of defective manufactured items out of 100 items has support<span class="math inline">\(\{0,1,2,\cdots,100\}\)</span>.</p></li>
+<li><p><strong>Counts per unit</strong>. We are counting how many times an event of interest occurs per day, per square foot, or per some other units. The counts cannot be converted to proportions and they depend on the unit of measurement. By increasing the units by factor 2 one expects twice as many events. Examples are the number of disease incidences per 10,000 population, the number of customer calls per day received by a call center, the number of chocolate chips on a chocolate chip cookie, and so on.</p></li>
+</ul>
+<p>Counts out of a total have a direct connection to binary data. If <span class="math inline">\(Y_1, Y_2, \cdots, Y_n\)</span> are independent Bernoulli(<span class="math inline">\(\pi\)</span>) random variables, then their sum is a Binomial(<span class="math inline">\(n,\pi\)</span>) random variable. The approach to model such counts is also called <strong>Binomial regression</strong>.</p>
+<p>The typical assumption for counts per unit is that they follow a Poisson distribution.</p>
+<p>An introduction to binomial and <strong>Poisson regression</strong> follows here. Other distributions such as the Negative Binomial and concepts such as overdispersion and zero-inflated count processes are covered in more detail in the chapter on Generalized Linear Models (<a href="glm.html" class="quarto-xref"><span>Chapter 26</span></a>).</p>
+<section id="binomial-regression" class="level3">
+<h3 class="anchored" data-anchor-id="binomial-regression">Binomial Regression</h3>
+<p>A Binomial(<span class="math inline">\(n,\pi\)</span>) random variable is the sum of <span class="math inline">\(n\)</span> independent Bernoulli(<span class="math inline">\(\pi\)</span>) random variables. The mean and variance of a <span class="math inline">\(Y\sim \text{Binomial}(n,\pi\)</span>) random variable follow from this definition <span class="math display">\[
+\text{E}[Y] = n\pi \quad \text{Var}[Y] = n\pi(1-\pi)
+\]</span></p>
+<p>A regression for binomial data is thus a special case of a logistic regression with <strong>grouped data</strong>.</p>
+<div class="{example}">
+<div class="example-header">
+<p>Example: Insecticide Dose Response</p>
+</div>
+<div class="example-container">
+<p>The data for this problem are from $6.7.1 of <span class="citation" data-cites="Schabenberger2001">(<a href="references.html#ref-Schabenberger2001" role="doc-biblioref">Schabenberger and Pierce 2001</a>)</span>. For each of seven concentrations of an insecticide, 20 larvae were exposed and the number of larvae killed was recorded.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>conc <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.375</span>,<span class="fl">0.75</span>,<span class="fl">1.5</span>,<span class="fl">3.0</span>,<span class="fl">6.0</span>,<span class="fl">12.0</span>,<span class="fl">24.0</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>killed <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">8</span>,<span class="dv">11</span>,<span class="dv">16</span>,<span class="dv">18</span>,<span class="dv">20</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>total <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">20</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>insect <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(conc,killed,total)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(insect,<span class="at">format=</span><span class="st">"html"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">conc</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">killed</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.375</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.750</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.500</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3.000</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">6.000</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">12.000</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">24.000</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+<p>None of the twenty larvae exposed to a concentration of 0.375 succumbed to the insecticide. At a concentration of 3.0, 11 of the twenty larvae exposed to that concentration died, and so on.</p>
+<p>Each larva’s response to the insecticide is a Bernoulli (binary) random variable. Since the larvae respond independently, the number of larvae killed out of 20 is a Binomial(20,<span class="math inline">\(\pi\)</span>) random variable.</p>
+<p>A goal of the data analysis is to derive the <span class="math inline">\(LD_{50}\)</span> value, the insecticide concentration that leads to 50% mortality.</p>
+<p>Binomial regression models the event probability <span class="math inline">\(\pi\)</span> as a function of predictor (input) variables.</p>
+<p>For each concentration we can calculate the proportion <span class="math inline">\(p = \text{killed}/\text{total}\)</span> and its logit <span class="math inline">\(\log(p/(1-p))\)</span> and plot the logits against the concentration. This is not possible for binary data where outcomes are coded either <span class="math inline">\(Y=1\)</span> or <span class="math inline">\(Y=0\)</span> and a logit cannot be calculated.</p>
+<p>That gives us an idea of the relationship between mortality and concentration on the logit scale.</p>
+<p>No larvae were killed at the first concentration and all larvae were killed at the last concentration. This leads to an undefined logit. To <strong>approximately</strong> visualize the observed logits we add/subtract a small amount to the counts for those concentrations. The original data will be used in modeling.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>k2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.2</span>,<span class="dv">1</span>,<span class="dv">8</span>,<span class="dv">11</span>,<span class="dv">16</span>,<span class="dv">18</span>,<span class="fl">19.8</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>insect2 <span class="ot">&lt;-</span> insect <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">prop =</span> k2<span class="sc">/</span>total,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">observed_logit =</span> <span class="fu">log</span>(prop<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>prop)),</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">logconc =</span> <span class="fu">log10</span>(conc))</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(insect2<span class="sc">$</span>conc,insect2<span class="sc">$</span>observed_logit, </span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">"Concentration"</span>, </span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">"Logit of sample proportion"</span>, <span class="at">type=</span><span class="st">"b"</span>)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(insect2<span class="sc">$</span>logconc,insect2<span class="sc">$</span>observed_logit, </span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">"log10(Concentration)"</span>, </span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">"Logit of sample proportion"</span>, <span class="at">type=</span><span class="st">"b"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regdiscrete_files/figure-html/logits-1.png" class="img-fluid figure-img" style="width:80.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The relationship between the logits of the sample proportion and insecticide concentration is not linear. Taking the log of the concentration removes the curvature. The graph in the right-hand panel suggests the following binomial regression model</p>
+<ul>
+<li><span class="math inline">\(Y | x \sim \text{Binomial}(n,\pi(x))\)</span></li>
+<li><span class="math inline">\(\eta = \beta_0 + \beta_1 \text{log10}(x)\)</span></li>
+<li>link function: logit</li>
+</ul>
+</div>
+</div>
+<div class="{example}">
+<div class="example-header">
+<p>Example: Insecticide Dose Response (Cont’d)</p>
+</div>
+<div class="example-container">
+<p>To signal to the <code>glm()</code> function that the response is a binomial proportion we specify the response as a two-column matrix where the first column contains the number of events (larvae killed) for the binomials and the second column contains the non-events (larvae survived).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>bin_reg <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(killed,total<span class="sc">-</span>killed) <span class="sc">~</span> logconc, </span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">family=</span><span class="st">"binomial"</span>,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">data=</span>insect2)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bin_reg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = cbind(killed, total - killed) ~ logconc, family = "binomial", 
+    data = insect2)
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  -1.7305     0.3741  -4.626 3.73e-06 ***
+logconc       4.1651     0.6520   6.388 1.68e-10 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 98.2178  on 6  degrees of freedom
+Residual deviance:  4.6206  on 5  degrees of freedom
+AIC: 23.019
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<p>The regression coefficient for <code>logconc</code> is highly significant. <a href="#fig-insect-mortality" class="quarto-xref">Figure&nbsp;<span>11.2</span></a> shows the predicted logistic probability function of the model and the <span class="math inline">\(LD_{50}\)</span> value.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-insect-mortality" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-insect-mortality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="regdiscrete_files/figure-html/fig-insect-mortality-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="regdiscrete_files/figure-html/fig-insect-mortality-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-insect-mortality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.2: Predicted mortality function for insecticide and <span class="math inline">\(LD_{50}\)</span> value.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The <span class="math inline">\(LD_{50}\)</span> is a value on the <span class="math inline">\(x\)</span>-axis. This is an inverse prediction problem: to find the value on the <span class="math inline">\(x\)</span>-axis that is associated with a predicted mortality of 0.5. Any value on the x-axis corresponding to a particular mortality rate <span class="math inline">\(\alpha\)</span> can be found by solving the following equation for <span class="math inline">\(x_\alpha\)</span></p>
+<p><span class="math display">\[
+\text{logit}(\alpha) = \beta_0 + \beta_1\text{log}_{10}(x_\alpha)
+\]</span></p>
+<p>The solution is <span class="math display">\[
+x_\alpha = 10^{(\text{logit}(\alpha) - \beta_0)/\beta_1}
+\]</span></p>
+<p>With <span class="math inline">\(\alpha = 0.5\)</span> and applying the estimated regression coefficients you get <span class="math display">\[
+x_{0.5} = 10^{(\text{logit}(0.5) + 1.7305)/4.1651} = 10^{0.4155} = 2.603
+\]</span></p>
+<p>The insecticide dosage that is fatal for 50% of the larvae, the <span class="math inline">\(LD_{50}\)</span> value, is 2.603 (the log10 concentration is 0.4155).</p>
+</div>
+</div>
+</section>
+<section id="poisson-regression" class="level3">
+<h3 class="anchored" data-anchor-id="poisson-regression">Poisson Regression</h3>
+<p>The Poisson distribution is arguably the go-to distribution when the target variable is a count per unit. It is a simple yet powerful probability model. A Poisson random variable has support <span class="math inline">\(\{0,1,2,\cdots\}\)</span> and probability mass function (p.m.f.) <span class="math display">\[
+\text{Pr}(Y=y) = \frac{\lambda^y}{y!} e^{-y}
+\]</span> The parameter <span class="math inline">\(\lambda\)</span> is the average count per unit and is also the variance of <span class="math inline">\(Y\)</span>, <span class="math inline">\(\text{E}[Y] = \text{Var}[Y] = \lambda\)</span>.</p>
+<p>The following plots show the p.m.f. for Poisson distributions with <span class="math inline">\(\lambda = 2\)</span> and <span class="math inline">\(\lambda = 5\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(<span class="fu">dpois</span>(<span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">10</span>,<span class="dv">1</span>),<span class="dv">2</span>), <span class="at">names.arg=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">10</span>,<span class="dv">1</span>), <span class="at">main =</span> <span class="st">"Poisson(2)"</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(<span class="fu">dpois</span>(<span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">14</span>,<span class="dv">1</span>),<span class="dv">5</span>), <span class="at">names.arg=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">14</span>,<span class="dv">1</span>), <span class="at">main =</span> <span class="st">"Poisson(5)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regdiscrete_files/figure-html/pmf_plots-1.png" class="img-fluid figure-img" style="width:80.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The natural link function for the Poisson distribution is the log link. A Poisson regression model has the following configuration:</p>
+<ul>
+<li><span class="math inline">\(Y | \textbf{x}\sim \text{Poisson}(\lambda(\textbf{x}))\)</span></li>
+<li><span class="math inline">\(\eta = \textbf{x}^\prime \boldsymbol{\beta}\)</span></li>
+<li><span class="math inline">\(\log(\lambda(\textbf{x})) = \eta\)</span></li>
+</ul>
+<div class="example">
+<div class="example-header">
+<p>Example: Poisson Regression for Bike Sharing Data</p>
+</div>
+<div class="example-container">
+<p>The data for this example comes with the <code>ISLR2</code> library and contains 8,645 records of the number of bike rentals per hour in Washington, DC along with time/date and weather information.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(Bikeshare)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(Bikeshare)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   8645 obs. of  15 variables:
+ $ season    : num  1 1 1 1 1 1 1 1 1 1 ...
+ $ mnth      : Factor w/ 12 levels "Jan","Feb","March",..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ day       : num  1 1 1 1 1 1 1 1 1 1 ...
+ $ hr        : Factor w/ 24 levels "0","1","2","3",..: 1 2 3 4 5 6 7 8 9 10 ...
+ $ holiday   : num  0 0 0 0 0 0 0 0 0 0 ...
+ $ weekday   : num  6 6 6 6 6 6 6 6 6 6 ...
+ $ workingday: num  0 0 0 0 0 0 0 0 0 0 ...
+ $ weathersit: Factor w/ 4 levels "clear","cloudy/misty",..: 1 1 1 1 1 2 1 1 1 1 ...
+ $ temp      : num  0.24 0.22 0.22 0.24 0.24 0.24 0.22 0.2 0.24 0.32 ...
+ $ atemp     : num  0.288 0.273 0.273 0.288 0.288 ...
+ $ hum       : num  0.81 0.8 0.8 0.75 0.75 0.75 0.8 0.86 0.75 0.76 ...
+ $ windspeed : num  0 0 0 0 0 0.0896 0 0 0 0 ...
+ $ casual    : num  3 8 5 3 0 0 2 1 1 8 ...
+ $ registered: num  13 32 27 10 1 1 0 2 7 6 ...
+ $ bikers    : num  16 40 32 13 1 1 2 3 8 14 ...</code></pre>
+</div>
+</div>
+<p>The following statements fit the same Poisson regression model as in <span class="citation" data-cites="James2013_ISLR2">(<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">James et al. 2021, 187</a>)</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>mod.pois <span class="ot">&lt;-</span> <span class="fu">glm</span>(bikers <span class="sc">~</span> mnth <span class="sc">+</span> hr <span class="sc">+</span> workingday <span class="sc">+</span> temp <span class="sc">+</span> weathersit,</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">data =</span> Bikeshare, </span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">family =</span> <span class="st">"poisson"</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod.pois)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = bikers ~ mnth + hr + workingday + temp + weathersit, 
+    family = "poisson", data = Bikeshare)
+
+Coefficients:
+                           Estimate Std. Error  z value Pr(&gt;|z|)    
+(Intercept)                2.693688   0.009720  277.124  &lt; 2e-16 ***
+mnthFeb                    0.226046   0.006951   32.521  &lt; 2e-16 ***
+mnthMarch                  0.376437   0.006691   56.263  &lt; 2e-16 ***
+mnthApril                  0.691693   0.006987   98.996  &lt; 2e-16 ***
+mnthMay                    0.910641   0.007436  122.469  &lt; 2e-16 ***
+mnthJune                   0.893405   0.008242  108.402  &lt; 2e-16 ***
+mnthJuly                   0.773787   0.008806   87.874  &lt; 2e-16 ***
+mnthAug                    0.821341   0.008332   98.573  &lt; 2e-16 ***
+mnthSept                   0.903663   0.007621  118.578  &lt; 2e-16 ***
+mnthOct                    0.937743   0.006744  139.054  &lt; 2e-16 ***
+mnthNov                    0.820433   0.006494  126.334  &lt; 2e-16 ***
+mnthDec                    0.686850   0.006317  108.724  &lt; 2e-16 ***
+hr1                       -0.471593   0.012999  -36.278  &lt; 2e-16 ***
+hr2                       -0.808761   0.014646  -55.220  &lt; 2e-16 ***
+hr3                       -1.443918   0.018843  -76.631  &lt; 2e-16 ***
+hr4                       -2.076098   0.024796  -83.728  &lt; 2e-16 ***
+hr5                       -1.060271   0.016075  -65.957  &lt; 2e-16 ***
+hr6                        0.324498   0.010610   30.585  &lt; 2e-16 ***
+hr7                        1.329567   0.009056  146.822  &lt; 2e-16 ***
+hr8                        1.831313   0.008653  211.630  &lt; 2e-16 ***
+hr9                        1.336155   0.009016  148.191  &lt; 2e-16 ***
+hr10                       1.091238   0.009261  117.831  &lt; 2e-16 ***
+hr11                       1.248507   0.009093  137.304  &lt; 2e-16 ***
+hr12                       1.434028   0.008936  160.486  &lt; 2e-16 ***
+hr13                       1.427951   0.008951  159.529  &lt; 2e-16 ***
+hr14                       1.379296   0.008999  153.266  &lt; 2e-16 ***
+hr15                       1.408149   0.008977  156.862  &lt; 2e-16 ***
+hr16                       1.628688   0.008805  184.979  &lt; 2e-16 ***
+hr17                       2.049021   0.008565  239.221  &lt; 2e-16 ***
+hr18                       1.966668   0.008586  229.065  &lt; 2e-16 ***
+hr19                       1.668409   0.008743  190.830  &lt; 2e-16 ***
+hr20                       1.370588   0.008973  152.737  &lt; 2e-16 ***
+hr21                       1.118568   0.009215  121.383  &lt; 2e-16 ***
+hr22                       0.871879   0.009536   91.429  &lt; 2e-16 ***
+hr23                       0.481387   0.010207   47.164  &lt; 2e-16 ***
+workingday                 0.014665   0.001955    7.502 6.27e-14 ***
+temp                       0.785292   0.011475   68.434  &lt; 2e-16 ***
+weathersitcloudy/misty    -0.075231   0.002179  -34.528  &lt; 2e-16 ***
+weathersitlight rain/snow -0.575800   0.004058 -141.905  &lt; 2e-16 ***
+weathersitheavy rain/snow -0.926287   0.166782   -5.554 2.79e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 1052921  on 8644  degrees of freedom
+Residual deviance:  228041  on 8605  degrees of freedom
+AIC: 281159
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+</div>
+<p>Input variables <code>mnth</code>, <code>hr</code>, and <code>weathersit</code> are factors, their first levels serve as the reference levels in the model (<code>mnth="Jan"</code>, <code>hr=0</code>, <code>weathersit="clear"</code>). The coefficient estimates inform us that bikeshare usage is high during commute hours (<code>hr</code> 8, 17, 18) and highest in spring and fall. Clear weather has higher usage than any of the other recorded weather situations.</p>
+</div>
+</div>
+<p>As the mean of the Poisson distribution increases, the distribution becomes more symmetric and approaches that of a Gaussian(<span class="math inline">\(\lambda,\lambda\)</span>) distribution. The average daily bike sharing count in the bike share data set is 143.7944 so it might be tempting to analyze the <code>bikers</code> variable with a classical linear model.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Classical Linear Model for Bike Sharing Data</p>
+</div>
+<div class="example-container">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>mod.lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(bikers <span class="sc">~</span> mnth <span class="sc">+</span> hr <span class="sc">+</span> workingday <span class="sc">+</span> temp <span class="sc">+</span> weathersit,</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">data =</span> Bikeshare)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod.lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = bikers ~ mnth + hr + workingday + temp + weathersit, 
+    data = Bikeshare)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-299.00  -45.70   -6.23   41.08  425.29 
+
+Coefficients:
+                          Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                -68.632      5.307 -12.932  &lt; 2e-16 ***
+mnthFeb                      6.845      4.287   1.597 0.110398    
+mnthMarch                   16.551      4.301   3.848 0.000120 ***
+mnthApril                   41.425      4.972   8.331  &lt; 2e-16 ***
+mnthMay                     72.557      5.641  12.862  &lt; 2e-16 ***
+mnthJune                    67.819      6.544  10.364  &lt; 2e-16 ***
+mnthJuly                    45.324      7.081   6.401 1.63e-10 ***
+mnthAug                     53.243      6.640   8.019 1.21e-15 ***
+mnthSept                    66.678      5.925  11.254  &lt; 2e-16 ***
+mnthOct                     75.834      4.950  15.319  &lt; 2e-16 ***
+mnthNov                     60.310      4.610  13.083  &lt; 2e-16 ***
+mnthDec                     46.458      4.271  10.878  &lt; 2e-16 ***
+hr1                        -14.579      5.699  -2.558 0.010536 *  
+hr2                        -21.579      5.733  -3.764 0.000168 ***
+hr3                        -31.141      5.778  -5.389 7.26e-08 ***
+hr4                        -36.908      5.802  -6.361 2.11e-10 ***
+hr5                        -24.135      5.737  -4.207 2.61e-05 ***
+hr6                         20.600      5.704   3.612 0.000306 ***
+hr7                        120.093      5.693  21.095  &lt; 2e-16 ***
+hr8                        223.662      5.690  39.310  &lt; 2e-16 ***
+hr9                        120.582      5.693  21.182  &lt; 2e-16 ***
+hr10                        83.801      5.705  14.689  &lt; 2e-16 ***
+hr11                       105.423      5.722  18.424  &lt; 2e-16 ***
+hr12                       137.284      5.740  23.916  &lt; 2e-16 ***
+hr13                       136.036      5.760  23.617  &lt; 2e-16 ***
+hr14                       126.636      5.776  21.923  &lt; 2e-16 ***
+hr15                       132.087      5.780  22.852  &lt; 2e-16 ***
+hr16                       178.521      5.772  30.927  &lt; 2e-16 ***
+hr17                       296.267      5.749  51.537  &lt; 2e-16 ***
+hr18                       269.441      5.736  46.976  &lt; 2e-16 ***
+hr19                       186.256      5.714  32.596  &lt; 2e-16 ***
+hr20                       125.549      5.704  22.012  &lt; 2e-16 ***
+hr21                        87.554      5.693  15.378  &lt; 2e-16 ***
+hr22                        59.123      5.689  10.392  &lt; 2e-16 ***
+hr23                        26.838      5.688   4.719 2.41e-06 ***
+workingday                   1.270      1.784   0.711 0.476810    
+temp                       157.209     10.261  15.321  &lt; 2e-16 ***
+weathersitcloudy/misty     -12.890      1.964  -6.562 5.60e-11 ***
+weathersitlight rain/snow  -66.494      2.965 -22.425  &lt; 2e-16 ***
+weathersitheavy rain/snow -109.745     76.667  -1.431 0.152341    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 76.5 on 8605 degrees of freedom
+Multiple R-squared:  0.6745,    Adjusted R-squared:  0.6731 
+F-statistic: 457.3 on 39 and 8605 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>The linear model explains 67.45% of the variability in the number of bike shares and has many highly significant predictors. Are the predictions comparable to those from the Poisson model? A look at <a href="#fig-bike-lm-vs-poisson" class="quarto-xref">Figure&nbsp;<span>11.3</span></a> shows that they are not at all the same. Predictions are higher under the Poisson model for small and large values. The predictions of the linear model extend into the negative values.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-bike-lm-vs-poisson" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bike-lm-vs-poisson-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="regdiscrete_files/figure-html/fig-bike-lm-vs-poisson-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bike-lm-vs-poisson-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.3: Preditions from Poisson and linear regression for bike share data.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-lrt" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="sec-lrt"><span class="header-section-number">11.4</span> Log-likelihood, Deviance, and the Likelihood-ratio Test</h2>
+<p>Interestingly, all coefficients are highly statistically significant in this analysis. As we will discover in greater detail in the chapter on generalized linear models, the analysis shows a red flag: the ratio of the residual deviance and the residual degrees of freedom should generally be about 1.</p>
+<p>The deviance of a model is twice the difference between the log likelihood evaluated at the parameter estimates and the largest possible log likelihood that is achievable in a saturated (yet overfit) model. The <code>Null deviance</code> reported by <code>glm</code> is the deviance for a model without input variables (intercept-only model). The <code>Residual deviance</code> is the deviance for the model with the specified input variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>mod.null <span class="ot">&lt;-</span> <span class="fu">glm</span>(bikers <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data=</span>Bikeshare, <span class="at">family=</span>poisson)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod.null)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = bikers ~ 1, family = poisson, data = Bikeshare)
+
+Coefficients:
+             Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) 4.9683848  0.0008969    5539   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 1052921  on 8644  degrees of freedom
+Residual deviance: 1052921  on 8644  degrees of freedom
+AIC: 1105961
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+</div>
+<p>In the null model the <code>Null</code> and <code>Residual</code> deviances are identical and match the null deviance reported in the previous model with input variables.</p>
+<p>The amount by which the deviance decreases through the addition of the input variables is the test statistic for the <strong>likelihood ratio test</strong> (LRT) that all coefficients except the intercept are simultaneously zero.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Likelihood Ratio Test for Bike Sharing Data</p>
+</div>
+<div class="example-container">
+<p>The <code>logLik</code> function extracts the log likelihood for model classes that export that information.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>LRT <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span>(<span class="fu">logLik</span>(mod.pois) <span class="sc">-</span> <span class="fu">logLik</span>(mod.null))</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>(LRT)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 824880.2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>mod.pois<span class="sc">$</span>null.deviance <span class="sc">-</span> mod.pois<span class="sc">$</span>deviance</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 824880.2</code></pre>
+</div>
+</div>
+</div>
+</div>
+<p>Under certain conditions, this likelihood-ratio test statistic has a <span class="math inline">\(\chi^2\)</span> distribution with degrees of freedom equal to the rank of <span class="math inline">\(\textbf{X}\)</span>. The LRT is the equivalent test in likelihood-based estimation to the sum-of-squares reduction test in least-squares based estimation (<a href="regglobal.html#sec-ss-reduction-test" class="quarto-xref"><span>Section 8.2</span></a>)</p>
+<div class="definition">
+<div class="definition-header">
+<p>Definition: Likelihood Ratio Test</p>
+</div>
+<div class="definition-container">
+<p>Suppose that <span class="math inline">\(\ell_f\)</span> and <span class="math inline">\(\ell_r\)</span> are the log likelihoods in a full and reduced model where the reduced model is nested within the full model through a constraint (a hypothesis) <span class="math inline">\(H\)</span> with <span class="math inline">\(q\)</span> degrees of freedom. The likelihood ratio test statistic <span class="math display">\[
+\Lambda = 2(\ell_f - \ell_r)
+\]</span> has an asymptotic <span class="math inline">\(\chi^2_q\)</span> distribution under the hypothesis.</p>
+</div>
+</div>
+<p>The LRT for the constraint <span class="math inline">\(H: \beta_1 = \beta_2 = \cdots = \beta_{39} = 0\)</span> has a near-zero <span class="math inline">\(p\)</span>-value, indicating not all of the coefficients are simultaneously zero.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pchisq</span>(LRT,<span class="at">df=</span><span class="dv">39</span>,<span class="at">lower.tail=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'log Lik.' 0 (df=40)</code></pre>
+</div>
+</div>
+<p>The <code>anova</code> function provides a convenient way of performing the LRT for nested models:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod.null,mod.pois,<span class="at">test=</span><span class="st">"LRT"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table
+
+Model 1: bikers ~ 1
+Model 2: bikers ~ mnth + hr + workingday + temp + weathersit
+  Resid. Df Resid. Dev Df Deviance  Pr(&gt;Chi)    
+1      8644    1052921                          
+2      8605     228041 39   824880 &lt; 2.2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Under certain conditions the residual deviance has a <span class="math inline">\(\chi^2\)</span> distribution with <span class="math inline">\(n-r(\textbf{X})\)</span> degrees of freedom.</p>
+<p>Since the mean of a <span class="math inline">\(\chi^2_\nu\)</span> random variable is equal to the degrees of freedom, <span class="math inline">\(\nu\)</span>, this suggests a simple calculation with the residual deviance: the ratio of the deviance and its degrees of freedom should be about 1. We can see that this ratio is far from 1 in the Poisson regression:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>mod.pois<span class="sc">$</span>deviance <span class="sc">/</span> mod.pois<span class="sc">$</span>df.residual</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 26.50099</code></pre>
+</div>
+</div>
+<p>This value indicates that there remains considerably more variability than expected. The model is somehow not correct. This condition is called <strong>overdispersion</strong> and can have many causes:</p>
+<ul>
+<li>important input variables are missing from the model</li>
+<li>the data are auto-correlated, for example in time series or longitudinal data</li>
+<li>the data do not follow a Poisson distribution but a model with greater dispersion, e.g., the Negative Binomial distribution</li>
+<li>the data were generated by more than one process and we observe a mixture.</li>
+</ul>
+<p>Overdispersion is addressed by turning the appropriate knob. If overdispersion is not addressed, the precision of the fitted model is overstated: standard error estimates are too small, confidence and prediction intervals are too narrow, <span class="math inline">\(p\)</span>-values are too small. More on this topic in <a href="glm.html#sec-glm-overdispersion" class="quarto-xref"><span>Section 26.7</span></a>.</p>
+</section>
+<section id="working-with-offsets" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="working-with-offsets"><span class="header-section-number">11.5</span> Working with Offsets</h2>
+<p>An offset is an input variable that has a known coefficient of 1. Consider the model <span class="math display">\[
+g(\mu) = \beta_0 + \beta_1x_1 + \beta_2x_2 + x^o
+\]</span> <span class="math inline">\(x^o\)</span> acts as an offset to the linear predictor. It is not an intercept, which takes on the same value for all observations. The offset can change from one observation to the next. But it is also not an input variable whose coefficient needs to be estimated. Somehow we know that the offset has a coefficient <span class="math inline">\(\beta = 1\)</span>.</p>
+<p>Offsets are important when working with count variables that relate to different units. If <span class="math inline">\(Y_1\)</span> is a count per day and <span class="math inline">\(Y_2\)</span> is a count of the same random process per week, the two do not have the same mean, <span class="math inline">\(\text{E}[Y_2] = 7\text{E}[Y_1]\)</span>. When incidences (crime, cancer, …) are counted in areas of different size or population (by city, by zip code, by county, by age group,…) we are more interested in modeling the event rate (cancer rate in Seattle per 100,000) than the raw counts (cancer cases in Seattle).</p>
+<p>If count variables relate to different units we need to adjust the analysis, otherwise changes in the mean due to size differences are attributed to the wrong effects. For Poisson regression the problem can be formalized as follows:</p>
+<p><span class="math display">\[
+Y_i \sim \text{Poisson}( x_i^0 \lambda)
+\]</span> and <span class="math inline">\(\lambda = \exp\{\textbf{x}^\prime\boldsymbol{\beta}\}\)</span>. In other words, we have to adjust the counts to a common unit to account for the differing sizes on the mean of the data. In the case of a log link, the model for the mean of <span class="math inline">\(Y_i\)</span> becomes <span class="math display">\[
+\text{E}[Y_i] = x_i^0\exp\{\textbf{x}^\prime\boldsymbol{\beta}\} = \exp\{\textbf{x}^\prime\boldsymbol{\beta}+ \log(x_i^0)\}
+\]</span> The log of the size of the units is an offset variable on the linear predictor. The interpretation of <span class="math inline">\(\lambda\)</span> is now in terms of a rate of events rather than a raw count.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Non-melanoma Skin Cancer</p>
+</div>
+<div class="example-container">
+<p>The following data appear in <span class="citation" data-cites="Kleinbaum2013">(<a href="references.html#ref-Kleinbaum2013" role="doc-biblioref">Kleinbaum et al. 2013</a>)</span> and describe the incidence of non-melanoma skin cancer among women by age group in two cities.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>nonmel <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="at">header =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">text =</span> <span class="st">"</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="st">   cases city u1 u2 u3 u4 u5 u6 u7      n</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="st">1      1    0  1  0  0  0  0  0  0 172675</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="st">2     16    0  0  1  0  0  0  0  0 123065</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a><span class="st">3     30    0  0  0  1  0  0  0  0  96216</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a><span class="st">4     71    0  0  0  0  1  0  0  0  92051</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a><span class="st">5    102    0  0  0  0  0  1  0  0  72159</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a><span class="st">6    130    0  0  0  0  0  0  1  0  54722</span></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a><span class="st">7    133    0  0  0  0  0  0  0  1  32185</span></span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a><span class="st">8     40    0  0  0  0  0  0  0  0   8328</span></span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a><span class="st">9      4    1  1  0  0  0  0  0  0 181343</span></span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a><span class="st">10    38    1  0  1  0  0  0  0  0 146207</span></span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a><span class="st">11   119    1  0  0  1  0  0  0  0 121374</span></span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a><span class="st">12   221    1  0  0  0  1  0  0  0 111353</span></span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a><span class="st">13   259    1  0  0  0  0  1  0  0  83004</span></span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a><span class="st">14   310    1  0  0  0  0  0  1  0  55932</span></span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a><span class="st">15   226    1  0  0  0  0  0  0  1  29007</span></span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a><span class="st">16    65    1  0  0  0  0  0  0  0   7583</span></span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a><span class="st">"</span>)</span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-22"><a href="#cb51-22" aria-hidden="true" tabindex="-1"></a>nonmel <span class="ot">&lt;-</span> <span class="fu">within</span>(nonmel, {</span>
+<span id="cb51-23"><a href="#cb51-23" aria-hidden="true" tabindex="-1"></a>    agegroup <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"15_24"</span>,<span class="st">"25_34"</span>,<span class="st">"35_44"</span>,<span class="st">"45_54"</span>,<span class="st">"55_64"</span>,<span class="st">"65_74"</span>,<span class="st">"75_84"</span>,<span class="st">"85+"</span>), <span class="dv">2</span>)</span>
+<span id="cb51-24"><a href="#cb51-24" aria-hidden="true" tabindex="-1"></a>    agegroup <span class="ot">&lt;-</span> <span class="fu">factor</span>(agegroup)</span>
+<span id="cb51-25"><a href="#cb51-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-26"><a href="#cb51-26" aria-hidden="true" tabindex="-1"></a>    city <span class="ot">&lt;-</span> <span class="fu">factor</span>(city, <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="fu">c</span>(<span class="st">"Minneapolis"</span>, <span class="st">"Dallas"</span>))</span>
+<span id="cb51-27"><a href="#cb51-27" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb51-28"><a href="#cb51-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-29"><a href="#cb51-29" aria-hidden="true" tabindex="-1"></a>nonmel <span class="ot">&lt;-</span> nonmel[<span class="fu">c</span>(<span class="st">"cases"</span>,<span class="st">"n"</span>,<span class="st">"city"</span>,<span class="st">"agegroup"</span>)]</span>
+<span id="cb51-30"><a href="#cb51-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-31"><a href="#cb51-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-32"><a href="#cb51-32" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(nonmel,<span class="at">format=</span><span class="st">"html"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">cases</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">city</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">agegroup</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">172675</td>
+<td style="text-align: left;">Minneapolis</td>
+<td style="text-align: left;">15_24</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">123065</td>
+<td style="text-align: left;">Minneapolis</td>
+<td style="text-align: left;">25_34</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">96216</td>
+<td style="text-align: left;">Minneapolis</td>
+<td style="text-align: left;">35_44</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">92051</td>
+<td style="text-align: left;">Minneapolis</td>
+<td style="text-align: left;">45_54</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">72159</td>
+<td style="text-align: left;">Minneapolis</td>
+<td style="text-align: left;">55_64</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">130</td>
+<td style="text-align: right;">54722</td>
+<td style="text-align: left;">Minneapolis</td>
+<td style="text-align: left;">65_74</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">133</td>
+<td style="text-align: right;">32185</td>
+<td style="text-align: left;">Minneapolis</td>
+<td style="text-align: left;">75_84</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">8328</td>
+<td style="text-align: left;">Minneapolis</td>
+<td style="text-align: left;">85+</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">181343</td>
+<td style="text-align: left;">Dallas</td>
+<td style="text-align: left;">15_24</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">146207</td>
+<td style="text-align: left;">Dallas</td>
+<td style="text-align: left;">25_34</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">119</td>
+<td style="text-align: right;">121374</td>
+<td style="text-align: left;">Dallas</td>
+<td style="text-align: left;">35_44</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">221</td>
+<td style="text-align: right;">111353</td>
+<td style="text-align: left;">Dallas</td>
+<td style="text-align: left;">45_54</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">259</td>
+<td style="text-align: right;">83004</td>
+<td style="text-align: left;">Dallas</td>
+<td style="text-align: left;">55_64</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">310</td>
+<td style="text-align: right;">55932</td>
+<td style="text-align: left;">Dallas</td>
+<td style="text-align: left;">65_74</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">226</td>
+<td style="text-align: right;">29007</td>
+<td style="text-align: left;">Dallas</td>
+<td style="text-align: left;">75_84</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">7583</td>
+<td style="text-align: left;">Dallas</td>
+<td style="text-align: left;">85+</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+<p>The <code>cases</code> variable is the raw count for the number of cases. Is the rate of non-melanoma skin cancer in 25–34 year old individuals in Dallas higher than in Minneapolis? To answer this question we need to adjust the raw counts for the population size. If the log of the population size <code>n</code> is used as the offset in a Poisson regression, then we are modeling the cancer rate per person in the two cities. Other offsets are possible, for example, to model the rate per 10,000 population. What matters is that the raw counts are adjusted to a common unit.</p>
+<p>Since <code>city</code> and <code>agegroup</code> are factors in the analysis, we choose reference levels for both. The results are expressed relative to the oldest age group in Minneapolis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>nonmel<span class="sc">$</span>city <span class="ot">&lt;-</span> <span class="fu">relevel</span>(nonmel<span class="sc">$</span>city, <span class="at">ref=</span><span class="st">"Minneapolis"</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>nonmel<span class="sc">$</span>agegroup <span class="ot">&lt;-</span> <span class="fu">relevel</span>(nonmel<span class="sc">$</span>agegroup, <span class="at">ref=</span><span class="st">"85+"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>offset=log(n)</code> option in the <code>glm</code> call defines the offset for the model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>mod_poi <span class="ot">&lt;-</span> <span class="fu">glm</span>(cases <span class="sc">~</span> city <span class="sc">+</span> agegroup, </span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">offset=</span><span class="fu">log</span>(n), </span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">family=</span><span class="st">"poisson"</span>,</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">data=</span>nonmel)</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod_poi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = cases ~ city + agegroup, family = "poisson", data = nonmel, 
+    offset = log(n))
+
+Coefficients:
+              Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)    -5.4834     0.1037 -52.890  &lt; 2e-16 ***
+cityDallas      0.8039     0.0522  15.399  &lt; 2e-16 ***
+agegroup15_24  -6.1742     0.4577 -13.488  &lt; 2e-16 ***
+agegroup25_34  -3.5440     0.1675 -21.160  &lt; 2e-16 ***
+agegroup35_44  -2.3268     0.1275 -18.254  &lt; 2e-16 ***
+agegroup45_54  -1.5790     0.1138 -13.871  &lt; 2e-16 ***
+agegroup55_64  -1.0869     0.1109  -9.800  &lt; 2e-16 ***
+agegroup65_74  -0.5288     0.1086  -4.868 1.13e-06 ***
+agegroup75_84  -0.1157     0.1109  -1.042    0.297    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 2789.6810  on 15  degrees of freedom
+Residual deviance:    8.2585  on  7  degrees of freedom
+AIC: 120.5
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<p>With the chosen reference levels, the intercept is the linear predictor for residents of Minneapolis in the 85+ age group. Exponentiating the intercept is the predicted cancer rate in that group.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The predicted cancer rate among residents of </span><span class="sc">\n</span><span class="st">Minneapolis in the 85+ age group is "</span>,</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(mod_poi<span class="sc">$</span>coefficients[<span class="dv">1</span>]),<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The predicted cancer rate among residents of 
+Minneapolis in the 85+ age group is  0.004155093 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The predicted number of non-melanoma skin cancer cases </span><span class="sc">\n</span><span class="st">among 1,000 residents of Minneapolis 85 years is "</span>,</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1000</span><span class="sc">*</span><span class="fu">exp</span>(mod_poi<span class="sc">$</span>coefficients[<span class="dv">1</span>]), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The predicted number of non-melanoma skin cancer cases 
+among 1,000 residents of Minneapolis 85 years is  4.155093 </code></pre>
+</div>
+</div>
+<p>The number of cases for a particular population size can also be obtained by supplying the value for the offet variable:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>xvals <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">city=</span><span class="st">"Minneapolis"</span>, <span class="at">agegroup=</span><span class="st">"85+"</span>, <span class="at">n=</span><span class="dv">1000</span>)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(mod_poi,<span class="at">newdata=</span>xvals,<span class="at">type=</span><span class="st">"response"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       1 
+4.155093 </code></pre>
+</div>
+</div>
+<p>Since we are modeling a standardized rate, comparisons across cities and age groups are now possible. For example, the following computes the excess number of non-melanoma skin cancer cases per 100,000 40-year old individuals versus 20-year old individuals for the two cities:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>xvals <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">city=</span><span class="st">"Minneapolis"</span>, <span class="at">agegroup=</span><span class="st">"15_24"</span>, <span class="at">n=</span><span class="dv">100000</span>)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>xvals[<span class="fu">nrow</span>(xvals)<span class="sc">+</span><span class="dv">1</span>,] <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">city=</span><span class="st">"Minneapolis"</span>, <span class="at">agegroup=</span><span class="st">"35_44"</span>, <span class="at">n=</span><span class="dv">100000</span>)</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>xvals[<span class="fu">nrow</span>(xvals)<span class="sc">+</span><span class="dv">1</span>,] <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">city=</span><span class="st">"Dallas"</span>, <span class="at">agegrouop=</span><span class="st">"15_24"</span>, <span class="at">n=</span><span class="dv">100000</span>)</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>xvals[<span class="fu">nrow</span>(xvals)<span class="sc">+</span><span class="dv">1</span>,] <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">city=</span><span class="st">"Dallas"</span>, <span class="at">agegroup=</span><span class="st">"35_44"</span>, <span class="at">n=</span><span class="dv">100000</span>)</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod_poi,<span class="at">newdata=</span>xvals,<span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Excess cancers per 100,000 in Minneapolis "</span>, p[<span class="dv">2</span>]<span class="sc">-</span>p[<span class="dv">1</span>], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Excess cancers per 100,000 in Minneapolis  39.69063 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Excess cancers per 100,000 in Dallas      "</span>, p[<span class="dv">4</span>]<span class="sc">-</span>p[<span class="dv">3</span>], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Excess cancers per 100,000 in Dallas       88.67815 </code></pre>
+</div>
+</div>
+<p>There are 2.2342 more cancer cases per 100,000 in Dallas compared to Minneapolis. Since the model does not include an interaction between city and age group, this multiplier applies to all age groups. You can find it more easily by exponentiating the coefficient for <code>cityDallas</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>(<span class="fu">exp</span>(mod_poi<span class="sc">$</span>coefficients[<span class="dv">2</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.234234</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-zero-inflation" class="level2" data-number="11.6">
+<h2 data-number="11.6" class="anchored" data-anchor-id="sec-zero-inflation"><span class="header-section-number">11.6</span> Zero-inflated Models</h2>
+<p>We briefly mentioned <strong>overdispersion</strong> in this chapter, the condition by which the data are more dispersed than is permissible under an assumed probability model. Gaussian data can never be overdispersed, because the mean and variance of the Gaussian are not related: any mean can be combined with any variance. That is quite unusual among probability distributions. In most cases, there is some relationship between the mean and the variance. For example, the Poisson(<span class="math inline">\(\lambda\)</span>) distribution has <span class="math display">\[
+\text{E}[Y] = \text{Var}[Y] = \lambda
+\]</span></p>
+<p>Regression explicitly models the mean function; when mean and variance are functionally related, the model implicitly captures the variance. Suppose you perform linear Poisson regression with <span class="math display">\[
+\log(\text{E}[Y]) = \beta_0 + \beta_1 x
+\]</span> and you find that the variability grows faster in <span class="math inline">\(x\)</span> than the mean. Either the mean function is not correctly specified, or <span class="math inline">\(Y|x\)</span> does not follow a Poisson distribution, or both.</p>
+<p>Especially with count data, a possible reason for overdispersion in the data is <strong>zero-inflated responses</strong>. Under this condition we observe more zero counts than expected under the reference distribution, usually a Poisson or Negative Binomial distribution. For example, if you ask visitors to a state park how many fish they caught that day, you will probably receive more zero responses than expected under a Poisson model because multiple processes are at work, generating zeros. Some visitors do not fish at all and naturally won’t catch any fish. Some visitors fish but are unlucky anglers that day. Zero count values appear in your data from multiple sources, inflating the overall count.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Simulated Zero Inflation</p>
+</div>
+<div class="example-container">
+<p>The following code simulates a zero-inflated Poisson process. 1,000 observations are drawn from a Poisson(5) process. A second process, <code>p2</code>, is deterministic and generates only zeros. With probability 0.2 an observation is drawn from <code>p2</code>, with probabilityt 0.8 an observation is drawn from the Poisson(5) process <code>p1</code>. The result is a zero-inflated Poisson process.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">876</span>)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">1000</span>)</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="dv">1000</span>,<span class="dv">5</span>)</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>zip <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(u <span class="sc">&lt;</span> <span class="fl">0.2</span>,p2,p1)</span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Effect of zero inflation</span></span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(zip)</span>
+<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(p1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-zero-inflation" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zero-inflation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="regdiscrete_files/figure-html/fig-zero-inflation-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="regdiscrete_files/figure-html/fig-zero-inflation-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zero-inflation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.4: Zero-inflated Poisson(5) process (left) and Poisson(5) process (right).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The excess zeros in the zero-inflated process leads to greater variability in the data compared to the non-inflated process.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(zip)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.83468</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(p1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.214244</code></pre>
+</div>
+</div>
+<p>If unaccounted for, zero inflation manifests itself as overdispersion in count data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">glm</span>(p2 <span class="sc">~</span> <span class="dv">1</span>, <span class="at">family=</span><span class="st">"poisson"</span>))<span class="sc">$</span>deviance</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4.122307e-10</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">glm</span>(zip <span class="sc">~</span> <span class="dv">1</span>, <span class="at">family=</span><span class="st">"poisson"</span>))<span class="sc">$</span>deviance</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2589.894</code></pre>
+</div>
+</div>
+</div>
+</div>
+<p>A zero-inflated model is a special case of a <strong>finite mixture model</strong> (FMM). In a <span class="math inline">\(k\)</span>-component finite mixture the probability distribution of the target variable is expressed as a weighted combination of <span class="math inline">\(k\)</span> distributions <span class="math display">\[
+p(y) = \sum_{j=1}^k \pi_j p_j(y)
+\]</span></p>
+<p>The <span class="math inline">\(\pi_j\)</span> are called the <strong>mixing probabilities</strong> of the FMM. In a <strong>homogeneous</strong> mixture model the component distributions <span class="math inline">\(p_j(y)\)</span> are from the same family, for example, they are all Gaussian distributions but with different parameters: <span class="math inline">\(p_j(y) = G(\mu_j,\sigma^2_j)\)</span>. A <strong>heterogeneous</strong> mixture model features component distributions from different families.</p>
+<p>The zero-inflated Poisson model is a heterogeneous, two-component mixture in which one component distribution is concentrated at 0 and the other distribution is Poisson(<span class="math inline">\(\lambda\)</span>)</p>
+<p><span class="math display">\[
+p_1(y) = \left \{ \begin{array}{ll} 1 &amp; y = 0 \\ 0 &amp; \text{otherwise}\end{array}\right .
+\]</span> <span class="math display">\[
+p_2(y) = \frac{\lambda^y}{y!} e{-\lambda}
+\]</span> The overall model can be written as <span class="math display">\[
+\Pr(Y=y) = \pi p_1 + (1-\pi)p_2(y)
+\]</span></p>
+<p>Opportunities to introduce input variables are the mixing probability <span class="math inline">\(\pi\)</span> and the mean of the Poisson model. The mixing probability can be modeled as a lothe gistic-type model. The model for the mean of <span class="math inline">\(p_2(y)\)</span> is a Poisson regression with log link. The two models can depend on the same inputs or different inputs. For example, the likelihood of excess zeros might depend on age of an individual but the mean of the Poisson variable is not a function of age.</p>
+<p>Using <span class="math inline">\(\textbf{z}\)</span> for the vector of inputs in the model for the mixing probability and <span class="math inline">\(\textbf{x}\)</span> for the vector of inputs in the Poisson model, the zero-inflated Poisson model in terms of estimable parameters is</p>
+<p><span class="math display">\[\begin{align*}
+    \text{logit}(\pi) &amp;= \textbf{z}^\prime \boldsymbol{\alpha}\\
+    \log(\lambda) &amp;= \textbf{x}^\prime \boldsymbol{\beta}
+\end{align*}\]</span></p>
+<div class="example">
+<div class="example-header">
+<p>Example: Catching Fish</p>
+</div>
+<div class="example-container">
+<p>The data for this example comes from the documentation of the FMM procedure in SAS/STAT software. The data represent gender, age, and the number of fish reportedly caught by visitors of a park.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">library</span>(<span class="st">"duckdb"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: DBI</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>catch <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM catch"</span>)</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(catch)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  gender age count
+1      F  54    18
+2      M  37     0
+3      F  48    12
+4      M  27     0
+5      M  55     0
+6      M  32     0</code></pre>
+</div>
+</div>
+<p>A Poisson generalized linear model with a common intercept and different age-slopes for the genders exhibits considerable overdispersion.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>poi_reg <span class="ot">&lt;-</span> <span class="fu">glm</span>(count <span class="sc">~</span> gender<span class="sc">:</span>age, <span class="at">data=</span>catch,<span class="at">family=</span><span class="st">"poisson"</span>)</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(poi_reg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = count ~ gender:age, family = "poisson", data = catch)
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -3.98109    0.54391  -7.319 2.49e-13 ***
+genderF:age  0.12778    0.01149  11.125  &lt; 2e-16 ***
+genderM:age  0.10442    0.01224   8.531  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 315.58  on 51  degrees of freedom
+Residual deviance: 104.84  on 49  degrees of freedom
+AIC: 188.71
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+</div>
+<p>A zero-inflated Poisson model can be fit in <code>R</code> with the <code>zeroinfl</code> function in the <code>pscl</code> package. The function specifies separate linear predictors for the count model and the zero-inflated part, separated by a vertical slash. <code>count ~ gender:age | 1</code> implies the same mean model for the count part as in the Poisson model above and an intercept-only model for the zero-inflation part. The <code>dist=</code> option specifies the distribution of the count variable, the <code>link=</code> option specifies the link function for the zero-inflation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pscl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Classes and Methods for R developed in the
+Political Science Computational Laboratory
+Department of Political Science
+Stanford University
+Simon Jackman
+hurdle and zeroinfl functions by Achim Zeileis</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>zip <span class="ot">&lt;-</span> <span class="fu">zeroinfl</span>(count <span class="sc">~</span> gender<span class="sc">:</span>age <span class="sc">|</span> <span class="dv">1</span>, </span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">data=</span>catch,</span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">dist=</span><span class="st">"poisson"</span>, <span class="co">#link for the GLM part assumed to be log()</span></span>
+<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">link=</span><span class="st">"logit"</span> <span class="co">#this is the link for the zero-inflated part!</span></span>
+<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb84-6"><a href="#cb84-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(zip)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+zeroinfl(formula = count ~ gender:age | 1, data = catch, dist = "poisson", 
+    link = "logit")
+
+Pearson residuals:
+    Min      1Q  Median      3Q     Max 
+-1.3540 -0.6922 -0.3865  0.6969  2.4075 
+
+Count model coefficients (poisson with log link):
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -3.52149    0.64473  -5.462 4.71e-08 ***
+genderF:age  0.12157    0.01344   9.046  &lt; 2e-16 ***
+genderM:age  0.10562    0.01393   7.580 3.45e-14 ***
+
+Zero-inflation model coefficients (binomial with logit link):
+            Estimate Std. Error z value Pr(&gt;|z|)  
+(Intercept)  -0.8342     0.4768  -1.749   0.0802 .
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Number of iterations in BFGS optimization: 9 
+Log-likelihood: -72.81 on 4 Df</code></pre>
+</div>
+</div>
+<p>The estimate of the intercept in the zero-inflation model is <span class="math inline">\(\widehat{\alpha}_0 =\)</span> -0.8342. Applying the inverse link yields the estimated mixing probability:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>coef <span class="ot">&lt;-</span> zip<span class="sc">$</span>optim<span class="sc">$</span>par</span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept) genderF:age genderM:age (Intercept) 
+ -3.5214860   0.1215659   0.1056183  -0.8341833 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">/</span>(<span class="dv">1</span><span class="sc">+</span><span class="fu">exp</span>(<span class="sc">-</span>coef[<span class="dv">4</span>])) <span class="co">#mixing prob. for the zero-inflated part</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept) 
+  0.3027613 </code></pre>
+</div>
+</div>
+<p>30.2% of the observations come from the zero-inflated process. The complement, 69.8% of the observations come from a Poisson process with estimated mean</p>
+<p><span class="math display">\[
+\exp\{\widehat{\beta}_0 + \widehat{\beta}_{1f} \,\text{age} \} = \exp\{-3.52149 + 0.12157\times \text{age}\}
+\]</span></p>
+<p>for females and <span class="math display">\[
+\exp\{\widehat{\beta}_0 + \widehat{\beta}_{1m} \, \text{age} \} = \exp\{-3.52149 + 0.10562\times \text{age}\}
+\]</span> for males.</p>
+<p>How do you calculate the predicted values in the zero-inflated Poisson model? The predictions of the two processes and the mixing probabilities need to be combined. For the first two observations,</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>mixprob <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">1</span><span class="sc">+</span><span class="fu">exp</span>(<span class="sc">-</span>coef[<span class="dv">4</span>]))</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Predicted value for obs 1: "</span>,</span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a>    mixprob <span class="sc">*</span> <span class="dv">0</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">-</span>mixprob) <span class="sc">*</span> <span class="fu">exp</span>(coef[<span class="dv">1</span>] <span class="sc">+</span> catch[<span class="dv">1</span>,<span class="st">"age"</span>]<span class="sc">*</span>coef[<span class="dv">2</span>]),<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Predicted value for obs 1:  14.62081 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Predicted value for obs 2: "</span>,</span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>    mixprob <span class="sc">*</span> <span class="dv">0</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">-</span>mixprob) <span class="sc">*</span> <span class="fu">exp</span>(coef[<span class="dv">1</span>] <span class="sc">+</span> catch[<span class="dv">2</span>,<span class="st">"age"</span>]<span class="sc">*</span>coef[<span class="dv">3</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Predicted value for obs 2:  1.026099</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(zip,<span class="at">newdata=</span>catch[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        1         2 
+14.620807  1.026099 </code></pre>
+</div>
+</div>
+<p>A likelihood-ratio test can be used to test whether adding the zero-inflation to the Poisson model improved the overall model. The two models are nested, the ZIP model reduces to a Poisson model as <span class="math inline">\(\pi \rightarrow 0\)</span>, or equivalently, <span class="math inline">\(\alpha \rightarrow -\infty\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>lrt <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span>(<span class="fu">logLik</span>(zip) <span class="sc">-</span> <span class="fu">logLik</span>(poi_reg))</span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>pvalue <span class="ot">&lt;-</span> <span class="fu">pchisq</span>(lrt,<span class="at">df=</span><span class="dv">1</span>,<span class="at">lower.tail=</span><span class="cn">FALSE</span>)</span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"p-value of LRT :"</span>, pvalue)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>p-value of LRT : 1.120097e-09</code></pre>
+</div>
+</div>
+<p>The ZIP model provides a significantly better fit than the Poisson model.</p>
+<p>The next model adds the <code>gender</code> variable to the zero-inflated model. There are now two mxing probabilities, one for males and one for females.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>zip_g <span class="ot">&lt;-</span> <span class="fu">zeroinfl</span>(count <span class="sc">~</span> gender<span class="sc">:</span>age <span class="sc">|</span> gender, </span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">data=</span>catch,</span>
+<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">dist=</span><span class="st">"poisson"</span>, </span>
+<span id="cb98-4"><a href="#cb98-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">link=</span><span class="st">"logit"</span>  </span>
+<span id="cb98-5"><a href="#cb98-5" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb98-6"><a href="#cb98-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(zip_g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+zeroinfl(formula = count ~ gender:age | gender, data = catch, dist = "poisson", 
+    link = "logit")
+
+Pearson residuals:
+    Min      1Q  Median      3Q     Max 
+-1.7975 -0.6309 -0.3893  0.5731  2.3716 
+
+Count model coefficients (poisson with log link):
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -3.40113    0.63517  -5.355 8.57e-08 ***
+genderF:age  0.11893    0.01327   8.965  &lt; 2e-16 ***
+genderM:age  0.10448    0.01372   7.617 2.60e-14 ***
+
+Zero-inflation model coefficients (binomial with logit link):
+            Estimate Std. Error z value Pr(&gt;|z|)  
+(Intercept)  -1.5405     0.7141  -2.157   0.0310 *
+genderM       1.5856     0.8858   1.790   0.0734 .
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Number of iterations in BFGS optimization: 10 
+Log-likelihood: -71.1 on 5 Df</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>lrt <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span>(<span class="fu">logLik</span>(zip_g) <span class="sc">-</span> <span class="fu">logLik</span>(zip))</span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>pvalue <span class="ot">&lt;-</span> <span class="fu">pchisq</span>(lrt,<span class="at">df=</span><span class="dv">1</span>,<span class="at">lower.tail=</span><span class="cn">FALSE</span>)</span>
+<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"p-value of LRT :"</span>, pvalue)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>p-value of LRT : 0.06473306</code></pre>
+</div>
+</div>
+<p>The likelihood ratio test of a gender-specific mixing probability is not significant at the 5% level (<span class="math inline">\(p =\)</span> 0.0647, very similar to the Wald-type <span class="math inline">\(p\)</span>-value of 0.0734 reported in the output.</p>
+</div>
+</div>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;11.2: Predicted mortality function for insecticide and <span class="math inline">\(LD_{50}\)</span> value.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;11.4: Zero-inflated Poisson(5) process (left) and Poisson(5) process (right).</span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-James2013_ISLR2" class="csl-entry" role="listitem">
+James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2021. <em>An Introduction to Statistical Learning: With Applications in r, 2nd Ed.</em> Springer. <a href="https://www.statlearning.com/">https://www.statlearning.com/</a>.
+</div>
+<div id="ref-Kleinbaum2013" class="csl-entry" role="listitem">
+Kleinbaum, David G., Lawrence L. Kupper, A. Nizam, and Eli S. Rosenberg. 2013. <em>Applied Regression Analysis and Other Multivariable Methods, 5 Ed.</em> Cengage Learning.
+</div>
+<div id="ref-Schabenberger2001" class="csl-entry" role="listitem">
+Schabenberger, O., and Francis J. Pierce. 2001. <em>Contemporary Statistical Models for the Plant and Soil Sciences</em>. CRC Press, Boca Raton.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./regnlr.html" class="pagination-link" aria-label="Nonlinear Regression">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./reglocal.html" class="pagination-link" aria-label="Local Models">
+        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","openEffect":"zoom","loop":false,"descPosition":"bottom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

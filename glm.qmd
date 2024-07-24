@@ -1,0 +1,1057 @@
+
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+# Generalized Linear Models {#sec-glm}
+
+## Introduction {#sec-glm-intro}
+
+We have encountered generalized linear models (GLMs) throughout the material and one could argue why they belong into a segment of advanced supervised learning techniques. After all, generalized linear models are very common today. We have placed them here because this part of the material is more "mathy" than previous sections and we want to dive a bit more into the distributional properties of the models in this part of the material than in other parts.
+
+The **generalization** of GLMs is found in a comparison to the classical linear model with Gaussian errors:
+$$
+Y = \bx^\prime\bbeta + \epsilon, \quad \epsilon \sim \textit{ iid } G(0, \sigma^2)
+$$
+Because of the linearity property of Gaussian random variables, the normality of $\epsilon$ transfers to $Y$: $Y \sim \textit{ iid } G(\bx^\prime\bbeta,\sigma^2)$. We are now relaxing several elements of this model:
+
+1. The distribution of $Y$ does not have to be Gaussian.
+2. The relationship between the inputs and the mean of $Y$ does not have to be linear in the coefficients.
+3. The model does not have an additive error structure.
+4. The target variables do not have to have the same variance.
+
+However, the relaxation of the model conditions is not without limits. Rather than allowing $Y$ to have *any* distribution, its distribution has to be a member of a special family of probability distributions. Rather than allowing any arbitrary nonlinear relationship between inputs and target, only certain (invertible) transformations are permitted; the effect of the inputs remains linear on *some* scale, although it is usually not the scale of the mean. Rather than allowing any arbitrary variance, the variance of the targets can be unequal but it is determined through the distribution itself.
+
+This sounds like we are placing many restrictions on the relaxations but it turns out that the class of generalized linear models is very broad and general. A generalized linear model has the following components:
+
+1. The distribution of $Y$ is a member of the exponential family of distributions (@sec-glm-Pexpo).
+2. The effects are a linear combination of the inputs, called the **linear predictor** $\eta = \bx^\prime\bbeta$.
+3. The linear predictor $\eta = \bx^\prime\bbeta$ is related to the mean through a link function $g(\mu) = \eta$ (@sec-glm-link).
+
+A further generalization of the generalization is achieved by modeling the effects of the inputs through smooth local elements (see @sec-local-models), and not just through global effects. The linear predictor now is a combination of smooth functions of the inputs,
+$$
+\eta = \beta_0 + f_1(x_1) + f_2(x_2) + \cdots
+$$
+This is the structure of **generalized additive** models (GAMs). A semi-parametric version combines global effects with smooth local effects, for e example
+$$
+\eta = \beta_0 + \beta_1 x_1 + f_2(x_2)
+$$
+These linear predictor types make up the family of **generalized models** in @fig-glm-mindmap.
+
+![Generalized model mind map](images/GeneralizedMindMap.png){#fig-glm-mindmap fig-align="center" width="90%" .lightbox}
+
+## Exponential Family of Distributions {#sec-glm-Pexpo}
+
+### Definition
+
+The exponential family of distributions, $P_{expo}$ comprises important discrete and continuous distributions (@fig-glm-mindmap), **the** exponential distribution is one particular member of the family. How do we know whether a distribution belongs to the family? If you can write its mass or density function in a particular form, then the distribution is a member. We follow here (for the most part) the notation in the seminal work on GLMs by @McCullaghNelder.
+
+:::{.definition}
+::::{.definition-header}
+Definition: Exponential Family of Distributions
+::::
+::::{.definition-container}
+The distribution of random variable $Y$ is a member of $P_{expo}$, the exponential family of distributions, if its density or mass function can be written as 
+$$
+p(y) = \exp\left\{(y\theta - b(\theta))/\psi + c(y,\psi)\right\}
+$$ {#eq-pexpo-form}
+
+for some functions $b(\cdot)$ and $c(\cdot)$. 
+
+$\theta$ is called the **natural parameter** and $\psi$ is related to the scale (dispersion) of $Y$.
+Not all members of $P_{expo}$ feature this parameter. Those that do are said to be in the two-parameter exponential family. 
+
+When $\theta$ is expressed as a function of the mean $\mu = \Exp[Y]$, the function $\theta(\mu)$ is called the **canonical (natural) link** function of the distribution.
+
+Distributions in the exponential family have many fascinating properties. Among them,
+
+$$\frac{\partial b(\theta(\mu))}{\partial \theta} = b^\prime(\theta) = \mu$$
+
+$$\frac{\partial^2 b(\theta(\mu))}{\partial \theta^2} = b^{\prime\prime}(\theta) = \Var[Y]$$
+The first result states that $b^\prime(\theta) = \mu$ is the **inverse canonical link** function. 
+$b^{\prime\prime}(\theta)$, when written as a function of $\mu$, is called the **variance function** of the distribution.
+::::
+:::
+
+### The Bernoulli in Exponential Form
+
+The expressions for mass functions or densities we have worked with so far are not written in the form of $P_{expo}$. The mass function of the Bernoulli(\pi) distribution, for example, is usually written as
+$$
+p(y) = \pi^y (1-\pi)^{1-y}, \quad y \in \{0,1\}
+$$
+If we rewrite this to fit @eq-pexpo-form, we should be able to peel off $\theta$, $b(\theta)$, then we can identify link function and variance function of the generalized linear model. Let's start by replacing $\pi$, the event probability of the Bernoulli with the symbol $\mu$, $\pi$ is the mean of $Y$ after all. Then, put the mass function into an exponent while applying logarithms and collect terms:
+$$
+\begin{align*}
+p(y) &= \mu^y (1-\mu)^{1-y} \\
+     &= \exp\{y \log \mu + (1-y) \log (1-\mu) \} \\
+     &= \exp\left\{y \log\left(\frac{\mu}{1-\mu} \right) + \log(1-\mu)\right\}
+\end{align*}
+$$
+Compare this expression to @eq-pexpo-form and identify:
+
+1. $\theta(\mu) = \log(\mu/(1-\mu))$
+2. $b(\theta) = -\log(1-\mu)$ 
+3. $\psi = 1$
+4. $c(y,\psi) = 0$.
+
+Solve 1. for $\mu$ and plug into 2. to get $b(\theta) = \log(1+e^\theta)$. Now you can take first and second derivatives with respect to $\theta$:
+$$
+\begin{align*}
+b^\prime(\theta) &= e^\theta/(1+e^{\theta}) = \mu\\
+b^{\prime\prime}(\theta) &= \mu(1-\mu)
+\end{align*}
+$$
+The canonical (natural) link function for the Bernoulli distribution is the **logit** function: $\text{logit}(\mu) = \log(\mu/(1-\mu))$. The inverse link function $b^\prime(\theta)$ is the logistic function
+$$
+b^\prime(\theta) = \frac{e^\theta}{1+e^{\theta}} = \frac{1}{1+e^{-\theta}}
+$$
+Logistic regression derives its name from this inverse link function. 
+
+The specification of a generalized linear model for binary data is now complete by equating the natural parameter with the linear predictor:
+$$
+\begin{align*}
+Y &\sim \text{Bernoulli}(\mu) \\
+\eta         &= \bx^\prime\bbeta \\
+g(\mu)       &= \log \left(\frac{\mu}{1-\mu} \right) = \eta \\
+g^{-1}(\eta) &= \frac{1}{1+e^{-\eta}} = \mu
+\end{align*}
+$$
+
+We generally use the notation $g(\mu)$ for the link function and $g^{-1}(\mu)$ for the inverse link function, rather than $\theta(\mu)$ and $b^\prime(\theta)$ as suggested by the $P_{expo}$ notation. The reason for the general notation is that the canonical link is just one of the possible link functions, we are free to choose others (@sec-glm-link). Using the canonical link in the specification of a GLM typically has certain computational advantages, but for some distributions the canonical link is not a good mapping between mean and linear predictor.
+
+### Distributions
+
+We now review some of the discrete and continuous distributions in $P_{expo}$
+
+#### Discrete distributions
+
+##### Bernoulli
+
+The most elementary random experiment is the Bernoulli experiment, two possible outcomes $Y=1$ and $Y=0$ occur with probability $\pi$ and $1-\pi$, respectively. The outcome coded $Y=1$ is called the **event** of the experiment. The outcome coded $Y=0$ is called the **non-event**. As we established earlier, the Bernoulli($\pi$) distribution is a member of the exponential family with mean $\pi$, canonical link $\log(\pi/(1-\pi))$ and variance function $\pi(1-\pi)$ (@fig-bernoulli-mass).
+
+``` {r, fig.asp=0.7, echo=FALSE, fig.align="center", out.width="75%"}
+#| fig.cap: Bernoulli(0.7) probability mass function.
+#| label: fig-bernoulli-mass
+par(mar=c(4,4,1,3))
+barplot(dbinom(c(0,1),1,0.7), 
+        width=c(0.5,0.5),
+        las=1,
+        space=0.2,
+        ylab="p(y)", 
+        xlab="y", 
+        names.arg=c("0","1"))
+```
+
+Although elementary, the Bernoulli($\pi$) is very important as the underlying model for logistic regression and because many other distributions are defined in terms of Bernoulli experiments.Consider a sequence $Y_1, Y_2, \cdots$ of **independent** Bernoulli($\pi$) experiments. The following members of $P_{expo}$ are defined in terms of the $Y_i$:
+
+1. Binomial$(n,\pi)$: the number of events in $n$ experiments.
+2. Geometric$(\pi)$: the number of experiments until 1st event.
+3. Geometric$^*(\pi)$: the number of non-events before the 1st event
+4. Negative Binomial$(k,\pi)$: the number of experiments until $k$th event.
+5. Negative Binomial$^*(k,\pi)$: the number of non-events before the $k$th event.
+
+##### Binomial
+
+The number of events $X = \sum_{i=1}^n Y_i$ in a sequence $Y_1, Y_2, \cdots, Y_n$ of 
+independent Bernoulli ($\pi$) events is a Binomial($n,\pi$) random variable
+$$
+\begin{align*}
+	p(x) &= {n \choose x} \pi^x \, (1-\pi)^{n-x} \quad x=0,1,\cdots, n \\
+	\Exp[X] &= n\pi \\
+	\Var[X] &= n\pi(1-\pi)
+\end{align*}
+$$
+
+${n \choose x}$ is the binomial coefficient: ${n \choose x} = \frac{n!}{x!(n-x)!}$, the number of ways in which an unordered subset of size $k$ can be chosen from $n$ items.
+
+The support of the Binomial($n,\pi$) is $0,\cdots,n$. You cannot observe fewer than 0 events and you cannot observe more than $n$ events (@fig-binomial-mass). The Binomial is thus a suitable probability model for count data that represents the number of events out of a total number. For example, the number of livestock herds out of all herds in a state that show incidences of pneumonia or the number of defective items out of a lot of 100 items. Such count variables are sometimes referred to as counts with a natural denominator.
+
+``` {r, fig.asp=0.7, echo=FALSE, fig.align="center", out.width="75%"}
+#| fig.cap: Binomial($8,0.3$) probability mass function.
+#| label: fig-binomial-mass
+par(mar=c(4,4,1,3))
+barplot(dbinom(seq(0,8),8,0.3),
+        space=0.2,
+        ylab="p(x)", 
+        xlab="x", 
+        las=1,
+        names.arg=c("0","1","2","3","4","5","6","7","8")
+)
+```
+
+##### Negative Binomial and Geometric
+
+The Geometric and Negative Binomial distributions have infinite support, $Y \in \{0,1, \cdots\}$. Having to wait very long until the 1^st^ (or $k$^th^) event occurs is unlikely if $\pi$ is large but it is not impossible. The Geometric distribution is obviously a special case of the Negative Binomial for $k=1$. These models are frequently used to model counts that do not have a natural demoninator, for example, the number of occurrences per day, per 100,000 population, or per mile.
+
+``` {r, fig.asp=0.7, echo=FALSE, fig.align="center", out.width="75%"}
+#| fig.cap: Geometric($0.5$) probability mass function.
+#| label: fig-geometric-mass
+par(mar=c(4,4,1,3))
+barplot(dgeom(seq(0,7),0.5),
+        ylab="p(x)", 
+        xlab="x", 
+        names.arg=c("1","2","3","4","5","6","7","8")
+)
+```
+
+``` {r, fig.asp=0.7, echo=FALSE, fig.align="center", out.width="75%"}
+#| fig.cap: Negative Binomial($5,0.7$) probability mass function.
+#| label: fig-negbin-mass
+par(mar=c(4,4,1,3))
+barplot(dnbinom(seq(0,8),5,0.7),
+        ylab="p(y)",
+        xlab="y",
+        names.arg=c("0","1","2","3","4","5","6","7","8")
+        )
+```
+
+##### Poisson
+
+A random variable has a Poisson distribution with parameter $\lambda$ if its mass function is given by
+
+$$
+\begin{align*}
+\Pr(Y=y) &= \frac{e^{-\lambda} \lambda^y} {y!} \quad y=0,1,\cdots\\
+	&= \exp\{ y \log(\lambda) - \lambda - \log(y!) \}
+\end{align*}
+$$
+From the last expression you see the components in the $P_{expo}$ family:
+
+- Canonical link: $\theta = \log(\lambda)$
+- $b(\theta) = e^\theta$
+- $b^\prime(\theta) = b^{\prime\prime}(\theta) = e^\theta$
+- $\Exp[Y] = \Var[Y] = \lambda$
+
+``` {r, fig.asp=0.7, echo=FALSE, fig.align="center", out.width="75%"}
+#| fig.cap: Poisson(2.4) (left) and Poisson(0.2) (right) probability mass functions.
+#| label: fig-poisson-mass
+par(mfrow=c(1,2))
+barplot(dpois(seq(0,10),2.4),
+        ylab="p(y)",
+        xlab="y",
+        names.arg=c("0","1","2","3","4","5","6","7","8","9","10"),
+        las=1
+        )
+
+barplot(dpois(seq(0,10),0.2),
+        ylab="p(y)",
+        xlab="y",
+        names.arg=c("0","1","2","3","4","5","6","7","8","9","10")
+        )
+```
+
+If events occur independently and at a constant rate, the number of events per unit is a Poisson random variable. The Poisson is not directly related to Bernoulli experiment but there is a connection through the Poisson approximation to the Binomial. In a Binomial$(n,\pi)$ process, if $n \rightarrow \infty$ and $n\pi \rightarrow \lambda$, then the probabilities can be approximated by those of a Poisson$(\lambda)$ process (@fig-poisson-bin-approx).
+
+``` {r, fig.asp=0.7, echo=FALSE, fig.align="center", out.width="75%"}
+#| fig.cap: Binomial(200,0.05) (left) and Poisson(10) (right) probability mass functions.
+#| label: fig-poisson-bin-approx
+bnpi <- dbinom(seq(0,20),200,0.05)
+bpoi <- dpois(seq(0,20),10)
+
+par(mfrow=c(1,2))
+barplot(bnpi,main="Binomial(200,0.05)")
+barplot(bpoi,main="Poisson(10)")
+```
+
+:::{.example}
+::::{.example-header}
+Example: Poisson Approximation to Binomial
+::::
+::::{.example-container}
+If three dice are rolled the probability of three sixes turning up is $1/6^3 = 1/216 = 0.0046$. 
+If three dice are rolled 200 times, what is the probability of at least one triple six?
+
+This is a $X \sim$ Binomial(200,1/216) experiment and we are interested in $1-\Pr(X=0)$
+$$ 
+	\Pr(\text{at least one triple six}) = 1 -  {200 \choose 0} \left ( \frac{1}{216}\right )^0  \left(\frac{215}{216}\right)^{200} = 0.6046
+$$
+The Poisson approximation of this probability relies on $Y \sim \text{Poisson}(\lambda=200/216)$
+$$
+	\Pr(\text{at least one triple six}) \approx 1 - \frac{(200/216)^0 } {0!} \exp\left\{ -\frac{200}{216} \right \} = 0.6038
+$$
+The calculation is much simpler and accurate to 2 decimal places.
+::::
+:::
+
+``` {r poisson_normal_hist, warning=FALSE, fig.asp=0.7, echo=FALSE, fig.align="center", out.width="75%"}
+#| fig.cap: istogram & Density of 10,000 Poisson(20) and Normal(20,20) draws.
+#| label: fig-normal-poisson-approx
+set.seed(4532)
+norm <- rnorm(10000,mean=20,sd=sqrt(20))-0.5
+poi <- rpois(10000,20)
+par(mar=c(4,4,1,3))
+hist(poi,breaks=40,freq=FALSE, xlab="", 
+     xlim=c(0,40),
+     cex.main=0.8 )
+lines(density(norm, bwd=nrd))
+```
+
+The Poisson can in turn be approximated by a Gaussian distribution. As $\lambda \rightarrow \infty$, the Poisson$(\lambda)$ p.m.f. approaches the density of a G$(\lambda,\lambda)$ random variable. The approximation holds for $\lambda > 100$ but is not bad even for $\lambda > 20$ (@fig-normal-poisson-approx).
+
+![Approximation of Binomial and Poisson probabilities](images/BinomialApproximation.png){fig-align="center" width="75%" .lightbox}
+
+#### Continuous distributions
+
+##### Gaussian
+
+The most important continuous distribution in statistics is the Gaussian, denoted G$(\mu,\sigma^2)$. A random variable $Y$ has a Gaussian distribution if its density function is given by
+$$ 
+f(y) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left\{-\frac{1}{2\sigma^2}(y-\mu)^2 \right \} \quad -\infty < y < \infty
+$$ 
+
+The parameters of the G($\mu,\sigma^2)$ represent the mean and variance of $Y$:
+$$
+\Exp[Y] = \mu \quad \Var[Y] = \sigma^2
+$$
+
+The distribution with $\mu = 0$, $\sigma^2 = 1$ is called the standard Gaussian distribution.
+
+:::{.callout-tip}
+The Gaussian distribution is sometimes parameterized in terms of the mean and **standard deviation** of $Y$. When using software make sure you know what the quantities represent. For example, you specify the mean and standard deviation with the `dnorm`, `pnorm`, `qnorm`, and `rnorm` functions in `R`.
+:::
+
+The Gaussian distribution is often referred to as the Normal distribution. We prefer the term Gaussian because there is nothing normal about the Normal distribution. Most attributes are not normally distributed, despite frequent assumptions to the contrary. The density has a classical, symmetric bell shape, centered at $\mu$ (@fig-normal-densities). 
+
+``` {r normal_dists, warning=FALSE, fig.asp=0.7, echo=FALSE, fig.align="center", out.width="75%"}
+#| fig.cap: Probability density functions of three Gaussian distributions. 
+#| label: fig-normal-densities
+#| 
+x <- seq(0,10,0.1)
+x2 <- seq(5,11,0.1)
+y <- dnorm(x,mean=4,sd=1)
+y2 <- dnorm(x,mean=5,sd=2)
+y3 <- dnorm(x2,mean=8,sd=0.75)
+par(mar=c(4,4,1,3))
+plot(x,y,type= "l",lwd=1.5,ylab="Density f(y)",xlab="y",ylim=c(0,0.55))
+lines(x,y2,lwd=1.5,lty="dashed")
+lines(x2,y3,lwd=1.5,lty="dotted")
+legend("topleft",lwd=1.5,
+       legend=c("G(4,1)","G(5,4)","G(8,0.5625)"),
+       lty=c("solid","dashed","dotted"))
+
+```
+
+:::{.callout-note title="What is normal?" collapse="true"}
+We eschew the use of the term normal to describe the Gaussian distribution for another reason: the connection of the concept of normality and this distribution to eugenics. The Belgian astronomer, statistician and mathematician Adolphe Quetelet (1796--1847) introduced the generalized notion of the normal. He studied the distribution of physical attributes and determined that the normal, the most representative, value of an attribute is its average. Discrepancies above and below the average were considered "errors". Early applications of the Gaussian distribution were in the study of measurement errors. C.F. Gauss used the distribution to represent errors in the measurement of celestial bodies.
+
+Prior to Quetelet, the view of "norm" and "normality" was associated with carpentry. The carpenter square is also called the norm, and in normal construction everything is at right angles. With Quetelet, the middle of the distribution, the center, became the "new normal." There is nothing objectionable so far. 
+
+However, this view did not sit well with Fancis Galton, who introduced the term eugenics. Galton replaced the term "error" with standard deviation and considered variability within a human population as potential for racial progress [@GrueHeiberg]. The bell shape of the normal distribution was not used to focus our attention on the average, as Quetelet did. Galton introduced quartiles to categorize the area under the normal into sections of greater and lesser genetic worth. That is not normal!
+:::
+
+The Gaussian has remarkable properties that make it stand out and that make it particularly easy to work with---compared to other distributions. For example,
+
+- **Linearity**. A linear combination of Gaussian random variables is also Gaussian distributed. If $Y \sim G(\mu,\sigma^2)$, then $X = aY + b \sim G(a\mu + b, a^2\sigma^2)$. An immediate corollary is that the sample mean from a Gaussian distribution is also Gaussian distributed: if $Y_i \sim \textit{ iid } G(\mu,\sigma^2)$, then $\overline{Y} \sim G(\mu,\sigma^2/n)$
+
+- **Mean-variance decoupling**. The mean and the variance of a Gaussian distribution are not linked. The variance is not a function of the mean, as is the case for other members of the exponential family of distributions.
+
+- **Correlation and Independence**. When two variables are jointly (bi-variate) Gaussian distributed, the absence of a correlation implies the independence of the random variables. This follows from the fact that with a zero covariance the joint distribution factors into the product of the marginal distributions (see @sec-multi-gaussian)
+
+- **Sampling Distributions**. When drawing random samples from a G($\mu,\sigma^2$), the probability distribution of simple transformations of sufficient statistics are well understood. For example, 
+$$
+\frac{\overline{Y}-\mu}{s/\sqrt{n}}
+$$
+follows a $t_{n-1}$ distribution with $n-1$ degrees of freedom. This forms the basis of hypothesis tests about the mean $\mu$.
+
+- **Asymptotic Gaussianity**. As sample size increases, the distribution of many estimators and statistics approaches a Gaussian distribution. This is the basis for using hypothesis tests, constructing confidence and prediction intervals, etc. based on a Gaussian distribution in sufficiently large samples.
+
+Maybe most importantly, the **Central Limit Theorem** tells us that even if we do not sample from a G($\mu, \sigma^2$) distribution, the distribution of the sample mean asymptotically follows a G($\mu,\sigma^2/n$) distribution.
+
+::: definition
+::: definition-header
+Central Limit Theorem
+:::
+
+::: definition-container
+Let $Y_{1},\cdots,Y_{n}$ be independent and identically distributed random variables with mean $\mu$ and variance $\sigma^{2} < \infty.$ The distribution of
+
+$$\frac{\overline{Y} - \mu}{\sigma/\sqrt{n}}$$
+
+converges to that of a standard Gaussian random variable as $n \rightarrow \infty$.
+:::
+:::
+
+In summary, the importance of the Gaussian distribution does not stem from attributes being Gaussian distributed. It follows because statistics such as parameter estimators asymptotically follow a Gaussian distribution. Another interesting property of the Gaussian distribution is its support: $-\infty < Y < \infty$. Many continuous attributes take on only positive values, length, weight, lifetime, etc. This does not rule out the use of the Gaussian distribution for those attributes, with a sufficiently large mean the probability of negative values is essentially zero. On the contrary, it triggers the question which continuous distributions in $P_{expo}$ have support $Y > 0$, or $0 < Y < 1$ and are possibly candidates 
+
+##### Exponential
+
+The exponential distribution is a useful probability model for modeling continuous lifetimes (@fig-expo-densities). It is related to Poisson processes. If events occur continuously and independently at a constant rate $\lambda$, the number of events is a Poisson random variable. The time between the events is an exponential random variable, denoted $Y \sim$ Expo($\lambda$).
+
+$$p(y) = \lambda e^{- \lambda y},\ \ \ \ y \geq 0$$
+
+$$F(y) = 1 - e^{- \lambda y},\ \ \ y \geq 0$$
+
+$$\Exp\lbrack Y\rbrack = \frac{1}{\lambda}\ \ \ \ \ \ \Var\lbrack Y\rbrack = \frac{1}{\lambda^{2}}$$
+
+Like the discrete Geometric($\pi$) distribution, the Expo($\lambda$) distribution is forgetful,
+
+$$\Pr{(Y > s + t|Y > t)} = \Pr{(Y > s)}$$
+
+and it turns out that no other continuous function has this **memoryless** property. This property is easily proven using $\Pr(Y > y) = 1 - F(y) = e^{- \lambda y}$:
+
+$$\Pr\left( Y > t + s \middle| Y > t \right) = \frac{\Pr{(Y > t + s,Y > t)}}{\Pr{(Y > t)}} = \frac{Pr(Y > t + s)}{Pr(Y > t)} = \frac{e^{- \lambda(t + s)}}{e^{- \lambda t}} = e^{- \lambda s}$$
+
+The memoryless property of the exponential distribution makes it **not** a good model for human lifetimes. The probability that a 20-year-old will live another 10 years is not the same as the probability that a 75-year-old will live another 10 years. The exponential distribution implies that this would be the case. When modeling earthquakes, it might be reasonable that the probability of an earthquake in the next ten years is the same, regardless of when the last earthquake occurred---the exponential distribution would then be reasonable.
+
+You don't have to worry about whether other distributions have this memoryless property in applications where lack of memory would not be appropriate. The exponential distribution is defined by this property, it is the only continuous distribution with lack of memory.
+
+
+``` {r expo_dists, warning=FALSE, fig.asp=0.7, echo=FALSE, fig.align="center", out.width="75%"}
+#| fig.cap: Probability density functions of Exponential random variables. 
+#| label: fig-expo-densities
+#| 
+x <- seq(0,7,0.05)
+f <- dexp(x,rate=3) 
+f2 <- dexp(x,rate=2) # this is the same as dgamma(x,shape=1,scale=0.5)
+f3 <- dexp(x,rate=0.5)
+par(mar=c(4,4,1,3))
+plot(x,f,type="l",lwd=1.5,ylab="Density f(y)",xlab="y",ylim=c(0,0.6))
+lines(x,f2,lwd=1.5,lty="dashed")
+lines(x,f3,lwd=1.5,lty="dotted")
+legend("topright",lwd=1.5,
+       legend=c("Exponential(3)","Exponential(2)","Exponential(0.5)"),
+       lty=c("solid","dashed","dotted"))
+```
+
+##### Gamma
+
+The Expo($\lambda$) distribution is a special case of a broader family of distributions, 
+the Gamma($\alpha,\beta$) distribution. A random variable $Y$ is said to have a Gamma($\alpha,\beta$) distribution 
+if its density function is
+
+$$f(y) = \frac{1}{\beta^{\alpha}\Gamma(\alpha)}y^{\alpha - 1}e^{- y/\beta},\ \ \ \ \ y \geq 0,\ \alpha,\beta > 0$$
+
+The mean and variance of a Gamma($\alpha,\beta$) random variable are given by
+
+$$\Exp\lbrack Y\rbrack = \alpha\beta\ \ \ \ \ \Var\lbrack Y\rbrack = \alpha\beta^{2}$$
+
+$\alpha$ is called the shape parameter of the distribution and $\beta$ is called the scale parameter. Varying $\alpha$ affects the shape and varying $\beta$ affects the units of measurement (@fig-gamma-densities). A property of Gamma functions is a constant **coefficient of variation** (CV). CV is defined as the ratio of the standard deviation to the mean of a distribution. For the Gamma($\alpha,\beta$) family this coefficient is
+$$
+\text{CV} = \frac{\sqrt{\alpha\beta^2}}{\alpha\beta} = \frac{1}{\sqrt{\alpha}}
+$$
+
+The term $\Gamma(\alpha)$ in the denominator of the density function is called the Gamma function,
+
+$$\Gamma(\alpha) = \int_{0}^{\infty}{y^{\alpha - 1}e^{- y}}dy$$
+
+
+``` {r gamma_dists, warning=FALSE, fig.asp=0.7, echo=FALSE, fig.align="center", out.width="75%"}
+#| fig.cap: Probability density functions of Gamma random variables. 
+#| label: fig-gamma-densities
+#| 
+x <- seq(0,7,0.05)
+f <- dgamma(x,shape=3,scale=0.5) # scale parameter is beta in my parameterization
+f2 <- dgamma(x,shape=2,scale=2)
+f3 <- dgamma(x,shape=1,scale=0.5)
+par(mar=c(4,4,1,3))
+plot(x,f,type="l",lwd=1.5,ylab="Density f(y)",xlab="y",ylim=c(0,0.6))
+lines(x,f2,lwd=1.5,lty="dashed")
+lines(x,f3,lwd=1.5,lty="dotted")
+legend("topright",lwd=1.5,
+       legend=c("Gamma(3,0.5)","Gamma(2,2)","Gamma(1,0.5)"),
+       lty=c("solid","dashed","dotted"))
+
+```
+
+::: callout-tip
+Fun fact: if $\alpha$ is an integer, $\Gamma(\alpha) = (\alpha - 1)!$
+:::
+
+The exponential random variable introduced earlier is a special case of the Gamma family, the Expo($1/\beta$) is the same as the Gamma(1,$\beta$).
+
+Another special case of the gamma-type random variables is the Chi-square random variable. A random variable $Y$ is said to have a Chi-squared distribution with $\nu$ degrees of freedom, denoted $\chi_{\nu}^{2}$, if $Y$ is a Gamma($\frac{\nu}{2},2$) random variable. 
+
+##### Beta {#sec-dist-beta}
+
+A random variable has a Beta distribution with parameters $\alpha$ and $\beta$,
+denoted $Y \sim \text{Beta}(\alpha,\beta)$, if its density function is given 
+by 
+$$
+f(y) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}\, y^{\alpha-1}\,(1-y)^{\beta-1}\quad 0 < y < 1
+$$
+The family of beta distributions takes on varied shapes as seen in @fig-beta-densities. 
+
+``` {r beta_dists, warning=FALSE, fig.asp=0.7, echo=FALSE, fig.align="center", out.width="75%"}
+#| fig.cap: Probability density functions of Beta random variables. 
+#| label: fig-beta-densities
+#| 
+x <- seq(0,1,0.025)
+f <- dbeta(x,shape1=1,shape2=1)
+f2 <- dbeta(x,shape1=1,shape2=3)
+f3 <- dbeta(x,shape1=0.5,shape2=0.2)
+f4 <- dbeta(x,shape1=5,shape2=10)
+par(mar=c(4,4,1,3))
+plot(x,f,type="l",lwd=1.5,ylab="Density f(y)",xlab="y",ylim=c(0,3.5))
+lines(x,f2,lwd=1.5,lty="dashed")
+lines(x,f3,lwd=1.5,lty="dotted")
+lines(x,f4,lwd=1.5,lty="dotdash")
+legend("topright",
+       lwd=1.5,
+       legend=c("Beta(1,1)","Beta(1,3)","Beta(0.5,0.2)","Beta(5,10)"),
+       lty=c("solid","dashed","dotted","dotdash"))
+```
+
+
+The ratio of Gamma functions is known as the Beta function and the density can
+also be written as $f(y) = y^{\alpha-1}(1-y)^{(\beta-1)} / B(\alpha,\beta)$ where
+$B(\alpha,\beta) = \Gamma(\alpha)\Gamma(\beta)/\Gamma(\alpha+\beta)$.
+
+The mean of a $\text{Beta}(\alpha,\beta])$ random variable is 
+$$\Exp[Y] = \frac{\alpha}{\alpha+\beta}
+$$
+and the variance is 
+$$ 
+\Var[Y] = \frac{\alpha\beta}{(\alpha+\beta)^2 (\alpha+\beta+1)} = \Exp[Y]\frac{\beta}{(\alpha+\beta)(\alpha+\beta+1)}
+$$
+
+The support of a Beta random variable is continuous on $[0,1]$, which makes it an 
+attractive candidate for modeling proportions, for example, the proportion of 
+time a vehicle is in maintenance or the proportion of disposable income spent
+on rent or the market share of a company.
+
+The Beta distribution can also be used for random variables that are
+defined on a different scale, $a < Y < b$, by transforming to the [0,1] scale: 
+$Y^* = (Y-a)/(b-a)$.
+
+The $\text{Beta}(1,1)$ is a continuous uniform random variable on [0,1]. 
+
+Since $Y$ is continuous, we can define the support of the Beta random variable as 
+$0 \le y \le 1$ or as $0 < y < 1$. The probability that the continuous random
+variable takes on exactly the value 0 or 1 is zero. However, in practice you
+can observe proportions at the extreme of the support; the proportion of income spent
+on rent by a homeowner is zero. That causes difficulties evaluating the log likelihood 
+function at the boundaries of the support.
+
+
+## Link Functions {#sec-glm-link}
+
+The link function in a GLM plays two important roles. It is the transformation of the mean to a scale where the input effects are linear. Because of this transformation, we can still work with linear structures $\bx^\prime\bbeta$ and do not have to resort to general nonlinear transformations. The linearity of the predictor simplifies parameter estimation, prediction, and hypothesis testing. 
+
+The second responsibility of the link function is to ensure that the model predictions are valid. The coefficients in the linear predictor can take on any value on the real line, $-\infty < \beta_j < \infty$. The predicted means have to comply with the support restrictions of the target variable. For example, the mean of a Bernoulli($\pi$) random variable is the probability $0 \le \pi \le 1$, for the Poisson the mean is $\lambda > 0$. The inverse link function needs to ensure that $g^{-1}(\eta)$ is a valid quantity for all possible values of $\eta$ (@fig-inverse-link).
+
+![The inverse link maps $\eta$ to valid values of the mean and the target data. If $Y \in \{0,1\}$, then $0 \le \Exp[Y] \le 1$.](images/InverseLinkConcept.png){#fig-inverse-link fig-align="center" width="90%" .lightbox}
+
+:::{.callout-important}
+The link function is a transformation of the **mean**, it is not a transformation of the data. Modeling $\log(\mu) = \bx^\prime\bbeta$ is very different from log-transforming the data and assuming a linear model holds on the transformed scale: $\log(Y) = \bx^\prime\bbeta + \epsilon$. The link function is a transformation of a constant, $\log(Y)$ is the transformation of a random variable. Choosing a different link function does not alter the essential distributional properties of the target variable---a Poisson remains a Poisson, for example. Choosing a different transformation of the target variable changes the distributional properties. If $Y \sim \text{Poisson}(\lambda)$, neither $log(Y)$ nor $\sqrt{Y}$ is Poisson distributed.
+:::
+
+@tbl-link-functions lists common link functions for important members of the exponential family. In most cases the canonical link is a good place to start. However, for the Gamma distribution, the reciprocal link is not adequate, although it is the natural link. Since the mean of a Gamma random variable is positive, choosing the reciprocal link does not guarantee that 
+$$
+g^{-1}(\eta) = \frac{1}{\eta} > 0
+$$
+It is common to choose the log link instead in Gamma regression models. Similar for the Inverse Gaussian distribution, where the inverse canonical link is the square root function and does not permit negative values for $\eta$. The Gaussian distribution shows how special it is one more time: it is the only distribution for which the canoncial link is the identity function: there is no transformation of the mean, the input effects are linear on the scale of the data.
+
+
+| **Distribution** | **Link Function** | **Name** | **Canonical** |
+|------|:-----:|------|:------:|
+| Bernoulli         | $\text{logit}(\mu) = \log\left (\frac{\mu}{1-\mu}\right )$ | Logit | Yes |
+|                   | $\Phi^{-1}(\mu)$     | Probit                |     |
+|                   | $\log(-\log(\mu))$   | Log-log               |     |
+|                   | $\log(-\log(1-\mu))$ | Complementary Log-log |     |
+| Binomial          | Same as Bernoulli    |                       |     |
+| Negative Binomial | $\log(\mu)$          | Log                   | Yes |
+| Poisson           | $\log(\mu)$          | Log                   | Yes |
+| Gaussian          | $\mu = \eta$         | Identity              | Yes |
+| Gamma             | $\mu^{-1}$           | Reciprocal            | Yes |
+|	                | $\log(\mu)$          | Log                   |     |
+| Inverse Gaussian  | $\mu^{-2}$           | Reciprocal squared    | Yes |
+|                   | $\log(\mu)$          | Log                   |     |
+| Beta              | $\text{logit}(\mu)= \log\left (\frac{\mu}{1-\mu}\right )$ | Logit | Yes |
+
+: Common link functions for important members of $P_{expo}$ {#tbl-link-functions .striped .hover}
+
+:::{.callout-note}
+You can choose any link function that satisfies the properties stated above. The function must be **invertible**, however, so that we can switch back and forth between the scale of the mean and the scale of the linear predictor.
+:::
+
+## Parameter Estimation {#sec-glm-estimation}
+
+### Maximum Likelihood
+
+The parameters of a generalized linear model are the coefficients in the mean function, $\bbeta$, and, where present, the scale parameter $\psi$.
+The standard (frequentist) approach is to estimate the parameters by **maximum likelihood**. This is reasonable and straightforward because the distribution of the data is specified and the observations are assumed independent. The log-likelihood of the data is then simply the sum of the log-likelihoods for the observations:
+$$
+\ell(\bmu,\psi;\by) = \sum_{i=1}^n \left(y_i\theta(\mu_i) - b(\theta(\mu_i)))/\psi + c(y_i,\psi)\right)
+$$
+To maximize this log likelihood function with respect to $\beta_k$ we can apply the chain rule of calculus:
+$$
+\frac{\partial \ell(\mu,\psi;\by)}{\partial \beta_k} = \sum_{i=1}^n \frac{\partial \ell(\mu_i,\psi;y_i)}{\partial \theta(\mu_i)}
+\frac{\partial \theta(\mu_i)}{\partial \mu_i} 
+\frac{\partial \mu_i}{\partial \eta_i}
+\frac{\partial \eta_i}{\partial \beta_k}
+$$
+Some manipulations lead to the following expression:
+$$
+\frac{\partial \ell(\mu,\psi;\by)}{\partial \beta_k} = \sum_{i=1}^n \frac{y_i-\mu_i}{\Var[Y_i]}\frac{\mu_i}{\eta_i}x_k
+$$
+This expression applies whether the link function is canonical or not. When you collect the derivatives for all parameters, finding the maximum likelihood estimates is equivalent to solving  
+$$
+\textbf{F}^\prime\bV^{-1}(\by-\bmu) = \bzero
+$$
+where $\textbf{F}$ is the $(n \times p+1)$ matrix of the first derivatives of the mean with respect to the $\beta$s: $\textbf{F}$ has typical element $[\partial \mu/\partial_\beta]_{ij}$. $\bV$ is a diagonal matrix that contains the variances of the targets on the diagonal.
+
+If $\bV$ were known, this is a weighted least squares problem. Because $\bV$ depends on $\bmu$ in a typical GLM, the ML estimates are found by an iterative procedure, called **iteratively reweighted least squares** (IRLS).
+
+### Iteratively Reweighted Least Squares (IRLS) {#sec-glm-irls}
+
+The IRLS algorithm can be used to find the maximum likelihood estimates of $\bbeta$. To motivate the algorithm we start by a linear approximation (a first-order Taylor series) of the linked [observations]{.underline} about an estimate of the mean:
+$$
+\begin{align*}
+g(y) &= g(\widehat{\mu}) + (y-\widehat{\mu})\left[ \frac{\partial g(y)}{\partial y}\right]_{\vert_{\widehat{\mu}}} \\
+&= g(\widehat{\mu}) + (y-\widehat{\mu})\left[\frac{\partial \eta}{\partial \mu} \right]_{\vert_{\widehat{\mu}}} \\
+&= \widehat{\eta} + (y-\widehat{\mu})\left[\frac{\partial \eta}{\partial \mu} \right]_{\vert_{\widehat{\mu}}}  \\
+&= z
+\end{align*}
+$${#eq-irls-linearization}
+
+$z$ is called an adjusted dependent variable or a working response variable or a pseudo-response. The final expression in @eq-irls-linearization can be viewed as a linear model with response variable $z$, systematic part $\widehat{\eta} = \bx^\prime\widehat{\bbeta}$ and error term $(y-\mu)[\partial \eta/\partial \mu]$. The variance of this error term is 
+$$
+\Var[z] = \left[\frac{\partial \eta}{\partial \mu}\right]^2 \Var[Y]
+$$
+
+The iterative procedure is as follows: given an initial value of $z$, which requires an initial estimate of $\mu$, fit a weighted linear model with inputs $\bx = [x_1,\cdots,x_p]^\prime$ and weights given by the inverse of $\Var[z]$. The solution to the weighted linear model is an updated parameter vector $\bbeta$. Re-calculate $z$ and the weights and repeat the weighted linear regression fit. Continue until the relative change in the parameter estimates, the log likelihood function, the deviance, or some other criterion is negligible. @McCullaghNelder show that this procedure converges to the maximum likelihood estimates.
+
+A nice property of the IRLS algorithm is the ease of finding starting values. The initial value of $z$ that kicks off the iterations does not necessarily require an estimate of $\bbeta$. If the link function can be evaluated at the data points (maybe after slight adjustments such as moving data points away from boundary values), then one can start the iterations using the observed data as the initial estimate of $\mu$. For binary data, for example, initial adjustments to the data values such as 
+$$
+y^* = \frac{y+c}{y+2c}
+$$
+can be used to avoid boundary problems. Another technique to get the iterations off the ground is to assume initially that $\bbeta = \bzero$.
+
+## Example: Gamma Regression {#sec-glm-gamma-example}
+
+### The Data, Real Estate Values in Albemarle County, Virginia
+
+This example is based on [this](https://library.virginia.edu/data/articles/getting-started-with-gamma-regression) 
+excellent tutorial at the University of Virginia.
+
+The data represent real estate information from Albemarle County, Virginia. 
+Of interest is modeling the total value of a home (`totalvalue`) 
+as a function of predictors such as finished square feet, number of full bathrooms, 
+lot size, etc.
+
+```{r albemarle, warning=FALSE, message=FALSE}
+library(duckdb)
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+homes <- dbGetQuery(con, "SELECT * FROM AlbemarleHomes")
+
+dbDisconnect(con)
+str(homes)
+```
+
+Computing the coefficient of variation within ranges of `finsqft` shows that
+the CV is pretty constant while the variability of home values increases with
+the square footage of the home. Increasing variability with increasing size
+is a common phenomenon for many data, biological or otherwise.
+If the increase in variability--as measured by the standard deviation--is 
+proportional to the mean, the data exhibit a constant coefficient of variation, 
+a property of the Gamma distribution.
+
+```{r, warning=FALSE, message=FALSE, fig.asp=0.7, fig.align='center', out.width="80%"}
+library(dplyr)
+
+finsqft_cut <- cut(x=homes$finsqft, 
+                   breaks = c(0, 1000, 2000, 3000, 4000, 5000, 8000))
+
+plot(finsqft_cut,homes$totalvalue,
+     ylab="Total Value",
+     xlab="Finished Square Footage",
+     las=1,
+     cex.axis=0.8)
+
+homes %>% mutate(sqft_cut = finsqft_cut) %>%
+    group_by(sqft_cut) %>% 
+    summarize(count=n(), mean=mean(totalvalue), std=sd(totalvalue)) %>%
+    mutate(CV = std/mean)
+```
+
+```{r, fig.asp=0.6}
+par(mfrow=c(1,2))
+hist(homes$totalvalue, 
+     breaks=30, 
+     cex.main=0.9,
+     main="Distribution of Home Values", 
+     xlab="value")
+
+hist(log(homes$totalvalue), 
+     breaks=30, 
+     cex.main=0.9,
+     main="Distribution of Log Home Values", 
+     xlab="log(value)" )
+```
+
+
+
+### Fitting a Gamma Regression Model
+
+We fit the Gamma GLM with the `glm` function in `R`. The default link for `family=Gamma` is the canonical link, which is the inverse. This is not a good link function to model positive target values, since there is no guarantee that the inverse link satisfies the range restriction for the mean of the target variable. We choose the log link instead. The following statements fit a regression model of the form
+$$
+\begin{align*}
+\log \Exp[\text{Total Value}] &= \beta_0 + \beta_1 \, \text{finished sq.ft} \\
+\Exp[\text{Total Value}] &= \exp\{\beta_0 + \beta_1 \, \text{finished sq.ft}\}
+\end{align*}
+$$
+assuming that `totalvalue` follows a Gamma distribution.
+
+```{r}
+gam_reg <- glm(totalvalue ~ finsqft, 
+               data=homes,
+               family=Gamma(link="log"))
+summary(gam_reg)
+```
+
+The model converges in `{r} gam_reg$iter` iterations and the maximum likelihood estimates of the coefficients are
+$\widehat{\beta}_0$ = `{r} round(gam_reg$coefficients[1],4)` and 
+$\widehat{\beta}_1$ = `{r} round(gam_reg$coefficients[2],5)`.
+
+The addition of the single input variable `finsqft` reduces the deviance dramatically, compared to a null model; from 
+`{r} round(gam_reg$null.deviance,3)` to `{r} round(gam_reg$deviance,3)`. The `finsqft` coefficient is highly significant.
+
+--- 
+
+Suppose we wish to predict the value of a home with 2,500 finished square feet.
+
+First, let's do it the hard way, using the coefficients from the output:
+
+```{r}
+round(gam_reg$coefficients,5)
+pred_2500 <- gam_reg$coefficients[1] + 2500 * gam_reg$coefficients[2]
+cat("Linear predictor for 2,500 finished square feet: ", pred_2500)
+cat("Predicted home value with 2,400 finished square feet:", exp(pred_2500))
+```
+
+The linear combination $\widehat{\beta}_0 + \widehat{\beta}_1 \times 2500$ yields the linear predictor, 
+`{r} round(pred_2500,4)`. This value is on the scale of the link function. To obtain the estimated total home value, we have to plug the estimated linear predictor into the inverse link function. The predicted total home value is `{r} round(exp(pred_2500),5)`. Especially when working with log links, analysts sometimes forget to apply the inverse link function. When the linear predictor is a positive number, it is easily mistaken for the prediction of the mean.
+
+You can also use the `predict` function to obtain the predictions. The `type=` option determines whether the predicted values are calculated for the linear predictor (`type="link"`) or for the mean response (`type="response"`).
+
+```{r}
+predict(gam_reg, newdata=data.frame(finsqft=2500),type="link")
+p <- predict(gam_reg, newdata=data.frame(finsqft=2500), type="response")
+cat("Predicted home value for 2,500 finished square feet: ", p)
+```
+
+### Likelihood Ratio Test
+
+Is our model sufficiently complex to capture the variability in total home values? We can compare it to more complex models with a likelihood ratio test, provided the models are nested. The following statements add four input variables to our basic model. The model summary confirms that their partial tests (adding each variable in the presence of the others) are significant. 
+
+```{r}
+gam_reg_full <- glm(totalvalue ~ finsqft + cooling + lotsize + fullbath + lotsize, 
+                    data=homes,
+                    family=Gamma(link="log"))
+
+summary(gam_reg_full)
+```
+
+We can test the simultaneous addition of the four variables with a single LRT. 
+```{r lrt_gam, warning=FALSE, message=FALSE}
+library(lmtest)
+
+lrtest(gam_reg,gam_reg_full)
+```
+
+:::{.callout-caution}
+The `lrtest` function in the `lmtest` package constructs LRTs based on the result returned from calls to `logLik` for each model. If the result returned from `logLik` is not a true log likelihood, the results of `lrtest` are not meaningful. For example, you can request `logLik` for a model fit by `lm`, which performs least-squares estimation. There is no distributional assumption in `lm`, hence there is no likelihood or log likelihood function. The `logLik` function itself computes the log likelihood indirectly, for example, based on Akaike's Information Criterion (AIC). For likelihood-based estimation, AIC is defined as 
+$$
+\text{AIC} = -2\log \ell + 2 k
+$$
+where $k$ is the total number of model parameters, including scale and covariance parameters. Back-calculating $\log ell$ based on AIC is implicitly making the distributional assumption that underpins the computation of AIC for a particular class of models, even if the estimation is free of a distributional assumption.
+:::
+
+## Example: Beta Regression
+
+The typical `R` functions to fit generalized linear models or generalized additive models are `glm` and `gam::gam`. Unfortunately, neither of them support beta-distributed data, although the Beta distribution is in the two-parameter exponential family. Recall from @sec-dist-beta that a Beta random variable is continuous on $[0,1]$ and a plausible model for ratios. Also, every random variable with finite support $[a,b]$ can be normalized to lie in the $[0,1]$ interval by the transformation 
+$$
+x_n = \frac{x - a}{b - a}
+$$
+
+The parameterization of the Beta distribution in @sec-dist-beta is not the most convenient to fit a generalized linear model. As shown there,
+$$
+f(y) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}\, y^{\alpha-1}\,(1-y)^{\beta-1}\quad 0 < y < 1
+$$
+
+and $Y$ has mean $\alpha/(\alpha + \beta)$. @FerrariCribariNeto proposed a parameterization in terms of $\mu=\alpha/(\alpha + \beta)$ and a scale parameter $\phi= \alpha + \beta$:
+$$
+f(y) = \frac{\Gamma(\phi)}{\Gamma(\mu\phi)\Gamma((1-\mu)\phi)}\, y^{\mu\phi-1}(1-y)^{(1-\mu)\phi-1}
+$$
+
+In this Beta$(\mu,\phi)$ parameterization, $\Exp[Y] = \mu$ and $\Var[Y] = \mu(1-\mu)/(1+\phi)$. The variance of the random variable is inversely related to the magnitude of $\phi$, that is why it is called a **precision** parameter ($1/\phi$ is a dispersion parameter). The mean--variance relationship should look familiar, it is akin to that of the Bernoulli distribution, except for the involvement of the precision parameter. This is not too surprising as both Bernoulli and Beta random variables have means that range from 0 to 1. By the same token, the most common link function in Beta regressions is the logit link.
+
+You can fit beta regression models in the @FerrariCribariNeto parameterization in `R` with the `betareg` package and with the `glam` package. The `glam` package can also handle generalized additive models (@sec-gam) and grew out of a previous project in this course. 
+
+We start with the gasoline yield data by @Prater1956 that is supplied by the `betareg` package. The target variable is the proportion of crude oil converted to gasoline after distillation and fractionation. Potential input variables to the regression include the gravity and vapor pressure of the crude oil, the temperature at with 10\% of the crude oil has vaporized, the temperature at which all gasoline has vaporized, and the batch number. The following code fits the model 
+$$
+\begin{align*}
+Y &\sim \text{Beta}(\mu,\phi) \\
+\mu &= \frac{1}{1+\exp\{-\eta\}} \\
+\eta &= \beta_0 + \beta_1\text{gravity} + \beta_2\text{pressure} + \beta_3\text{temp10} + \beta_4\text{temp} \\
+\end{align*}
+$$
+
+```{r, warning=FALSE}
+library(betareg)
+data("GasolineYield", package = "betareg")
+
+beta_glm1 <- betareg(yield ~ gravity + pressure + temp10 + temp,
+                     data=GasolineYield)
+s <- summary(beta_glm1)
+s
+```
+
+The maximum likelihood estimates of the model coefficients are 
+$\widehat{\beta}_0 =$ `{r} round(beta_glm1$coefficients[[1]][1],4)`,
+$\widehat{\beta}_1 =$ `{r} round(beta_glm1$coefficients[[1]][2],4)`,
+and so forth. 
+The estimate of the precision parameter is 
+$\widehat{\phi} =$ `{r} round(beta_glm1$coefficients[[2]],4)`.
+
+@fig-beta-reg-example displays the observed and fitted yield values against the temperature at which gasoline has vaporized (`temp`).
+
+```{r, echo=FALSE, fig.align='center', out.width="80%", fig.asp=0.8}
+#| fig.cap: Observed (empty circles) and fitted values (filled circles) in beta regression for gasoline yield.
+#| label: fig-beta-reg-example
+plot(GasolineYield$temp, GasolineYield$yield, 
+     xlab="Temperature", 
+     ylab="Yield", 
+     las=1, bty="l",
+     cex=1.2)
+points(GasolineYield$temp, beta_glm1$fitted.values, col = "red",pch=16,cex=1.35 )
+```
+
+To fit this model with the GLAM package, you would use
+
+```{r, eval=FALSE}
+library(glam)
+Y <- GasolineYield$yield
+X <- cbind(GasolineYield$gravity, 
+           GasolineYield$pressure,
+           GasolineYield$temp10, 
+           GasolineYield$temp)
+beta_glm2 <- glam(X, Y, model="linear", family="beta")
+```
+
+## Overdispersion {#sec-glm-overdispersion}
+
+**Overdispersion** is the condition where the data appear more variable than is permissible under a reference model. If overdispersion is present some aspect of the model is not correct. It is important to address the specific shortcoming that induces the overdispersion. Causes can include one or more of the following
+
+- important input variables are missing from the model
+- the data are autocorrelated, for example in time series or longitudinal data
+- the data do not follow the assumed probability model 
+- the data were generated by a mixture of random processes rather than a single mechanism
+
+Overdispersion is addressed by turning the appropriate knob. If overdispersion is not addressed, the precision of the fitted model is overstated: standard error estimates are too small, confidence and prediction intervals are too narrow, $p$-values are too small. 
+
+Generalized linear models are notorious for overdispersion issues, because the variability of the data is partially or completely controlled by the mean function. With Poisson data, for example, the variance equals the mean of the distribution. By specifying a GLM for the mean function, we explicitly specify a model for the variance. Two-parameter exponential family models such as the Gaussian, Gamma, and Beta distribution have a scale parameter but there is still a linkage between the mean and the variance. The only distribution where the mean of $Y$ is completely decoupled from the variance is the Gaussian distribution. Gaussian data can never be overdispersed because the reference model can combine any value for the mean with any value for the variance.
+
+The following example shows how incorrectly modeling count data can induce overdispersion.
+
+:::{.example}
+::::{.example-header}
+Example: Poppy Counts in RCBD
+::::
+::::{.example-container}
+The following data from [@Meadetal1993, p. 144], are from a randomized complete block design (RCBD) with 4 blocks and 6 experimental treatments.
+The output variable was the number of poppies on the experimental unit.
+
+| Treatment | Block 1 | Block 2 | Block 3 | Block 4 |
+|:---------:|:-------:|:-------:|:-------:|:-------:|
+|     A     |    538  |   422   |   377   |   315   |
+|     B     |    438  |   442   |   319   |   380   |
+|     C     |     77  |    61   |   157   |    52   |
+|     D     |    115  |    57   |   100   |    45   |
+|     E     |     17  |    31   |    87   |    16   |
+|     F     |     18  |    26   |    77   |    20   |
+
+: Poppy count data from [@Meadetal1993]
+
+There appears to be a strong treatment effect, the counts are generally higher for treatments A and B than for E and F. There also appears to be a block effect. Scanning the columns in the table, block 4 seems to have systematically smaller counts than the other blocks.
+
+In a randomized complete block design with $t$ treatments and $b$ blocks, there are $t\times b$ experimental units. A block of units is characterized by greater similarity of the experimental units within the block than between the blocks. The $t$ treatments are then randomly assigned to the experimental units within each block (@fig-rcbd). This design captures systematic differences between the blocks and the randomization of treatments within a block balances out the unaccounted effects within the blocks.
+
+![Randomized Complete Block Design](images/RandomizedBlocks.png){fig-align="center" width="80%" .lightbox #fig-rcbd}
+
+```{r warning=FALSE, message=FALSE}
+library("duckdb")
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+poppies <- dbGetQuery(con, "SELECT * FROM poppies")
+
+dbDisconnect(con)
+
+poppies$block <- as.factor(poppies$block)
+poppies$block <- relevel(poppies$block,"4")
+poppies$tx <- relevel(as.factor(poppies$treatment),"F")
+```
+
+Suppose we analyze the data as a Poisson model with a treatment factor but leave the block effects out of the model. This is clearly not the correct model as the mean function does not reflect the experimental design.
+
+```{r}
+poi_tx <- glm(count ~ tx, data=poppies, family=poisson)
+summary(poi_tx)
+```
+Treatment F was set as the reference level, so the coefficients in the `glm` output measure differences to that treatment. All treatments are significantly different from F, except for treatment E. 
+
+The large residual deviance relative to its degrees of freedom is troubling, however. In a well-specified model, their ratio should be close to 1. Instead, the ratio is almost 19.
+
+```{r}
+poi_tx$deviance / poi_tx$df.residual
+```
+
+The model is highly overdispersed. Without block effects, the model is misspecified. 
+
+```{r}
+poi_rcbd <- glm(count ~ block + tx, data=poppies, family=poisson)
+summary(poi_rcbd)
+```
+
+The RCBD Poisson model improves the overdispersion but not by much:
+
+```{r}
+poi_rcbd$deviance / poi_rcbd$df.residual
+```
+
+The mean function is now correctly specified; the explanation for the overdispersion is that the data are not Poisson distributed.
+::::
+:::
+
+### Scaled Analysis
+
+A "quick fix" of the overdispersion problem is to introduce a scaling factor that adjusts the variability of the data somehow. In the presence of overdispersion the standard errors reported by software are too small. As a consequence, $p$-values are too small, prediction and confidence intervals are too narrow. 
+
+The quick fix is to adjust the variance-covariance matrix of the model coefficients by the sum of the squared Pearson residuals divided by the residual degrees of freedom. The Pearson residual in a generalized linear model is 
+$$
+    \frac{y_i - \widehat{\mu}_i}{\sqrt{\widehat{\text{Var}}[y_i]}}
+$$
+and the adjustment factor is 
+$$
+\frac{1}{df_{\text{res}}} \sum_{i=1}^n \frac{(y_i - \widehat{\mu}_i)^2}{\widehat{\text{Var}}[y_i]}
+$$
+
+This is sometimes called a quasi-glm analysis. The results of the quasi-poisson analysis for the poppies experiment follows.
+
+:::{.example}
+::::{.example-header}
+Example: Quasi-Poisson Model for Poppy Counts in RCBD
+::::
+::::{.example-container}
+```{r}
+poi_qp <- glm(count ~ block + tx, data=poppies,
+           family=quasipoisson)
+
+```
+
+The coefficient estimates are identical to those in the Poisson model. The standard errors of the coefficients are 
+increased by a constant factor
+
+```{r}
+s <- summary(poi_rcbd)
+s_q <- summary(poi_qp)
+s_q$coefficients[,2] / s$coefficients[,2]
+```
+
+The factor scaling the standard errors is the square root of the sum of the squared Pearson residuals divided by the residual degrees of freedom. 
+
+```{r}
+pear_res <- (poi_rcbd$fitted.values - poppies$count)/sqrt(poi_rcbd$fitted.values)
+disp_factor <- sum(pear_res^2)/poi_rcbd$df.residual
+sqrt(disp_factor)
+```
+
+The adjustment can be made directly by supplying the dispersion factor to the summary of the RCBD analysis:
+
+```{r}
+summary(poi_rcbd,dispersion=disp_factor)
+```
+::::
+:::
+
+The quasi-glm analysis is not the recommended approach for addressing overdispersion. It is a band-aid that covers over the real reasons behind the overdispersion mechanism. The estimates in the quasi-glm analysis are no longer maximum likelihood estimates. A more sophisticated and more appropriate approach to addressing overdispersion is to account for more variability in the system.
+
+
+### Mixing Models
+
+If the Poisson distribution is not sufficiently dispersed for a count target, what other options are available?
+
+The Negative Binomial distribution is also a model for count data and permits more variability than the Poisson distribution. It is a popular alternative for the Poisson model in the presence of overdispersion. The Negative Binomial is often derived from independent Bernoulli experiments, similar to the Binomial random variable. While the Binomial($n,\pi$) is the sum of $n$ independent Bernoulli($\pi$) experiments, the NegBin($k,\pi$) random variable is the number of Bernoulli($\pi$) trials until the $k$^th^ event occurs.
+
+Another way of motivating the Negative Binomial is through a **mixing process** and this way is particularly insightful in the context of modeling overdispersion.
+
+
+In a mixing process one or more parameters are assumed random. The base distribution is considered conditional on the mixing parameter and the mixing distribution is derived as the marginal distribution, integrating (or summing) over the distribution of the mixing parameter. An example will make that easier to understand. Suppose that $Y|\lambda$ has a Poisson($\lambda$) distribution and that $\lambda$ is a Gamma($\alpha,\beta$) random variable. 
+The mixing distribution, the marginal distribution, is obtained by integrating the conditional distribution over the distribution of the random parameter:
+
+$$
+p(y) = \Pr(Y=y) = \int_0^\infty p(y|\lambda) f(\lambda) \, d\lambda
+$$
+The conditional distribution in this integral, $p(y|\lambda)$, is a Poisson and $f(\lambda)$ is a Gamma distribution. Before looking at the marginal distribution of $Y$ in this **Poisson--Gamma mixing** scheme, is there something we can learn about the mean and variance of $Y$?
+
+Suppose $Y$ has a distribution that depends on parameters $[\alpha, \beta]$ and has conditional expectation and variance
+$$
+\Exp[Y|\alpha] = \mu(\alpha,\beta) \quad \Var[Y|\alpha] = \sigma^2(\alpha,\beta)
+$$
+If $\beta$ is a constant and $\alpha$ is a random variable the marginal mean and variance of $Y$ are
+
+\begin{align*}
+  \Exp[Y] &= \Exp_\alpha[\Exp[Y|\alpha]] = \Exp_\alpha[\mu(\alpha,\beta)] \\
+  \Var[Y] &= \Var_\alpha[\Exp[Y|\alpha]] + \Exp_\alpha[\Var[Y|\alpha]] \\
+  &= \Var_\alpha[\mu(\alpha,\beta)] + \Exp_\alpha\left[\sigma^2(\alpha,\beta)\right]
+\end{align*}
+
+What does that mean? The marginal variance is larger than the average variance of the conditional distribution. By introducing a randomly varying parameter, and integrating over its distribution, we arrive at a more dispersed distribution.
+
+Now back to the Poisson--Gamma mixing problem. It can be shown that if $Y|\lambda \sim \text{Poisson}(\lambda)$, and $\lambda \sim \text{Gamma}(\alpha,\beta)$ that the marginal distribution of $Y$ is 
+
+$$
+\Pr(Y=y)= {y+\alpha-1\choose\alpha-1} \left(\frac{\beta}{\beta+1}\right)^y \left(\frac{1}{\beta+1}\right)^\alpha
+$$
+
+This is a Negative Binomial distribution with mean $\Exp[Y] = \alpha\beta$ and variance $\Var[Y] = \alpha\beta(1+\beta)$.
+The Negative Binomial is overdispersed relative to the Poisson by the factor $(1+\beta)$.
+
+Different parameterizations of the Gamma mixing distribution are in use. For example, the Gamma can be parameterized in terms of $\Exp[\lambda] = \alpha\beta = \mu$ and $\Var[\lambda] = \mu/\phi$. The resulting Negative Binomial model is then overdispersed by a factor $(1+\phi)/\phi$.
+
+
+:::{.example}
+::::{.example-header}
+Example: Negative Binomial Analysis for Poppy Counts in RCBD
+::::
+::::{.example-container}
+You can fit a Negative Binomial model in `R` with the `glm.nb` function in the `MASS` library.
+
+```{r}
+library(MASS)
+
+nbreg <- glm.nb(count ~ block + tx, data=poppies,link="log")
+summary(nbreg)
+```
+
+The ratio of the residual deviance to its degrees of freedom is about 1.6, much improved compared to any of the Poisson-based models. 
+
+```{r}
+nbreg$deviance/nbreg$df.residual
+```
+
+Both the coefficient estimates and the standard errors change compared to the Poisson analysis. Recall that the quasi-Poisson analysis affected only the standard errors of the coefficients.
+::::
+:::
+
+Other forms of parameter mixing are popular. The **Binomial--Poisson** mixing scheme assumes that the number of trials $n$ of a Binomial($n,\pi$) random variable follows a Poisson($\lambda$) distribution. If $Y|n \sim \text{Binomial}(n,\pi)$ and $n \sim \text{Poisson}(\lambda)$, then $Y$ has a Poisson distribution with mean $\lambda\pi$. This Poisson is overdispersed relative to the Binomial($n,\pi$) evaluated at the average sample size $\lambda$ because
+$$
+\lambda\pi > \lambda\pi(1-\pi)
+$$
+
+The **Beta-Binomial** mixing model assumes that $Y|n \sim \text{Binomial}(n,\pi)$, $n$ is fixed, and $\pi$ is a random variable with a Beta($\alpha,\beta$) distribution. The resulting marginal distribution of $Y$ is known as the beta-binomial distribution and has mean and variance
+$$
+\Exp[Y] = \frac{n\alpha}{\alpha+\beta} \quad \Var[Y] = \frac{n\alpha\beta(n+\alpha+\beta)}{(\alpha+\beta)^2(\alpha+\beta+1)}
+$$
+
+A **double mixing** scheme assumes that multiple parameters are random. For example, starting with a Binomial($n,\pi)$ random variable, we can define a **Binomial--Poisson--Gamma** mixing model as follows
+
+\begin{align*}
+    Y | n &\sim \text{Binomial}(n,\pi) \\
+    n | \lambda &\sim \text{Poisson}(\lambda) \\
+    \lambda &\sim \text{Gamma}(\alpha,\beta)
+\end{align*}
+
+The marginal distribution of $Y$ is again Negative Binomial with mean $\Exp[Y] = \alpha\beta\pi$ and variance $\Var[Y] = \alpha\beta\pi(1+\beta\pi)$.
+

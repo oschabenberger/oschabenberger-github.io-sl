@@ -1,0 +1,7 @@
+# Boosting {#sec-boosting}
+
+## Adaptive Boosting (AdaBoost)
+
+## Gradient Boosting
+
+## Extreme Gradient Boosting (XGboost)

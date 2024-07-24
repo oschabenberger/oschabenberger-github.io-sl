@@ -1,0 +1,252 @@
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+# Generalized Additive Models {#sec-gam}
+
+## Introduction {#sec-gam-intro}
+
+Generalized linear models (GLMs) generalize the classical linear regression model in a number of ways, detailed in @sec-glm-intro.
+The most important generalization is to allow the target variable to be distributed according to any of the members of the exponential family of distributions. An important property of the linear model retained in GLMs is the linear predictor $\eta = \bx^\prime\bbeta$: the predictor is a linear function of the inputs.
+
+Generalized **additive** models (GAMs) relax the linear predictor assumption of GLMs. There is still a predictor and it is additive, but it is not additive in the $\beta_j x_j$ components. Instead, the predictor is additive in **functions** of the inputs. Mathematically, the change from GLMs to GAMs is a change from 
+$$
+\eta = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_p x_p
+$$
+to
+$$
+\eta = \beta_0 + f_1(x_1) + f_2(x_2) + \cdots + f_p(x_p)
+$$
+
+Each input is modeled with its own function. Where did the $\beta$s go? There still is an overall intercept that adjusts for the level of $Y$, any remaining parameters that need to be determined depend on the particulars of the functions $f_j(x_j)$. For example, if $f_1()$ is a natural spline in $x_1$, then the spline basis expands into a certain number of columns depending on the degrees of freedom of the spline.
+
+Once the predictor of the GAM has been determined, predicting the mean proceeds as in the GLM, invoking the inverse link function, $\mu = g^{-1}(\eta)$.
+
+How do we choose the functions $f_1(),\cdots,f_p()$? If $x_j$ is discrete (a factor), then it is common to estimate $f_j(x_j)$ with a separate constant value for each of the factor levels. If $x_j$ is continuous, local methods from @sec-local-models are candidates. In principle, you could use any technique for expressing $Y$ as a function of $x$ as one of the $f_j$.
+
+## Pros and Cons of GAMs
+
+GAMs are another generalization of the classical model on top of GLMs. In a sense, they bring the concept of local models into the GLM framework and add flexibility to capture non-linear relationships. Rather than trying out different transformations of $x_j$ such as logarithms, square roots, inverses, polynomials, etc., you can leave it to the non-parametric nature of $f_j()$ to find the appropriate trend.
+
+Yet the contributions of the input variables remain additive: you can evaluate the contribution made by adding $f_2(x_2)$ to a model containing $f_1(x_1)$. Model interpretation is simple in terms of additive effects of functions of the inputs.
+
+One downside of the GAM formulation is that the model is additive in functions of [individual]{.underline} inputs. When $x_1$ and $x_2$ interact, how can you capture this in an additive model? One approach is to consider the product $x_1x_2$ and add it to the GAM as another variable:
+$$
+\eta = \beta_0 + f_1(x_1) + f_2(x_2) + f_3(x_1x_2)
+$$
+
+Another approach would be to add a two-dimensional smooth function of $x_1$ and $x_2$:
+$$
+\eta = \beta_0 + f_1(x_1) + f_2(x_2) + f^*_3(x_1, x_2)
+$$
+Notice the subtle difference between $f_3(x_1x_2)$ and $f^*_3(x_1,x_2)$: the former is a one-dimensional smoother in the product of the two variables, the latter is a two-dimensional smoother.
+
+Another downside of the GAM formulation is a more complicated fitting procedure. If $Y$ is Gaussian and all $f_j$ are simple natural cubic splines, then we can set up one big $\bX$ matrix with the columns of the splines and compute the solution directly, as in a linear regression. If the $f_j$ are smoothing splines, or loess models, or other functions that require a local fitting routine, then a different algorithm is needed. The solution is known as the **backfitting** algorithm [@HastieTibshirani].
+
+The backfitting algorithm, more fully described below, is an iterative algorithm. Fitting a GLM is typically also an iterative procedure (unless $Y$ is Gaussian and the link is the identity function). A GAM for non-Gaussian data is thus a **doubly iterative** procedure. The IRLS algorithm described in @sec-glm-irls derives the maximum likelihood estimates by repeatedly fitting a weighted linear model, updating the pseudo-response and the weights of the model after each iteration. With a GAM component, fitting the weighted model at each of the IRLS iteration uses a weighted iterative backfitting algorithm. The IRLS algorithm defines the **outer** loop of the doubly-iterative algorithm, the backfitting algorithm comprises the inner loop.
+
+While doubly-iterative algorithms are not unusual in statistical modeling, they do present additional challenges:
+
+* The outer and the inner iteration might not converge. 
+
+* Convergence criteria are needed for both iterations, and they can be different. Tolerances for the inner iterations can change as the outer iterations progress. It makes sense to have more lax convergence criteria for the inner loop at early stages of the outer iteration than toward the end.
+
+* Increased computational burden..
+
+### Backfitting Algorithm
+
+The idea of the backfitting algorithm is straightforward. Fit a scatterplot smoother $f_k$ to the partial residuals that extract the signal of all other functions $f_j, j \neq k$. Replace the previous values of $f_k$ with the new values. Do this in turn for all functions until some convergence criterion is met. 
+
+Suppose the response is continuous and the observational generalized additive model can be written as 
+$$
+Y_i = \beta_0 + \sum_{j=1}^p f_j(x_j) + \epsilon_i \qquad i=1,\cdots,n
+$$
+with mean-zero errors. This GAM applies when $Y_i$ is Gaussian distributed. The backfitting algorithm takes the following steps
+
+- Step 0: Estimate $\widehat{\beta}_0$ as $\frac{1}{n}Y_i$
+
+- Step 1: $\widehat{f}_j = 0 \quad \forall j$
+
+- Step 2: Cycle through the $k=1,\cdots,p$ functions and replace $\widehat{f}_k$ with a smoother of the partial residuals
+$$
+y - \widehat{\beta}_0 - \sum_{j=1, \ne k}^p \widehat{f}_j(x_j)
+$$
+
+- Step 3: Stop the process if the functions $\widehat{f}_j$ are changing by less than a chosen threshold, otherwise return to step 2.
+
+At the end of step 2 for each of the functions, the estimated functions can be re-centered as $\widehat{f}_j - \frac{1}{n}\sum \widehat{f}_j(x_{ij})$. While this is not necessary from a theoretical standpoint, the finite-precision calculations can benefit from re-centering.
+
+Among the issues with the backfitting algorithm are
+
+- the arbitrary stop criterion: monitoring the change in function norms or the predicted values, a sum of squares criterion, etc. It is not clear what is the best (right) choice.
+
+- the order-dependence: the solution of the backfitting algorithm depends on the order in which the $f_j(x_j)$ enter the model.
+
+- non-uniqueness: the solution of the algorithm is not unique (unless expressed in terms of eigendecomposition of projections).
+
+## Example: Real Estate Values in Albemarle County, Virginia
+
+In @sec-glm-gamma-example we fit a Gamma regression model to the home values in Albemarle County, VA. For comparison with a GAM, we repeat here the model from that section, it expresses total home value as a function of the finished square footage of the home:
+
+```{r albemarle, warning=FALSE, message=FALSE}
+library(duckdb)
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+homes <- dbGetQuery(con, "SELECT * FROM AlbemarleHomes")
+
+dbDisconnect(con)
+str(homes)
+
+gamma_glm <- glm(totalvalue ~ finsqft, 
+               data=homes,
+               family=Gamma(link="log"))
+summary(gamma_glm)
+```
+
+The model converges in `{r} gamma_glm$iter` iterations and the maximum likelihood estimates of the coefficients are
+$\widehat{\beta}_0$ = `{r} round(gamma_glm$coefficients[1],4)` and 
+$\widehat{\beta}_1$ = `{r} round(gamma_glm$coefficients[2],5)`.
+
+The addition of the single input variable `finsqft` reduces the deviance dramatically, compared to a null model; from 
+`{r} round(gamma_glm$null.deviance,3)` to `{r} round(gamma_glm$deviance,3)`. The `finsqft` coefficient is highly significant.
+
+--- 
+
+How does this compare to a generalized additive model where the effect of `finsqft` is modeled as a smoothing spline?
+We use the `gam::gam` function to fit the GAM via backfitting algorithm. The `gam` function gives you flexibility in the formula for the  predictor. You can specify effects of inputs as linear effects by simply listing the variable name, or as smooth effects by wrapping the variable in one of the possible smoother expressions. Currently, those expressions are `s()` for a smoothing spline, and `lo()` for a local regression (loess) smoother.
+
+```{r albemarle_gam, warning=FALSE, message=FALSE}
+library(gam)
+gamma_gam <- gam(totalvalue ~ s(finsqft), 
+              data=homes,
+              family=Gamma(link="log"))
+summary(gamma_gam)
+round(gamma_gam$coefficients,5)
+gamma_gam$nl.df
+```
+
+`gam` adds a global parametric effect for each input variable in addition to the smooth nonparametric effects. The term `s(finsqft)` in the model formula triggers the addition of two model elements: a term $\beta \,\text{finsqft}$ and a smoothing spline $f_1(\text{finsqft})$. That is why `s(finsqft)` appears twice in the summary output: under the parametric effects with a single degree of freedom for the coefficient, and under the nonparametric effects. By default, the spline smoother in `gam` has target degrees of freedom of 4, and the output reports the degrees of freedom as one less than the trace of the smoother matrix; these degrees of freedom can be fractional numbers.
+
+The residual deviance of the GAM model is smaller than that of the GLM model, `{r} round(gamma_gam$deviance,3)` versus `{r} round(gamma_glm$deviance,3)`. Does this mean the GAM model provides a significantly better fit? We can test this hypothesis, but first a few words on how `gam` constructs predicted values.
+
+:::{.callout-note}
+The smoothing spline and loess function invoked by `gam` are `gam.s` and `gam.lo`, and are not the same as `smooth.spline` and `loess`. The default for `gam.s` are a smoothing spline with 4 target degrees of freedom and for `gam.lo` a loess fit of degree 1 with a span of 0.5. You can change these values, for example, 
+```{r, eval=FALSE}
+    gam(totalvalue ~ s(finsqft,df=6) + lo(lotsize,span=0.25,degree=1), ...)
+```
+
+Also note that the smoothing spline in `gam` does not perform cross-validation selection of the optimal number of degrees of freedom (or knots) of the spline.
+:::
+
+To compute predicted values for a GLM or GAM model, we can use the `predict` function, making sure we request the predictions of interest: on the scale of the linear predictor or on the scale of the response (the mean)
+
+```{r}
+p_glm <- predict(gamma_glm, newdata=data.frame(finsqft=2500), type="response")
+p_gam <- predict(gamma_gam, newdata=data.frame(finsqft=2500), type="response")
+cat("GLM: Predicted home value for 2,500 finished square feet: ", p_glm,"\n")
+cat("GAM: Predicted home value for 2,500 finished square feet: ", p_gam,"\n")
+```
+
+How do you construct the predicted value for an observation in the GAM analysis?
+Suppose we are interested in the predicted value for the 36^th^ observation.
+
+```{r}
+homes[36,]
+round(gamma_gam$coefficients,5)
+
+parametric <- gamma_gam$coefficients[1] + gamma_gam$coefficients[2]*homes[36,"finsqft"]
+as.numeric(parametric)
+as.numeric(parametric + gamma_gam$smooth[36])
+```
+
+The predictions comprise a parametric contribution from $\beta\,\text{finsqft}$ and a nonparametric contribution
+from the smoothing spline. The sum of the two is the predicted value on the scale of the predictor (the scale of the link function). 
+You can also find this value in the `additive.predictors` vector.
+
+Exponentiating this value---because we chose a log link function---produces the predicted home value for that observation.
+The `fitted.values` vector contains those values for all observations
+
+``` {r}
+gamma_gam$additive.predictors[36]  # parametric + nonparametric elements
+
+as.numeric(exp(parametric + gamma_gam$smooth[36]))
+gamma_gam$fitted.values[36]
+
+```
+
+--- 
+
+@fig-gamma-gam displays the observed and predicted home values for the GLM and GAM models. 
+The GAM predictions are generally lower than those of the GLM model. Interestingly, although we added a spline component in the finished square feet variable, the predictions are still very smooth. 
+
+```{r}
+xvals <- seq(1000,8000,by=100)
+pred_glm <- predict(gamma_glm,type="response",newdata=data.frame("finsqft"=xvals))
+pred_gam <- predict(gamma_gam,type="response",newdata=data.frame("finsqft"=xvals))
+```
+
+```{r, fig.asp=1, echo=FALSE, fig.align='center', out.width="80%"}
+#| fig.cap: Fitted home values for GAM and GLM models.
+#| label: fig-gamma-gam
+plot(x=homes$finsqft,y=homes$totalvalue,
+     ylab="Total value",
+     xlab="Finished square footage",
+     bty="l",type="p",
+     las=1,
+     cex.axis=0.8,
+     cex=0.6)
+lines(x=xvals,y=pred_glm,lty="solid", lwd=1.5)
+lines(x=xvals,y=pred_gam,lty="dotted",lwd=1.5)
+
+legend("topleft",
+       legend=c("GLM","GAM"),
+       lty=c("solid","dashed"),
+       lwd=1.5)
+```
+
+This changes when you increase the degrees of freedom of the smoothing spline. @fig-gamma-2gams shows the fitted values for smoothing splines with 4 and 100 df, respectively.
+
+```{r, fig.asp=1, echo=FALSE, fig.align='center', out.width="80%"}
+#| fig.cap: GAM models with smoothing splines with 4 and 100 df, respectively.
+#| label: fig-gamma-2gams
+
+gamma_gam_100 <- gam(totalvalue ~ s(finsqft,df=100), 
+              data=homes,
+              family=Gamma(link="log"))
+
+pred_gam_100 <- predict(gamma_gam_100,type="response",newdata=data.frame("finsqft"=xvals))
+
+plot(x=homes$finsqft,y=homes$totalvalue,
+     ylab="Total value",
+     xlab="Finished square footage",
+     bty="l",type="p",
+     las=1,
+     cex.axis=0.8,
+     cex=0.6)
+lines(x=xvals,y=pred_gam,     lty="solid", lwd=1.5)
+lines(x=xvals,y=pred_gam_100, lty="dotted",lwd=1.5)
+
+legend("topleft",
+       legend=c("s(finsqft,df=4)",
+                "s(finsqft,df=100)"),
+       lty=c("solid","dashed"),
+       lwd=1.5)
+```
+
+---
+
+Both GLMs and GAMs are fit by maximum likelihood and the `gam` function adds parametric terms for the input variables to the model. We can thus compare the following models with a likelihood-ratio test because the GLM model is nested within the GAM model.
+
+```{.default}
+glm(totalvalue ~ finsqft, ... )
+gam(totalvalue ~ s(finsqft), ... )
+```
+
+The difference in degrees of freedom between the two models should be equal to the number of degrees of freedom attributed to the smooth (nonparametric) components. This can be verified with the `anova` function:
+
+```{r, warning=FALSE}
+anova(gamma_glm,gamma_gam,test="LRT")
+```
+
+The GAM model provides a significantly better fit to the data compared to the generalized linear model.

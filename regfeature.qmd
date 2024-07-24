@@ -1,0 +1,998 @@
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+# Feature Selection and Regularization {#sec-feature-reg}
+
+The classical linear model is a workhorse in data science and statistical learning. It is interpretable, intuitive, easy to fit and to explain. The model is computationally and mathematically straightforward, the properties of parameter estimators are easily derived and well understood. 
+
+Also, the classical linear model is surprisingly competitive against more complex alternatives. 
+
+:::{.example}
+::::{.example-header}
+Example: XOR Gate
+::::
+::::{.example-container}
+The exclusive OR function--also called the XOR Gate--has two binary inputs, $X_1 \in \{0,1\}$ and $X_2 \in \{0,1\}$. The result of the gate is $Y = 1$ if exactly one of the $X$s is 1, $Y=0$ otherwise.
+
+| $X_1$ | $X_2$|   $Y$ |
+|:-----:|:----:|:-----:|
+| 0     | 0    |    0  |
+| 0     | 1    |    1  |
+| 1     | 0    |    1  |
+| 1     | 1    |    0  |
+
+: XOR Gate
+
+We will see in @sec-ann how to model the XOR gate with an artificial neural network with a single hidden layer with 2 units. The neural network requires 9 parameters to perfectly model the gate. We could also create a linear model that perfectly models the gate, requiring only three parameters.
+
+```{r warning=FALSE}
+dat <- data.frame(x1=c(0,0,1,1), x2=c(0,1,0,1), y=c(0,1,1,0))
+reg_ia <- lm(y ~ x1 + x2 + x1*x2 -1, data=dat)
+
+summary(reg_ia)
+round(predict(reg_ia),3)	
+
+```
+
+The model $Y = x_1 + x_2 - 2 x_1 x_2$ perfectly fits the gate. It has an $R^2=1$, $SSE=0$, and still one degree of freedom left for the error. The model has 1/3 the parameters of the neural network and is intrinsically interpretable.
+::::
+:::
+
+The classical linear model works well if $n \gg p$ and the input variables do not exhibit multicollinearity. If the model errors have zero mean, the least-squares estimators are unbiased, and thus the model is unbiased. However, it does not necessarily have the lowest mean-squared error. As $p$ grows, for fixed sample size $n$, problems start to mount:
+
+- The OLS estimator becomes more unstable, exacerbated by multicollinearity
+- When $p > n$, a unique OLS estimator does not exist, $(\bXpX)^{-1}$ cannot be computed. 
+- Other estimation approaches lead to models with smaller mean-squared prediction error.
+
+With increasing $p$, relative to $n$, the regression problem turns into a **high-dimensional** problem. Situations in which there are more input variables than observations are not at all uncommon. 
+
+:::{.example}
+::::{.example-header}
+Example: Microarray Analysis
+::::
+::::{.example-container}
+A microarray is a rectangular array in which the expression of genes is compared between two samples, often a reference (healthy individual) and an experimental sample (cancer patient). The samples are dyed green and red. If gene expression is higher [lower] in the experimental sample the corresponding spot on the microarray appears red [green]. A 20 x 20 array yields 400 inputs, but you might have only data on 10 arrays.
+
+![A gene expression microarray](images/microarray.png){#fig-microarray fig.align="center" out.width="80%"}
+::::
+:::
+
+How can we address the shortcomings of the classical linear model as problems become higher dimensional? 
+
+**Algorithmic feature selection** uses search techniques and cross-validation to find well-fitting models among the $2^p$ possible linear models you can build with $p$ inputs (@sec-feature-select). The goal is to find a relatively small set of inputs that explains sufficient variability in the data and to eliminate inputs that do not contribute (much) to explaining the variability.
+
+**Regularization** techniques consider all $p$ inputs, even if $p$ is large, and allay the shortcomings of the ordinary least squares estimator by penalizing its tendency toward instability (@sec-regularization). Regularization penalties shrink the estimators toward zero, thereby limiting the variability they can inflict on the model. The resulting estimators are biased, but at the same time their variability is suppressed enough to lead to an overall smaller mean-square prediction error compared to ordinary least squares.
+
+**Dimension reduction** methods derive $m$ linear combinations of the $p$ inputs where $m \ll p$. The $m$ combinations are treated as inputs to the model, thereby reducing the dimension of the regression while still consuming information from all $p$ inputs (@sec-feature-dimred). 
+
+In summary, feature selection chooses a subset of the $p$ inputs, regularization keeps all $p$ inputs and introduces bias to limit variability, dimension reduction uses $m < p$ linear combinations of the variables.
+
+## Algorithmic Feature Selection {#sec-feature-select}
+
+Suppose you have $p$ candidate input variables. How many possible linear models are there? One model without any inputs, one model with all $p$ inputs, $p$ models have a single input, and so on. The number of models having $k \le p$ inputs is
+$$
+{p \choose k} = \frac{p!}{k!(p-k)!}
+$$
+and the total number of models is
+$$
+\sum_{k=0}^p {p\choose k} = {p\choose0} + {p\choose 1} + \cdots + {p\choose p-1} + {p\choose p}
+$$
+By the **binomial theorem**, $(x+y)^n = \sum_{k=0}^n {n\choose k}x^{n-k}y^{k}$. Setting $x=y=1$, we find that the total number of models equals $2^p$. This is a very large number even for moderate $p$. With $p=10$ there are "only" 1,024 models, with $p=20$ this number increases to 1,048,576, with $p=30$ there are 1,073,741,824 models--more than a billion.
+
+Evaluating all regression models becomes unfeasible quickly due to the large number of models. Instead, we use a two-step process: 
+
+1. Among the set $\{M_k\}$ of $k$-size models, find the best candidate and call it $M_k^*$.
+2. Choose the single best model among $M_0^*, M_1^*, \cdots, M_p^*$.
+
+The feature selection methods differ in how they construct the candidate sets $\{M_k\}$ in step 1. For example, best subset selection uses efficient search algorithms to explore the space of possible models, forward selection considers $\{M_k\}$ as a superset of $\{M_{k-1}\}$, backward selection considers $\{M_k\}$ as a subset of $\{M_{k+1\}$.
+
+In step 1 the "best" model is chosen among the $k$-size models using criteria such as SSE, $R^2$, $p$-values, etc.
+In step 2 the models are compared based on an estimate of test error using cross-validation or, more commonly, an indirect estimate of test error.  
+
+:::{.callout-tip}
+When choosing $p$-values to judge models against each other during variable selection, you are performing many tests and you are not testing hypotheses in the typical sense. Feature selection is not akin to formulating a research hypothesis, collecting data, and testing whether the data support the hypothesis. The use of $p$-values during variable selection is more akin to a rough check whether adding or removing a feature should be considered. Thus, larger thresholds such as $p=0.1$ or $p=0.2$ are used. 
+
+Even if the process would be testing hypotheses in the usual sense, the large number of comparisons, each with a chance of a Type-I or Type-II error, creates a massive **multiplicity** (multiple testing) problem.
+:::
+
+### Indirect Estimates of Test Error
+
+Cross-validation approaches such as train:test split, leave-one-out cross-validation, or $k$-fold cross-validation produce a **direct** estimate of the mean-squared prediction error. **Indirect** estimates of the test error make adjustments to quantities derived from the training data and are easy to compute. These estimates are used to quickly quantify model  performance without random elements and to compare non-nested models. The best $M_k^*$ and best $M_j^*$ models in feature selection are not necessarily nested in the sense that one model can be reduced from the other--they might have completely different inputs. Those models cannot be compared based on $p$-values or just SSE. Some adjustments is necessary to incorporate the model complexity and to avoid overfitting.
+
+#### Mallows' $C_p$
+
+The $C_p$ statistic of @Mallows1973 estimates the average sum of prediction errors
+$$
+\Gamma_p = \frac{1}{\sigma^2}\Exp \left [\sum_{i=1}^n \left(\widehat{Y}_i - \Exp[Y_i|\bx_i]\right)^2 \right]
+$$
+It is a prediction-oriented criteria that seeks to strike a balance between the bias of an underfit model and the variability of an overfit model. $\Gamma_p$ expands into 
+$$
+\Gamma_p = \frac{1}{\sigma^2} \left(\sum_{i=1}^n\Var[\widehat{Y}_i] + \sum_{i=1}^n\left[\text{Bias}(\widehat{Y}_i)\right]^2 \right)
+$$ {#eq-cp-pop}
+
+The contribution of an overfit model is the first term in parentheses, $\Var[\widehat{Y}_i]$, the contribution of an underfit model is the squared bias term. It is insightful to take a look at the first piece, the sum of the variances of the predicted values. Suppose we have a model with $d$ inputs. From $\widehat{\bY} = \bX\widehat{\bbeta}$ it follows that
+$$
+\Var[\widehat{\bY}] = \sigma^2 \bX(\bXpX)^{-1}\bX^\prime = \sigma^2 \bH
+$$
+The Hat matrix is a projection matrix of rank $d+1$ and thus $\sum_{i=1}^n \Var[\widehat{Y}_i] = \sigma^2(d+1)$. The sum of the variances of the predicted values will go up when inputs are added to the model, whether the inputs are useful in explaining variability in $Y$ or not. Adding junk variables to a model results in greater variability of the predicted values--there is "no free lunch".
+
+The bias term in @eq-cp-pop can be estimated as 
+$$
+(\widehat{\sigma}^2_d - \sigma^2)(n-d-1)
+$$
+where $\widehat{\sigma}^2_d$ is the estimate of $\sigma^2$ in a model with $d$ inputs. Putting everything together we arrive at an estimator of $\Gamma_p$, known as Mallow's $C_p$ statistic
+$$
+C_p = \frac{1}{\widehat{\sigma}^2}\left(\widehat{\sigma}^2(d+1) + (\widehat{\sigma}^2_d - \widehat{\sigma}^2)(n-d-1) \right) = \frac{\text{SSE}}{\widehat{\sigma}^2} - n + 2(d+1)
+$$
+where $d$ is the number of inputs in the model, $(d+1)$ accounts for the intercept. In feature selection, $\widehat{\sigma}^2$ is based on the full model with $p$ inputs, since this model most likely yields the least biased estimator of the variance of the model errors. Among a set of competing models, select the one with the **smallest** $C_p$ statistic. Among models with the same number of inputs, $d$, selection based on $C_p$ leads to choosing the model with the smallest SSE. The term $2(d+1)$ can be viewed as a penalty term for model complexity. A larger model has to reduce SSE more substantially to overcome the additional parameters. 
+
+An alternative formulation for Mallow's statistic is
+$$
+C_p^\prime = \frac{1}{n}\left(\text{SSE} + 2(d+1)\widehat{\sigma}^2\right)
+$$
+$C_p$ and $C_p^\prime$ are not identical but they lead to the selection of the same model if models are chosen according to smaller $C_p$ or smaller $C_p^\prime$ values.
+
+
+#### AIC and BIC
+
+Akaike's Information Criterion (AIC) and the Bayesian Information Criterion (BIC) are based on likelihood theory and assume a distribution for the data, given the parameter estimates. In linear models, this distribution is typically Gaussian, and the criteria are computed as follows:
+
+$$
+\text{AIC} = \frac{1}{n}\left(\text{SSE} + 2(d+1)\widehat{\sigma}^2\right)
+$$
+$$
+\text{BIC} = \frac{1}{n}\left(\text{SSE} + \log(n)(d+1)\widehat{\sigma}^2\right)
+$$
+In this formulation, choose the model with the smaller AIC and smaller BIC. 
+AIC is identical to $C_p^\prime$, selection based on AIC and $C_p$ lead to the same model. 
+
+BIC applies a stronger complexity penalty when $\log(n) > 2$, ($n > 7$), and thus tends to select models smaller than $C_p$ or AIC.
+
+#### Adjusted $R^2$
+
+This statistic applies a correction to $R^2$ that penalizes larger models. It is not an estimate of the test error, but is still useful to select models. For a model with $d$ inputs, 
+$$
+\text{Adjusted } R^2 = 1 - \frac{\text{SSE}}{\text{SST}}\left(\frac{n-1}{n-d-1} \right) = 1-(1-R^2)\left(\frac{n-1}{n-d-1} \right) 
+$$
+When inputs are added to a model, SSE decreases and $R^2$ increases. However, $\text{SSE}/(n-d-1)$ may increase or decrease. If unimportant variables are added, the reduction in SSE does not offset the loss of degree of freedom and Adjusted $R^2$ will be smaller. When selecting models based on Adjusted $R^2$, choose the model with the larger value.
+
+<!--
+```{r}
+library(ISLR2)
+regfit <- lm(Balance ~ .,data=Credit)
+s <- summary(regfit)
+r2 <- s$r.squared
+d <- length(s$coefficients[,1])-1
+n <- length(s$residuals)
+adjr2 <- 1 - (1-r2)*(n-1)/(n-d-1)
+adjr2
+```
+-->
+
+### Best Subset Selection
+
+Best subsets regression uses an efficient branch-and-bound algorithm to explore the space of all possible models. A branch and bound algorithm does not visit all possible models. For example, the LEAPS algorithm of @FurnivalWilson1974 uses a separate tree as the bounding function that eliminates models that need not be considered given the branches of models that have already been seen. This algorithm is implemented as `method="exhaustive"` in the `regsubsets` function of the `leaps` package in `R`.
+
+:::{.example}
+::::{.example-header}
+Example: Credit Data from ISLR2
+::::
+::::{.example-container}
+We are using here the `Credit` data from @James2013_ISLR2 [Sec 3.3, p.85]. 
+The data are simulated observations (400) on 
+
+- Income: income in $1,000
+- Limit: credit limit
+- Rating: credit rating
+- Cards: number of credit cards
+- Age: age in years
+- Education: education in years
+- Own: two-level factor whether individual owns a home ("Yes"/"No")
+- Student: two-level factor whether individual is a student ("Yes"/"No")
+- Married: two-level factor whether individual is married ("Yes"/"No")
+- Region: three-level factor of geographic location ("East", "South", "West")
+- Balance: average credit card balance in \$
+
+The target variable is `Balance`.
+
+There are 10 input variables, 6 numeric variables, 3 two-level factors and one three-level factor (`Region`). When all variables are included, this leads to a model with $p = 6 + 3 + 2 = 11$ predictors. The three-level `Region` variable expands to two columns in $\bX$, the first level serves as default as the reference level.
+
+The following code performs best subset regression with the leaps algorithm. The `nvmax` parameter limits the maximum size of subsets to examine by the leaps-and-bound algorithm; the default is `nvmax=8`. Setting it to `NULL` forces the algorithm to consider all subsets up to size $p$.
+
+```{r warning=FALSE, message=FALSE}
+library(ISLR2)
+library(leaps)
+regfit <- regsubsets(Balance ~ ., data=Credit, method="exhaustive", nvmax=NULL)
+s_all <- summary(regfit)
+s_all
+```
+
+<!---
+```{r}
+X <- model.matrix(Balance ~ ., data=Credit)
+XpX = t(X) %*% X
+H = X %*% solve(XpX) %*% t(X)
+sum(diag(H))
+
+ncol(X)
+X[1:10,]
+```
+--->
+
+With $p=11$ predictors, there are 11 sets $\{M_1\}, \cdots, \{M_{11}\}$. The best single-predictor model--the best model in the set $\{M_1\}$-- is 
+$$
+M_1^*: \text{Balance} = \beta_0 + \beta_1\text{Rating} + \epsilon
+$$
+The best model in $\{M_2\}$ is 
+$$
+M_2^*: \text{Balance} = \beta_0 + \beta_1\text{Income} + \beta_2\text{Rating} + \epsilon
+$$
+and so on.
+Notice that `Rating` is included in $M_1^*$, $M_2^*$, and $M_3^*$ but is not present in $M_4^*$.
+
+To select the best model from the $k$-best models, we look at the model summary performance measures:
+
+```{r}
+s_all$cp
+s_all$bic
+s_all$adjr2
+```
+Selecting models according to $C_p$ the best 6-input model is chosen. Base on BIC and Adjusted $R^2$ we would choose the best 4-input and best 7-input model, respectively (@fig-best-subset-results).
+
+```{r}
+which.min(s_all$cp)
+which.min(s_all$bic)
+which.max(s_all$adjr2)
+```
+
+
+
+```{r Credit_plots_all, echo=FALSE, fig.align="center", out.width="90%"}
+#| fig.cap: Results of best subsets regression.
+#| label: fig-best-subset-results
+par(mfrow=c(1,3))
+
+plot(s_all$cp, ylab="Cp", xlab="# of predictors", type="b")
+idxcp <- which.min(s_all$cp) 
+points(idxcp, s_all$cp[idxcp], pch=4, cex=3, col="red")
+
+plot(s_all$bic, ylab="BIC", xlab="# of predictors", type="b")
+idxbic <- which.min(s_all$bic) 
+points(idxbic, s_all$bic[idxbic], pch=4, cex=3, col="red")
+
+plot(s_all$adjr2, ylab="Adj. R^2", xlab="# of predictors", type="b")
+idxr2 <- which.max(s_all$adjr2) 
+points(idxr2, s_all$adjr2[idxr2], pch=4, cex=3, col="red")
+
+#text("All Subset Regression", side = 3, line = -2, outer = TRUE)
+```
+::::
+:::
+
+### Forward Selection
+
+Forward selection greatly reduces the number of models being evaluated, since at each stage $k$, the set $\{M_{k+1}\}$ contains the $p-k$ models with one additional predictor variable. The process starts with the null model, $M_0$, containing only the intercept. All $p$ predictors are then evaluated and the "best" is added to the model. Depending on the criteria, this is the predictor that reduces SSE or increases $R^2$ the most, or has the smallest $p$-value. Suppose that $x_4$ was added to the model in this round. We now have $M_1^*$ and define as $\{M_2\}$ the set of models that contain $x_4$ and one additional predictor. At this stage we evaluate only $p-1$ models, rather than ${p \choose 2}$ models.
+
+In summary, only one predictor is added during each stage of forward selection, input variables that have been added in a previous stage remain in the model, and the total number of models evaluated is
+$$
+\sum_{k=0}^p (p-k) = 1 + \frac{p(p+1)}{2}
+$$
+Recall that with $p=30$, evaluating all models requires visiting 1,073,741,824 models. Forward selection evaluates only 466 of them. 
+
+Forward selection has clear advantages:
+
+- the number of models evaluated is small
+- the algorithm can be applied when $p > n$ since it does not need to fit a model with all predictors
+
+There are also some clear disadvantages:
+
+- it is not guaranteed that the algorithm visits the best model; in fact it is not even guaranteed that the algorithm finds the best $k$-size model if $k \ge 1$.
+- variables that are added early in the cycle can become unimportant with the addition of variables later in the cycle. A variable is not removed by the algorithm once it is added to the model.
+
+To illustrate these points, consider that $x_4$ is added to the model at stage $k=0$. At $k=1$ input variable $x_2$ is chosen because it reduces SSE the most when one of the remaining predictors are added to a model that contains $x_4$. The model $M_2^*$ has inputs $\{x_4, x_2\}$ according to forward selection. The best two-predictor model might be $\{x_1,x_3\}$ if all possible models with $p=2$ had been examined.
+
+
+After the best $k$-size models are found, the winning model is selected among those based on $C_p$, BIC, Adjusted $R^2$, or cross-validation. This is the second step of the general procedure for feature selection.
+
+:::{.callout-note}
+A form of forward selection does not select among the $M_k^*$ models in the second step. Instead, it specifies threshold values that a variable has to overcome to get added to the model, for example, a $p$-value < 0.1. Forward selection then continues until no variable outside of the model can be added to the model. If this happens at stage $k+1$, the process stops and $M_k^*$ is chosen as the winning model.
+:::
+
+:::{.example}
+::::{.example-header}
+Example: Credit Data from ISLR2 (Cont'd)
+::::
+::::{.example-container}
+Forward selection can be performed with `method="forward"` in `regsubsets`:
+
+```{r}
+regfit <- regsubsets(Balance ~ ., data=Credit, method="forward", nvmax=NULL)
+s_forw <- summary(regfit)
+s_forw
+```
+
+In the first step of the algorithm, $k=0$, the variable `Rating` is added. It adds the greatest improvement over the intercept-only model among the 11 predictor variables. From now on, every model will contain the `Rating` variable. Recall that in best subset selection this variable was not part of the best 4-predictor model. 
+
+Choosing BIC as the criterion to select among $M_1^*$--$M_{11}^*$, the 5-predictor model is chosen; it has the smallest BIC:
+
+```{r}
+s_forw$bic
+which.min(s_forw$bic)
+```
+
+The best subset selection and forward selection algorithm lead to similar models
+
+| Algorithm  |       |       |         |       |            |  BIC  |
+|:----------:|:-----:|:-----:|:-------:|:-----:|:----------:|:-----:|
+| Best Subset| Income| Limit |         | Cards | StudentYes |-1198.1|
+| Forward    | Income| Limit | Rating  | Cards | StudentYes |-1197.1|
+
+: Models selected by best subset and forward selection
+
+::::
+:::
+
+### Backward Selection
+
+Backward selection is similar to forward selection in that at each stage only a limited number of candidate models are considered, namely those models that have one less predictor than the model in the previous stage. In contrast to forward selection, backward selection starts with the full model with $p$ predictors and attempts to remove one variable at a time. The variable removed is the one that causes the smallest increase in SSE, smallest decrease in $R^2$, or has the largest $p$-value. 
+
+Backward selection has similar advantages and disadvantages compared to forward selection. It is computationally efficient because it visits only a subset of the possible models; $1 + p(p+1)/2$ models like forward selection. It is also not guaranteed to visit the best $k$-size model or the best model overall.
+
+If $p > n$, backward selection is not possible because the full model cannot be fit by least squares without regularization. On the other hand, starting with the full model provides the least biased estimate of the residual variance $\sigma^2$.
+
+:::{.callout-note}
+As with forward selection, a form of backward selection uses only $p$-values or threshold values on change in SSE ($R^2$) to stop the process of removing predictor variables if at any stage of the algorithm all variables exceed the threshold. That is, no variable can be removed without "significantly" deteriorating the model. 
+:::
+
+:::{.example}
+::::{.example-header}
+Example: Credit Data from ISLR2 (Cont'd)
+::::
+::::{.example-container}
+Backward selection can be performed with `method="backward"` in `regsubsets`. For this data set, the algorithm selects the same model as best subset selection.
+
+```{r}
+regfit <- regsubsets(Balance ~ ., data=Credit, method="backward", nvmax=NULL)
+s_backw <- summary(regfit)
+s_backw
+```
+
+Consider the full model with all 11 predictors first. The variable that causes the smallest increase in SSE or decrease in $R^2$ is `Education` and is removed. This variable is not considered in subsequent steps. The variable whose removal causes the smallest increase in SSE at the next step is `RegionSouth` and so on.
+
+Based on BIC, backward selection chooses the same model as best subset selection--for these data.
+
+```{r}
+s_backw$bic
+which.min(s_backw$bic)
+```
+
+| Algorithm  |       |       |         |       |            |  BIC  |
+|:----------:|:-----:|:-----:|:-------:|:-----:|:----------:|:-----:|
+| Best Subset| Income| Limit |         | Cards | StudentYes |-1198.1|
+| Forward    | Income| Limit | Rating  | Cards | StudentYes |-1197.1|
+| Backward   | Income| Limit |         | Cards | StudentYes |-1198.1|
+
+: Models selected by best subset, forward, and backward selection
+
+::::
+:::
+
+### Stepwise Selection
+
+This selection method combines elements of forward and backward selection. A problem of those algorithms is that once a variable has been added it cannot be removed (forward) or once a variable has been removed it cannot be added (backward) at a later step. A stepwise procedure that starts from the null model examines after the addition of a variable if any of the variables now in the model should be removed. Stepwise procedures, also called hybrid procedures, examine more models than forward or backward methods but do not exhaust the entire space of models.
+
+A variation is the sequential replacement algorithm of @Miller1984 implemented in the `leaps` package. Instead of removing a variable from a model, replacement attempts to replace any variable in the model with a variable not in the model. Variables are considered for replacement at every step, allowing variables that are being replaced at one stage to re-enter the model at a later stage.
+
+:::{.example}
+::::{.example-header}
+Example: Credit Data from ISLR2 (Cont'd)
+::::
+::::{.example-container}
+Sequential replacement  selection can be performed with `method="seqrep"` in `regsubsets`. 
+
+```{r}
+regfit <- regsubsets(Balance ~ ., data=Credit, method="seqrep", nvmax=NULL)
+s_seqrep <- summary(regfit)
+s_seqrep
+```
+
+The `Rating` variable is the strongest predictor in a single-regressor model but is replaced in the two-regressor model. It re-enters in $M_3^*$ is replaced in $M_4^*$ and re-enters in $M_5^*$. Judged by BIC the best model among the 11 stage models is the $M_4^*$:
+
+```{r}
+s_seqrep$bic
+which.min(s_seqrep$bic)
+```
+
+
+| Algorithm  |       |       |         |       |            |  BIC  |
+|:----------:|:-----:|:-----:|:-------:|:-----:|:----------:|:-----:|
+| Best Subset| Income| Limit |         | Cards | StudentYes |-1198.1|
+| Forward    | Income| Limit | Rating  | Cards | StudentYes |-1197.1|
+| Backward   | Income| Limit |         | Cards | StudentYes |-1198.1|
+| Seq. Repl. | Income| Limit |         | Cards | StudentYes |-1198.1|
+
+: Models selected by best subset, forward, backward, and sequential replacement selection
+
+::::
+:::
+
+### Feature Selection with Cross-validation
+
+So far we have based the selection of the best $k$-size model on indirect measures of test error, AIC, BIC, $C_p$, or on Adjusted $R^2$. Cross-validation is another option to choose among the $M_k^*$ models. The `caret::train` function makes this easy. The following code performs backward selection with 10-fold cross-validation.  Set the `method` parameter of the `train()` function to `leapBackward`, `leapForward`, or `leapSeq` to pick the corresponding
+selection method from `leaps`. 
+
+``` {r train_backward_cv, warning=FALSE, message=FALSE}
+library(caret)
+set.seed(123)
+train.control <- trainControl(method="cv", number=10)
+# Train the model
+bkwd.model <- train(Balance ~ . , data=Credit,
+                    method = "leapBackward", 
+                    tuneGrid = data.frame(nvmax = 1:11),
+                    trControl = train.control)
+bkwd.model
+```
+
+For the ISLR2 Credit data 10-fold cross-validation for backward selection chooses $M_6^*$ as the best model.
+The coefficients of this model are as follows:
+
+```{r}
+coef(bkwd.model$finalModel,bkwd.model$bestTune$nvmax)
+
+```
+
+
+## Regularization {#sec-regularization}
+
+Feature selection attempts to select from $p$ candidate features a set that models the signal in the data well and eliminates unimportant variables. Having too many predictor variables, especially ones that do not contribute substantially to the model, increases the variability of the least squares coefficient and leads to overfitting. Regularization approaches the problem from a different perspective: can we work with all $p$ features and allay the negative effects on ordinary least squares estimation? 
+
+### Shrinkage Estimation
+
+The answer is "Yes" and it requires a slight modification to the estimation criterion. Instead of solving 
+$$
+\argmin_{\bbeta} \left(\bY - \bX\bbeta \right)^\prime\left(\bY - \bX\bbeta \right)
+$$
+we add a term that controls the variability of the coefficients:
+
+$$
+\argmin_{\bbeta} \left(\bY - \bX\bbeta \right)^\prime\left(\bY - \bX\bbeta \right) + \lambda f(\bbeta)
+$$
+$\lambda$ is a hyper-parameter that controls the extent of the penalty and $f(\bbeta)$ is a positive-valued function of the coefficients. If $\lambda=0$, the penalty term vanishes and ordinary least squares estimates result. Since $f(\bbeta)$ is positive, a large value of $\lambda$ adds a heftier penalty to the residual sum of squares. This has the effect of reducing the size of the $\widehat{\beta}_j$ in absolute value; hence the name **shrinkage estimation**.  
+
+Why does shrinkage estimation work? Suppose we want to estimate $\theta$ and have an unbiased estimator $h(\bY)$. The mean-squared error of this estimator is thus $\text{MSE}[h(\bY);\theta] = \Var[h(\bY)]$. A simplistic shrinkage estimator could be $g(\bY) = c \times h(\bY)$ where $0 \le c \le 1$ is the shrinkage factor. When will $g(\bY)$ be superior to $h(\bY)$ in terms of mean-squared error?
+$$
+\frac{\text{MSE}[g(\bY);\theta]}{\text{MSE}[h(\bY);\theta]} = \frac{c^2\Var[h(\bY)]+(c-1)^2\theta^2}{\Var[h(\bY)]}=c^2+(c-1)^2\frac{\theta^2}{\Var[h(\bY)]}
+$$
+
+The shrinkage estimator is preferred when this expression is less than 1. Since $0 \le c \le 1$, $c^2 \le 1$, $(c-1)^2 \le 1$ and it boils down to whether the reduction in variance ($c^2\Var[h(\bY)]$) can overcome the increase in bias ($(c-1)^2\theta^2$). If $h(\bY)$ is highly variable relative to its mean, more shrinkage can be applied.
+
+Let's return to the regularization setup. To make the procedure operational we need to choose $\lambda$ and $f(\bbeta)$.
+
+Three penalty functions are common in statistical modeling and machine learning:
+
+$$
+f(\bbeta) = \sum_{j=1}^p \beta_j^2 = ||\,[\beta_1, \cdots, \beta_p]\, ||_2^2
+$$ {#eq-ridge-penalty}
+
+$$
+f(\bbeta) = \sum_{j=1}^p |\beta_j|= ||\,[\beta_1,\cdots,\beta_p]\, ||_1
+$$ {#eq-lasso-penalty}
+
+$$
+f(\bbeta,\alpha)  = \frac{1-\alpha}{2}\sum_{j=1}^p\beta_j^2 + \alpha\sum_{j=1}^p|\beta_j|
+$$ {#eq-elastinet-penalty}
+
+:::{.callout-note}
+The intercept $\beta_0$ is not included in the penalty term. It models the mean of $Y$ when all inputs are zero and does not need to be penalized.
+:::
+
+The penalty function in @eq-ridge-penalty is known as a $L_2$ penalty (or $L_2$ regularization), since it is based on the (squared) $L_2$-norm of the $[\beta_1, \cdots, \beta_p]$. The $L_2$-norm of vector $\bz$ is 
+$$
+||\bz||_2 = \sqrt{\sum_{j=1}^p z_j^2}
+$$
+The $L_1$-norm of a vector, on the other hand, is 
+$$
+||\bz||_1 = \sum_{j=1}^p |z_j|
+$$
+
+and this is the basis of the penalty function @eq-lasso-penalty. The function @eq-elastinet-penalty is a combination of $L_1$ and $L_2$ regularization: $\alpha=0$ results in the $L_2$ penalty, $\alpha=1$ results in the $L_1$ penalty and values $0 < \alpha < 1$ mix the two.
+
+Regularization using @eq-ridge-penalty is known as **ridge** regression. The $L_1$-norm regularization in @eq-lasso-penalty leads to **lasso** regression (also Lasso or LASSO) and the mixture is known as an **elastic net** regression.
+
+:::{.callout-tip}
+There is a single regularization parameter $\lambda$ that applies to all coefficients. Because the size of $\beta_j$ depends on the scale of $x_j$, it is highly recommended to standardize the columns of $\bX$ before applying any regularization. Software will often take care of standardization as part of model fitting. Check the documentation on whether that is the case and whether the results are reported for the standardized or for the original coefficients.
+:::
+
+The value of $\lambda$ determines the extent of the shrinkage. For each value of $\lambda$ there is a set of coefficient estimates $\widehat{\bbeta}_\lambda$ that minimize the objective function
+$$
+\left(\bY - \bX\bbeta \right)^\prime\left(\bY - \bX\bbeta \right) + \lambda f(\bbeta)
+$$
+The value of $\lambda$ thus needs to be set a priori, chosen by cross-validation or some other method.
+
+### Ridge Regression {#sec-regularization-ridge}
+
+Ridge regression applies the $L_2$ regularization penalty 
+$$
+\lambda \sum_{j=1}^p \beta_j^2
+$$
+and shrinks the coefficient estimates toward 0 unless $\lambda=0$. A feature of ridge regression is that it shrinks *toward* zero in absolute value but the coefficients are not exactly zero. To make predictions in a ridge regression model requires information on all $p$ attributes; they all make non-zero contributions toward predicted values.
+
+:::{.example}
+::::{.example-header}
+Example: Hitter Data (ISLR2)
+::::
+::::{.example-container}
+To demonstrate regularization we use another data set from @James2013_ISLR2. The `Hitters` data contains salaries and 19 other attributes about major league baseball players from the 1986 and 1987 seasons.
+
+Regression models with regularization can be fit with the `glmnet` function in the `glmnet` package. This function implements the elastic net regularization--by choosing the `alpha=` parameter you can choose between ridge, lasso, or elastic net regularization. `glmnet` does not support the formula syntax, instead you supply the $\by$ vector and the $\bX$ matrix. The `model.matrix()` function in `R` extracts the model matrix based on the formula syntax.
+
+``` {r glmnet, warning=FALSE, message=FALSE}
+library(ISLR2)
+
+Hit <- na.omit(Hitters)
+x <- model.matrix(Salary ~ ., data=Hit)[,-1]
+y <- Hit$Salary
+```
+
+To demonstrate the effects of shrinkage we examine the ridge regression estimates for several values of $\lambda$. By default, `glmnet` standardizes the $\bX$ matrix and reports the results on the original (non-standardized) scale. We explicitly standardize $\bX$ here to compare the effects of shrinkage based on standardized ridge regression coefficients.
+
+The following code computes the ridge regression estimates for $\lambda=[100, 10, 0.1, 0]$. Setting `alpha=0` results in the $L_2$ regularization (ridge regression). Since we are passing a standardized $\bX$ matrix, we add `standardize=FALSE`. 
+
+``` {r ridge_1, message=FALSE, warning=FALSE}
+library(glmnet)
+xstd <- scale(x) 
+grid <- c(100,10, 0.1, 0)
+ridge_reg <- glmnet(xstd,
+                    y,
+                    alpha      =0,
+                    lambda     =grid,
+                    standardize=FALSE)
+c <- coef(ridge_reg)
+round(c,5)
+```
+There are 19 predictors in addition to the intercept. The coefficient columns labeled `s0`, `s1`, `s2`, and `s3` correspond to the four values of $\lambda = [100, 10, 0.1, 0]$. Note that the intercept is the same because the variables have been standardized and $\beta_0$ is not shrunk. For each of the predictors, the values are smaller (in absolute value) for the larger values of $\lambda$. For example, the coefficient estimate of `AtBat` increases from `{r} round(c[2,1],4)` at $\lambda=100$ to `{r} round(c[2,2],4)` at $\lambda=10$ and to `{r} round(c[2,3],4)` at $\lambda=0.1$.
+
+@fig-ridge-standardized shows the standardized ridge regression coefficients for the four values of $\lambda$. The larger variation of the coefficients for smaller values of $\lambda$ is evident.
+
+``` {r ridge_plot, echo=FALSE, fig.align="center", out.width="90%"}
+#| fig.cap: Standardized Ridge Regression Coefficients
+#| label: fig-ridge-standardized
+plot(c@x[62:80], type="b", ylab="Stand. Coefficient Estimate", 
+     xlab="Predictor index")
+lines(c@x[42:60], type="p", col="darkgreen")
+lines(c@x[22:40], type="b", col="red")
+lines(c@x[2:20], type="b", col="blue")
+legend("topright",legend=c( expression(paste(lambda, "=0.0")), 
+                            expression(paste(lambda, "=0.1" )),
+                            expression(paste(lambda, "=10")),
+                            expression(paste(lambda, "=100"))),
+       fill=c("black","darkgreen","red","blue"))
+
+```
+::::
+:::
+
+#### Cross-validation for $\lambda$
+
+`cv.glmnet()` performs $k$-fold cross-validation for `glmnet()` models. By default,
+$k=10$ and the function goes through its own sequence of $\lambda$ values. You 
+can provide a grid with the `lambda` parameter. 
+The evaluation metric can be set with the `type.measure=` option, for example, `"mse"` for mean-squared error or `"auc"` for the area under the ROC curve.
+
+``` {r ridge_cv}
+set.seed(6543)
+cv.out <- cv.glmnet(x,y,alpha=0, nfolds=10, type.measure="mse")
+plot(cv.out)
+```
+
+The numbers across the top of the plot indicate the number of predictors in the model. Ridge regression does not shrink coefficients to exactly zero, all 19 variables have non-zero coefficients for all values of $\lambda$.
+
+The left vertical line is drawn at the $\lambda$ value that produces the minimum
+cross-validation error. The dashed vertical line on the right is the value of $\lambda$
+(or log($\lambda$) to be more exact) such that the error is within 1 standard error 
+of the minimum.
+
+You can access key results from the cross-validation from the return object of
+`cv.glmnet`. The following statements show how to locate the best value for lambda
+and the index of that value in the cross-validation sequence. That index is then
+used to access the coefficients of the winning model and the minimum cross-validation
+measure. 
+
+``` {r}
+bestlam <- cv.out$lambda.min
+bestlam
+log(bestlam)
+
+bestIndex <- cv.out$index[1]
+selcoef <- cv.out$glmnet.fit$beta[,bestIndex]
+round(selcoef,4)
+
+cat("10-fold CV error for Ridge regression, ", cv.out$cvm[bestIndex])
+```
+
+#### Ridge trace
+
+Another method of selecting $\lambda$ is based on the **ridge trace**, a plot of the standardized ridge regression coefficient estimates as a function of $\lambda$. The point where the coefficients stop changing drastically as $\lambda$ increases is chosen. For the Credit data, the ridge trace stabilizes around $\lambda$=20--25 (@fig-ridge-trace).
+
+```{r, echo=FALSE, out.width="90%", fig.align="center"}
+#| fig.cap: Rige trace for credit data
+#| label: fig-ridge-trace
+#| lightbox:
+ridge_trace <- glmnet(xstd,
+                      y,
+                      alpha      =0,
+                      lambda     =seq(1,30,1),
+                      standardize=FALSE)
+c <- coef(ridge_trace)
+
+plot(ridge_trace$lambda,(c[2,]),type="l",ylim=c(-300,300),
+     ylab="Stand. coefficient",xlab="lambda")
+for (i in 3:20) {lines(ridge_trace$lambda, (c[i,]))}
+abline(h=0,lty="dotted",col="red")
+```
+
+
+#### High-dimensional ridge regression
+
+An important use case for regularized regression is in high-dimensional problems where $p$ is very large. If $p > n$, the ordinary least squares solution does not exist because $\bXpX$ is not of full rank (it is a $(p \times p)$ matrix of rank $n < p$ in that case). Similarly, the cross-product matrix $\bX^{*\prime} \bX^*$ formed from the standardized $\bX$ matrix is not of full rank. However, the **ridged matrix**
+$$
+\bX^{*\prime}\bX^* + \lambda\bI
+$$
+is of full rank. The ridge regression estimator 
+$$
+\widehat{\bbeta}_R = \left( \bX^{*\prime}\bX^* + \lambda\bI\right)^{-1} \bX^{*\prime}\bY
+$$
+can be computed. 
+
+The following `R` statements simulate a data set with $n=5$, $p=10$.
+
+``` {r}
+set.seed(1234)
+vec <- runif(50)
+x <- matrix(vec, nrow=5, ncol=10)
+y <- rnorm(dim(x)[1]) + rowSums(x)
+```
+
+These matrix manipulations verify that $\bX^{*\prime}\bX^*$ is singular but the ridged cross-product matrix can be inverted.
+
+```{r}
+#| error: true
+xstd <- scale(x)
+XpX <- t(xstd) %*% xstd
+solve(XpX)
+solve(XpX + 10*diag(dim(x)[2]))
+```
+
+A linear regression of $\bY$ on $\textbf{X}$ produces a saturated model (a perfect fit).
+Only four of the predictors are used in the model, since least squares runs out
+of degrees of freedom.
+
+``` {r linreg}
+linreg <- lm(y ~ x)
+summary(linreg)
+```
+
+The ridge regression estimates can be computed, however:
+
+``` {r ridge_wide}
+ridge_reg <- glmnet(x,y,alpha=0,lambda=c(100,10,0.1,0.01))
+c <- coef(ridge_reg)
+round(c,5)
+```
+Notice that all 10 predictors make non-zero contributions.
+
+The ridge regression does not produce a perfect fit, although the predicted
+values are close to y if $\lambda$ is small.
+
+``` {r ridge_pred}
+y - predict(ridge_reg,newx=x)
+```
+
+
+
+### Lasso Regression {#sec-regularization-lasso}
+
+The lasso acronym stands for *least absolute shrinkage and selection operator* and hints at a key difference from Ridge regression: in addition to shrinking the estimates, the lasso can also be used to select features. The reason is that the lasso $L_1$ regularization can shrink estimates to exactly zero, whereas ridge regression shrinks *toward* zero.
+
+This feature of $L_1$ regularization is considered important by many data scientists and lasso is often preferred over ridge regression for this reason. Neither approach dominates the other in terms of mean-squared error, however. In situations where some inputs dominate and many are irrelevant, the lasso tends to outperform ridge regression in MSE. When standardized coefficients are of similar size across the inputs, ridge regression tends to be superior. 
+
+The ability to combine regularization with feature selection is sufficient to prefer lasso over ridge regression for many. 
+In order to apply a model to predict new observations, information on all input variables is necessary. A ridge regression with $p=50$ requires data on 50 features. If lasso shrinks half of them to zero, only 25 attributes need to be measured to make a prediction.
+
+:::{.example}
+::::{.example-header}
+Example: Hitter Data (ISLR2) (Cont'd)
+::::
+::::{.example-container}
+The following statements fit a lasso regression to the `Hitter` data. The only change from previous code is the specification `alpha=1` to trigger the $L_1$ regularization penalty.
+
+``` {r, warning=FALSE, message=FALSE}
+x <- model.matrix(Salary ~ ., data=Hit)[,-1]
+y <- Hit$Salary
+
+lasso_reg <- glmnet(x,y,alpha=1,lambda=grid)
+c <- coef(lasso_reg)
+lasso_reg$lambda
+
+round(c,5)
+```
+
+For $\lambda=100$ and $\lambda=10$, several coefficients are shrunk to zero, leaving 5 and 9 non-zero coefficients, respectively (not counting the intercept). The smaller values for $\lambda$ shrink coefficients but not all the way to zero.
+
+The following code chooses $\lambda$ by cross-validation
+
+``` {r, fig.align="center", out.width="90%"}
+#| label: fig-lasso-cv
+set.seed(987)
+cv.out <- cv.glmnet(x, y, alpha=1)
+bestlam <- cv.out$lambda.min
+bestlam
+log(bestlam)
+
+plot(cv.out)
+```
+
+The optimal value for $\lambda$ per 10-fold cross-validation is `{r} round(bestlam,3)`. @fig-lasso-cv displays the results of cross-validation graphically. At the optimal value of $\lambda$, the lasso model has 13 non-zero coefficients, six of the variables have been deselected from the model. The following output shows the final model.
+
+```{r}
+bestIndex <- cv.out$index[1]
+round(cv.out$glmnet.fit$beta[,bestIndex],5)
+
+cat("10-fold CV error for lasso regression, ", cv.out$cvm[bestIndex])
+```
+
+The CV error is lower for the lasso model than for the cross-validated ridge regression.
+::::
+:::
+
+#### High-dimensional lasso regression
+
+Like ridge regression, lasso regression can be used when $p > n$. Unlike ridge regression, 
+the lasso will give you an idea about the important variables since it
+sets coefficients for redundant variables to zero.
+
+To demonstrate, consider this small simulation study. Data are generated with $n=30$ and
+$p=60$ but only the first 5 predictors are significant and have the same 
+coefficient 3.0.
+
+``` {r lasso_sim}
+library(Matrix)
+set.seed(12345)
+n <- 30
+p <- 60
+p1 <- 5
+beta <- c(rep(3,p1),rep(0,p-p1))
+xmat <- scale(matrix(rnorm(n*p),n,p))
+eps <- rnorm(n,mean=0,sd = 0.1)
+fx <- xmat %*% beta
+yvec <- fx + eps
+```
+
+Now let's choose $\lambda$ by 10-fold cross-validation
+
+``` {r lasso_sim_cv}
+set.seed(527)
+cv.out <- cv.glmnet(xmat,yvec,alpha=1)
+plot(cv.out)
+```
+
+Let's see what the coefficients look like for the best model:
+
+``` {r lasso_sim_fit}
+lasso.fit <- glmnet(xmat,yvec,alpha=1,lambda=cv.out$lambda.min)
+c <- coef(lasso.fit)
+which(c != 0)
+round(c[which(c != 0)],3)
+```
+
+The lasso regression recovered the true model pretty well. Recall that the true
+model had $\beta_1 = \beta_2 = \beta_3 = \beta_4 = \beta_5 = 3$ and all other 
+coefficients were zero.
+
+
+## Dimension Reduction {#sec-feature-dimred}
+
+We can think of regression as a dimension reduction technique. The target vector $\bY$ is an $(n \times 1)$ vector in $n$-dimensional space. $\bX\bbeta$ is a $(p+1 \times 1)$ vector in $(p+1)$-dimensional space. We are finding the least squares solution by projecting $\bY$ onto the column space of $\bX$--in other words, we are finding the closest representation of $\bY$ in a $(p+1)$-dimensional space. The techniques discussed so far in this chapter to deal with the problem of $p$ being large are
+
+1. Set some $\beta_j$ to zero $\rightarrow$ feature selection
+2. Impose constraints on the $\beta_j \rightarrow$ regularization
+
+A third technique to reduce the dimensionality of the problem is to apply a two-step procedure. In the first step we create $M$ linear combinations of the $p$ inputs, call them $Z_1, \cdots, Z_M$. We choose $M \ll p$ and in the second step use $Z_1$ through $Z_M$ as the input variables in a regression model.
+
+### Principal Components
+
+It is important that the $Z_M$ are linear combinations of **all** predictors
+$$
+		Z_{im} = \sum_{j=1}^p \phi_{jm}X_{ij}
+$$ {#eq-pca-scores}
+
+The coefficients $\phi_{jm}$ are called the **loadings** or **rotations** and the **scores** $Z_{im}$ are constructed as the **principal components** of the $\bX$ matrix. We will discuss principal component analysis (PCA) and the construction of the $Z_{im}$ in detail in @sec-pca. 
+
+(PCA) finds linear combinations of $p$ inputs that explain decreasing amounts of variability among the $x$'s. Not any linear combination will do, the principal components are orthogonal to each other and project in the directions in which the inputs are most variable. That means they decompose the variability in the inputs into non-overlapping chunks. The first principal component explains the most variability, the second principal component explains the second-most variability, and so forth.
+
+Consider the following data set with $n=10$ and $p=4$.
+
+|	**Obs** | $X_1$ | $X_2$ | $X_3$ | $X_4$ |
+|:---------:|:-------:|:-------:|:-------:|:-------:|
+|1  |0.344 |0.364 |0.806 |0.160 |
+|2  |0.363 |0.354 |0.696 |0.249 |
+|3  |0.196 |0.189 |0.437 |0.248 |
+|4  |0.200 |0.212 |0.590 |0.160 |
+|5  |0.227 |0.229 |0.437 |0.187 |
+|6  |0.204 |0.233 |0.518 |0.090 |
+|7  |0.197 |0.209 |0.499 |0.169 |
+|8  |0.165 |0.162 |0.536 |0.267 |
+|9  |0.138 |0.116 |0.434 |0.362 |
+|10 |0.151 |0.151 |0.483 |0.223 |
+| $\overline{x}_j$ | 0.218 | 0.222 | 0.544 |  0.211 |
+| $s_j$ | 0.076 | 0.081 | 0.122 |  0.075 |
+
+: Example data for principal component analysis. Sample mean and standard deviation of the columns shown in the last two rows. {#tbl-pca-data .striped .hover}
+
+When the $x$s are centered with their means and scaled by their standard deviations, and the principal components are computed, the matrix of loadings is
+$$
+\boldsymbol{\Phi} = \left [ \begin{array}{r r r r }
+-0.555 & 0.235 &  0.460 & -0.652\\
+-0.574 &0.052  &0.336 & 0.745\\
+-0.530 &0.208 &-0.821 &-0.053\\
+0.286 &0.948  &0.047  & 0.132\\
+	 \end{array} \right]
+$$
+
+This matrix can now be used, along with the data in @tbl-pca-data to compute the scores $Z_{im}$. For example,
+
+\begin{align*}
+	Z_{11} &= -0.555 \frac{0.344-0.218}{0.076} -0.574\frac{0.364-0.222}{0.081} - 0.530\frac{0.806-0.544}{0.122} + 0.286\frac{0.16-0.211}{0.075} = -3.248 \\
+	Z_{32} &= 0.235 \frac{0.196-0.218}{0.076} +0.052\frac{0.189-0.222}{0.081} + 0.208\frac{0.437-0.544}{0.122} +0.948\frac{0.248-0.211}{0.075} = 0.194\\
+\end{align*}
+
+@tbl-pca-scores displays the four inputs and the four scores $Z_1, \cdots Z_4$ from the PCA.
+
+|	**Obs** | $X_1$ | $X_2$ | $X_3$ | $X_4$ | $Z_1$ | $Z_2$ | $Z_3$ | $Z_4$ |
+|:---------:|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|
+|1  |0.344 |0.364 |0.806 |0.160 |-3.248 | 0.282 |-0.440 | 0.029|
+|2  |0.363 |0.354 |0.696 |0.249 |-2.510 | 1.257 | 0.425 |-0.025|
+|3  |0.196 |0.189 |0.437 |0.248 |0.993  |0.194  |0.465  |0.001|
+|4  |0.200 |0.212 |0.590 |0.160 |-0.191 |-0.629 |-0.498 |-0.041|
+|5  |0.227 |0.229 |0.437 |0.187 |0.255 |-0.459  |0.780 |-0.001|
+|6  |0.204 |0.233 |0.518 |0.090 |-0.329 |-1.614  |0.055 | 0.023|
+|7  |0.197 |0.209 |0.499 |0.169 | 0.286 |-0.691  |0.087 | 0.012|
+|8  |0.165 |0.162 |0.536 |0.267 |1.058 | 0.479 |-0.485  |0.009|
+|9  |0.138 |0.116 |0.434 |0.362 |2.380 | 1.391 |-0.098  |0.023|
+|10 |0.151 |0.151 |0.483 |0.223 |1.306 |-0.210 |-0.291 |-0.028|
+
+: Data ($X_1,\cdots,X_4$) and principal component scores ($Z_1,\cdots,Z_4$). {#tbl-pca-scores .striped .hover}
+
+For each observation there is a corresponding component score and there are as many components as there are input variables. Although there is a 1:1 correspondence at the row level, there is no such correspondence at the column level. Instead, each PCA score $Z_j$ is a linear combination of **all** $p$ input variables. Even if we were to proceed with only $Z_1$ in a linear model 
+$$
+Y_i = \theta_0 + \theta_1 Z_{i1} + \epsilon_i
+$$
+the model contains information from from $X_1$ through $X_4$ because
+$$
+Z_{i1} = \sum_{j=1}^p \phi_{j1}X_{ij}
+$$
+
+So what have we gained? The $Z_j$ have very special properties, not shared by the $X_j$:
+
+- They have zero mean :$\sum_{i=1}^n Z_{ij} = 0$ (if data was centered)
+- They are uncorrelated: $\text{Corr}[Z_j, Z_k] = 0, \forall j \ne k$
+- $\Var\left[\sum_{j=1}^p Z_j\right] = \sum_{j=1}^p \Var[Z_j] = p$ (if data was scaled)
+- The components are ordered in terms of their variance: $\Var[Z_1] > \Var[Z_2] > \cdots > \Var[Z_p]$
+
+
+|	**Statistic** | $X_1$ | $X_2$ | $X_3$ | $X_4$ | $Z_1$ | $Z_2$ | $Z_3$ | $Z_4$ |
+|:---------:|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|
+|	Sample Mean |0.218|0.222|0.544|0.211|0 |0 |0 |0|
+|	Sample Sd |0.076 |0.081 |0.122 |0.075 |1.719 |0.918 |0.445 |0.024|
+|	Sample Var |||| |2.957 | 0.844 | 0.199 |0.0006 |
+|	\% Variance |||||73.9 \% |21\% |5\% |$<$ 1\%| 
+
+: Statistics computed for $X_j$ and $Z_j$. {#tbl-pca-stats .striped}
+
+The sum of the sample variances of the $Z_j$ in @tbl-pca-stats is (within rounding error)
+$$
+2.957 + 0.844 + 0.199 + 0.0006 = 4
+$$
+The first principal component, $Z_1$, explains $2.957/4 \times 100\% = 73.9\%$ of the variability in the input variables.
+
+As you can see from @eq-pca-scores, PCA is an unsupervised learning method, it does not involve a target variable. The result of PCA, however, can be used in a supervised learning method, such as a regression model. A regression model that uses principal components as the input is called a **principal component regression** (PCR).
+
+### Principal Component Regression (PCR) {#sec-pcr}
+
+Based on the variance decomposition of the principal components (see the last row of @tbl-pca-stats), we can select a subset $Z_1, \cdots, Z_M$ from the scores $Z_1, \cdots, Z_p$. The number of principal components included into the model depends on how much variability in the $X$s we want to account for. If all $p$ principal components are included in the model we have not really reduced the dimensionality. In the example above, the first two principal components account for 73.9\% + 21 \% = 94.9\% of the variability; there is not much gained in choosing $M > 2$.
+
+Once the $M$ principal components have been selected, the linear model becomes
+
+$$
+\textbf{Y}_{n \times 1} = \theta_0 + \textbf{Z}_{n \times M}\btheta + \bepsilon
+$$
+The dimension of the problem has been reduced from $p+1$ to $M+1$.
+
+You can show that this is equivalent to a linear model with coefficients
+$$
+	\beta_j = \sum_{m=1}^M\theta_m \phi_{jm}
+$$
+Principal component regression can be viewed as a method of constraining the coefficients, forcing the $\beta_j$ to take on this particular form.
+
+The number of components $M$ in PCR can be chosen heuristically or through cross-validation as in the following example.
+
+:::{.example}
+::::{.example-header}
+Example: Hitter Data (ISLR2) (Cont'd)
+::::
+::::{.example-container}
+To apply PCR to the `Hitters` data we use the `pcr` function in the `pls` library. The `validation=` option determines whether $k$-fold cross-validation or leave-one-out cross-validation is performed. Here, we choose LOOCV. By default, `pcr` centers the data but does not scale it. `scale=TRUE` makes sure that the data are also scaled. We recommend that analyses based on principal components are always centered and scaled.
+
+``` {r pcr_fit_LOOCV, warning=FALSE, message=FALSE}
+library(pls)
+pcr.fit <- pcr(Salary ~ ., data=Hit, 
+               scale=TRUE, 
+               validation="LOO")
+summary(pcr.fit)
+```
+
+There are 19 input variables and hence there are 19 principal components. The output displays two tables with 19 columns each. The first reports the cross-validated root mean square error of prediction and a bias-adjusted version. The smallest error is achieved with six components in the model. The second table displays the cumulative proportion of variability explained. Using just the first principal component explains `{r} round(100*pcr.fit$Xvar[1]/pcr.fit$Xtotvar,2)` \% of the variability in the $X$s. That model has an $R^2$ of 0.4063. Adding the second principal component adds 
+`{r} round(100*pcr.fit$Xvar[2]/pcr.fit$Xtotvar,2)` \% of variability in the $X$s.
+
+The model with 6 components, chosen by cross-validation, explains 88.63\% of the variability in $X$ and 46.48\% of the variability in the `Salary` target. The sharp drop-off in mean-square error after the first component enters the model is seen in @fig-pcr-hit. This is a pretty typical picture, because the components are ordered in terms of the proportion of variability explained. Selecting the hyper-parameter based on the "kink" or "elbow" in cross-validation plots is sometimes referred to as the "elbow method".
+
+
+``` {r validationplot1, fig.align="center", out.width="90%"}
+#| fig.cap: Mean square prediction error as a function of number of principal components in PCR.
+#| label: fig-pcr-hit
+validationplot(pcr.fit,val.type="MSEP",legendpos="topright")
+```
+
+The chosen model can be fit with the following statements. Note that there is no change to the percentages of variability explained. The components 7--19 are simply not used in the model.
+
+```{r}
+pcr.final <- pcr(Salary ~ ., data=Hit, 
+               scale=TRUE, 
+               validation="none",
+               ncomp=6)
+summary(pcr.final)
+```
+
+Here are the loadings for the six components in the final model.
+
+``` {r}
+round(loadings(pcr.final)[,1:6],4)
+```
+
+The loadings give us the weights of the input variables for each component.
+They show that each principal component is a linear combination of all the 
+inputs. Examining the magnitude of the loading values gives an idea which inputs influence the $j$^th^ component most. For example, the first component has large values for inputs related to hits, at bats, and runs.
+
+The `scores` represent the $\bX$ matrix of a linear regression of $\bY$ on 
+the principal components. 
+
+``` {r}
+scores(pcr.final)[1:10,]
+```
+You can validate the score calculation by combining the $\bX$ 
+matrix of the model with the loadings. For the selected PCR model with 6
+components
+
+``` {r}
+xm <- scale(model.matrix(Salary ~ .,data=Hit)[,-1]) %*% loadings(pcr.final)[,1:6]
+```
+
+The $\bX$ matrix is centered and scaled to match the computations of the `pcr()` function. The scores and the matrix
+calculated from the loadings should be identical
+
+``` {r}
+round(sum(scores(pcr.final)[,1:6] - xm),5) 
+```
+
+If the first 6 components are used in a regression with target `Salary`, the 
+$R^2$ of that regression should equal 0.4648, corresponding to 46.48% variance
+explained by 6 components in the PCR output. 
+
+``` {r}
+summary(lm(Hit$Salary ~ scores(pcr.final)[,1:6]))$r.squared
+```
+::::
+:::

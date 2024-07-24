@@ -1,0 +1,888 @@
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+# Local Models {#sec-local-models}
+
+In @sec-reg-intro we introduced different approaches to structure the problem of finding
+$$
+\Exp[Y_i | \bx_i] = f^*(\bx_i)
+$$
+by constraining the model family or the approach to estimation. 
+@sec-local-global-models then introduced the concept of **global** and **local** models.
+
+The methods discussed in this part of the book so far are **global models** in the sense that they depend on parameters $\bbeta$ that apply regardless of the position $\bx_0$ in the regression hull. Global models do not have a different set of parameters at $\bx_i$ and $\bx_j$.
+
+In this chapter we discuss in greater detail models that capture local variations of the mean function. The two major approaches to give models greater flexibility is through the introduction of weight functions or through basis expansions. Kernel regression and local polynomials are examples of the weighting approach. Regressions and smoothing splines are examples of the basis expansion approach.
+
+Because these methods suffer from the curse of dimensionality (@sec-curse-dimensionality), they are not applied in higher dimensions. For the remainder of this chapter we assume a single input variable, $\bx = x$.
+
+## Kernel Regression
+
+A special case of a kernel regression estimator was introduced in @sec-knn-regression, the $k$-nearest neighbor regression estimator. The idea is simple: to predict the mean of $Y$ at $x_0$, find the $k$ observations closest to $x_0$ and take their average. The procedure can be formalized as follows:
+
+1. The general model is $Y(x) = f(x) + \epsilon$ with $\Exp[\epsilon] = 0$
+
+2. To predict $f(x_0)$ use the local estimator $\widehat{f}(x_0) = \frac{1}{k}\sum_{i=1}^k y(x_{(i)})$ where $x_{(i)}$ is the $i$^th^ closest observation to $x_0$ and $y(x_{(i)})$ is the observed value of the target variable at $x_{(i)}$.
+
+3. This is equivalent to considering at $x_0$ the regression model
+$$
+Y(x_0) = \beta + \epsilon^*
+$$
+in just a neighborhood of $x_0$. This is an intercept-only model and the OLS estimator is $\widehat{\beta} = \overline{y}$. To make it so the model uses only the $k$ observations closest to $x_0$ we fit it as a **weighted** regression. The weight of an observation is 1 if it is within the $k$-neighborhood and 0 if it is outside. Formally, the weight function at $x_0$ is 
+
+$$
+K(x_0,x_i) = I(||x_i-x_0|| \le ||x_{(k)} - x_0 ||)
+$$ 
+where $x_{(k)}$ denotes the observation ranked $k$^th^ in distance from $x_0$, $||x_i-x_0||$ denotes the distance of $x_i$ from the prediction location $x_0$, and $I()$ is the indicator function ($I(a)$ is 1 if $a$ is true).
+
+4. When the weight function is applied, the estimator of $\beta$ becomes 
+$$
+\widehat{\beta}(x_0) = \frac{\sum_{i=1}^n K(x_0,x_i) \, y(x_i)}{\sum_{i=1}^n K(x_0,x_i)} = \frac{1}{k}\sum_{i=1}^k y(x_{(i)})
+$$
+
+What have we accomplished with this setup? A global model, $Y(x) = \beta + \epsilon^*$, which is probably not correct over the range of $X$ has turned into a local model for $Y(x_0)$ by introducing a weight function that gives more weight to observations close to $x_0$ than to observations far away. It is much more reasonable to assume an intercept-only model holds at $x_0$ than across the entire range of $X$. As the prediction problem moves to another location, say $x^*_0$, the weighted regression problem is solved again, this time based on the weight function
+$$
+K(x^*_0,x_i) = I(||x_i-x^*_0|| \le ||x_{(k)} - x^*_0 ||)
+$$ 
+
+Rather than one global estimate $\widehat{\bbeta}$ we get as many estimates as there are points we wish to predict at: $\widehat{\beta}(x_0), \widehat{\beta}(x^*_0), \widehat{\beta}(x^{**}_0), \cdots$.
+
+The following simulated data is taken from the course on Predictive Modeling by @Garcia-Portugues2024. The true mean function is
+$$
+f(x) = x^2 \, \cos(x)
+$$
+and the observed data (@fig-sim-data-garcia) follow the model
+$$
+Y(x) = f(x) + \epsilon\quad \epsilon \sim \textit{iid } G(0,4)
+$$
+
+```{r}
+set.seed(12345)
+n <- 100
+eps <- rnorm(n, sd = 2)
+m <- function(x) x^2 * cos(x)
+X <- rnorm(n, sd = 2)
+Y <- m(X) + eps
+```
+
+```{r, out.width="75%", fig.asp=0.8, echo=FALSE, fig.align="center"}
+#| label: fig-sim-data-garcia
+#| lightbox:
+#| fig.cap: Simulated data according to @Garcia-Portugues2024.
+#| 
+xGrid <- seq(-5, 6, l = 250)
+par(mar=c(4.1, 4.1, 2, 3)) # bottom, left, top, right
+plot(X, Y, las=1,bty="l")
+rug(X, side = 1); rug(Y, side = 2)
+lines(xGrid, m(xGrid), col = "black",lwd=1.5)
+```
+
+:::{.example}
+::::{.example-header}
+Example: 3-nearest Neighbor Estimation
+::::
+::::{.example-container}
+The following code computes the 3-NN regression estimator at a grid of $x_0$ values, ranging from -4 to 4.
+
+```{r}
+x_0 <- seq(-4,4,1)
+k3_reg <- Rfast::knn(as.matrix(x_0),
+                     as.matrix(Y),
+                     as.matrix(X),k=3,type="R") 
+
+cbind(x_0,k3_reg)
+```
+The same results can be obtained using an intercept-only model with weights calculated according to $K(x_0,x_i)$. The `proxy::dist()` function computes the distance between the $x_0$ locations and the $x$ values. The loop constructs the weight vector for each prediction point, assigning 1 to the points within the 3-neighbor distance and 0 to the points outside. The only change in the call to `lm()` from one prediction point to the next is the vector of weights.
+
+```{r}
+d <- proxy::dist(x_0,X,method="euclidean")
+for (i in 1:length(x_0)) {
+    d_lim <- head(sort(d[i,]),3)
+    w <- rep(0,length(X))
+    w[which((d[i,] >= d_lim[1] & (d[i,] <= d_lim[3])))] <- 1
+    cat("x_0: ", x_0[i], "beta_hat: ",lm(Y ~ 1, weights=w)$coefficients,"\n")
+}
+```
+
+::::
+:::
+
+### Nadaraya-Watson Estimator
+
+The previous estimator is a special case of the Nadaraya-Watson kernel estimator of $f(x_0)$,
+$$
+\widehat{f}(x_0) = \frac{\sum_{i=1}^n K_\lambda(x_0,x_i)\,y_i}{\sum_{i=1}^nK_\lambda(x_0,x_i)}=\sum_{i=1}^n w_i(x_0)\,y_i
+$$
+
+The expression on the right shows that this is a weighted estimator where the weights are given by
+$$
+w_i(x_0) = \frac{K_\lambda(x_0,x_i)}{\sum_{i=1}^n K_\lambda(x_0,x_i)}
+$$
+The **kernel function** $K_\lambda(x_0,x_i)$ depends on the prediction location $x_0$, the distance $|x_i-x_0|$ between $x_i$ and $x_0$, and a parameter $\lambda$ that controls the shape of the kernel. $\lambda$ is called the **bandwidth** of the kernel because it controls how quickly the kernel weights drop with increasing distance from $x_0$; or in other words, how wide the kernel function is.
+
+Popular kernel functions are
+
+1. **Epanechnikov** kernel
+$$
+K_\lambda(x_0,x) = \left \{ \begin{array}{ll} \frac{3}{4}\left(1-t^2\right) & \text{if } |t| \le 1 \\
+0 & \text{otherwise} \end{array}\right .
+$$
+
+2. **Tricube** kernel
+$$
+K_\lambda(x_0,x) = \left \{ \begin{array}{ll} \frac{3}{4}\left(1-|t|^3\right)^3 & \text{if } |t| \le 1 \\
+0 & \text{otherwise} \end{array}\right .
+$$
+
+3. **Gaussian** kernel
+$$
+K_\lambda(x_0,x) = \phi(t)
+$$
+
+In these expressions $t = |x - x_0|/\lambda$ and $\phi(t)$ is the standard Gaussian density function.
+
+@fig-kernel-funcs shows the kernel functions for $\lambda=0.5$ and $\lambda=1$, respectively. The functions reach their maximum at $|x-x_0| = 0$ and decrease symmetrically in both directions. The Epanechnikov has a kink at $|t| = \lambda$ while the tricube kernel transitions smoothly through that point. Tricube kernels are sometimes preferred over the Epanechnikov kernel because the latter is not differentiable at $|t|=1$. The Gaussian kernel is very smooth and for a given value of $\lambda$ assigns greater weights for points remote from $x_0$.
+
+```{r, echo=FALSE, fig.align='center', out.width="85%"}
+#| fig.cap: Epanechnikov, tricube and Gaussian kernel functions popular in kernel regression and density estimation. Bandwidth set to 0.5 and 1 for each kernel.
+#| label: fig-kernel-funcs
+#| lightbox:
+
+epanechnikov <- function(x,lambda=0.2) {
+    t <- x/lambda
+    K <- ifelse(abs(t) <= 1, (3/4) * (1-t*t), 0 )
+    return(K)
+}
+
+tricube <- function(x,lambda=0.2) {
+    t <- abs(x)/lambda
+    K <- ifelse(t <= 1, (1-t*t*t)^3, 0 )
+    return(K)
+}
+
+dnormkernel <- function(x,lambda=0.2) {
+    t <- x/lambda
+    K <- dnorm(t,0,1)
+    return(K)
+}
+x <- seq(-2,2,0.05)
+
+ep_05 <- epanechnikov(x,0.5)
+ep_1  <- epanechnikov(x,1)
+
+tri_05 <- tricube(x,0.5)
+tri_1  <- tricube(x,1)
+
+norm_05 <- dnormkernel(x,0.5)
+norm_1  <- dnormkernel(x,1)
+
+plot(x=x,y=ep_05,type="l",ylab="Kernel",ylim=c(0,1),
+     col="black", 
+     las=1,
+     bty="l",
+     xlab="x - x0")
+lines(x=x,y=ep_1,type="l",col="black")
+
+lines(x=x,y=tri_05,type="l",lty="dashed",col="red")
+lines(x=x,y=tri_1,type="l",lty="dashed",col="red")
+
+lines(x=x,y=norm_05,type="l",lty="dotted",col="blue")
+lines(x=x,y=norm_1,type="l",lty="dotted",col="blue")
+legend("topleft",
+        legend=c("Epanechnikov","Tricube","Gaussian"),
+        lty=c("solid","dashed","dotted"),
+       col=c("black","red","blue")
+       )
+```
+
+In practice, the choice of the kernel function is less important than the choice of the bandwidth parameter $\lambda$.
+
+:::{.example}
+::::{.example-header}
+Example: Kernel Regression with Simulated Data
+::::
+::::{.example-container}
+The `ksmooth()` function in the `stats` package (built-in) can be used to compute 
+the kernel regression smoother. `x.points=` specifies the points at which 
+to evaluate the smoothed fit. `kernel="normal"` chooses the Gaussian kernel
+
+``` {r}
+kr_05 <- ksmooth(X,Y,kernel="normal",bandwidth=0.5, x.points=xGrid)
+kr_09 <- ksmooth(X,Y,kernel="normal",bandwidth=0.9, x.points=xGrid)
+```
+
+
+``` {r, out.width="75%", fig.asp=0.8, fig.align="center", echo=FALSE}
+#| label: fig-simdata-kernel-regression
+#| fig.cap: Kernel regression estimates for Gaussian kernel with $\lambda=0.5$ and $\lambda=0.9$.
+plot(X, Y, las=1, bty="l")
+rug(X, side = 1); rug(Y, side = 2)
+lines(xGrid, m(xGrid), col = "black", lwd=1.5)
+lines(kr_05$x, kr_05$y, col = "red" ,lwd=1.5)
+lines(kr_09$x, kr_09$y, col = "blue",lwd=1.5)
+legend("top", 
+       legend = c("True mean function", 
+                  expression(paste("Kernel regression, ", lambda, "=0.5")),
+                  expression(paste("Kernel regression, ", lambda, "=0.9"))
+                  ),
+       lwd = 1.5, 
+       col = c("black","red","blue"))
+```
+::::
+:::
+
+Several noteworthy items in @fig-simdata-kernel-regression:
+
+- The kernel regression estimate for $\lambda=0.9$ is more smooth than the estimate for $\lambda=0.5$. A larger bandwidth widens the kernel (weight) function. As $\lambda$ increases the fit approaches a flat line at $\widehat{\beta} = \overline{y}$, a global model.
+
+- In contrast to the $k$-NN estimator, the kernel regression estimator is smooth. $k$-NN estimates change abruptly when a point leaves the $k$-neighborhood and another point enters. The $k$-NN weight function 
+$$
+K(x_0,x_i) = I(||x_i-x_0|| \le ||x_{(k)} - x_0 ||)
+$$ 
+is not smooth. The weight associated with a data point $x_i$ in kernel regression changes gradually with its distance from $x_0$.
+
+- Fitting the model at $x_0$ and predicting at $x_0$ is the same operation; unlike in global models where you fit the model first, obtain the parameters, and then use them to predict at any point you choose.
+
+- There must be a variance-bias tradeoff between the bias of a model with large bandwidth and the variability of a model with small bandwidth. The hyperparameter $\lambda$ can be chosen by some form of cross-validation.
+
+- The kernel regression estimates generally capture the mean function well, but seem to struggle near the edges of the $x$-range. Both underestimate the trend at the edge, the estimate with $\lambda=0.5$ turns away more sharply than the estimate with $\lambda = 0.9$. The problem near the edge is that the estimator can use information only from one side of the edge. Fitting the model at $x_0 = \max(x_i)$ only observations with $x < x_0$ are assigned non-zero weight. Unless the mean function is flat beyond the range of $x$, the kernel estimator will be biased near the edges of the range.
+
+
+### Cross-validation for $\lambda$
+
+The best value for $\lambda$ that resolves the bias-variance tradeoff for a particular set of data can be determined by a form of cross-validation.
+
+:::{.example}
+::::{.example-header}
+Example: Kernel Regression with Simulated Data
+::::
+Here we implement a function that performs leave-one-out CV and computes the average squared prediction residual (PRESS). The function is then evaluated on a grid of candidate bandwidth values.
+
+::::{.example-container}
+```{r}
+ksm.cv <- function(X,Y,bw=0.5) {
+    MSTe <- rep(0,length(bw))
+    for (j in seq_along(bw)) {
+        PRESS <- 0
+        ngood <- 0
+        for (i in seq_along(X)) {
+            nw <- ksmooth(x        =X[-i],
+                          y        =Y[-i],
+                          kernel   ="normal",
+                          bandwidth=bw[j],
+                          x.points =X[i])
+            if (!is.na(nw$y)){
+                PRESS <- PRESS + (Y[i] - nw$y)^2
+                ngood <- ngood + 1
+            }
+        }
+        MSTe[j] = PRESS/ngood
+    }
+    return (as.data.frame(cbind(bw,MSTe,ngood)))
+}
+
+bw_grid <- seq(0.5,1.5,0.05)
+cvres <- ksm.cv(X,Y,bw_grid)
+
+cat("Smallest LOOCV MSE ", 
+    cvres$MSTe[which.min(cvres$MSTe)],
+    " at bandwidth ",
+    cvres$bw[which.min(cvres$MSTe)])
+```
+
+@fig-simdata-loocv-kr displays the LOOCV mean-squared error for bandwidth values from 0.5 to 1.5 in steps of 0.05. The smallest error is achieved at $\lambda = 1.1$. @fig-simdata-kr-best displays the kernel regression estimate for that bandwidth. The local model fits the data well but continues to show bias at the boundary of the $x$-range.
+
+```{r, out.width="80%", fig.align="center", echo=FALSE}
+#| fig.cap: Leave-one-out cross-validation MSE as a function of bandwidth. 
+#| label: fig-simdata-loocv-kr
+plot(x=cvres$bw,y=cvres$MSTe, 
+     xlab="Bandwidth",
+     ylab="LOOCV MSE",
+     las=1,
+     bty="l")
+abline(h=cvres$MSTe[which.min(cvres$MSTe)],col="red",lty="dotted")
+abline(v=cvres$bw[which.min(cvres$MSTe)],col="red",lty="dotted")
+```
+
+
+
+``` {r, out.width="75%", fig.asp=0.8, fig.align="center", echo=FALSE}
+#| fig.cap: Kernel regression estimates at the cross-validated value of $lambda=1.1$ and true mean function. 
+#| label: fig-simdata-kr-best
+
+kr <- ksmooth(X,Y,kernel="normal",bandwidth=cvres$bw[which.min(cvres$MSTe)], x.points=xGrid)
+
+plot(X, Y, las=1, bty="l")
+rug(X, side = 1); rug(Y, side = 2)
+lines(xGrid, m(xGrid), col = "black", lwd=1.5)
+lines(kr$x, kr$y, col = "red" ,lwd=1.5)
+```
+::::
+:::
+
+:::{.callout-tip}
+When you graph the results of cross-validation and the minimum criteria is achieved for the smallest (or largest) value of the hyperparameter being validated, you need to extend the grid of values below (or above) the values considered. Otherwise you might erroneously conclude that the "best" value is the value on the boundary of your candidate values. This is not a problem in @fig-simdata-loocv-kr where the minimum MSE does not fall on the boundary.
+:::
+
+## Local Regression
+
+The kernel regression estimate at $x_0$ is equivalent to fitting a weighted intercept-only model 
+$$
+Y(x) = \beta_0 + \epsilon
+$$
+where the weights are calculated according to a kernel function with some bandwidth $\lambda$:
+$$
+w_i(x_0) = \frac{K_\lambda(x_0,x_i)}{\sum_{i=1}^n K_\lambda(x_0,x_i)}
+$$
+
+Local regression generalizes this idea to weighted polynomial regression models. A local regression model of degree 1 (linear) is a weighted regression with mean function
+$$
+Y(x) = \beta_0 + \beta_1 x + \epsilon
+$$
+A local regression model of degree 2 (quadratic) is a weighted regression with mean function
+$$
+Y(x) = \beta_0 + \beta_1 x + \beta_2 x^2 + \epsilon
+$$
+and so on. The kernel regression estimate of the previous section is a special case, a local regression model of degree 0.
+
+The parameters in the local regression model change with prediction location $x_0$ because the kernel weight function changes with $x_0$. Formally, the estimates at $x_0$ satisfy a weighted least squares criterion. For a model of degree 1 the criterion is
+
+$$
+			\argmin_{\beta_0(x_0), \beta_1(x_0)} = \sum_{i=1}^n K_\lambda(x_0,x_i) \left(y_i - \beta_0(x_0) - \beta_1(x_0) x_i \right )^2
+$$
+
+### Choosing the Degree
+
+The degree of a local regression polynomial is typically small, $p=1$ or $p=2$. Higher-order polynomials are against the spirit of local methods that any function can be approximated in a small neighborhood by a low-order polynomials. 
+
+The boundary bias we noticed in the kernel regression ($p=0$) estimates is greatly reduced when $p > 0$. The local model now depends on $x$ and does not approximate the mean with a flat line near the boundary.
+
+For the same bandwidth, a quadratic model will be more flexible (wiggly) than a linear model. With curved trends, quadratic models can fit better than linear models in the interior of the $x$ range. This is a classical bias-variance tradeoff. 
+
+:::{.example}
+::::{.example-header}
+Example: Linear and Quadratic Local Polynomials with Simulated Data
+::::
+::::{.example-container}
+The `KernSmooth::locpoly` function in `R` computes local polynomial regression estimates with Gaussian kernels.
+For comparison purposes, the following fit models of degree 0, 1, and 2 for the same bandwidth. 
+
+
+```{r}
+library(KernSmooth)
+
+lp_05_0 <- locpoly(X,Y,
+                   degree   =0,
+                   kernel   ="normal",
+                   bandwidth=0.5,
+                   gridsize =250,
+                   range.x  =c(-5,6))
+
+lp_05_1 <- locpoly(X,Y,
+                   degree   =1,
+                   kernel   ="normal",
+                   bandwidth=0.5,
+                   gridsize =250,
+                   range.x  =c(-5,6))
+
+lp_05_2 <- locpoly(X,Y,
+                   degree   =2,
+                   kernel   ="normal",
+                   bandwidth=0.5,
+                   gridsize =250,
+                   range.x  =c(-5,6))
+```
+
+The local quadratic model is the most flexible at the same bandwidth (@fig-simdata-locpoly). All three estimates are similar in the interior of the $x$ range. The boundary bias of the linear and quadratic model is much reduced compared to the kernel regression (degree 0) estimate.
+
+``` {r, out.width="80%", fig.asp=0.8, echo=FALSE, fig.align="center"}
+#| fig.cap: Local polynomials of degree 0, 1, and 2 with Gaussian kernels and $\lambda = 0.5$.
+#| label: fig-simdata-locpoly
+#| 
+plot(X, Y, las=1,bty="l")
+rug(X, side = 1); rug(Y, side = 2)
+
+lines(xGrid, m(xGrid), col = "black", lwd=1.5)
+lines(lp_05_0$x, lp_05_0$y, col = "red"      ,lwd=1.5, lty="solid")
+lines(lp_05_1$x, lp_05_1$y, col = "blue"     ,lwd=1.5, lty="dashed")
+lines(lp_05_2$x, lp_05_2$y, col = "darkgreen",lwd=1.5, lty="dotted")
+legend("topleft", 
+       bty="n",
+       legend = c("True mean function", 
+                  expression(paste("LocPoly(0), ", lambda, "=0.5")),
+                  expression(paste("LocPoly(1), ", lambda, "=0.5")),
+                  expression(paste("LocPoly(2), ", lambda, "=0.5"))),
+       lwd = 1.5, 
+       col = c("black","red","blue","darkgreen"),
+       lty = c("solid","solid","dashed","dotted"))
+```
+::::
+:::
+
+### Loess Regression
+
+Loess (or LOESS) is a special case of local polynomial regression described by @Cleveland1979. The abbreviation stands for Local Estimated Scatterplot Smoothing. In terms of concepts introduced so far, Cleveland recommended a local linear model (degree 1) with a tricube kernel weight function and leave-one-out cross-validation to determine the bandwidth.
+
+The tricube kernel was preferred because it reduces to exactly 0 and thus excludes observations outside of the tricube window from the calculations. The resulting computational savings were important at the time LOESS was proposed.
+
+The `loess` function in `R` implements LOESS and specifies the bandwidth through a `span` parameter that determines the neighborhood of $x_0$ as a proportion of the data points. The tricube weight function is then applied to the points in the spanned neighborhood. By default `loess` fits quadratic models with `span=0.75`. This value is fairly large for applications where you want to model $Y$ as a function of $X$, but works well in situations where you want to detect the presence of larger trends, as in the analysis of residuals.
+
+Fitting of LOESS models and cross-validating the span parameter can be done conveniently in `R` with the `train` function in the `caret` package.
+
+```{r, include=FALSE}
+suppressWarnings(library(caret))
+```
+
+:::{.example}
+::::{.example-header}
+Example: LOESS Model of Degree 1 with Simulated Data
+::::
+::::{.example-container}
+``` {r loess_caret, warning=FALSE}
+
+df <- data.frame(cbind(Y,X))
+model <- caret::train(Y ~ X, 
+               data    =df,
+               method  ="gamLoess", 
+               tuneGrid=expand.grid(span = 0.2, degree=1), 
+               trContro=trainControl(method = "none"))
+```
+
+``` {r, out.width="80%", fig.asp=0.8, echo=FALSE, fig.align="center"}
+#| fig.cap: LOESS smooth with span 0.2, degree 1.
+#| label: fig-simdata-loess_02
+#| 
+plot(X, Y, las=1,bty="l")
+rug(X, side = 1); 
+rug(Y, side = 2)
+lines(xGrid, m(xGrid), col = "black", lwd=1.5)
+suppressWarnings(
+    lines(xGrid,predict(model, newdata=data.frame("X"=xGrid)), col="red", lwd=2)
+)
+```
+::::
+:::
+
+To perform cross-validation for the span parameter, you can supply instructions to the `train` function. The `tuneGrid` parameter provides a data frame with values for the hyperparameters. In the code below, the span is varied from 0.15 to 0.75 in 40 steps and the degree of the local polynomial is held fixed at 1. The `trControl` parameter defines the behavior of the `train` function. Here, 10-fold cross-validatoin of the hyperparameters is requested.
+
+
+``` {r loess_k_10, fig.align="center", out.width="80%", warning=FALSE}
+set.seed(3678)
+
+ctrl <- trainControl(method = "cv", number = 10)
+grid <- expand.grid(span = seq(0.15, 0.75, len = 40), degree = 1)
+
+model <- train(Y ~ X, 
+               data     =df, 
+               method   ="gamLoess", 
+               tuneGrid =grid, 
+               trControl=ctrl)
+
+print(model)
+
+plot(model)
+
+min(model$results$RMSE)
+model$results$span[which.min(model$results$RMSE)]
+```
+The smallest root mean square error (RMSE) of `{r} round(min(model$results$RMSE),4)` is achieved with a span of
+`{r} round(model$results$span[which.min(model$results$RMSE)],4)`. 
+
+
+## Basis Functions {#sec-basis-functions}
+
+### Segments, Knots, and Constraints
+
+Local models using weight functions provide a lot of flexibility to model smooth functions based on a simple idea: if a constant, linear, or quadratic model approximates the local behavior at $x_0$ well then we can estimate the parameters of that local model through a weighted analysis that downweighs observations based on their distance from $x_0$. Data points that are far from $x_0$ will not have much impact on determining the local behavior if we choose the bandwidth of the kernel weight function properly.
+
+Greater flexibility in the fitted model could also be achieved by adding higher-order polynomial terms and fitting a global model. Unfortunately, this does not work well. Adding a higher-order term such as a cubic ($x^3$), quartic ($x^4$), or quintic ($x^5$) term to pick up curvature in one region can introduce strange behavior in another region. @fig-quintic-model shows the fit of global polynomial models with up to third, fourth, and fifth degree terms for the simulated data. The quartic model
+$$
+Y = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4 x^4 + \epsilon
+$$
+does a pretty good job in capturing the curvature in the center of the $x$ range. It could benefit from more flexibility in the upper region of $x$, though. Adding a quintic term $\beta_5 x^5$ to the model improves the fit for larger values of $x$ but leads to poor behavior for small values of $x$.
+
+
+![Polynomial models up to the 5^th^ degree.](images/QuinticPolynomials.png){#fig-quintic-model .lightbox fig-align="center" width="80%"}
+
+Can we introduce flexibility into the model by creating local behavior and avoid the uncontrolled behavior of higher-degree polynomials? The answer is "yes", and **splines** is the way we achieve that.
+
+A spline model is a **piecewise** polynomial model. Rather than fitting a local model at every prediction point, a spline model connects polynomial models at specific points along the $x$-axis, called **knots**. As with global models, fitting a spline model and making predictions are separate steps. The model is local in the sense that we have different polynomials in different sections of the $x$ range. @fig-piecewise-linear displays the concept for piecewise polynomials of degree 1--that is, piecewise linear models. The extreme points of the $x$ range serve as the boundary knots, four interior knots are evenly spaced along the $x$ axis. This results in five linear segments. If we denote the interior knots as $c_1, \cdots, c_4$, this piecewise linear model can be written as follows
+
+$$
+Y = \left \{ \begin{array}{ll} \beta_{01} + \beta_{11} x & x \le c_1 \\
+\beta_{02} + \beta_{12}x & c_1 < x \le c_2 \\
+\beta_{03} + \beta_{13}x & c_2 < x \le c_3 \\
+\beta_{04} + \beta_{14}x & c_3 < x \le c_4 \\
+\beta_{05} + \beta_{15}x & x > c_4 \\
+\end{array}
+\right .
+$$
+
+Each segment has a separate intercept and slope estimate. As the number of knots increases, the model becomes more localized and has more parameters.
+
+
+![Piecewise linear model with four interior knots.](images/PiecewiseLinear.png){#fig-piecewise-linear .lightbox fig-align="center" width="80%"}
+
+The name spline originates in construction where thin strips of wood were used to create curved shapes, for example, in shipbuilding. The strips of wood, called splines, are fixed at two points with devices called "dogs" or "ducks" and can be flexed between them (@fig-spline-construction). 
+
+![A spline in construction. [Source](https://www.lancaster.ac.uk/stor-i-student-sites/tamas-papp/2020/02/10/splines/)](images/Spline.png){#fig-spline-construction fig-align="center" width="40%"}
+
+The segments in @fig-piecewise-linear are not curved, that can be fixed by increasing the degree of the polynomial in each segment. But we recognize another problem with the piecewise linear model, the fitted lines do not connect at the segments. In order for the model to be continuous across the interior knots, the parameter estimates cannot be chosen freely--they have to obey certain constraints. For example, in order for the first two segments in @fig-piecewise-linear to connect, we need to have
+$$
+\beta_{01} + \beta_{11} c_1 = \beta_{02} + \beta_{12} c_1
+$$
+
+We would not be satisfied with the segments just touching at the knots, we also would want the spline to transition smoothly through the knots. So we can impose additional constraints on the polynomials. To ensure that the segments have the same slope at the knot we constrain their first derivative
+$$
+\beta_{11} = \beta_{12}
+$$
+
+With each constraint the number of free parameters in the model is reduced. We started with ten parameters in the model with four (interior) knots and disconnected lines (@fig-piecewise-linear). Imposing continuity at each knot imposes one constraint at each knot, leaving us with 6 free parameters (we are using 6 degrees of freedom for the model). Imposing continuity in the first derivative at each knot removes another 4 parameters, leaving us with 2 degrees of freedom. Without increasing the degree of the polynomial we will not be able to add further constraints. In fact, the continuous piecewise linear model with continuity in the first derivatives is just a global simple linear regression model.
+
+To leave degrees of freedom to pick up local trends in the mean function we use cubic splines that are continuous at the knots and have the same first and second derivatives to be equal at the knots. A spline that satisfies those conditions is known as a cubic spline (@fig-cubic-spline) or a degree-3 spline. 
+
+A spline of degree $d$ in general is a piecewise polynomial of degree $d$ with continuity constraints in the derivatives up to degree $d-1$ at each knot. There is typically no need to engage splines of higher orders than cubic splines. They still have a discontinuity at the knots since they are continuous only up to second derivatives but it is said that the discontinuity is not visible to the human eye [@hastie_ESL, p. 134].  
+
+![Cubic spline with four interior knots.](images/CubicSpline.png){#fig-cubic-spline .lightbox fig-align="center" width="80%"}
+
+We also want to handle the boundary properly and are imposing another constraint: the model should have degree 1 beyond the range of $x$ in the training data. This is known as a **natural cubic spline** (@fig-natural-cubic-spline). The natural cubic spline achieves linearity at the boundary by imposing additional constraints, two at each boundary knot. The four degrees of freedom made available--compared to the cubic spline--can be used to place an additional interior knot.
+
+![Natural cubic spline with four interior knots.](images/NaturalCubicSpline.png){#fig-natural-cubic-spline .lightbox fig-align="center" width="80%"}
+
+More degrees of freedom in the spline translates into more free parameters and more flexibility in the fit. For a cubic spline with $K$ knots, there are $K+1$ degree-3 polynomial segments that obey $K\times 3$ constraints at the knots. The model thus uses $4(K+1) - 3K = K+4$ degrees of freedom. The flexibility of a spline model increases with the number of knots. 
+
+### Basis Function Representation
+
+Fitting a spline model is a constrained optimization problem: minimize the residual sum of squares of the piecewise polynomial subject to the continuity constraints imposed on the parameters. There is a more direct way in which the model is written in a way that incorporates the constraints and a standard least-squares routine for linear models can be used.
+
+Let's think of our model in a slightly different formulation,
+$$
+Y = \beta_0 + \beta_1 h_1(x) + \beta_2 h_2(x) + \cdots + \beta_p h_p(x) + \epsilon
+$$
+The functions $h_1(x), \cdots, h_p(x)$ are known transformations of $x$. For example, a third-degree polynomial has $h_1(x)=x$, $h_2(x)=x^2$, and $h_3(x)=x^3$.
+
+This is called the **basis function** representation of the linear model. The cubic spline model can be written as a third-degree polynomial augmented by **truncated power basis functions**. A truncated power basis function takes the general form
+
+$$
+t^n_+ = \left \{ \begin{array}{cc} t^n & t > 0 \\ 0 & t \le 0\end{array}\right .
+$$
+
+The cubic spline model with $K$ (interior) knots, written in terms of truncated power basis functions becomes
+$$
+Y = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \beta_{3+1}(x-c_1)^3_+ + \cdots + \beta_{3+K}(x-c_K)^3_+ + \epsilon
+$$ {#eq-cubic-spline-tpf}
+
+For each knot, an input variable is added, its values are the 3-rd order truncated power basis functions of the distance from the $k$^th^ knot. The model has $K+4$ parameters, as expected for a cubic spline.
+
+:::{.example}
+::::{.example-header}
+Example: Cubic Spline with 3 Knots 
+::::
+::::{.example-container}
+For the simulated data we can fit a cubic spline with 3 knots by constructing a model matrix for @eq-cubic-spline-tpf and passing it to the `lm.fit` function. First we need to decide on the placement of the three knots. One option is to place knots evenly throughout the range of $x$. Or, we can place knots at certain percentiles of the distribution of the $x$ data. We choose the 1st, 2nd (median), and 3rd quartile here.
+
+```{r}
+s <- summary(X)
+c_1 <- s[2] # 1st. quartile
+c_2 <- s[3] # median
+c_3 <- s[5] # 3rd quartile
+
+c_1
+c_2
+c_3
+
+tpf <- function(x,knot,degree) {
+    t <- ifelse(x > knot, (x-knot)^degree, 0)
+}
+
+Xmatrix <- cbind(rep(1,length(X)), X, X^2, X^3, 
+                 tpf(X,c_1,3), tpf(X,c_2,3), tpf(X,c_3,3))
+colnames(Xmatrix) <- c("Inctpt","x","x^2","x^3","tpf_c1","tpf_c2","tpf_c3")
+round(Xmatrix[1:10,],4)
+```
+
+Observations to the left of $c_1$ = `{r} round(c_1,4)` do not receive a contribution from the augmented power function terms, for example the second observation. Observation \#8, which falls to the right of $c_3$ = `{r} round(c_3,4)` receives a contribution from all three truncated power function terms.
+
+```{r}
+cub_spline <- lm.fit(x=Xmatrix,y=Y)
+cub_spline$coefficients
+```
+
+
+```{r, echo=FALSE, out.width="80%", fig.align="center"}
+#| label: fig-simdata-cubspline
+#| fig.cap: Cubic spline fit by linear least squares based on truncated power basis functions.
+
+xx <- cbind(rep(1,length(xGrid)), 
+            xGrid, xGrid^2, xGrid^3, 
+            tpf(xGrid,c_1,3), tpf(xGrid,c_2,3), tpf(xGrid,c_3,3))
+
+pred <- xx %*% cub_spline$coefficients
+
+plot(X, Y, las=1,bty="l")
+rug(X, side = 1); rug(Y, side = 2)
+
+lines(xGrid, m(xGrid), col = "black", lwd=1.5)
+lines(xGrid, pred, col = "red",lwd=1.5, lty="solid")
+```
+
+For a model with only seven parameters the cubic spline with knots at the 1st, 2nd, and 3rd quartile provides an excellent fit (@fig-simdata-cubspline)
+::::
+:::
+
+### Regression Splines
+
+The model in the previous example is known as a **regression spline**, characterized by placing a fixed number of knots. A common approach is to specify $K$, the number of knots and placing knots at percentiles of the $x$ values, as in the  previous example. Another option is to place more knots in regions where the mean function is expected to vary more. 
+
+The truncated power basis function is one approach to generating the $\bX$ matrix for a least-squares regression that produces a particular spline. It is not the numerically most advantageous approach. There are many equivalent basis functions to represent polynomials. A popular basis are the B-spline basis functions.
+
+The `R` functions `bs()` and `ns()` in the `splines` library compute cubic spline matrices and natural cubic spline matrices based on B-splines. 
+
+``` {r}
+library(splines)
+xx <- bs(X,df=6)
+attr(xx,"knots")
+```
+
+The number of knots generated by `bs()` equals the chosen degrees of freedom minus the degree of the spline, which is 3 by default. The knots are placed at percentiles of $x$, a third-order spline with 6 degrees of freedom results in 3 knots at the 1st, 2nd, and 3rd quartiles; the same values used earlier in the truncated power function example.
+
+``` {r}
+
+round(xx[1:10,],5)
+```
+
+Although the `xx` matrix produced by `bs()` is not identical to the `Xmatrix` based on the truncated power basis functions, the models are equivalent and the predicted values are identical. The conditioning of the $\bXpX$ matrix based on the truncated power basis is poorer than the conditioning of the $\bXpX$ matrix computed from the B-spline basis. The pairwise correlations are generally higher in the former.
+
+```{r}
+round(cor(Xmatrix[,2:7]),5)
+
+round(cor(xx),5)
+```
+
+
+The function `ns()` produces the natural cubic splines from the B-spline basis.
+
+```{r}
+nn <- ns(X,df=6)
+round(nn[1:10,],5)
+```
+
+The models can be fit without first generating the spline matrix:
+
+``` {r}
+ns_spline <- lm(Y ~ ns(X,df=6))
+bs_spline <- lm(Y ~ bs(X,df=6))
+```
+
+@fig-simdata-bs-ns displays the fitted values for the 6-df cubic and natural cubic splines.
+
+```{r, echo=FALSE, out.width="85%", fig.align="center", warning=FALSE}
+#| fig.cap: Cubic and natural cubic splines with 6 degrees of freedom.
+#| label: fig-simdata-bs-ns
+#| lightbox:
+#| 
+plot(X, Y, las=1,bty="l")
+rug(X, side = 1); rug(Y, side = 2)
+
+lines(xGrid, m(xGrid), col = "black", lwd=1.5)
+lines(xGrid, 
+      predict(bs_spline,newdata=data.frame(X=xGrid)), 
+      col = "red",lwd=1.5, lty="dashed")
+lines(xGrid, 
+      predict(ns_spline,newdata=data.frame(X=xGrid)), 
+      col = "blue",lwd=1.5, lty="dotted")
+legend("topleft", 
+       bty="n",
+       legend = c("True mean function", 
+                  "Natural cubic spline, df=6",
+                  "Cubic spline, df=6"),
+       lwd = 1.5, 
+       col = c("black","red","blue"),
+       lty = c("solid","dashed","dotted"))
+```
+
+An objective method for choosing the number of knots in regression splines is through cross-validation. 
+
+:::{.example}
+::::{.example-header}
+Example: Choosing Degrees of Freedom by Cross-validation 
+::::
+::::{.example-container}
+The following code use the `caret::train` function in `R` to choose the degrees of freedom of the cubic spline based on 10-fold cross-validation. The degrees of freedom evaluated range from 2 to 20.
+
+
+``` {r, fig.align="center", out.width="80%"}
+df <- data.frame(Y=Y,X=X)
+
+set.seed(3678)
+
+ctrl <- trainControl(method = "cv", number = 10)
+grid <- expand.grid(df = seq(2,20,by=1))
+
+model <- train(Y ~ X, 
+               data      = df, 
+               method    = "gamSpline", 
+               tuneGrid  = grid, 
+               trControl = ctrl)
+
+model
+plot(model)
+```
+
+The square root of the mean square error (RMSE) achieves a minimum for `df=15` although any value between 12 and 17 is reasonable.
+
+Next, the final model is trained using the degrees of freedom chosen by cross-validation.
+
+```{r}
+model <- train(Y ~ X, 
+               data      = df, 
+               method    = "gamSpline", 
+               tuneGrid  = expand.grid(df=model$bestTune$df), 
+               trControl = trainControl(method = "none"))
+```
+
+
+```{r, echo=FALSE, out.width="80%", fig.align="center"}
+#| fig.cap: Cross-validated cubic spline fit.
+
+plot(X, Y, las=1,bty="l")
+rug(X, side = 1); rug(Y, side = 2)
+
+lines(xGrid, m(xGrid), col = "black", lwd=1.5)
+lines(xGrid,predict(model,newdata=data.frame(X=xGrid)), 
+      col = "red",lwd=1.5, lty="solid")
+```
+::::
+:::
+
+### Smoothing Splines {#sec-smoothing-splines}
+
+Regression splines require specification of the number of knots $K$ and their placement $c_1, \cdots, c_K$. Equivalently, the degrees of freedom of the spline can be specified instead of $K$. Choosing $K$ too small results in bias and choosing $K$ too large leads to overfit models with high variance.
+
+Smoothing splines approach the issue of knot placement from a different angle. Why not place knots at all unique values of $X$? This creates a high-dimensional problem that can be adjusted through **regularization**.
+This resolves the questions of knot number and knot placement and shifts attention from cross-validating $K$ to choosing the regularization parameter.
+
+The regularization penalty for smoothing splines is 
+$$
+   \lambda \int f^{\prime\prime}(v)\,dv  
+$$
+where $f^{\prime\prime}$ denotes the second derivative of the mean function and $\lambda$ is the hyperparameter. The rationale for this penalty term is as follows: the second derivative $f^{\prime\prime}(x)$ measures the curvature of $f$ at $x$. High absolute values indicate that $f$ changes quickly in the neighborhood of $x$, the sign of a wiggly function. The integral of the second derivative can be interpreted as the degree of wiggliness across the range of $x$. 
+
+For a given value of $\lambda$ more wiggly functions result in a higher penalty. For $\lambda = 0$ no penalty is added. The basic model for a smoothing spline is a cubic spline with knots at all unique $x$-values. The regularization penalty shrinks the coefficient estimates of the spline and reduces the variability of the fitted function this way. 
+
+An interesting aspect are the **effective** or **equivalent degrees of freedom**. The smoothing spline has $n$ parameters but these are shrunk if the penalty term kicks in. The equivalent degrees of freedom are a measure of the flexibility of the fitted function. Mathematically, the fitted values of a smoothing spline is a linear function of the observed data. For each value $\lambda$, the solution can be written as 
+
+$$
+\widehat{y}_\lambda = \textbf{S}_\lambda \by
+$$
+where $\textbf{S}_\lambda$ is the **smoother matrix**, akin to the Hat matrix in global regression models. Recall that the Hat matrix is an orthogonal projection matrix and its trace equals the number of parameters (the degrees of freedom) of the model. Similarly, the equivalent degrees of freedom of a smoother are obtained as the trace of the smoother matrix,
+$$
+df_\lambda = tr(\textbf{S}_\lambda) = \sum_{i=1}^n S[ii]_\lambda
+$$
+
+:::{.example}
+::::{.example-header}
+Example: Apple Share Prices
+::::
+::::{.example-container}
+The data for this example are the weekly closing share prices of Apple (ticker symbol AAPL) between January 1996 and January 2024. @fig-aapl-share-price shows a time series of these prices along with the dates major Apple products were introduced.
+
+```{r, warning=FALSE}
+library(splines)
+library(lubridate)
+library("duckdb")
+
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+weekly <- dbGetQuery(con, "SELECT * FROM AAPLWeekly")
+weekly$date <- make_date(weekly$year,weekly$month,weekly$day)
+
+dbDisconnect(con)
+```
+
+
+```{r, echo=FALSE, out.width="90%", fig.align="center"}
+#| fig.cap: Weekly AAPL close share prices from January 1996 until January 2024 and dates major products were introduced.
+#| label: fig-aapl-share-price
+#| lightbox:
+#| 
+plot(weekly$date,weekly$Close,type="l",las=1,bty="l",
+     ylab="Closing Price",
+     xlab="Date",
+     main="",
+     ylim=c(0,205)
+)
+iMacDate <- make_date(1998,8,15)
+iPodDate <- make_date(2001,10,15)
+macBookDate <- make_date(2006,5,15)
+iPhoneDate <- make_date(2007,6,15)
+iPadDate <- make_date(2010,1,15)
+watchDate <- make_date(2017,9,15)
+
+abline(v=c(iMacDate,iPodDate,iPhoneDate,iPadDate,watchDate,macBookDate),lty="dotted")
+text(iMacDate,205,cex=0.75,"iMac")
+text(iPodDate,205,cex=0.75,"iPod")
+text(macBookDate,205,cex=0.75,"macBook")
+text(iPhoneDate,190,cex=0.75,"iPhone")
+text(iPadDate,205,cex=0.75,"iPad")
+text(watchDate,205,cex=0.75,"Apple Watch")
+
+```
+The `smooth.spline` function in `R` computes smoothing splines and selects the smoothing parameter (the penalty hyperparameter) by leave-one-out cross-validation. It should be noted that `smooth.spline` by default does **not** place knots at all unique $x$ values, but places evenly-spaced knots, their number is a function of the unique number of $x$-values. You can change this behavior by setting `all.knots=TRUE`.
+
+In the AAPL example, there are 1,461 unique dates, and `smooth.spline` would choose `{r} .nknots.smspl(1461)` knots by default.
+
+```{r}
+# general method for computing the number of unique values in a numeric vector
+nx <- length(weekly$date) - 
+      sum(duplicated(round((weekly$date - mean(weekly$date))/1e-6)))
+nx
+.nknots.smspl(nx)
+```
+
+
+
+```{r}
+smspl_a <- smooth.spline(y=weekly$Close,
+                       x=weekly$date,
+                       all.knots=TRUE,
+                       cv=TRUE)
+smspl_a
+```
+The cross-validation leads to a PRESS criterion of `{r} round(smspl_a$cv.crit,4)` and equivalent degrees of freedom of `{r} round(smspl_a$df,3)`. The regularization penalized the spline from 1461 interior knots to the equivalent of a spline with about 610 knots. The smoothing parameter `spar` has a substantial value of `{r} round(smspl_a$spar,4)`.
+
+Setting `all.knots=FALSE` leads to the following analysis
+
+```{r}
+smspl_s <- smooth.spline(y=weekly$Close,
+                         x=weekly$date,
+                         all.knots=FALSE,
+                         cv=TRUE)
+smspl_s
+```
+The smoothing parameter is much smaller, `spar`=`{r} round(smspl_s$spar,5)` and the equivalent degrees of freedom are not much different from the number of knots used (154). This suggests that this smoothing spline has not been penalized sufficiently, the appropriate number of equivalent degrees of freedom is higher--this was confirmed in the first call to `smooth.spline` with `all.knots=TRUE`. Also note that the PRESS statistic for this run is almost 3 times higher than in the first analysis.
+
+@fig-aapl-smooth-splines compares the fitted values for the smoothing splines. The smoothing spline from the second analysis does not capture the changes in share price in recent years but does a good job in the earlier years. The degree of smoothness in the weekly share prices changes over time which presents a challenge for any method that attempts to distill the degree of smoothness in a single parameter.
+
+```{r, fig.asp=0.7, echo=FALSE, fig.align="center", out.width="90%"}
+#| fig.cap: Smoothing splines for AAPL close share prices. 
+#| label: fig-aapl-smooth-splines
+#| lightbox:
+#| 
+plot(weekly$date,
+     weekly$Close,
+     type="l",las=1,bty="l",
+     ylab="Closing Price",
+     xlab="Date")
+
+legend("topleft",legend=c("all.knots = T (1,461)","all.knots = F (154)"),
+       col=c("red","blue"),lwd=1)
+
+lines(smspl_a$x,smspl_a$y,col="red", lwd=1)
+lines(smspl_s$x,smspl_s$y,col="blue", lwd=1)
+```
+
+::::
+:::

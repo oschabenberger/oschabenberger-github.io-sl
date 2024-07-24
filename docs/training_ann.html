@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 31&nbsp; Training Neural Networks</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./ann_R.html" rel="next">
+<link href="./ann.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ann.html">Neural Networks and Deep Learning</a></li><li class="breadcrumb-item"><a href="./training_ann.html"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#nonlinear-function-optimization" id="toc-nonlinear-function-optimization" class="nav-link active" data-scroll-target="#nonlinear-function-optimization"><span class="header-section-number">31.1</span> Nonlinear Function Optimization</a>
+  <ul>
+  <li><a href="#objective-and-loss-functions" id="toc-objective-and-loss-functions" class="nav-link" data-scroll-target="#objective-and-loss-functions">Objective and Loss Functions</a></li>
+  <li><a href="#the-gradient" id="toc-the-gradient" class="nav-link" data-scroll-target="#the-gradient">The Gradient</a>
+  <ul class="collapse">
+  <li><a href="#first-order-methods" id="toc-first-order-methods" class="nav-link" data-scroll-target="#first-order-methods">First-order methods</a></li>
+  <li><a href="#second-order-methods" id="toc-second-order-methods" class="nav-link" data-scroll-target="#second-order-methods">Second-order methods</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#gradient-descent-gd-and-stochastic-gradient-descent-sgd" id="toc-gradient-descent-gd-and-stochastic-gradient-descent-sgd" class="nav-link" data-scroll-target="#gradient-descent-gd-and-stochastic-gradient-descent-sgd"><span class="header-section-number">31.2</span> Gradient Descent (GD) and Stochastic Gradient Descent (SGD)</a>
+  <ul>
+  <li><a href="#backpropagation" id="toc-backpropagation" class="nav-link" data-scroll-target="#backpropagation">Backpropagation</a></li>
+  </ul></li>
+  <li><a href="#tuning-a-network" id="toc-tuning-a-network" class="nav-link" data-scroll-target="#tuning-a-network"><span class="header-section-number">31.3</span> Tuning a Network</a>
+  <ul>
+  <li><a href="#regularization" id="toc-regularization" class="nav-link" data-scroll-target="#regularization">Regularization</a></li>
+  <li><a href="#vanishing-gradients-and-dying-relu" id="toc-vanishing-gradients-and-dying-relu" class="nav-link" data-scroll-target="#vanishing-gradients-and-dying-relu">Vanishing Gradients and Dying ReLU</a>
+  <ul class="collapse">
+  <li><a href="#vanishing-gradients" id="toc-vanishing-gradients" class="nav-link" data-scroll-target="#vanishing-gradients">Vanishing gradients</a></li>
+  <li><a href="#dying-relu" id="toc-dying-relu" class="nav-link" data-scroll-target="#dying-relu">Dying ReLU</a></li>
+  </ul></li>
+  <li><a href="#scaling" id="toc-scaling" class="nav-link" data-scroll-target="#scaling">Scaling</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ann.html">Neural Networks and Deep Learning</a></li><li class="breadcrumb-item"><a href="./training_ann.html"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-training-ann" class="quarto-section-identifier"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Training a neural network is in principle a nonlinear optimization problem: an objective function that is nonlinear in the parameters needs to be minimized (or maximized).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We express all optimization problems as <strong>minimization</strong> problems. If you need to maximize a function <span class="math inline">\(\ell(\boldsymbol{\theta})\)</span>, you can always express it as a minimization problem with respect to <span class="math inline">\(-\ell(\boldsymbol{\theta})\)</span>. For example, maximum likelihood estimation (MLE) asks to find the values of <span class="math inline">\(\boldsymbol{\theta}\)</span> that maximize the likelihood function, or, equivalently, the log likelihood function. Those are the values that minimize the negative log likelihood or minus twice the negative log likelihood. Finding MLEs by minimizing <span class="math inline">\(-2 \times \log \ell(\boldsymbol{\theta})\)</span>, where <span class="math inline">\(\ell\)</span> is the likelihood function, is very common.</p>
+</div>
+</div>
+<p>We will spend a few paragraphs on the general problem of finding the minimum of a function using iterative algorithms. While any of the general methods apply to ANNs in principle, neural networks present a set of specific challenges. The models are highly over-parameterized, the objective functions can be non-convex with multiple local minima and saddle points, the number of parameters is very large, the numerical precision in computing the all-important gradients can be questionable, etc. Because of these challenges specialized algorithms such as minibatch gradient descent with backpropagation have emerged to handle large neural networks specifically.</p>
+<section id="nonlinear-function-optimization" class="level2" data-number="31.1">
+<h2 data-number="31.1" class="anchored" data-anchor-id="nonlinear-function-optimization"><span class="header-section-number">31.1</span> Nonlinear Function Optimization</h2>
+<section id="objective-and-loss-functions" class="level3">
+<h3 class="anchored" data-anchor-id="objective-and-loss-functions">Objective and Loss Functions</h3>
+<p>Suppose we have a function <span class="math inline">\(\ell(\boldsymbol{\theta};\textbf{y})\)</span> of parameters and data and we wish to find estimates <span class="math inline">\(\widehat{\boldsymbol{\theta}}\)</span> that minimize <span class="math inline">\(\ell(\boldsymbol{\theta};\textbf{y})\)</span>. We call <span class="math inline">\(\ell(\boldsymbol{\theta};\textbf{y})\)</span> the <strong>objective function</strong> of the estimation problem. In many statistical learning and machine learning applications, <span class="math inline">\(\ell(\boldsymbol{\theta};\textbf{y})\)</span> takes on the form of a sum over the observations, <span class="math display">\[
+\ell(\boldsymbol{\theta}; \textbf{y}) = \sum_{i=1}^n C_i(\boldsymbol{\theta};\textbf{y})
+\]</span> or an average, <span class="math display">\[
+\ell(\boldsymbol{\theta}; \textbf{y}) = \frac{1}{n} \sum_{i=1}^n C_i(\boldsymbol{\theta};\textbf{y})
+\]</span> where <span class="math inline">\(C_i\)</span> is a measure of <strong>loss</strong> associated with observation <span class="math inline">\(i\)</span>.</p>
+<p>In least-squares estimation, for example, <span class="math inline">\(C_i(\boldsymbol{\theta};\textbf{y})\)</span> measures the squared-error loss between the observed data and the model <span class="math inline">\(f(\textbf{x};\boldsymbol{\theta})\)</span>: <span class="math display">\[
+C_i(\boldsymbol{\theta};\textbf{y}) = \left(y_i - f(\textbf{x}_i;\boldsymbol{\theta}) \right)^2
+\]</span> In linear least squares, this loss simplifies to <span class="math display">\[
+C_i(\boldsymbol{\theta};\textbf{y}) = \left(y_i - \textbf{x}_i^\prime\boldsymbol{\theta}\right)^2
+\]</span> In maximum likelihood estimation, <span class="math inline">\(C_i(\boldsymbol{\theta}; \textbf{y})\)</span> is the negative log likelihood function of the <span class="math inline">\(i\)</span><sup>th</sup> observation.</p>
+<p>In statistical learning, loss functions are typically not divided by the number of observations. In machine learning (and in training neural networks) it is common to add the <span class="math inline">\(1/n\)</span> divisor in the objective function. This is the difference between optimizing squared error loss or mean squared error loss, for example. It has no effect on the parameter estimates.</p>
+<p>For training neural networks the most important loss functions when predicting a continuous target are</p>
+<ul>
+<li><p><strong>Squared error loss</strong>: <span class="math inline">\(C_i = (y_i - g(T(\textbf{a}^{(h)}))^2\)</span>.</p></li>
+<li><p><strong>Absolute error loss</strong>: <span class="math inline">\(C_i = |y_i - g(T(\textbf{a}^{(h)}))|\)</span></p></li>
+</ul>
+<p>In classification models the most important loss functions are</p>
+<ul>
+<li><p><strong>binary cross-entropy loss</strong> (also called log-loss): <span class="math inline">\(C_i = - \left(y_i\log(\pi) + (1-y_i)\log(1-\pi)\right)\)</span></p></li>
+<li><p><strong>categorical cross-entropy loss</strong>: <span class="math inline">\(C_i = - \sum_{j=1}^k y_{ij} \log(\pi_j)\)</span></p></li>
+</ul>
+<p>You will recognize the binary cross-entropy loss as the negative log likelihood of a Bernoulli(<span class="math inline">\(\pi\)</span>) random variable and the categorical cross-entropy loss as the (kernel of) the negative log likelihood of a Multinomial(<span class="math inline">\(\pi_1,\cdots,\pi_k\)</span>) random variable with <span class="math inline">\(k\)</span> categories.</p>
+</section>
+<section id="the-gradient" class="level3">
+<h3 class="anchored" data-anchor-id="the-gradient">The Gradient</h3>
+<p>How do we go about finding the values of <span class="math inline">\(\boldsymbol{\theta}\)</span> that minimize the objective function given a set of data? When the system has a closed-form solution, like the XOR problem in <a href="ann.html#sec-xor-gate" class="quarto-xref"><span>Section 30.2.4</span></a>, we can compute the estimates in a single step. Most neural networks are not of that ilk and require an iterative, numeric solution: beginning from a set of starting values, the estimates are updated iteratively, with a general tendency toward improving (lowering) the objective function. When the objective function does not improve—or only negligibly so—the iterations stop.</p>
+<p>In <a href="regnlr.html#sec-nlr-starting-values" class="quarto-xref"><span>Section 10.3</span></a> we spent considerable energy on finding good starting values for nonlinear regression models. The closer the starting values are to a solution, the more reliably will any iterative algorithm improve on the starting values and converge. Recall the two-layer ANN for the MNIST data from the last chapter. The model has 109,386 parameters. How do you find starting values for all these? In the nonlinear regression models of <a href="regnlr.html" class="quarto-xref"><span>Chapter 10</span></a> we relied on the intrinsic interpretability of the models to find starting values. Neural networks are not interpretable and any attempt to find “meaningful” starting values is futile. Usually, the starting values of neural networks are chosen at random.</p>
+<p>Once we have starting values <span class="math inline">\(\boldsymbol{\theta}^{[0]}\)</span>, the objective function <span class="math inline">\(\ell(\boldsymbol{\theta}^{[0]};\textbf{y})\)</span> can be computed.</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The notation is a bit messy. We used superscripts with parentheses to identify layers in a neural network and now are using superscripts with square brackets to denote iterates of a parameter vector.</p>
+</div>
+</div>
+<p>To improve on the starting values and get an updated value <span class="math inline">\(\boldsymbol{\theta}^{[1]}\)</span>, many optimization methods rely on the <strong>gradient</strong> of the objective function, the set of partial derivatives with respect to the parameter estimates. The gradient of the objective function is thus a vector, the size equals the number of parameters, and the typical element in position <span class="math inline">\(j\)</span> is <span class="math display">\[
+\delta(\theta_j; \textbf{y}) = \frac{\partial \ell(\boldsymbol{\theta};\textbf{y})}{\partial \theta_j}
+\]</span></p>
+<p>The overall gradient is the vector <span class="math inline">\(\boldsymbol{\delta}(\boldsymbol{\theta};\textbf{y}) = [\delta(\theta_1;\textbf{y}), \cdots, \delta(\theta_p;\textbf{y})]^\prime\)</span>.</p>
+<p>The gradient measures the change in the objective function in the direction of <span class="math inline">\(\boldsymbol{\theta}_j\)</span>.</p>
+<p>Using terminology and notation familiar from calculus, <a href="#fig-grad-descent1" class="quarto-xref">Figure&nbsp;<span>31.1</span></a> shows a function <span class="math inline">\(f(x)\)</span> in one parameter (<span class="math inline">\(x\)</span>). The function has two minima and two maxima. These occur at values of <span class="math inline">\(x\)</span> where the derivative <span class="math inline">\(f^\prime(x)\)</span> is zero. Once we have located a minimum or maximum, the second derivative <span class="math inline">\(f^{\prime\prime}(x)\)</span> tells us whether we have found a minimum (<span class="math inline">\(f^{\prime\prime}(x) &gt; 0\)</span>) or a maximum (<span class="math inline">\(f^{\prime\prime}(x) &lt; 0\)</span>). Optimally we locate the overall minimum (or maximum), known as the global minimum (or maximum), not just a local minimum (maximum).</p>
+<p>Suppose we started the search for a minimum at the value indicated with a green arrow in <a href="#fig-grad-descent1" class="quarto-xref">Figure&nbsp;<span>31.1</span></a>. To find a smaller objective function value we should move to the right. Similarly, in <a href="#fig-grad-descent2" class="quarto-xref">Figure&nbsp;<span>31.2</span></a>, we should move to the left.</p>
+<div id="fig-grad-descent1" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-grad-descent1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/GradientDescent1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/GradientDescent1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-grad-descent1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.1: Minimizing a function <span class="math inline">\(f(x)\)</span> in one parameter <span class="math inline">\(x\)</span>.
+</figcaption>
+</figure>
+</div>
+<div id="fig-grad-descent2" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-grad-descent2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/GradientDescent2.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/GradientDescent2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-grad-descent2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.2: Minimizing a function <span class="math inline">\(f(x)\)</span> in one parameter <span class="math inline">\(x\)</span>.
+</figcaption>
+</figure>
+</div>
+<p>The upshot of the figures is that from any point in the parameter space, you should follow the <strong>negative</strong> value of the gradient to find a point in the parameter space where the objective function is lower. If we wanted to maximize the objective function, we would follow the direction of the <strong>positive</strong> gradient to climb up the objective function (<a href="#fig-min-func-gradient" class="quarto-xref">Figure&nbsp;<span>31.3</span></a>).</p>
+<div id="fig-min-func-gradient" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-min-func-gradient-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/MinimizeFunction.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/MinimizeFunction.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-min-func-gradient-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.3: Find solution that minimizes a function in one parameter.
+</figcaption>
+</figure>
+</div>
+<section id="first-order-methods" class="level4">
+<h4 class="anchored" data-anchor-id="first-order-methods">First-order methods</h4>
+<p>An optimization technique is called a <strong>first-order method</strong> if it relies only on gradient information to update the parameter estimates between iterations. The general expression for the update formula at iteration <span class="math inline">\(t\)</span> is <span id="eq-gradient-update"><span class="math display">\[
+\begin{align*}
+\boldsymbol{\delta}(\boldsymbol{\theta}^{[t]}; \textbf{y}) &amp;= \frac{\partial{\ell(\boldsymbol{\theta};\textbf{y})}}{\boldsymbol{\theta}} \biggr\vert_{\boldsymbol{\theta}^{[t]}} \\
+\boldsymbol{\theta}^{[t+1]} &amp;= \boldsymbol{\theta}^{[t]} - \epsilon \times \boldsymbol{\delta}(\boldsymbol{\theta}^{[t]}; \textbf{y})
+\end{align*}
+\tag{31.1}\]</span></span></p>
+<p><span class="math inline">\(\boldsymbol{\delta}(\boldsymbol{\theta}^{[t]}; \textbf{y})\)</span> is the vector of derivatives of the objective function with respect to all parameters evaluated at <span class="math inline">\(\boldsymbol{\theta}^{[t]}\)</span>. The <span class="math inline">\((t+1)\)</span><sup>st</sup> value of the parameter estimates is obtained by moving <span class="math inline">\(\boldsymbol{\theta}^{[t]}\)</span> in the direction of the negative gradient. The quantity <span class="math inline">\(\epsilon\)</span> is known as the <strong>step size</strong> or the <strong>learning rate</strong>. It determines how big a step in the direction of the negative gradient we should take.</p>
+<p>Examples of first-order optimization methods are</p>
+<ul>
+<li>Gradient descent</li>
+<li>Stochastic gradient descent</li>
+<li>Conjugate gradient algorithm</li>
+<li>Quasi-Newton algorithm</li>
+<li>Double dogleg algorithm</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The gradient tells us in which direction we need to apply a correction of the parameter estimates, it does not tell us how far we should go. Suppose you stand blindfolded in the vicinity of a cliff. You want to get closer to the cliff but not fall off it. Someone orients you toward the cliff. The learning rate determines the size of your next step. If you know that you are far away from the cliff you might as well take a full step—maybe even jump toward it. If you are very close to the cliff you only take a baby step.</p>
+</div>
+</div>
+<p>The learning rate is an important hyperparameter of nonlinear optimization. Choosing a rate too small means making only tiny improvements and the procedure will require many iterations. Taking steps too large can make you miss a minimum and step from one valley of the objective function into another, giving the optimization fits. In nonlinear regression estimation, the best step size between iterations is often computed with a separate algorithm such as a line search. Machine learning applications range considerably in how they determine the learning rate. The classical stochastic gradient descent (SGD) algorithm holds <span class="math inline">\(\epsilon\)</span> fixed throughout. The popular Adam optimizer, on the other hand, has a parameter-specific learning rate that is determined from the exponential moving average of the gradient and the squared gradient.</p>
+</section>
+<section id="second-order-methods" class="level4">
+<h4 class="anchored" data-anchor-id="second-order-methods">Second-order methods</h4>
+<p><strong>Second-order</strong> optimization methods use information about the second derivative of the objective function in computing the updates. The second derivative contains information about the <strong>curvature</strong> of the objective function. The gradient tells us how much the objective function changes in a parameter, the curvature describes how much the function bends. Second-order information is captured by the <strong>Hessian</strong> matrix <span class="math inline">\(\textbf{H}\)</span> of the objective function. The Hessian is simply the matrix of second derivatives of <span class="math inline">\(\ell(\boldsymbol{\theta};by)\)</span> with respect to the parameters (the Jacobian of the gradient). The <span class="math inline">\((p \times p)\)</span> Hessian matrix has typical element <span class="math display">\[
+\textbf{H}= [h_{ij}] = \frac{\partial^2{\ell(\boldsymbol{\theta};\textbf{y})}}{\partial \theta_i \partial \theta_j}
+\]</span></p>
+<p>Examples of second-order optimization methods are the following:</p>
+<ul>
+<li>Fisher scoring</li>
+<li>Newton-Raphson algorithm</li>
+<li>Trust region algorithm</li>
+<li>Levenberg-Marquardt algorithm</li>
+</ul>
+<p>Should you choose a first-order or second-order algorithm? All things being equal, second-order algorithms are superior to first-order algorithms and converge in fewer iterations. On the other hand, the computational effort for each iteration is much greater with a second-order algorithm. The parameter update between iterations is computed as <span class="math display">\[
+\boldsymbol{\theta}^{[t+1]} = \boldsymbol{\theta}^{[t]} - {\textbf{H}^{[t]}}^{-1}\boldsymbol{\delta}(\boldsymbol{\theta}^{[t]};\textbf{y})
+\]</span> and requires the computation <strong>and</strong> inversion of the <span class="math inline">\((p \times p)\)</span> matrix <span class="math inline">\(\textbf{H}\)</span>. Recall the two layer ANN for the MNIST example from the last chapter. The model has 109,386 parameters. When <span class="math inline">\(p &gt; 1000\)</span>, computing and inverting the Hessian at each iteration is prohibitive. Approximate methods such as limited memory BFGS (L-BFGS) exist. However, because of the generally large number of parameters, first-order methods dominate in training artificial neural networks; in particular variations of gradient descent.</p>
+<!----
+On Adam optimization, see this: 
+https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/
+---->
+</section>
+</section>
+</section>
+<section id="gradient-descent-gd-and-stochastic-gradient-descent-sgd" class="level2" data-number="31.2">
+<h2 data-number="31.2" class="anchored" data-anchor-id="gradient-descent-gd-and-stochastic-gradient-descent-sgd"><span class="header-section-number">31.2</span> Gradient Descent (GD) and Stochastic Gradient Descent (SGD)</h2>
+<p>The basic <strong>gradient descent</strong> algorithm was described above: to find the parameter values that minimize the objective function, take a step in the direction of the negative gradient: <span class="math display">\[
+\boldsymbol{\theta}^{[t+1]} = \boldsymbol{\theta}^{[t]} - \epsilon \times \boldsymbol{\delta}(\boldsymbol{\theta}^{[t]}; \textbf{y})
+\]</span></p>
+<p>The rationale is that the objective function decreases fastest in the direction of the opposite gradient. However, it is not guaranteed that <span class="math inline">\(\ell(\boldsymbol{\theta}^{[t+1]};\textbf{y}) \le \ell(\boldsymbol{\theta}^{[t]}; \textbf{y})\)</span> if one takes a full step in the direction of the negative gradient. But the inequality should be true for some value <span class="math inline">\(\epsilon\)</span>, called the <strong>learning rate</strong> or <strong>step size</strong>.</p>
+<p>An analogy to explain gradient descent is finding one’s way down from a mountain at night. You cannot see the path because of darkness, yet you need to descent from the mountain. The best way is to measure the slope in the vicinity of your location (compute the gradient), and to take a step in the direction of the greatest downhill slope. If you repeat this procedure you will either get off the mountain (find the global minimum) or get stuck in a depression (find a local minimum) such as a mountain lake.</p>
+<p>In addition to changing the step length with the learning rate, we can also modify the direction in which we move downhill. The idea is that by taking a more shallow path the direction can be sustained for a longer period of time without measuring the slope again. This would reduce the number of gradient calculations, which can be expensive.</p>
+<p>The classical gradient descent, also called <strong>batch</strong> GD, computes the gradient across all <span class="math inline">\(n\)</span> observations in the training data set. When the objective function takes the form of a sum, <span class="math display">\[
+\ell(\boldsymbol{\theta}; \textbf{y}) = \frac{1}{n} \sum_{i=1}^n C_i(\boldsymbol{\theta};\textbf{y})
+\]</span> the gradient is the sum of the individual gradients <span class="math display">\[
+\delta(\theta_j; \textbf{y}) = \frac{\partial \ell(\boldsymbol{\theta};\textbf{y})}{\partial \theta_j} = \frac{1}{n} \sum_{i=1}^n \frac{\partial C_i(\boldsymbol{\theta};\textbf{y})}{\partial \theta_j}
+\]</span> The parameters are updated after the gradients have been computed for all the parameters according to <a href="#eq-gradient-update" class="quarto-xref">Equation&nbsp;<span>31.1</span></a>. When <span class="math inline">\(n\)</span> is large, computing the gradient can be time consuming. First-order methods tend to require more iterations until convergence and computing the gradient is a primary bottleneck of the algorithms. The <strong>stochastic</strong> GD version is an online algorithm that computes gradients and updates one observation at a time: <span class="math display">\[
+\boldsymbol{\theta}^{[i+1]} = \boldsymbol{\theta}^{[i]} - \epsilon \boldsymbol{\delta}(\boldsymbol{\theta}^{[i]};y_i) \qquad i=1,\cdots,n-1
+\]</span> The true gradient is approximated as the gradient of the <span class="math inline">\(i\)</span><sup>th</sup> sample, and an update is calculated for each sample. This process of passing over the data and updating the parameters <span class="math inline">\(n\)</span> times repeats until convergence, often with a random shuffling of the data between passes to avoid cycling of the algorithm.</p>
+<p>Classical GD and SGD as presented here present the two extremes of calculating gradients between parameter updates: once for the entire sample, or for each observation. While the gradients computed in GD are very stable, they require the most computation between updates. The gradients in SGD on the other hand can be erratic and a poor approximation of the overall gradient. A compromise is <strong>minibatch</strong> gradient descent, where gradients are calculated for a small batch of observations, usually a few hundred.</p>
+<p>SGD with minibatches and backpropagation has become a standard in training neural networks. The original SGD has a fixed learning rate, and an obvious extension is to modify the learning rate, for example, decreasing <span class="math inline">\(\epsilon\)</span> with the iteration. The SGD algorithm then learns quickly early on and learns slower as the algorithm reaches convergence. Adaptive versions with a per-parameter learning rate are AdaGrad (Adaptive Gradient) and RMSProp (Root Mean Square Propagation). Since 2014, Adam-based optimizers (Adaptive Moment Estimation), an extension of RMSProp, have been used extensively in training neural networks due to their strong performance in practice.</p>
+<section id="backpropagation" class="level3">
+<h3 class="anchored" data-anchor-id="backpropagation">Backpropagation</h3>
+<p>Working with neural networks you will hear and read about <strong>backpropagation</strong>. This is not a separate optimization algorithm, but an efficient method of calculating the gradients in a multi layer neural network. Because these networks are based on chaining transformations, you can express the gradient with respect to a parameter by the chain rule of calculus.</p>
+<p>Backpropagation computes the gradient one layer at a time, going backward from the last layer to avoid duplicate computations, and using the chain rule.</p>
+</section>
+</section>
+<section id="tuning-a-network" class="level2" data-number="31.3">
+<h2 data-number="31.3" class="anchored" data-anchor-id="tuning-a-network"><span class="header-section-number">31.3</span> Tuning a Network</h2>
+<p>-The performance of a neural network in training and scoring (inference) is affected by many choices. Training a neural network means tuning a sensitive and over-parameterized nonlinear problem; it is both art and science. Among the choices the model builder has to make are the following:</p>
+<ul>
+<li><p>Hidden layers: number of layers, number of neurons in each layer, activation functions</p></li>
+<li><p>Output function</p></li>
+<li><p>Regularization parameters such as the dropout rate or the penalty for lasso or ridge regularization (see below)</p></li>
+<li><p>Details of optimization: minibatch size, early stopping rule, starting values, number of epochs, learning rate, etc.</p></li>
+</ul>
+<p>All of these should be considered hyperparameters of the network. With other statistical learning algorithms it is customary to determine values for some (or all) of the hyperparameters by estimation or by a form of cross-validation. With neural networks that is rarely the case. Training a single configuration of a network is time consuming and one often settles on a solution if the convergence behavior seems reasonable.</p>
+<section id="regularization" class="level3">
+<h3 class="anchored" data-anchor-id="regularization">Regularization</h3>
+<p>Neural networks are over-parameterized. When we encountered high-dimensional problems previously in statistical learning, we turn to regularization and shrinkage estimation to limit the variability of the fitted function. That was the approach in ridge or lasso regression (<a href="regfeature.html#sec-regularization" class="quarto-xref"><span>Section 9.2</span></a>) and in spline smoothing (<a href="reglocal.html#sec-smoothing-splines" class="quarto-xref"><span>Section 12.3.4</span></a>).</p>
+<p>Regularization in neural networks to reduce overfitting can take three different forms:</p>
+<ol type="1">
+<li><span class="math inline">\(L_1\)</span> penalty (lasso-style) on a particular layer</li>
+<li><span class="math inline">\(L_2\)</span> penalty (ridge-style) on a particular layer</li>
+<li><strong>Dropout</strong> regularization</li>
+</ol>
+<p>Note that the regularization is applied on a per-layer basis, and not just as one big penalty term on the weights and biases of the entire network. Also, frameworks like <code>TensorFlow</code> or <code>Keras</code> allow you to add both regularization penalties separately for the weights, the biases, and/or the output of a layer. In <code>Keras</code> these are called the <code>kernel_regularizer</code>, <code>bias_regularizer</code>, and <code>activity_regularizer</code>, respectively. Each of those can apply an <span class="math inline">\(L_1\)</span>, an <span class="math inline">\(L_2\)</span>, or both penalties. As you can see, there are many choices and possible configurations. Typically, regularization penalties, whether <span class="math inline">\(L_1\)</span> or <span class="math inline">\(L_2\)</span> are applied to the weights of a layer, shrinking them toward zero. The bias terms, which act like intercepts are typically not regularized as that shrinks the model toward one that passes through the origin.</p>
+<p>The new regularization method in the context of neural networks is <strong>dropout</strong> regularization, performed by adding a dropout layer to the network architecture. This is a parameter-free layer that randomly removes units from an input layer or a hidden layer by setting its activation to zero. Dropout learning can be applied to any layer, <a href="#fig-dropout-learning" class="quarto-xref">Figure&nbsp;<span>31.4</span></a> shows depicts a singe layer network with one input unit (<span class="math inline">\(x_3\)</span>) and one hidden unit (<span class="math inline">\(A_2\)</span>) being dropped.</p>
+<div id="fig-dropout-learning" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dropout-learning-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/DropoutLearning.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4"><img src="images/DropoutLearning.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dropout-learning-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.4: Dropout in input and hidden layer.
+</figcaption>
+</figure>
+</div>
+<p>The dropped units do not receive connections from the preceding layer and do not emit output to the following layer.</p>
+<p>Why does dropout learning work and reduce the chance of overfitting a neural network? Each neuron of a layer to which dropout is applied is removed with some probability <span class="math inline">\(\phi\)</span>. During training, the network cannot rely on any one neuron because it might disappear. As a result, assigning large weights to neurons is avoided in favor of spreading weights across the remaining nodes, making them smaller. As with <span class="math inline">\(L_1\)</span> or <span class="math inline">\(L_2\)</span> regularization, the effect of randomly dropping neurons from layers is to shrink the remaining weights to zero. Note that dropout can be applied to any layer and that the dropout rate <span class="math inline">\(\phi\)</span> can vary among the dropout layers. Dropout rates range from <span class="math inline">\(\phi=0.1\)</span> to <span class="math inline">\(\phi = 0.5\)</span>; yet another hyperparameter one has to think about.</p>
+<p>While not regularizing a network can lead to overfitting, choosing a dropout rate or regularization penalty that is too high can lead to under-training the network that struggles to learn the patterns in the data.</p>
+</section>
+<section id="vanishing-gradients-and-dying-relu" class="level3">
+<h3 class="anchored" data-anchor-id="vanishing-gradients-and-dying-relu">Vanishing Gradients and Dying ReLU</h3>
+<p>Training neural networks with backpropagation computes the objective function on a forward pass through the network—from input layer to output layer—and the gradient on the backward pass—from output to input. The goal is to find values for weights and biases where the objective function has a minimum, a zero gradient. In nonlinear optimizations, the gradient thus naturally approaches zero as the iterations converge to a solution. When the gradient is near zero, the model “stops learning” and the process stops.</p>
+<section id="vanishing-gradients" class="level4">
+<h4 class="anchored" data-anchor-id="vanishing-gradients">Vanishing gradients</h4>
+<p>The <strong>vanishing gradient</strong> problem describes the issue where the gradient values become very small and learning of the network slows down (or stops), simply because the gradients are small, not because we have found a minimum of the objective function. This affects deep networks more than shallow networks and the early layers suffer more from vanishing gradients than deep layers since the gradient is accumulated by moving backwards through the network.</p>
+<p>The intuition for this phenomenon is that the overall gradient has a certain value, distributed across all the layers. As layers are chaining transformations, the overall derivative is essentially a long chain rule of products. If the values multiplied in this operation are small, the overall product can be tiny—the gradient is numerically vanishing.</p>
+<p>The vanishing gradient problem was more serious before the discovery of ReLU activation. The use of the sigmoid activation function contributed to vanishing gradients and limited the ability to train networks with many layers. To see why, consider the sigmoid activation <span class="math inline">\(\sigma(x) = 1/(1+\exp\{-x\})\)</span> and its derivative. Since <span class="math inline">\(\sigma(x)\)</span> is the c.d.f. of the standard logistic distribution, the derivative is the standard logistic density function <span class="math display">\[
+f(x) = \frac{\partial \sigma(x)}{\partial x} = \frac{\exp^{-x}}{\left(1+\exp^{-x} \right)^2}
+\]</span></p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-logis-density" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-logis-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="training_ann_files/figure-html/fig-logis-density-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-logis-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.5: Density function of the standard logistic distribution.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The density is symmetric about zero with a max value at zero of <span class="math inline">\(1/(1+1)^2 = 1/4\)</span> (<a href="#fig-logis-density" class="quarto-xref">Figure&nbsp;<span>31.5</span></a>). Because the gradient of the sigmoid activation function is <span class="math inline">\(\le 0.25\)</span>, repeated multiplication can produce very small numbers.</p>
+</section>
+<section id="dying-relu" class="level4">
+<h4 class="anchored" data-anchor-id="dying-relu">Dying ReLU</h4>
+<p>Why does ReLU help with the vanishing gradient problem? It <em>partially</em> helps because the function <span class="math inline">\(\sigma(x) = \max\{0,x\}\)</span> has derivative <span class="math display">\[
+\frac{\partial \sigma(x)}{\partial x} = \left \{
+\begin{array}{ll} x &amp; x &gt; 0 \\ 0 &amp; x &lt;  0 \end{array}
+\right .
+\]</span> When <span class="math inline">\(x &gt; 1\)</span>, multiplying with the gradient increases the product. However, for <span class="math inline">\(x \le 0\)</span>, the gradient is exactly zero and vanishes completely. The situation where many activations are negative, ReLU sets them to zero and essentially drops out the neuron, is known as the <strong>dying ReLU</strong> problem. Once the linear combinations <span class="math inline">\(b^{(t)}_j + \textbf{w}^{(t)}_j\textbf{a}^{(t-1)}\)</span> are mostly in the negative range, the ReLU network cannot recover and dies. A large value for the learning rate will exacerbate this problem as it adjusts the parameter estimates downwards.</p>
+<p>To address the dying ReLU problem and to help with the vanishing gradient issue, the <strong>leaky</strong> ReLU activation function has been proposed: <span class="math display">\[
+\sigma(x) = \left \{ \begin{array}{ll} x &amp; x &gt; 0 \\ \alpha x &amp; x \le 0\end{array}\right .
+\]</span> Leaky ReLU returns a small negative value when <span class="math inline">\(x &lt; 0\)</span>, leading to a non-zero activation and a non-zero (albeit constant, <span class="math inline">\(\alpha\)</span>) gradient. Values for <span class="math inline">\(\alpha\)</span> in the range of 0.01 to 0.1 are common.</p>
+<p>Related activation functions that avoid the dying ReLU issue are the <strong>exponential linear unit</strong> (ELU) function <span class="math display">\[
+\sigma(x) = \left \{ \begin{array}{ll} x &amp; x &gt; 0 \\ \alpha (e^x-1) &amp; x \le 0 \end{array}\right .
+\]</span> and the <strong>Gaussian ELU</strong> <span class="math display">\[
+\sigma(x) = x \,\Phi(x)
+\]</span> where <span class="math inline">\(\Phi(x)\)</span> is the standard Gaussian cumulative distribution function (<a href="#fig-relu-type-funcs" class="quarto-xref">Figure&nbsp;<span>31.6</span></a>).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-relu-type-funcs" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-relu-type-funcs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="training_ann_files/figure-html/fig-relu-type-funcs-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-relu-type-funcs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.6: Acrivation functions related to rectified linear units (ReLU).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Another approach to minimize the odds of network training dying because of negative values, is to initialize the weights using positive values. Choosing random weights as starting points from a standard Gaussian or other distribution that is symmetric about zero, and a ReLU activation function, can cause many zero activations in early stages of training. Choosing random starting weights from distributions of positive random variables avoids this issue—we are assuming here that the inputs are positive-valued.</p>
+</section>
+</section>
+<section id="scaling" class="level3">
+<h3 class="anchored" data-anchor-id="scaling">Scaling</h3>
+<!---
+Check this resource for comments on scaling in neural networks and
+Python code
+https://machinelearningmastery.com/how-to-improve-neural-network-stability-and-modeling-performance-with-data-scaling/
+--->
+<p>Scaling the input variables is typically done for statistical learning methods that depend on measures of distance (clustering) or where the scale of inputs affects the distribution of variability (principal component analysis). In linear regression scaling the inputs by standardizing or normalizing is not really necessary unless the differences in scales across the inputs create numerical instability. Methods that regularize such as ridge or lasso regression often apply scaling internally to make sure that a common adjustment factor (the regularization penalty) applies equally to all coefficients.</p>
+<p>Where do artificial neural networks fit in this? Should you consider scaling the input variables when training ANNs?</p>
+<p>The answer is “Yes, usually you should” for the following reasons:</p>
+<ul>
+<li><p>Neural networks are over-parameterized and very sensitive numerically. Numerical instabilities can throw them off and input variables with different scales is one source of instability that can be avoided.</p></li>
+<li><p>The initial weights and biases are chosen at random, not taking into account the scale of the inputs. In order to get the optimization off well with random starting values, it is highly recommended that the inputs are on a similar scale.</p></li>
+<li><p>The training epochs (iterations) are behaving no worse when the data are scaled. The optimization behavior is frequently better with scaled data.</p></li>
+<li><p>One objection to scaling inputs in regression models is the changing interpretation of the coefficient. You need to know how the data were scaled in order to predict new values, for example. Neural networks are non-interpretable models, the actual values of the weights and biases is not of interest.</p></li>
+</ul>
+<p>The recommended outcome of scaling inputs for neural networks is that all variables have a common range, and their values should be small, between 0 and 1. This suggests two approaches to scaling, standardizing and normalizing.</p>
+<p>A variable is <strong>standardized</strong> by subtracting its mean and dividing by its standard deviation: <span class="math display">\[
+x_s = \frac{x-\overline{x}}{s_x}
+\]</span> The resulting variable has arithmetic mean 0 and standard deviation 1.</p>
+<p>A variable is <strong>normalized</strong> by shifting its range and scaling it to fall between 0 and 1: <span class="math display">\[
+x_n = \frac{x - \min\{x\}}{\max\{x\} - \min\{x\}}
+\]</span></p>
+<p>Should you also scale the output variable? Some recommend it, but I do not. More important than scaling is making sure that the output activation function is chosen properly. For example, if the target variable <span class="math inline">\(Y\)</span> is continuous and takes values <span class="math inline">\(-\infty &lt; Y &lt; \infty\)</span>, then you want an identity (“linear”) output function, and definitely not a ReLU function which would replace all negative values with 0. If, however, you choose a sigmoid or hyperbolic tangent output function, then scaling the output variable to range from 0–1 prior to training is necessary. To interpret the prediction from the neural network you would have to undo any scaling or normalization after the prediction.</p>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;31.1: Minimizing a function <span class="math inline">\(f(x)\)</span> in one parameter <span class="math inline">\(x\)</span>.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;31.2: Minimizing a function <span class="math inline">\(f(x)\)</span> in one parameter <span class="math inline">\(x\)</span>.</span>
+<span class="glightbox-desc lightbox-desc-3">Figure&nbsp;31.3: Find solution that minimizes a function in one parameter.</span>
+<span class="glightbox-desc lightbox-desc-4">Figure&nbsp;31.4: Dropout in input and hidden layer.</span>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./ann.html" class="pagination-link" aria-label="Artificial Neural Networks">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./ann_R.html" class="pagination-link" aria-label="Neural Networks in `R` (with Keras)">
+        <span class="nav-page-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","loop":false,"openEffect":"zoom","closeEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

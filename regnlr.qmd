@@ -1,0 +1,521 @@
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+# Nonlinear Regression {#sec-nonlin-reg}
+
+## Introduction
+
+A model is **nonlinear** if the derivative of the mean function with respect to any parameter is a function of one or more parameter. Curvilinear models such as the polynomial
+$$
+ \Exp[Y] = \beta_0 + \beta_1x + \beta_2x^2
+$$
+have a curved appearance when $\Exp[Y]$ is plotted against $x$ but they are not nonlinear models by our definition. Many models we work with in data science and statistics are highly nonlinear. A logistic regression model is nonlinear in the parameters. Neural networks deliberately introduce nonlinearity through activation functions. Support vector machines use nonlinear kernel transformation to translate the classification problem into a space where linear decision boundaries can be applied. The list goes on and on.
+
+The models considered in this section are nonlinear regression models in the narrow sense, the target variable is continuous and the model errors are additive. The models depend on input variables but there is not a 1--1 correspondence between inputs and parameters. A nonlinear regression model might have one input variable and four parameters. The general form of the nonlinear regression model is
+
+\begin{align*}
+    \bY &= f(\bx,\btheta) + \bepsilon \\
+    \bepsilon &\sim (\bzero, \sigma^2\bI)
+\end{align*}
+
+Except for the nonlinearity of the mean function, the assumptions from the classical linear model carry over: uncorrelated errors are additive with zero mean and constant variance.
+
+Nonlinear regression models have advantages and disadvantages compared to their linear counterparts. Among the advantages are:
+
+- the models are typically **intrinsically interpretable**, meaning that they can be interpreted based on the structure of the model alone. The parameters are meaningful quantities in terms of the subject matter domain.
+- the models are based on physical, biological, economic, etc. theory.
+- the models have fewer parameters compared to linear models.
+
+Among the disadvantages are:
+
+- the need for iterative fitting algorithms, there are no closed-form solutions for the parameter estimates
+- the need for starting values and potential sensitivity to the choice of starting values
+- inference is often approximate
+
+Overall, the advantages outweigh the added complications of nonlinear model fitting. @Schabenberger2001 give numerous examples why nonlinear regression models are preferable over linear ones.
+
+:::{.example}
+::::{.example-header}
+Examples: 4:0 for Nonlinear Models
+::::
+::::{.example-container}
+**Parsimony**. To achieve curvature with inflection in a polynomial model requires at least a model of third degree ($x^3$). Including the lower order terms, this model has 4 parameters. The nonlinear model $\Exp[Y] = 1-\exp\{-\beta x^\alpha\}$ achieves inflection with only two parameters.
+
+**Limiting Behavior**. Many biological or physical processes have bounds and asymptotes. It is difficult to incorporate that behavior into linear models and simple to build nonlinear models that are concave, convex, sigmoidal, sinusoidal, and so on.
+
+**First Principles**. Elementary assumptions about processes naturally lead to nonlinear models. For example, if $y$ is the size of an organism at time $t$, $\alpha$ is the maximum size, and the rate of growth $\partial y/\partial t$ is proportional to the remaining size $\alpha-y$, then integrating the differential equation $\partial y/\partial t = \beta(\alpha - y)$ leads to the nonlinear growth model
+$$
+y(t) = \alpha + (\gamma - \alpha)\exp\{-\beta t\}
+$$
+where $\gamma$ represents the initial size (at time $t=0$).
+
+**Interpretation**. The parameters of nonlinear regression models are typically meaningful quantities that capture important aspects of the phenomenon under study. For the growth model in the previous equation $\alpha$ is the asymptotically achieved final size, $\gamma$ is the initial size at time $t=0$, and $\beta$ relates to the rate of change that determines how quickly the organism grows from $\gamma$ to $\alpha$. 
+
+The mineralization potential of soil can be modeled as $\Exp[Y] = \theta_0 (1-\exp\{-\theta_1 t\})$ where $\theta_0$ is the maximum amount and $0 \le 1-\exp\{-\theta_1 t\} \le 1$ is the proportional mineralization over time (for $\theta_1 > 0$) (@fig-nlr-redterm).  
+
+```{r, echo=FALSE, fig.align="center", out.width="85%"}
+#| fig.cap: The term $1-\exp\{-\theta t\}$ for $\theta = [0.5, 1, 2]$.
+#| label: fig-nlr-redterm
+t <- seq(0,10,0.1)
+th1 <- 0.5
+th2 <- 1
+th3 <- 2
+r1 <- 1-exp(-th1 * t)
+r2 <- 1-exp(-th2 * t)
+r3 <- 1-exp(-th3 * t)
+
+plot(t,r1,type="l",ylab="1-exp(-theta t)",las=1,bty="l")
+lines(t,r2)
+lines(t,r3)
+```
+::::
+:::
+
+## Estimation
+
+Parameter estimation in nonlinear regression models is typically done by nonlinear least squares (@sec-nonlinear-least-squares), finding a numeric solution that minimizes the residual sum of squares criterion @eq-nonlin-sse. Many algorithms can be used for that purpose, Gauss-Newton, Newton-Raphson, Levenberg-Marquardt, or steepest descent algorithms are common.
+
+The Gauss-Newton or Newton-Raphson algorithms are usually implemented with modifications. Gauss-Newton, for example, does not guarantee that the residual sum of squares decreases from one iteration to the next. It is thus combined with a step size (or learning rate) that moves the parameter estimates only a partial step into the direction of the update, making sure that $\text{SSE}^{(t+1)} < \text{SSE}^{(t)}$. The step size can be determined by a line search algorithm or be fixed a priori. 
+
+As discussed in @sec-nonlinear-least-squares, finding the nonlinear LS solution can be expressed in terms of a series of linear models where the $\bX$ matrix is made up of the derivatives of the model, evaluated at the current iterate. Nonlinear least squares suffers from poorly conditioned cross-product matrices because the columns of the matrix of derivative tend to be highly correlated. The derivatives often involve similar terms, creating near-linear dependency and multicollinearity. To stabilize parameter estimation, regularization techniques can be used. The Levenberg-Marquardt algorithm, for example, applies ridge regression to reduce the collinearity in the cross-product matrix formed from the derivatives.
+
+The iterations stop when some convergence criteria is met. The hope is that the algorithm converges to a global minimum in the residual sum of square surface. Monitoring the change in the SSE between iterations is thus common, as is monitoring the change in the parameter estimates. These criteria measure different aspects: a small change in the parameter estimates implies that a small increment of the estimates an be tolerated; a small change in SSE implies that the objective function is flat in the neighborhood of the current solution. Convergence criteria should always be relative criteria, not measuring the absolute change in a criterion between iterations. Finally, convergence of the algorithm according to some measure of change between iterations does not necessarily mean that a global minimum has been reached. Iterations might stop because of lack of progress. For example, when the residual sum of square surface is flat in the neighborhood of the current parameter estimates, a SSE-based criterion might halt the iterations when the iterations should continue to crawl out of the flat spot.
+
+## Starting Values {#sec-nlr-starting-values}
+
+A central issue in fitting nonlinear regression models is the choice of starting values. The algorithm kicks off with initial estimates $\btheta^{(0)}$ and updates them (iterates) until the minimum of SSE is found. Starting values that are close to the solution greatly facilitate the estimation. Starting values far from the solution require more iterations and increase the odds to find a local minimum.
+
+A number of techniques can be used to find starting values for the parameters and these are often used in combination.
+We illustrate with an example from modeling plant yield with the Mitscherlich equation and simulated data.
+
+:::{.example}
+::::{.example-header}
+Example: Mitscherlich Equation for Plant Yield
+::::
+::::{.example-container}
+The Mitscherlich equation is used in agricultural applications to model the yield of a crop as a function of some input $x$, for example, a fertilizer. The systematic part of the equation is
+
+$$
+\lambda + (\xi-\lambda) \exp\left\{ -\kappa x\right\}
+$$ 
+
+The parameters have straightforward interpretations: 
+
+- $\xi$: the crop yield at $x=0$ 
+- $\lambda$: the upper yield asymptote as $x$ increases 
+- $\kappa$: is related to the rate of change, how quickly the yield increases from $\xi$ to $\lambda$
+
+The following code simulates 21 observations from a Mitscherlich model with
+$\lambda = 40$, $\xi = 40$, and $\kappa = 0.01$.
+
+```{r Mitscherlich_data, fig.align="center",out.width="90%"}
+#| fig.cap: Simulated yield data and Mitscherlich model
+#| label: fig-mitsch-data
+set.seed(675)
+x <- seq(from=0, to=400, by=20)
+lambda <- 80
+xi <- 40  
+kappa <- 0.01 
+M <- lambda + (xi-lambda) * exp(-kappa * x)
+Yield <- M + rnorm(length(M),mean=0,sd=3)
+mitsch <- data.frame(Yield,M,x)
+plot(x,M, type="l",las=1,bty="l",ylab="Yield",ylim=c(40,80))
+points(x,Yield)
+```
+
+::::
+:::
+
+### Graphical Inspection
+
+A simple method for finding starting values is to glean values from a scatterplot of the data. For example, a four-parameter logistic response model 
+$$
+\Exp[Y] = \delta + \frac{\alpha}{1+\exp\{\beta-\gamma x\}}
+$$
+has lower and upper asymptotes $\delta$ and $\alpha + \delta$, respectively. The inflection point is located at $x= \beta/\gamma$ and the slope at the inflection point is $\alpha\gamma/2$. Starting values for all four parameters can be found by guesstimating the asymptotes and slope on a scatterplot and solving. 
+
+
+:::{.example}
+::::{.example-header}
+Example: Mitscherlich Equation (Cont'd)
+::::
+::::{.example-container}
+The Mitscherlich equation has a lower and upper bound of yield. The lower bound $\xi$ occurs at $x=0$. Based on the data points in @fig-mitsch-data, starting values of $\xi^{(0)} = 40$ and $\lambda^{(0)} = 80$ are reasonable.
+::::
+:::
+
+
+### Eliminating Linear Parameters
+
+Some models contain linear and nonlinear components. A simple transformation or holding a parameter fixed can then lead to an interim linear model for which values can be obtained by linear regression. The model
+$$
+\Exp[Y] = \theta_0 + \theta_1 x + \theta_2z^{\theta_3}
+$$
+is nonlinear in $\theta_3$ but once $\theta_3$ is fixed, this is a three-parameter linear model. Starting values for $[\theta_0, \theta_1, \theta_2]$ can be found by linear least squares after setting $\theta_3$ to some reasonable value. $z^{\theta_3}$ is then just another input variable in the linear model.
+
+:::{.example}
+::::{.example-header}
+Example: Mitscherlich Equation (Cont'd)
+::::
+::::{.example-container}
+Obtaining good starting values for $\lambda$ and $\xi$ can be done by visual
+inspection of the data. Finding a good starting value for $\kappa$ is trickier. We can lean on
+the math to find a value using linear regression.
+
+The formula for the Mitscherlich equation is
+$$
+\text{E}[Y] = \lambda + (\xi-\lambda) \exp\left\{ -\kappa x\right\}
+$$
+
+Moving terms around and taking logarithms gives 
+$$
+\log(\lambda - \text{E}[Y]) = \log(\lambda-\xi) -\kappa x
+$$
+
+We can approximate $\kappa$ as the negative slope of a linear regression with
+target $\log(\lambda^{(0)}-Y)$ where $\lambda^{(0)}$ is the initial guess for $\lambda$.
+We can then also get a starting value for $\xi^{(0)}$ by transforming the intercept of the
+regression.
+
+```{r, warning=FALSE}
+lm.fit <- lm(log(80-Yield) ~ x, data=mitsch)
+lm.fit
+```
+
+From this linear regression we get starting values
+
+-   $\kappa^{(0)}$ = `{r} -round(coef(lm.fit)[2],4)`
+-   $\xi^{(0)}$ = 80 - exp(`{r} round(coef(lm.fit)[1],4)`) = `{r} round(80 - exp(coef(lm.fit)[1]),4)`
+
+::::
+:::
+
+### Grid Search
+
+A grid search evaluates the residual sum of squares at a set of starting values. Each parameter takes on a set of starting values and the grid is the cartesian product of the parameter sets. For example, if the set of starting values for $\theta_1$ is $S_1 = \{1, 1.5, 2\}$, the set for $\theta_2$ is $S_2 = \{0.1, 0.2\}$ and the set for $\theta_3$ is $S_3 = \{10, 100\}$, their cartesian product--the grid of the starting value sets--has cardinality $|S_1| \times |S_2| \times |S_3| = 3 \times 2 \times 2 = 12$.
+
+The grid search evaluates the residual sum of squares at each point on the grid and starts the iterations from the set of starting values that produce the smallest SSE.
+
+:::{.callout-note}
+The grid search does **not** fit the model to each set of parameters on the grid and chooses the one that leads to the lowest converged SSE. The model is fit to only one vector of starting values, the one that produces the smallest SSE when the model is evaluated at the starting values.
+:::
+
+The number of parameter combinations for which the initial SSE needs to be computed can grow very quickly when the number of parameters in the grid is large or when the grid is very granular. This can take considerable conmputing resources, although the grid evaluation can be easily executed in parallel.
+
+:::{.example}
+::::{.example-header}
+Example: Mitscherlich Equation (Cont'd)
+::::
+::::{.example-container}
+You can fit nonlinear regression models by least squares in `R` with the `nls` function in the built-in `stats` package. Unfortunately, `nls` accepts only one vector of starting values and does not perform a grid search. The `nls2` function in the package by the same name allows a grid of starting values. You combine the functions as follows:
+
+1. Set up a grid of starting values and call `nls2` with `algorithm="grid-search"`. This will return as the coefficients of a nonlinear regression object the best set of starting values.
+2. Call `nls` with the best set returned from `nls2` as the starting values or call `nls2` again, passing the best set from the grid search as the starting values.
+
+The following code creates a $5 \times 6 \times 4$ grid of 120 sets of starting values for the three parameters of the Mitscherlich equation. The equation is defined through a model formula that is passed to `nls2` as the first argument.
+
+```{r starting_grid, warning=FALSE, message=FALSE}
+library(nls2)
+
+gr <- expand.grid(lambda=seq(10,100,20), 
+                  xi    =seq(0,50,10),
+                  kappa =seq(0.001,0.01,0.0025))
+
+mit_eq <- Yield ~ lambda + (xi-lambda)*exp(-kappa*x)
+best_start <- nls2(formula  =mit_eq, 
+                   data     =mitsch,
+                   start    =gr,
+                   algorithm="grid-search")
+
+best_start
+```
+
+Among the sets of starting values examined, 
+$\lambda_0$ =`{r} round(coef(best_start)[1],3)`, 
+$\xi_0$ = `{r} round(coef(best_start)[2],3)`, 
+$\kappa_0$ =`{r} round(coef(best_start)[3],4)` produce the smallest SSE=
+`{r} round((summary(best_start)$sigma^2 * summary(best_start)$df[2]),3)`
+
+Note that the output from `nls2` suggests that an actual optimization with 120 iterations was performed and that the algorithm converged. 120 is the size of the grid of starting values passed to `nls2`. The reported error sum of squares is obtained by evaluating the Mitscherlich equation at the starting values, it is not the SSE at a converged solution. The following code verifies this:
+
+```{r}
+lambda_0 <- coef(best_start)[1]
+xi_0 <- coef(best_start)[2]
+kappa_0 <- coef(best_start)[3]
+fit_0 <- lambda_0 + (xi_0-lambda_0)*exp(-kappa_0*mitsch$x)
+
+sum((mitsch$Yield - fit_0)^2)
+```
+
+We now need to perform the actual nonlinear regression estimation using the 
+best starting values determined by `nls2` as starting values for `nls()`.
+
+```{r start_from_best}
+mitsch_fit <- nls(mit_eq, start=coef(best_start), data=mitsch)
+mitsch_fit
+```
+
+The algorithm coverges very quickly, after only three iterations. 
+The converged parameter estimates are 
+$\widehat{\lambda} =$ `{r} round(coef(mitsch_fit)[1],4)`, 
+$\widehat{\xi} =$ `{r} round(coef(mitsch_fit)[2],4)`, 
+$\widehat{\kappa} =$ `{r} round(coef(mitsch_fit)[3],4)`.
+
+Alternatively, you can call the nls2() function again and pass the previous return object, using the default fitting algorithm:
+
+``` {r}
+nls2(mit_eq, best_start, data=mitsch)
+```
+
+You can also let `nls2()` generate a grid for you by providing a two-row data
+frame that defines the bounding box for the starting values and control the density of
+the grid with the `maxiter` parameter of `nls.control()`.
+
+```{r}
+parm_box <- data.frame(lambda=c(10,100),
+                       xi    =c(0,50),
+                       kappa =c(0.001,0.01))
+
+mit_eq <- Yield ~ lambda + (xi-lambda)*exp(-kappa*x)
+best_start <- nls2(formula  =mit_eq, 
+                   data     =mitsch,
+                   control  =nls.control(maxiter=100),
+                   start    =parm_box,
+                   algorithm="grid-search")
+
+best_start
+```
+
+```{r}
+nls2(mit_eq, best_start, data=mitsch)
+```
+With the best starting values from this evaluation, the final fit converges to almost the same parameter estimates as with the best starting values from the earlier grid.
+::::
+:::
+
+
+## Reparameterization
+
+Reparameterization of a model is the re-expression of a model in terms of a different set of parameters. The overall fit of the model remains the same, but the meaning of the parameters changes. Reparameterization is an important and underappreciated aspect of nonlinear modeling. Expressing the model in terms of different parameters has many uses:
+
+- facilitating finding of starting values
+- reducing the multicollinearity between the columns of the derivative matrix
+- imposing constraints on the parameter estimates
+
+### Imposing a Positivity Constraint
+
+:::{.example}
+::::{.example-header}
+Example: Theophylline Concentration
+::::
+::::{.example-container}
+@Boeckmanetal1992 report serum concentration profiles for the anti-asthma drug theophylline, administered orally to 12 subjects. The serum concentrations were measured at ten time points over a 25-hour period. The subjects fall into two groups, depending on one of two doses of theophylline administered. The data have a longitudinal structure and have been analyzed using nonlinear mixed models by @Davidian1995, @PinheiroBates1995, and others.
+
+We ignore the longitudinal aspect of the data here and fit a nonlinear regression model to data from all subjects--we will return to these data with a longitudinal analysis in @sec-mixed-longitudinal.
+
+```{r, warning=FALSE, message=FALSE}
+library("duckdb")
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+theoph <- dbGetQuery(con, "SELECT * FROM theoph_all")
+
+dbDisconnect(con)
+head(theoph,20)
+```
+
+Like @Davidian1995, we eliminate the data points at time $t=0$ from the analysis of a one-compartmental model with first-order absorption and elimination. This model expresses $C(t)$, the serum concentration at time $t$ following administration of dose $D$, as 
+$$
+C(t) = \frac{D k_a}{V(k_a - Cl/V)}\left\{\exp\left(-\frac{Cl}{V}t\right) - \exp(-k_a t) \right\}
+$$ {#eq-compartmental1}
+
+The parameters to be estimated in @eq-compartmental1 are $\{k_a,V,Cl\}$, the rate of absorption $k_a$, the volume of distribution $V$, and the clearance $Cl$.
+
+We first fit the model in this parameterization
+
+```{r}
+comp_model <- conc ~ (Dose * ka)/(V*(ka-Cl/V)) * (exp(-Cl/V*Time) - exp(-ka*Time))
+fit1 <- nls(formula=comp_model,
+            start  =list(Cl=0.01, ka=1, V=0.2), 
+            data   =theoph,
+            subset =(theoph$Time > 0))
+summary(fit1)
+```
+The fit converges in `{r} fit1$convInfo$finIter` iterations to estimates 
+$\widehat{Cl}$ = `{r} round(coef(fit1)[1],4)`, 
+$\widehat{k}_a$ = `{r} round(coef(fit1)[2],4)`, and 
+$\widehat{V}$ = `{r} round(coef(fit1)[3],4)`.
+
+Thankfully, the estimates for all parameters are positive; a negative absorption, negative clearance, or negative volume would be difficult to explain. The positivity constraint can be built into the model through reparameterization. 
+Instead of estimating $k_a$, $Cl$, and $V$, the model can be written in terms of $\beta_1 = \log Cl$, $\beta_2 = \log k_a$, and $\beta_3 = \log V$.
+
+
+```{r}
+comp_model2 <- conc ~ (Dose * exp(beta2)) / (exp(beta3)*(exp(beta2)-exp(beta1)/exp(beta3))) *
+                       (exp(-exp(beta1)/exp(beta3)*Time) - exp(-exp(beta2)*Time))
+
+fit2 <- nls(formula=comp_model2, 
+            start  =list(beta1=-3, beta2=0.2, beta3=-0.8), 
+            data   =theoph,
+            subset =(theoph$Time > 0))
+summary(fit2)
+```
+
+The $\beta$ estimates now can range on the real line, $-\infty < \beta_j < \infty$, the exponentiated values will be positive. The reparameterized model converges to the same solution, expressed in terms of different parameters. The equivalence can be verified by exponentiating the estimates of `fit2`:  
+
+```{r}
+exp(coef(fit2))
+coef(fit1)
+```
+
+::::
+:::
+
+For parameters that represent proportions a logit transform is useful. If $0 \le \alpha \le 1$, we can instead fit the unconstrained parameter $\theta = \log (\alpha/(1-\alpha)$. This should look familiar, it is the transformation that maps the mean in logistic regression to the linear predictor. 
+
+### Expected Value Parameterization
+
+This technique is helpful to find starting values for parameters and has a positive side-effect in reducing a **curvature** component of the nonlinear model. A model has two curvatures, called the **intrinsic** and the **parameter-effects** curvatures. Intrinsic curvature measures how much the model bends if the parameters are changed when the inputs are held fixed. (This is not the same as measuring how much the mean function changes with a change in the inputs.) 
+
+Parameterization does not affect the intrinsic curvature, but it affects the second component, the parameter-effects curvature. This component measures the quality of the linear approximation in a neighborhood of the parameter values. 
+
+Models with large curvature have undesirable statistical properties, they converge more slowly, the parameter estimates are biased with unreliable standard errors and the asymptotic inference assuming that the estimates are Gaussian distributed is questionable.
+
+The **expected value parameterization** introduced by Ratkowsky [-@Ratkowsky1983; -@Ratkowsky1990] reduces the parameter-effects curvature which he argues is the greater of the two curvature components.
+
+Suppose the model has a single input variable, $x$. By visual inspection based on the scatterplot of $Y$ versus $x$ you can obtain a guesstimate of $\Exp[Y|x^*]$ for a particular value $x^*$ of the input. Call this estimate $\mu^*$ and set it equal to $f(x^*,\btheta)$. You can now replace one of the parameters with $\mu^*$ for which you already have a starting value. An example from @Schabenberger2001 [p.209] will make this approach more tangible.
+
+:::{.example}
+::::{.example-header}
+Example: Michaelis-Menten Model
+::::
+::::{.example-container}
+The Michaelis-Menten model is popular in biochemical applications to describe chemical reactions in enzyme systems:
+$$
+\Exp[Y|x] = \frac{Vx}{x+K}
+$$ {#eq-michaelis-menten}
+$Y$ is the velocity of the chemical reaction, $x$ is the substrate concentration. The parameters $V$ and $K$ measure the theoretical maximum velocity ($V$) and the substrate concentration at with velocity $V/2$ is attained ($K$).
+
+Choose any concentration $x^*$ and estimate the velocity $\mu^*$ from a scatterplot of the data. Under the Michaelis-Menten model we now have
+$$
+\mu^* = \frac{Vx^*}{x^*+K}
+$$
+Solve for $V$, the parameter most difficult to specify:
+$$
+V = \mu^* \, \frac{x^*+K}{x^*}
+$$
+You can now substitute this expression for $V$ in @eq-michaelis-menten, leading to the reparameterized model
+$$
+\Exp[Y|x] = \mu^* \frac{x+xK/x^*}{x^*+xK/x^*}
+$$
+Instead of the parameters $\btheta = [V,K]$ you are now estimating $\btheta^* = [\mu^*,K]$. This model has the same intrinsic curvature as @eq-michaelis-menten but has lower parameter-effects curvature and the starting value for $\mu^*$ is easily found by graphical inspection.
+
+Choosing a second pair of values $(x^{**},\mu^{**})$, you can also replace $K$ with an expected-value parameter.
+::::
+:::
+
+### Defining Relationships
+
+The expected-value reparameterization does not lead to a more readable form of the model, we choose a value $x^*$ and replace one of the parameters with $\mu^*$. @Schabenberger2001 describe the reverse process, choosing a value $\mu^*$ and replacing a model parameter with the input value $x^*$ that corresponds to it. This is termed reparameterization through **defining relationships** and is useful when the goal is to estimate $x^*$, an inverse prediction problem.
+
+This occurs frequently in dose-response studies where one is interested in the amount of input one has to provide to achieve a particular output. For example, the $LD_{50}$ represents the lethal dosage at which 50\% of the subjects die, the $GR_{25}$ represents the input that increases or decreases growth by 25\%. Turning these quantities into model parameters has the added benefit that we can obtain estimates and standard errors, compute confidence intervals and test hypotheses.
+
+As with expected-value parameters, the defining relationship is
+$$
+\Exp[Y|x^*] = f(x^*,\btheta)
+$$
+but now we are solving for $x^*$ in the quest to replace a parameter and not for $\Exp[Y|x^*]$.
+
+:::{.example}
+::::{.example-header}
+Example: Log-logistic Growth Model
+::::
+::::{.example-container}
+@Schabenberger2001 [pp.234--236] apply these ideas to a log-logistic model for growth:
+$$
+\Exp[Y|x] = \delta + \frac{\alpha-\delta}{1+\psi\exp\{\beta\log(x)\}}
+$$
+The asymptotes of the growth model are $\alpha$ and $\delta$ and growth transitions in sigmoidal shape between those. 
+Define $\lambda_K$ as the the value at which $K\%$ of the difference between lower and upper asymptote is reached
+$$
+\Exp[Y|\lambda_K] = \delta + \frac{100-K}{100}(\alpha-\delta)
+$$
+Now consider the **defining relationship**
+$$
+\delta + \frac{100-K}{100}(\alpha-\delta) = \delta + \frac{\alpha-\delta}{1+\psi\exp\{\beta\log(\lambda_K)\}}
+$$
+@Schabenbergeretal1999 solve for $\psi$, leading to the reparameterized log-logistic model
+$$
+\Exp[Y|x] = \delta + \frac{\alpha-\delta}{1+\frac{K}{100-K}\exp\{\beta\log(x/\lambda_K)\}}
+$$
+@fig-sim-log-logistic shows simulated data from a log-logistic model. 
+```{r, echo=FALSE, warning=FALSE, fig.align="center", out.width="90%"}
+#| fig.cap: Simulated data under a log-logistic model
+#| label: fig-sim-log-logistic
+set.seed(654)
+x <- seq(0.0001,0.6,.01)
+x <- x + abs(rnorm(length(x),0,0.1))
+x <- sort(x)
+alpha <- 100
+delta <- 10
+psi <- 50 
+beta <- 2.5
+
+mn <- delta + (alpha-delta)/(1+psi*exp(beta*log(x)))
+y <- mn + rnorm(length(x),mean=0,sd=9)
+plot(x,y,las=1,bty="l")
+df <- data.frame(y,x)
+#lines(x,mn)
+
+```
+
+We can fit the model in the $\lambda_K$ parameterization as follows, for example, with $K=50$: 
+
+```{r}
+K <- 50
+loglog <- y ~ delta + (alpha-delta)/(1+(K/(100-K)*exp(beta*log(x/lambda))))
+fit <- nls(formula=loglog, data=df,
+           start=list(alpha=100, delta=3, lambda=0.2, beta=1)
+           )
+summary(fit)
+```
+
+For $K=50$, $\lambda$ is the point on the $x$-axis where the difference between upper and lower asymptote is reduced by half, $\widehat{\lambda}=$ `{r} round(coef(fit)[3],4)`. We can validate that easily:
+
+```{r}
+predict(fit,newdata=data.frame(x=coef(fit)[3]))
+as.numeric(coef(fit)[1] - 0.5*(coef(fit)[1] - coef(fit)[2]))
+```
+
+@fig-sim-log-logistic_50 displays observed and fitted values along with the $\widehat{\lambda}_{50}$ value.
+
+```{r, echo=FALSE, fig.align="center", out.width="90%"}
+#| fig.cap: Observed and fitted values with $\lambda_{50}$
+#| label: fig-sim-log-logistic_50
+plot(df$x,df$y,las=1,bty="l",xlab="x",ylab="y")
+lines(df$x,predict(fit),lwd=2)
+hval_50 <- coef(fit)[2] + (coef(fit)[1] - coef(fit)[2])/2
+xval_50 <- coef(fit)[3]
+abline(h=hval_50,lty="dotted",col="red")
+abline(v=xval_50,lty="dotted",col="red")
+```
+The model is easily changed to estimate a different point of reduction, for example $\lambda_{75}$:
+
+```{r}
+K <- 75
+loglog <- y ~ delta + (alpha-delta)/(1+(K/(100-K)*exp(beta*log(x/lambda))))
+fit2 <- nls(formula=loglog, data=df,
+           start=list(alpha=100, delta=3, lambda=0.2, beta=1)
+           )
+summary(fit2)
+```
+Notice that the parameter estimates of $\alpha$, $\delta$, and $\beta$ do not change, and the overall fit is the same, as can be seen from the residual standard error. The estimate of the point where the difference between the asymptotes is reduced by 75\% is $\widehat{\lambda}_{75}=$ `{r} round(coef(fit2)[3],4)`.
+
+```{r}
+predict(fit2,newdata=data.frame(x=coef(fit2)[3]))
+as.numeric(coef(fit2)[1] - 0.75*(coef(fit2)[1] - coef(fit2)[2]))
+```
+
+::::
+:::

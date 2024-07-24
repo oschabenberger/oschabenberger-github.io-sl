@@ -1,0 +1,27 @@
+
+# Deep Learning {#sec-deep-learning}
+
+## Introduction
+
+We can at best provide an introduction into the vast topic of deep learning in this material. Our goal is to continue the discussion of neural networks and move from the generic ANN to specialized neural networks that are used for specific types of data. 
+
+**Convolutional** neural networks process data that appears on a grid. The most frequent case is two-dimensional data in images that are arranged into rows and columns of pixels. These networks take advantage of the spatial layout of the pixels and train neural networks for tasks that are relevant in computer vision: object detection, object classification, edge detection, face detection and recognition, optical character recognition (OCR) and so forth.
+
+**Recurrent** neural networks process data that are sequential in nature such as text or time series. 
+
+Deep neural networks are one manifestation of deep learning.
+
+Since 2017, when the architecture was described in @Vaswani_etal_2017, and in particular since 2022, when Chat GPT 3.5 was released, **transformer** architectures have revolutionized the approach to natural language modeling and to artificial intelligence in general. We give a brief introduction into transformer architectures as an evolution of recurrent encoder/decoder networks.
+
+**Reinforcement learning** also belongs to the deep learning technologies. It is a very different form of learning that does not fall neatly into the delineation of supervised and unsupervised methods of learning. In reinforcement learning, an agent reacts to feedback from the environment and chooses actions to optimize future positive feedback. 
+
+## Convolutional Neural Networks
+
+
+## Recurrent Neural Networks
+
+
+## Transformers
+
+
+## Reinforcement Learning

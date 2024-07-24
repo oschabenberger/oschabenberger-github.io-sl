@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 29&nbsp; Mixed Models for Longitudinal Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./ann.html" rel="next">
+<link href="./corrdata.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./glm.html">Supervised Learning III: Advanced Topics</a></li><li class="breadcrumb-item"><a href="./mixed.html"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">29.1</span> Introduction</a>
+  <ul>
+  <li><a href="#motivation" id="toc-motivation" class="nav-link" data-scroll-target="#motivation">Motivation</a></li>
+  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
+  <li><a href="#predicting-random-effects" id="toc-predicting-random-effects" class="nav-link" data-scroll-target="#predicting-random-effects">Predicting Random Effects</a></li>
+  </ul></li>
+  <li><a href="#linear-mixed-models" id="toc-linear-mixed-models" class="nav-link" data-scroll-target="#linear-mixed-models"><span class="header-section-number">29.2</span> Linear Mixed Models</a>
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#estimation-and-prediction" id="toc-estimation-and-prediction" class="nav-link" data-scroll-target="#estimation-and-prediction">Estimation and Prediction</a>
+  <ul class="collapse">
+  <li><a href="#fixed-effects-and-random-effects" id="toc-fixed-effects-and-random-effects" class="nav-link" data-scroll-target="#fixed-effects-and-random-effects">Fixed effects and random effects</a></li>
+  <li><a href="#covariance-parameters" id="toc-covariance-parameters" class="nav-link" data-scroll-target="#covariance-parameters">Covariance parameters</a></li>
+  </ul></li>
+  <li><a href="#choosing-random-effects" id="toc-choosing-random-effects" class="nav-link" data-scroll-target="#choosing-random-effects">Choosing Random Effects</a></li>
+  <li><a href="#linear-mixed-models-in-r" id="toc-linear-mixed-models-in-r" class="nav-link" data-scroll-target="#linear-mixed-models-in-r">Linear Mixed Models in <code>R</code></a></li>
+  </ul></li>
+  <li><a href="#sec-glmm" id="toc-sec-glmm" class="nav-link" data-scroll-target="#sec-glmm"><span class="header-section-number">29.3</span> Generalized Linear Mixed Models (GLMM)</a>
+  <ul>
+  <li><a href="#introduction-1" id="toc-introduction-1" class="nav-link" data-scroll-target="#introduction-1">Introduction</a></li>
+  <li><a href="#estimation-approaches" id="toc-estimation-approaches" class="nav-link" data-scroll-target="#estimation-approaches">Estimation Approaches</a></li>
+  <li><a href="#glmm-in-r" id="toc-glmm-in-r" class="nav-link" data-scroll-target="#glmm-in-r">GLMM in <code>R</code></a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./glm.html">Supervised Learning III: Advanced Topics</a></li><li class="breadcrumb-item"><a href="./mixed.html"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-mixed-longitudinal" class="quarto-section-identifier"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="29.1">
+<h2 data-number="29.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">29.1</span> Introduction</h2>
+<section id="motivation" class="level3">
+<h3 class="anchored" data-anchor-id="motivation">Motivation</h3>
+<p>In the previous chapter we analyzed longitudinal data with correlated error models. The example in <a href="corrdata.html#sec-apples-corr-errors" class="quarto-xref"><span>Section 28.3.3</span></a> analyzed diameter measurements of 80 apples over a 12-week period. The fixed-effect model was a linear relationship between diameter and measurement time. If subscript <span class="math inline">\(i\)</span> identifies the apple and subscript <span class="math inline">\(j\)</span> the measurement occasion, the model for an individual observation is <span class="math display">\[
+Y_{ij} = \beta_0 + \beta_1 x_{ij} + \epsilon_{ij}, \quad i=1,\cdots,80
+\]</span> The graph of the fitted model with an autocorrelation structure of the <span class="math inline">\(\epsilon_{ij}\)</span> is shown in <a href="corrdata.html#fig-apple-corr-error" class="quarto-xref">Figure&nbsp;<span>28.9</span></a>. All apples share the same intercept and slope. That seems problematic, some apples are clearly not represented well by that overall trend. In the vernacular of mixed models, this overall trend is called the <strong>population average</strong> trend for reasons that will become apparent soon.</p>
+<p>How can we introduce more subject-specific behavior to capture that apples differ in their growth behavior? An obvious step would be to vary the intercepts and slopes between apples. The model <span id="eq-many-fixed-effects"><span class="math display">\[
+Y_{ij} = \beta_{0i} + \beta_{1i} x_{ij} + \epsilon_{ij}, \quad i=1,\cdots,80
+\tag{29.1}\]</span></span></p>
+<p>has a cluster-specific intercept and a cluster-specific intercept. These 80 intercepts and 80 slopes capture the variability in the fixed-effects among the clusters (apples).</p>
+<p>Is there a more parsimonious way to express this variability? Replace in <a href="#eq-many-fixed-effects" class="quarto-xref">Equation&nbsp;<span>29.1</span></a> <span class="math inline">\(\beta_{0i}\)</span> with <span class="math inline">\(\beta_0 + b_0\)</span> and <span class="math inline">\(\beta_{1i}\)</span> with <span class="math inline">\(\beta_1 + b_1\)</span>: <span id="eq-random-int-and-slope"><span class="math display">\[
+Y_{ij} = (\beta_0 + b_{0i}) + (\beta_1 + b_{1i}) x_{ij} + \epsilon_{ij}, \quad i=1,\cdots,80
+\tag{29.2}\]</span></span></p>
+<p>The <span class="math inline">\(b_{0i}\)</span> and <span class="math inline">\(b_{1i}\)</span> terms in this model are <strong>random variables</strong>, not fixed effects. Specifically, we assume that <span class="math inline">\(b_{0i} \sim G(0,\sigma^2_0)\)</span> and <span class="math inline">\(b_{1i} \sim G(0,\sigma^2_1)\)</span>. We are back to having only two fixed effects: <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span>. A specific apple’s intercept is expressed as a random deviation from the overall intercept. A specific apple’s slope is expressed as a random deviation from the overall slope.</p>
+<p>Another way of thinking about the intercepts and slopes in <a href="#eq-random-int-and-slope" class="quarto-xref">Equation&nbsp;<span>29.2</span></a> is as follows: an effect consists of two elements: a fixed, overall, contribution and a random draw from a Gaussian distribution that is specific to the cluster (to the apple). Because the random effect is centered at 0, the overall contribution describes the behavior of the average apple. Adding the random draw yields the apple-specific effect. This explains the terms <strong>population-average</strong> and <strong>subject-specific</strong> effects. The behavior of the average apple is described by the population-average model <span class="math display">\[
+\text{E}[Y_{ij}] = \beta_0 + \beta_1 x_{ij}
+\]</span> The apple-specific behavior is described by the conditional model <span class="math display">\[
+\text{E}[Y_{ij} | b_{0i}, b_{1i}] = (\beta_0 + b_{0i}) + (\beta_1 + b_{1i}) x_{ij}
+\]</span></p>
+<p>What have we gained by introducing random effects <span class="math inline">\(b_{0i}\)</span> and <span class="math inline">\(b_{1i}\)</span> in <a href="#eq-random-int-and-slope" class="quarto-xref">Equation&nbsp;<span>29.2</span></a> compared to <a href="#eq-many-fixed-effects" class="quarto-xref">Equation&nbsp;<span>29.1</span></a>?</p>
+<ol type="1">
+<li><p>A very natural way of expressing variability as normal random variation about a fixed value.</p></li>
+<li><p>A more parsimonious way of expressing the variability in intercepts and slopes. Instead of 160 parameters in the mean function (80 <span class="math inline">\(\beta_{0i}\)</span>s and 80 <span class="math inline">\(\beta_{1i}\)</span>s) we have only four parameters: <span class="math inline">\(\beta_0, \beta_1, \text{Var}[b_{0i}] = \sigma^2_0, \text{Var}[b_{1i}] = \sigma^2_1\)</span>.</p></li>
+<li><p>The ability to model the population average behavior and the cluster-specific behavior within the same model.</p></li>
+<li><p>A straightforward way to address questions such as “do the slopes vary between clusters”? This is simply a test of <span class="math inline">\(H: \sigma^2_1 = 0\)</span>. If a random variable with mean 0 has variance 0, then it is the constant 0. If $= 0, then <span class="math inline">\(\beta_1 + b_{1i} = \beta_1\)</span> and a common slope for all subjects is appropriate.</p></li>
+</ol>
+</section>
+<section id="definition" class="level3">
+<h3 class="anchored" data-anchor-id="definition">Definition</h3>
+<div class="definition">
+<div class="definition-header">
+<p>Definition: Mixed Model</p>
+</div>
+<div class="definition-container">
+<p>A <strong>mixed model</strong> is a statistical model that contains multiple sources of random variation in addition to systematic (=fixed) effects. The random sources of variation separate into those describing the variability of model components and the variability of the target given all other effects.</p>
+<p>Every major family of statistical model features a mixed model version. There are, for example, linear mixed models, nonlinear mixed models, generalized linear mixed models, generalized additive mixed models, and so on.</p>
+</div>
+</div>
+<p>Counting the number of sources of random variation in the definition of a mixed model deserves some explanation. The issue arises because some models have a natural formulation in terms of additive errors. For example, the linear model for clustered data <span class="math display">\[
+\textbf{Y}_i = \textbf{X}_i\boldsymbol{\beta}+ \boldsymbol{\epsilon}_i
+\]</span> expresses the distributional properties of cluster target vector <span class="math inline">\(\textbf{Y}_i\)</span> through the distributional properties of the model errors <span class="math inline">\(\boldsymbol{\epsilon}_i \sim (\textbf{0},\textbf{R}_i)\)</span>. This model contains one source of random variation, <span class="math inline">\(\boldsymbol{\epsilon}_i\)</span>. Adding a second random component, <span class="math inline">\(\textbf{Z}_i\textbf{b}_i\)</span> where <span class="math inline">\(\textbf{b}_i \sim (\textbf{0},\textbf{D})\)</span> is a random vector, creates a (linear) mixed model: <span class="math display">\[
+\textbf{Y}_i = \textbf{X}_i\boldsymbol{\beta}+ \textbf{Z}_i \textbf{b}_i + \boldsymbol{\epsilon}_i
+\]</span> This model now has two random sources of variation, <span class="math inline">\(\boldsymbol{\epsilon}_i\)</span> and <span class="math inline">\(\textbf{b}_i\)</span>. The distribution of <span class="math inline">\(\textbf{Y}_i\)</span> now can be interpreted in a population-average sense and in a cluster-specific sense: <span class="math display">\[
+\begin{align*}
+\textbf{Y}_i &amp;\sim (\textbf{X}_i\boldsymbol{\beta}, \textbf{Z}_i\textbf{D}\textbf{Z}_i^\prime + \textbf{R}_i) \\
+\textbf{Y}_i | \textbf{b}_i &amp;\sim (\textbf{X}_i\boldsymbol{\beta}+ \textbf{Z}_i\textbf{b}_i, \textbf{R}_i)
+\end{align*}
+\]</span></p>
+<hr>
+<p>In a generalized linear model the errors do not have an additive formulation. Instead, the distributional properties of the target are specified directly. For example, suppose that <span class="math inline">\(\textbf{Y}_i\)</span> is a vector of (0,1) values that specify the disease state of an individual over time. For example, <span class="math inline">\(Y_{i1} = 1\)</span> if subject <span class="math inline">\(i\)</span> has the disease at the first observation occasion, and <span class="math inline">\(Y_{ij} = 0\)</span> if the subject does not have the disease at the <span class="math inline">\(j\)</span><sup>th</sup> occasion. A generalized linear mixed model for this situation might specify <span class="math display">\[
+\begin{align*}
+\textbf{Y}_i | \textbf{b}_i &amp;\sim \text{Bernoulli}(\boldsymbol{\pi}_i) \\
+\text{logit}(\pi_{ij} | \textbf{b}_i) &amp;= \textbf{x}_{ij}^\prime \boldsymbol{\beta}+ \textbf{z}_{ij}^\prime\textbf{b}_i \\
+\end{align*}
+\]</span> The expression for the linear predictor contains one random variable, <span class="math inline">\(\textbf{b}_i\)</span>. The second source of random variation is implied through assuming that <span class="math inline">\(\textbf{Y}_i\)</span> conditional on the random effects, has a Bernoulli distribution.</p>
+</section>
+<section id="predicting-random-effects" class="level3">
+<h3 class="anchored" data-anchor-id="predicting-random-effects">Predicting Random Effects</h3>
+<p>Let’s return to the model with random intercept and random slopes in the apple example, <a href="#eq-random-int-and-slope" class="quarto-xref">Equation&nbsp;<span>29.2</span></a>. The conditional (cluster-specific) and marginal (population-average) interpretations are elegant. With an estimate of <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span>, we can predict the population-average trend of apples as <span class="math display">\[
+\widehat{Y}_{ij} = \widehat{\beta}_0 + \widehat{\beta}_1 x_{ij}
+\]</span> How do we compute a cluster-specific prediction for the <span class="math inline">\(i\)</span><sup>th</sup> apple when <span class="math inline">\(b_{0i}\)</span> and <span class="math inline">\(b_{1i}\)</span> are unobservable random variables? We cannot estimate random variables, but fortunately, we can <strong>predict</strong> them. Based on the observed data and the distributional assumptions, values <span class="math inline">\(\tilde{b}_{0i}\)</span> and <span class="math inline">\(\tilde{b}_{1i}\)</span> can be found that are in some sense “best” guesses for the unobservable random variables. With those values the cluster-specific predictions can be computed: <span class="math display">\[
+(\widehat{Y}_{ij} | b_{0i}=\tilde{b}_{0i}, \,b_{1i}=\tilde{b}_{1i}) = \widehat{\beta}_0 + \tilde{b}_{0i} + (\widehat{\beta}_1 + \tilde{b}_{1i}) x_{ij}
+\]</span> Predictors of the random effects can be motivated in a number of ways, for example, by maximizing the joint density of <span class="math inline">\(\boldsymbol{\epsilon}\)</span> and <span class="math inline">\(\textbf{b}\)</span> <span class="citation" data-cites="Henderson1950 Henderson1984">(<a href="references.html#ref-Henderson1950" role="doc-biblioref">Henderson 1950</a>; <a href="references.html#ref-Henderson1984" role="doc-biblioref">R. 1984</a>)</span> or by considering optimal unbiased predictors under squared-error loss <span class="citation" data-cites="Harville1976">(<a href="references.html#ref-Harville1976" role="doc-biblioref">Harville 1976</a>)</span>.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Prediction of Random Variables">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Prediction of Random Variables
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>We have encountered the issue of estimating parameters versus predicting random variables before. When predicting the target value for a new observation in regression models, we have a choice of estimating <span class="math inline">\(\text{E}[Y | x_0]\)</span>, the mean of the target at <span class="math inline">\(x_0\)</span>, or predicting <span class="math inline">\(Y | x_0\)</span>, the value of the random variable <span class="math inline">\(Y\)</span> at <span class="math inline">\(x_0\)</span>. In discussing regression models, this is often presented as the difference between predicting the average at <span class="math inline">\(x_0\)</span> or a single observation at <span class="math inline">\(x_0\)</span>.</p>
+<p>In the classical linear model, the predicted values are the same for both, <span class="math inline">\(\widehat{y} = \textbf{x}_0\widehat{\boldsymbol{\beta}}\)</span>. What differs is the precision of that quantity. If we look for unbiased estimators that minimize squared error loss, then the relevant loss for predicting the mean is <span class="math inline">\(\text{Var}[\widehat{Y} - \text{E}[Y|x_0]]\)</span> and for predicting <span class="math inline">\(Y|x_0\)</span> it is <span class="math inline">\(\text{Var}[\widehat{Y}-Y]\)</span>. The former is the variance of <span class="math inline">\(\widehat{Y}\)</span>, the latter is the variance of a difference (since <span class="math inline">\(Y\)</span> is a random variable)</p>
+</div>
+</div>
+</div>
+<p>So the good news is that by modeling the variation in the model terms through random effects, rather than through many fixed effects, we can calculate the solutions for the random effects and predict a cluster-specific response. This has an interesting implication for forecasting new values. We can forecast an apple’s diameter at any time point <span class="math inline">\(x_0\)</span>, even if it falls beyond the measurement period: <span class="math display">\[
+(\widehat{Y}_{ij} | b_{0i}=\tilde{b}_{0i}, \,b_{1i}=\tilde{b}_{1i}, x=x_0) = \widehat{\beta}_0 + \tilde{b}_{0i} + (\widehat{\beta}_1 + \tilde{b}_{1i}) x_0
+\]</span> How would we predict the response of a new apple, one that did not participate in the study? Our best estimates of the intercept and slope for this new apple are the population-average estimates <span class="math inline">\(\widehat{\beta}_0\)</span> and <span class="math inline">\(\widehat{\beta}_1\)</span>. Unless we have reason to believe the new apple is not represented by the training data, we predict its diameter as <span class="math display">\[
+\widehat{Y}^* | x=x_0 = \widehat{\beta}_0 + \widehat{\beta}_1 x_0
+\]</span> What values for <span class="math inline">\(\tilde{b}_0\)</span> and <span class="math inline">\(\tilde{b}_1\)</span> are best for this new apple? If diameter measurements are available, and the apple did not contribute to the analysis, we can compute the predictors of the random effects. If diameter measurements are not available—the more realistic case—the random effects are best predicted with their mean, which is zero. In other words, the population-average prediction is the best we can do for new observations.</p>
+</section>
+</section>
+<section id="linear-mixed-models" class="level2" data-number="29.2">
+<h2 data-number="29.2" class="anchored" data-anchor-id="linear-mixed-models"><span class="header-section-number">29.2</span> Linear Mixed Models</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before “LMM” became the acronym for Large Language Model, it was the acronym for the Linear Mixed Model. LMM in this chapter refers to the linear mixed model.</p>
+</div>
+</div>
+<section id="setup" class="level3">
+<h3 class="anchored" data-anchor-id="setup">Setup</h3>
+<p>Mixed models apply to many data structures. Longitudinal clustered data is a special situation where the data breaks into <span class="math inline">\(k\)</span> clusters of size <span class="math inline">\(n_1, \cdots, n_k\)</span>. Split-plot experimental designs also have a linear mixed model representation, for example. To cover the more general case of the linear mixed model we do not explicitly call out the clusters with index <span class="math inline">\(i\)</span>. This makes the notation a bit cleaner. If you are thinking about a clustered data structure, where <span class="math inline">\(\textbf{Y}_i\)</span> is the <span class="math inline">\((n_i \times 1)\)</span> vector of responses for cluster <span class="math inline">\(i\)</span>, <span class="math inline">\(\textbf{X}_i\)</span> is an associated matrix of inputs for the fixed effects, and <span class="math inline">\(\textbf{Z}_i\)</span> is the matrix of inputs for the random effects, we now stack and re-arrange these as follows: <span class="math display">\[
+\textbf{Y}= \left [\begin{array}{c} \textbf{Y}_1 \\ \vdots \\ \textbf{Y}_k \end{array} \right]
+\quad
+\textbf{X}= \left [ \begin{array}{c} \textbf{X}_1 \\ \vdots \\ \textbf{X}_k \end{array}\right]
+\quad
+\textbf{b}= \left [\begin{array}{c} \textbf{b}_1 \\ \vdots \\ \textbf{b}_k \end{array} \right]
+\quad
+\boldsymbol{\epsilon}= \left [\begin{array}{c} \boldsymbol{\epsilon}_1 \\ \vdots \\ \boldsymbol{\epsilon}_k \end{array} \right]
+\]</span> The overall input matrix for the random effects is a block-diagonal matrix <span class="math display">\[
+\textbf{Z}= \left[
+    \begin{array}{cccc}
+        \textbf{Z}_1 &amp; \textbf{0}&amp; \cdots &amp; \textbf{0}\\
+        \textbf{0}&amp; \textbf{Z}_2  &amp; \cdots &amp; \textbf{0}\\
+        \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+        \textbf{0}&amp; \textbf{0}&amp; \cdots &amp; \textbf{Z}_k
+    \end{array}
+\right]
+\]</span> and the covariance matrices of the random effects and the model errors also take on a block-diagonal structure:</p>
+<p><span class="math display">\[
+\text{Var}[\textbf{b}] = \textbf{G}= \left[
+    \begin{array}{cccc}
+        \textbf{G}^* &amp; \textbf{0}&amp; \cdots &amp; \textbf{0}\\
+        \textbf{0}&amp; \textbf{G}^* &amp; \cdots &amp; \textbf{0}\\
+        \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+        \textbf{0}&amp; \textbf{0}&amp; \cdots &amp; \textbf{G}^*
+    \end{array}
+\right]
+\qquad
+\text{Var}[\textbf{b}] = \textbf{R}= \left[
+    \begin{array}{cccc}
+        \textbf{R}_1 &amp; \textbf{0}&amp; \cdots &amp; \textbf{0}\\
+        \textbf{0}&amp; \textbf{R}_2 &amp; \cdots &amp; \textbf{0}\\
+        \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+        \textbf{0}&amp; \textbf{0}&amp; \cdots &amp; \textbf{R}_k
+    \end{array}
+\right]
+\]</span> The variance matrix <span class="math inline">\(\text{Var}[\textbf{b}_i] = \textbf{G}^*\)</span> is the same for all clusters. The variance matrix of the <span class="math inline">\(\boldsymbol{\epsilon}_i\)</span> can differ from cluster to cluster, for example, when the observation times differ between clusters or in the presence of missing values.</p>
+<p>With the re-arrangement from the clustered case out of the way, the general linear mixed model can be written as follows: <span id="eq-general-lmm"><span class="math display">\[
+\begin{align*}
+\textbf{Y}&amp;= \textbf{X}\boldsymbol{\beta}+ \textbf{Z}\textbf{b}+ \boldsymbol{\epsilon}\\
+\textbf{b}&amp;\sim G(\textbf{0},\textbf{G}) \\
+\boldsymbol{\epsilon}&amp;\sim G(\textbf{0},\textbf{R}) \\
+\text{Cov}[\textbf{b},\boldsymbol{\epsilon}] &amp;= \textbf{0}
+\end{align*}
+\tag{29.3}\]</span></span></p>
+<p>The assumption of Gaussian distributions for the random effects and the errors is common, it makes the subsequent analysis simple compared to any alternative specification. It should be noted that this implies a Gaussian distribution for <span class="math inline">\(\textbf{Y}\)</span> as well. Applying the results for the multivariate Gaussian (<a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 4.7</span></a>), the conditional and marginal (population-average) distribution of <span class="math inline">\(\textbf{Y}\)</span> is</p>
+<p><span class="math display">\[
+\begin{align*}
+\textbf{Y}| \textbf{b}&amp;\sim G(\textbf{X}\boldsymbol{\beta}+ \textbf{Z}\textbf{b}, \textbf{R}) \\
+\textbf{Y}&amp;\sim G(\textbf{X}\boldsymbol{\beta}, \textbf{V}) \\
+\textbf{V}&amp;= \textbf{Z}\textbf{G}\textbf{Z}^\prime + \textbf{R}
+\end{align*}
+\]</span></p>
+</section>
+<section id="estimation-and-prediction" class="level3">
+<h3 class="anchored" data-anchor-id="estimation-and-prediction">Estimation and Prediction</h3>
+<p>The general linear mixed model <a href="#eq-general-lmm" class="quarto-xref">Equation&nbsp;<span>29.3</span></a> contains parameters that need to be estimated and random variables that need to be predicted. The parameters are the <strong>fixed effects</strong> <span class="math inline">\(\boldsymbol{\beta}\)</span> and the <strong>covariance parameters</strong> that define <span class="math inline">\(\textbf{G}\)</span> and <span class="math inline">\(\textbf{R}\)</span>. In the longitudinal, clustered case, <span class="math inline">\(\textbf{R}\)</span> has an autocovariance structure and <span class="math inline">\(\textbf{G}\)</span> is often an unstructured matrix. For example, with a random intercept and a random slope, an unstructured <span class="math inline">\(\textbf{G}^*\)</span> takes on the form <span class="math display">\[
+\textbf{G}^* = \left[\begin{array}{cc} \sigma^2_0 &amp; \sigma_{01} \\ \sigma_{01} &amp; \sigma^2_1 \end{array}\right]
+\]</span> <span class="math inline">\(\sigma^2_0\)</span> and <span class="math inline">\(\sigma^2_1\)</span> are the variances of the random intercept and slope, respectively, and <span class="math inline">\(\sigma_{01}\)</span> is their covariance. Many other covariance structures are possbile for <span class="math inline">\(\textbf{G}\)</span>, including autocovariance structures when the random effects have a temporal or spatial structure.</p>
+<p>We collect all covariance parameters into the vector <span class="math inline">\(\boldsymbol{\theta}= [\boldsymbol{\theta}_G, \boldsymbol{\theta}_R]\)</span> and write the variance matrix of the data as a function of <span class="math inline">\(\boldsymbol{\theta}\)</span>: <span class="math display">\[
+\text{Var}[\textbf{Y}] = \textbf{V}(\boldsymbol{\theta}) = \textbf{Z}\textbf{G}(\boldsymbol{\theta}_G)\textbf{Z}^\prime + \textbf{R}(\boldsymbol{\theta}_R)
+\]</span></p>
+<section id="fixed-effects-and-random-effects" class="level4">
+<h4 class="anchored" data-anchor-id="fixed-effects-and-random-effects">Fixed effects and random effects</h4>
+<p>The <strong>mixed model equations</strong> are estimating equations for <span class="math inline">\(\boldsymbol{\beta}\)</span> and <span class="math inline">\(\textbf{b}\)</span> given that we know the covariance parameters <span class="math inline">\(\boldsymbol{\theta}\)</span>. These equations gp back to [<span class="citation" data-cites="Henderson1950">Henderson (<a href="references.html#ref-Henderson1950" role="doc-biblioref">1950</a>)</span>; Henderson1984] who derived them in the context of animal breeding. Henderson’s thought process was as follows: to derive estimating equations similar to the normal equations in least-squares estimation, consider the joint distribution of <span class="math inline">\([\boldsymbol{\epsilon}, \textbf{b}]\)</span>. We want to find the values <span class="math inline">\(\widehat{\boldsymbol{\beta}}\)</span> and <span class="math inline">\(\widehat{\textbf{b}}\)</span> which maximize this distribution.Since <span class="math inline">\(\boldsymbol{\epsilon}= \textbf{Y}- \textbf{X}\boldsymbol{\beta}- \textbf{Z}\textbf{b}\)</span> and <span class="math inline">\(\textbf{b}\)</span> are jointly Gaussian distributed and because <span class="math inline">\(\text{Cov}[\boldsymbol{\epsilon},\textbf{b}] = \textbf{0}\)</span>, maximizing their joint distribution for known <span class="math inline">\(\textbf{G}\)</span> and <span class="math inline">\(\textbf{R}\)</span> is equivalent to minimizing <span class="math display">\[
+Q = \textbf{b}^\prime\textbf{G}^{-1}\textbf{b}+ (\textbf{y}- \textbf{X}\boldsymbol{\beta}- \textbf{Z}\textbf{b})^\prime\textbf{R}^{-1}(\textbf{y}- \textbf{X}\boldsymbol{\beta}- \textbf{Z}\textbf{b})
+\]</span> <span class="math inline">\(Q\)</span> is the sum of two quadratic forms, one in the random effects, the other in the model errors. Taking derivatives of <span class="math inline">\(Q\)</span> with respect to <span class="math inline">\(\textbf{b}\)</span> and <span class="math inline">\(\boldsymbol{\beta}\)</span>, setting to zero and rearranging yields the mixed model equations:</p>
+<p><span id="eq-mixed-model-equations"><span class="math display">\[
+\left[\begin{array}{cc} \textbf{X}^\prime\textbf{R}^{-1}\textbf{X}&amp; \textbf{X}^\prime\textbf{R}^{-1}\textbf{Z}\\
+\textbf{Z}^\prime\textbf{R}^{-1}\textbf{X}&amp; \textbf{Z}^\prime\textbf{R}^{-1}\textbf{Z}+ \textbf{G}^{-1}\end{array}\right]
+\left[\begin{array}{c} \boldsymbol{\beta}\\ \textbf{b}\end{array}\right] =
+\left[\begin{array}{c} \textbf{X}^\prime\textbf{R}^{-1}\textbf{y}\\ \textbf{Z}^\prime\textbf{R}^{-1}\textbf{y}\end{array}\right]
+\tag{29.4}\]</span></span></p>
+<p>The solutions to <a href="#eq-mixed-model-equations" class="quarto-xref">Equation&nbsp;<span>29.4</span></a> are <span class="math display">\[
+\begin{align*}
+\widehat{\boldsymbol{\beta}} &amp;= \left(\textbf{X}^\prime\textbf{V}^{-1}\textbf{X}\right)^{-1}\textbf{X}^\prime\textbf{V}^{-1}\textbf{y}\\
+\widehat{\textbf{b}} &amp;= \textbf{G}\textbf{Z}^\prime\textbf{V}^{-1}(\textbf{y}- \textbf{X}\widehat{\boldsymbol{\beta}})
+\end{align*}
+\]</span> The estimator of the fixed effects has the form of a generalized least squares estimator. The predictor of the random effects is a linear combination of the fitted residuals. Both results make sense. The random effects measure how much the conditional means differ from the marginal (population-average) prediction.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Henderson’s method is not maximum likelihood although it was initially referred to as “joint likelihood estimation”. It is simply an intuitive way to motivate estimating equations for <span class="math inline">\(\boldsymbol{\beta}\)</span> and <span class="math inline">\(\textbf{b}\)</span>. <span class="citation" data-cites="Harville1976">Harville (<a href="references.html#ref-Harville1976" role="doc-biblioref">1976</a>)</span> established that the solution to the mixed model equations is a best linear unbiased predictor (BLUP) for <span class="math inline">\(\textbf{b}\)</span> and remains the BLUP if the generalized least squares estimator for <span class="math inline">\(\boldsymbol{\beta}\)</span> is substituted.</p>
+</div>
+</div>
+<p>The mixed model equations <a href="#eq-mixed-model-equations" class="quarto-xref">Equation&nbsp;<span>29.4</span></a> are fascinating for another reason. Suppose we choose to estimate the inputs in <span class="math inline">\(\textbf{Z}\)</span> not as random effects, but as fixed effects. That is, the model would be a linear model <span class="math display">\[
+\textbf{Y}= \textbf{X}\boldsymbol{\beta}_x + \textbf{Z}\boldsymbol{\beta}_z + \boldsymbol{\epsilon}, \qquad \boldsymbol{\epsilon}\sim (\textbf{0},\textbf{R})
+\]</span> The generalized least squares estimating equations for <span class="math inline">\(\boldsymbol{\beta}= [\boldsymbol{\beta}_x, \boldsymbol{\beta}_z]\)</span> would be</p>
+<p><span class="math display">\[
+\left[\begin{array}{cc} \textbf{X}^\prime\textbf{R}^{-1}\textbf{X}&amp; \textbf{X}^\prime\textbf{R}^{-1}\textbf{Z}\\
+\textbf{Z}^\prime\textbf{R}^{-1}\textbf{X}&amp; \textbf{Z}^\prime\textbf{R}^{-1}\textbf{Z}\end{array}\right]
+\left[\begin{array}{c} \boldsymbol{\beta}_x \\ \boldsymbol{\beta}_z \end{array}\right] =
+\left[\begin{array}{c} \textbf{X}^\prime\textbf{R}^{-1}\textbf{y}\\ \textbf{Z}^\prime\textbf{R}^{-1}\textbf{y}\end{array}\right]
+\]</span> These equations are very similar to the mixed model equations, except for the term <span class="math inline">\(+\textbf{G}^{-1}\)</span> in the lower right cell of the first matrix. What does that mean? The inverse variance matrix <span class="math inline">\(\textbf{G}^{-1}\)</span> acts like a <strong>shrinkage</strong> factor in the prediction of <span class="math inline">\(\textbf{b}\)</span>. If the variances of the random effects are small, the effect of <span class="math inline">\(\textbf{G}^{-1}\)</span> on the estimating equations is large and the <span class="math inline">\(\textbf{b}\)</span> will be shrunk toward zero compared to the fixed-effect estimates. On the contrary, when the variances of the random effects are large, there will be less shrinkage in the random effects solution.</p>
+</section>
+<section id="covariance-parameters" class="level4">
+<h4 class="anchored" data-anchor-id="covariance-parameters">Covariance parameters</h4>
+<p>Covariance parameters can be derived by a number of principles, once the parameter estimates are obtained you plug them into <span class="math inline">\(\textbf{G}\)</span> and <span class="math inline">\(\textbf{R}\)</span> and solve the mixed model equations. The most important estimation principles for the estimation of covariance parameters are maximum likelihood (ML) and restricted (residual) maximum likelihood (REML) based on the marginal distribution of <span class="math inline">\(\textbf{Y}\)</span>, as for the general correlated error model discussed in <a href="corrdata.html#sec-corr-error-models" class="quarto-xref"><span>Section 28.3</span></a>.</p>
+<p>Since <span class="math inline">\(\textbf{Y}\)</span> is multivariate Gaussian, minus twice the negative log likelihood is <span id="eq-minus2-loglike"><span class="math display">\[
+-2 \ell(\boldsymbol{\theta},\boldsymbol{\beta};\textbf{y}) = \log |\textbf{V}(\boldsymbol{\theta})| + (\textbf{y}-\textbf{X}\boldsymbol{\beta})^\prime\textbf{V}(\boldsymbol{\theta})^{-1}(\textbf{y}-\textbf{X}\boldsymbol{\beta}) + c
+\tag{29.5}\]</span></span> where <span class="math inline">\(c\)</span> is a constant that does not depend on the parameters. Given <span class="math inline">\(\boldsymbol{\theta}\)</span>, the minimum of <span class="math inline">\(-2 \ell(\boldsymbol{\theta},\boldsymbol{\beta};\textbf{y})\)</span> with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span> has a closed-form solution in the GLS estimator <span class="math inline">\(\widehat{\boldsymbol{\beta}} = (\textbf{X}^\prime\textbf{V}^{-1}\textbf{X})^{-1}\textbf{X}^\prime\textbf{V}^{-1}\textbf{y}\)</span>. Plugging this estimator back into <a href="#eq-minus2-loglike" class="quarto-xref">Equation&nbsp;<span>29.5</span></a> leads to a function in <span class="math inline">\(\boldsymbol{\theta}\)</span> only. The ML estimates of <span class="math inline">\(\boldsymbol{\theta}\)</span> are found by numerically minimizing this <strong>profiled</strong> log-likelihood.</p>
+<p>In the case of REML, instead of the log-likelihood of <span class="math inline">\(\textbf{Y}\)</span> one maximizes the log-likelihood of <span class="math inline">\(\textbf{K}\textbf{Y}\)</span> where <span class="math inline">\(\textbf{K}\)</span> is a matrix of error contrasts chosen such that <span class="math inline">\(\textbf{K}\textbf{X}= \textbf{0}\)</span>. A common choice of <span class="math inline">\(\textbf{K}\)</span> leads to the following expression for minus twice the restricted log-likelihood <span id="eq-minus2-restricted-loglike"><span class="math display">\[
+-2 \ell(\boldsymbol{\theta};\textbf{y}) = \log |\textbf{V}(\boldsymbol{\theta})| + \log |\textbf{X}^\prime\textbf{V}(\boldsymbol{\theta})^{-1}\textbf{X}| + (\textbf{y}-\textbf{X}\boldsymbol{\beta})^\prime\textbf{V}(\boldsymbol{\theta})^{-1}(\textbf{y}-\textbf{X}\boldsymbol{\beta}) + c_R
+\tag{29.6}\]</span></span></p>
+<p>This is the same objective function as <a href="#eq-minus2-loglike" class="quarto-xref">Equation&nbsp;<span>29.5</span></a> except for the second log determinant term (and the inconsequential constant terms). Also notice that the REML log-likelihood is a function of only the covariance parameters. The fixed effects are not profiled from <a href="#eq-minus2-restricted-loglike" class="quarto-xref">Equation&nbsp;<span>29.6</span></a>. The fixed effects are removed by considering the special transformation <span class="math inline">\(\textbf{K}\textbf{Y}\)</span>.</p>
+<p>REML estimators of the covariance parameters are generally less biased than ML estimates, and are sometimes unbiased. They are preferred for this reason. However, the restricted log-likelihood in <a href="#eq-minus2-restricted-loglike" class="quarto-xref">Equation&nbsp;<span>29.6</span></a> does not contain information about the fixed effects. You <strong>cannot</strong> use the restricted log-likelihood to perform likelihood ratio tests for hypotheses about the fixed effects.</p>
+</section>
+</section>
+<section id="choosing-random-effects" class="level3">
+<h3 class="anchored" data-anchor-id="choosing-random-effects">Choosing Random Effects</h3>
+<p>When a mixed model arises in the context of an experimental design—such as a split-plot design—the assignment of fixed and random effects is dictated by the experimental design. In other situations, there is more latitude in choosing fixed and random effects.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Sleep Study.</p>
+</div>
+<div class="example-container">
+<p>The data for this example are part of the <code>lme4</code> library in <code>R</code> and represent the average reaction time (in milliseconds) for subjects in a sleep deprivation study. The data are a subset of a larger study described in <span class="citation" data-cites="Belenky_et_al">Belenky et al. (<a href="references.html#ref-Belenky_et_al" role="doc-biblioref">2003</a>)</span>.</p>
+<p><a href="#fig-sleep-data" class="quarto-xref">Figure&nbsp;<span>29.1</span></a> shows the response profiles for the 18 subjects in the study. In general, the reaction times increase with increasing sleep deprivation. However, there is clearly substantial subject-to-subject variability in the profiles. Some subjects (#309, #310) do not respond to sleep deprivation very much compared to others (#308, #337, for example). The trend of reaction time versus duration of sleep deprivation could be linear for most subjects, quadratic for some.</p>
+<p>If we assume a linear trend for all subjects, do the intercepts and slopes vary across subjects or only the intercepts or only the slopes?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lattice)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">xyplot</span>(Reaction <span class="sc">~</span> Days <span class="sc">|</span> Subject, </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">data=</span>sleepstudy,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab=</span><span class="st">"Days of Sleep Deprivation"</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab=</span><span class="st">"Reaction Time (ms)"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">strip =</span> <span class="cf">function</span>(...) {</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>           <span class="fu">strip.default</span>(..., </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                         <span class="at">strip.names =</span><span class="cn">TRUE</span>, </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                         <span class="at">strip.levels=</span><span class="cn">TRUE</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                         <span class="at">sep=</span><span class="st">" "</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>       },</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">par.strip.text =</span> <span class="fu">list</span>(<span class="at">cex =</span> <span class="fl">0.8</span>), </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">type=</span><span class="fu">c</span>(<span class="st">"p"</span>),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">layout=</span><span class="fu">c</span>(<span class="dv">6</span>,<span class="dv">3</span>,<span class="dv">1</span>),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">as.table=</span><span class="cn">TRUE</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>       )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-sleep-data" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sleep-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="mixed_files/figure-html/fig-sleep-data-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="mixed_files/figure-html/fig-sleep-data-1.png" class="img-fluid figure-img" width="672"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sleep-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;29.1: Reaction times by subject in sleep deprivation study
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>As a general rule, if a coefficient of a linear model appears in the random part of the model it should be included in the fixed effects part. Otherwise it might not be reasonable to assume that the random effects have a zero mean. In the sleep deprivation study, this means a model such as <span class="math display">\[
+Y_{ij} = \beta_0 + b_{1i} x_{ij} + \epsilon_{ij}
+\]</span> with a random slope but no fixed-effect slope is not appropriate. In order for the <span class="math inline">\(b_{1i}\)</span> to satisfy a zero-mean assumption, there needs an overall (population-average) slope in the model:</p>
+<p><span class="math display">\[
+Y_{ij} = \beta_0 + \beta_1 x_{ij} + b_{1i} x_{ij} + \epsilon_{ij}
+\]</span> In other words, the columns in <span class="math inline">\(\textbf{Z}\)</span> also appear in <span class="math inline">\(\textbf{X}\)</span>. The reverse is not necessarily so. Not varying the intercepts or slopes by subject is perfectly acceptable.</p>
+</section>
+<section id="linear-mixed-models-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="linear-mixed-models-in-r">Linear Mixed Models in <code>R</code></h3>
+<p>Linear mixed models cam be fit in <code>R</code> with the <code>lme4</code> and <code>nlme</code> packages. <code>nlme</code> fits LMMs with the <code>lme</code> function and nonlinear mixed models with the <code>nlme()</code> function by ML or REML. <code>lme4</code> fits LMMs with the <code>lmer()</code> function by ML or REML, generalized linear models with the <code>glmer()</code> function by ML, and nonlinear mixed models with the <code>nlmer()</code> function by ML.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Sleep Study (Cont’d)</p>
+</div>
+<div class="example-container">
+<p>We use <code>lme</code> for the analysis of the sleep study data because it allows us to specify random effects <strong>and</strong> a correlated within-subject error structure. The model we have in mind is <span class="math display">\[
+\begin{align*}
+Y_{ij} &amp;= \beta_0 + \beta_1 d_{j} + b_{0i} + b_{1i}d_j + \epsilon_{ij} \\
+\textbf{G}^* &amp;= \left [\begin{array}{cc}\sigma^2_0 &amp; \sigma_{01} \\ \sigma_{01} &amp; \sigma^2_1 \end{array}\right] \\
+\text{Cov}[\epsilon_{ij},\epsilon_{ik}] &amp;= \sigma^2 \rho^{|d_j - d_k|}
+\end{align*}
+\]</span> where <span class="math inline">\(Y_{ij}\)</span> is the sleep deprivation of subject <span class="math inline">\(i\)</span> on day <span class="math inline">\(d_j\)</span> (<span class="math inline">\(i=1,\cdots,18\)</span>). This is a linear mixed model with random intercept and slopes and correlated errors. The autocovariance structure is that of a continuous AR(1) process. There are a total of seven parameters in this model:</p>
+<ul>
+<li>the population-average intercept <span class="math inline">\(\beta_0\)</span> and the population-average slope <span class="math inline">\(\beta_1\)</span></li>
+<li>the variances of the random effects, <span class="math inline">\(\sigma^2_0\)</span> and <span class="math inline">\(\sigma^2_1\)</span> and their covariance <span class="math inline">\(\sigma_{01}\)</span></li>
+<li>rhe variance of the errors, <span class="math inline">\(\sigma^2\)</span></li>
+<li>the autocorrelation <span class="math inline">\(\phi\)</span></li>
+</ul>
+<p>The following statements fit this model by REML (the default) using <code>lme</code>.</p>
+<p>The <code>fixed=</code> argument specifies the fixed effects of the model, an intercept is included automatically. The <code>random=</code> argument specifies the random effects and the clusters after a vertical slash. The intercept is <strong>not</strong> automatically included in the random effect specification. The covariance structure is specified with the <code>correlation=</code> argument using the same syntax as the correlated error model in <a href="corrdata.html#sec-apples-corr-errors" class="quarto-xref"><span>Section 28.3.3</span></a>. The <code>control=</code> argument changes the numerical optimizer from the default to a general purpose algorithm.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>lmixcorr <span class="ot">&lt;-</span> <span class="fu">lme</span>(<span class="at">fixed =</span> Reaction <span class="sc">~</span> Days,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">random =</span> <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Days <span class="sc">|</span> Subject,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">data=</span>sleepstudy, </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">correlation=</span><span class="fu">corAR1</span>(<span class="at">form =</span> <span class="sc">~</span>Days <span class="sc">|</span> Subject),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">control=</span><span class="fu">lmeControl</span>(<span class="at">opt=</span><span class="st">"optim"</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">method=</span><span class="st">"REML"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lmixcorr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: sleepstudy 
+       AIC     BIC    logLik
+  1738.187 1760.46 -862.0935
+
+Random effects:
+ Formula: ~1 + Days | Subject
+ Structure: General positive-definite, Log-Cholesky parametrization
+            StdDev    Corr  
+(Intercept) 14.879196 (Intr)
+Days         4.759861 0.897 
+Residual    30.500694       
+
+Correlation Structure: AR(1)
+ Formula: ~Days | Subject 
+ Parameter estimate(s):
+      Phi 
+0.4870368 
+Fixed effects:  Reaction ~ Days 
+                Value Std.Error  DF  t-value p-value
+(Intercept) 252.24315  6.851137 161 36.81770       0
+Days         10.46701  1.532133 161  6.83166       0
+ Correlation: 
+     (Intr)
+Days -0.131
+
+Standardized Within-Group Residuals:
+        Min          Q1         Med          Q3         Max 
+-3.18606983 -0.63340364  0.06086905  0.49755434  4.78980880 
+
+Number of Observations: 180
+Number of Groups: 18 </code></pre>
+</div>
+</div>
+<p>The estimates of the fixed effects are <span class="math inline">\(\widehat{\beta}_0\)</span> = 252.2432 and <span class="math inline">\(\widehat{\beta}_1\)</span> = 10.467.</p>
+<p>The estimates of the covariance parameters are <span class="math inline">\(\widehat{\sigma}^2_0\)</span> = 221.3905, <span class="math inline">\(\widehat{\sigma}^2_1\)</span> = 22.6563, and <span class="math inline">\(\widehat{\sigma}_{01}\)</span> = 63.509. The <code>lme</code> output reports the square roots of the variances (<code>Std Dev</code>) and reports the correlation between <span class="math inline">\(b_{0i}\)</span> and <span class="math inline">\(b_{1i}\)</span> rather than the covariance.</p>
+<p>The estimate of the autocorrelation parameter is <span class="math inline">\(\widehat{\phi}\)</span> = 0.487.</p>
+<hr>
+<p>The model with random effects and autocorrelated errors has a restricted log-likelihood of -862.0935. We can test if the addition of the correlation process significantly improves the model by comparing this model against one without the correlation structure. If we fit both models by REML, this is a valid likelihood ratio test of <span class="math inline">\(H: \phi = 0\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>lmix <span class="ot">&lt;-</span> <span class="fu">lme</span>(<span class="at">fixed =</span> Reaction <span class="sc">~</span> Days,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">random =</span> <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Days <span class="sc">|</span> Subject,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>sleepstudy, </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">control=</span><span class="fu">lmeControl</span>(<span class="at">opt=</span><span class="st">"optim"</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">method=</span><span class="st">"REML"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">anova</span>(lmix,lmixcorr)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>a</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+lmix         1  6 1755.628 1774.719 -871.8141                        
+lmixcorr     2  7 1738.187 1760.459 -862.0935 1 vs 2 19.44123  &lt;.0001</code></pre>
+</div>
+</div>
+<p>The model without correlated errors has a restricted log likelihood of -871.8141. Twice the difference of the log-likelihoods is the test statistic for the LRT, 19.4412. There is one restriction on the full model, <span class="math inline">\(\phi=0\)</span>, hence this is a 1-degree of freedom test. The <span class="math inline">\(p\)</span>-value is very small, we reject the hypothesis that <span class="math inline">\(\phi = 0\)</span>. The correlated error structure is significant, we continue our investigation with the <code>lmixcorr</code> model.</p>
+<hr>
+<p>The fixed and random effects can be extracted with the respective access functions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fixed.effects</span>(lmixcorr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)        Days 
+  252.24315    10.46701 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>refs <span class="ot">&lt;-</span> <span class="fu">random.effects</span>(lmixcorr)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(refs,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    (Intercept)     Days
+308    17.57941  6.31918
+309   -27.85018 -9.02972
+310   -22.97529 -7.23899
+330     0.87286 -0.39008
+331     3.12671  0.60686
+332    -1.75398 -0.87031
+333     5.14211  1.39114
+334     0.56455  0.33448
+335   -19.38623 -6.87002
+337    26.38532  8.50471
+349    -5.63593 -1.42460
+350     6.91575  2.69492
+351    -3.08503 -1.12210
+352    11.69349  3.92972
+369     2.89212  0.90771
+370    -0.06864  0.60010
+371    -0.28057 -0.13069
+372     5.86352  1.78769</code></pre>
+</div>
+</div>
+<p>The random effects are organized as a matrix, the columns correspond to the intercept and slope, the rows correspond to subjects. To predict the response for the average study participant, we use intercept and slope estimates <span class="math inline">\(\widehat{\beta}_0\)</span> = 252.2432 and <span class="math inline">\(\widehat{\beta}_1\)</span> = 10.467.</p>
+<p>To predict the sleep deprivation of subject #333, we use the subject-specific intercept and slope <span class="math inline">\(\widehat{\beta}_0 + b_{0,333}\)</span> = 252.2432 + 5.1421 = 257.3853, <span class="math inline">\(\widehat{\beta}_1 + b_{1,333}\)</span> = 10.467 + 1.3911 = 253.6343.</p>
+<ul>
+<li>With increasing time of sleep deprivation, which subject has the smallest increase in reaction time and which subject has the largest increase?</li>
+</ul>
+<p>To answer this question we can look at the min and max of the random slope predictors:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(<span class="fu">random.effects</span>(lmixcorr)[,<span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -9.029723</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which.min</span>(<span class="fu">random.effects</span>(lmixcorr)[,<span class="dv">2</span>]) <span class="co"># subject 309</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(<span class="fu">random.effects</span>(lmixcorr)[,<span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8.504712</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which.max</span>(<span class="fu">random.effects</span>(lmixcorr)[,<span class="dv">2</span>]) <span class="co"># subject 337</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+</div>
+<p>Subjects 330, 334, 370, and 371 are similar to the population average. They have the smallest subject-specific intercept and slope adjustment.</p>
+<p>This is also confirmed in <a href="#fig-sleep-trellis-fit" class="quarto-xref">Figure&nbsp;<span>29.2</span></a> below. The subject-specific and population-average predictions for these four subjects overlay closely.</p>
+<ul>
+<li>What is the predicted reaction time on day 4 for an individual who did not participate in the study?</li>
+</ul>
+<p>To answer this question we have to rely on the population average effects since we do not have a solution for the random effects predictor.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">fixed.effects</span>(lmixcorr)[<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">4</span><span class="sc">*</span><span class="fu">fixed.effects</span>(lmixcorr)[<span class="dv">2</span>]</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> (<span class="st">"Predicted reaction time of a new subject at day 4 = "</span>, pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Predicted reaction time of a new subject at day 4 =  294.1112</code></pre>
+</div>
+</div>
+<p>You can also use the <code>predict()</code> function but when you do that for a subject that is not in the study you get a NA. To get around that and obtain the population-average predictions, specify the <code>level=</code> option of <code>predict()</code>. Check the doc on <code>predict.lme()</code> for details. If you specify <code>level=0</code> it does not matter what you pass for the Subject variable. You can even leave it out of the data frame.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Subject in the study, population-average predictions</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">"Days"</span><span class="ot">=</span><span class="dv">4</span>,<span class="st">"Subject"</span><span class="ot">=</span><span class="dv">308</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(lmixcorr,<span class="at">newdata=</span>data,<span class="at">level=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 294.1112
+attr(,"label")
+[1] "Predicted values"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Subject not in the study, population-average predictions</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">"Days"</span><span class="ot">=</span><span class="dv">4</span>,<span class="st">"Subject"</span><span class="ot">=</span><span class="dv">1000</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(lmixcorr,<span class="at">newdata=</span>data,<span class="at">level=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 294.1112
+attr(,"label")
+[1] "Predicted values"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># No subject specified, population-average predictions</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">"Days"</span><span class="ot">=</span><span class="dv">4</span>) <span class="co">#,"Subject"=1000)</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(lmixcorr,<span class="at">newdata=</span>data,<span class="at">level=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 294.1112
+attr(,"label")
+[1] "Predicted values"</code></pre>
+</div>
+</div>
+<p>To obtain population-average and subject-specific predictions for all subjects specify a vector of level values</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>predvals <span class="ot">&lt;-</span> <span class="fu">predict</span>(lmixcorr,<span class="at">level=</span><span class="fu">c</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>),<span class="at">na.action=</span>na.omit)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>predvals[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,] <span class="co">#showing only the first 20 of 180 records</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Subject predict.fixed predict.Subject
+1      308      252.2432        269.8226
+2      308      262.7102        286.6088
+3      308      273.1772        303.3950
+4      308      283.6442        320.1812
+5      308      294.1112        336.9673
+6      308      304.5782        353.7535
+7      308      315.0452        370.5397
+8      308      325.5122        387.3259
+9      308      335.9792        404.1121
+10     308      346.4463        420.8983
+11     309      252.2432        224.3930
+12     309      262.7102        225.8303
+13     309      273.1772        227.2676
+14     309      283.6442        228.7048
+15     309      294.1112        230.1421
+16     309      304.5782        231.5794
+17     309      315.0452        233.0167
+18     309      325.5122        234.4540
+19     309      335.9792        235.8913
+20     309      346.4463        237.3286</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="#fig-sleep-trellis-fit" class="quarto-xref">Figure&nbsp;<span>29.2</span></a> displays the population-average and subject-specific predictions of the reaction times for all 18 subjects. The population-average trend (blue) is the same in all panels. The subject-specific trends vary from panel to panel. Subject 330 behaves very much like the population average. Subject 337 has a very different slope, their reaction time increases much more quickly than that of the average subject. The linear mixed model with autocorrelated error captures a remarkable degree of variability, based on only seven parameters.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xyplot</span>(Reaction <span class="sc">~</span> Days <span class="sc">|</span> Subject, </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">data=</span>sleepstudy,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab=</span><span class="st">"Days of sleep deprivation"</span>,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab=</span><span class="st">"Reaction time (ms)"</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">type=</span><span class="fu">c</span>(<span class="st">"p"</span>),</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">as.table=</span><span class="cn">TRUE</span>,</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">layout=</span><span class="fu">c</span>(<span class="dv">6</span>,<span class="dv">3</span>,<span class="dv">1</span>),</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">panel=</span><span class="cf">function</span>(x,y,...) {</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>           grpname <span class="ot">&lt;-</span> <span class="fu">dimnames</span>(<span class="fu">trellis.last.object</span>())[[<span class="dv">1</span>]][<span class="fu">packet.number</span>()]</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>           <span class="fu">panel.xyplot</span>(x,y,...)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>           <span class="fu">panel.lines</span>(x,predvals<span class="sc">$</span>predict.Sub[predvals<span class="sc">$</span>Sub <span class="sc">==</span> grpname],</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">col=</span><span class="st">"red"</span>,<span class="at">lwd=</span><span class="fl">1.5</span>)</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>           <span class="fu">panel.lines</span>(x,predvals<span class="sc">$</span>predict.fixed[predvals<span class="sc">$</span>Sub <span class="sc">==</span> grpname],</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>                       <span class="at">col=</span><span class="st">"blue"</span>,<span class="at">lwd=</span><span class="fl">1.5</span>)</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>           },</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">strip =</span> <span class="cf">function</span>(...) {</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>           <span class="fu">strip.default</span>(..., </span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>                         <span class="at">strip.names =</span><span class="cn">TRUE</span>, </span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>                         <span class="at">strip.levels=</span><span class="cn">TRUE</span>,</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>                         <span class="at">sep=</span><span class="st">" "</span>)</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>       },</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">par.strip.text =</span> <span class="fu">list</span>(<span class="at">cex =</span> <span class="fl">0.8</span>), </span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>       ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-sleep-trellis-fit" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sleep-trellis-fit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="mixed_files/figure-html/fig-sleep-trellis-fit-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="mixed_files/figure-html/fig-sleep-trellis-fit-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sleep-trellis-fit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;29.2: Population-average (blue) and subject-specific (red) predictions in sleep study.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-glmm" class="level2" data-number="29.3">
+<h2 data-number="29.3" class="anchored" data-anchor-id="sec-glmm"><span class="header-section-number">29.3</span> Generalized Linear Mixed Models (GLMM)</h2>
+<section id="introduction-1" class="level3">
+<h3 class="anchored" data-anchor-id="introduction-1">Introduction</h3>
+<p>The transition from the classical linear model to generalized linear models (GLM) in <a href="glm.html" class="quarto-xref"><span>Chapter 26</span></a> added to the linear model</p>
+<ul>
+<li>that the distribution of <span class="math inline">\(Y\)</span> is a member of the exponential family of distributions</li>
+<li>an invertible link function <span class="math inline">\(g(\mu)\)</span> that maps between the scale of the data (the scale of the response) and the input variables.</li>
+</ul>
+<p>Common to both model families is to express the effect of the input variables through a linear predictor <span class="math display">\[
+\eta = \textbf{x}^\prime \boldsymbol{\beta}
+\]</span> A GLM, written in vector form, can thus be summarized as follows: <span class="math display">\[
+\begin{align*}
+Y       &amp;\sim P_{expo} \\
+\text{E}[Y] &amp;= \mu(\boldsymbol{\beta}) \\
+g(\mu)  &amp;= \eta \\
+\eta    &amp;= \textbf{x}^\prime\boldsymbol{\beta}
+\end{align*}
+\]</span></p>
+<p>The extension to a mixed-model version, the <strong>generalized linear mixed model</strong> (GLMM) seems obvious: extend the linear predictor with random variables <span class="math inline">\(\textbf{b}\)</span>: <span class="math display">\[
+\begin{align*}
+Y | \textbf{b}&amp;\sim P_{expo} \\
+g(\mu)  &amp;= \textbf{x}^\prime\boldsymbol{\beta}+ \textbf{z}^\prime \textbf{b}\\
+\eta    &amp;= \textbf{x}^\prime\boldsymbol{\beta}+ \textbf{z}^\prime \textbf{b}
+\end{align*}
+\]</span> where <span class="math inline">\(\textbf{b}\)</span> follows some distribution, a <span class="math inline">\(G(\textbf{0},\textbf{G})\)</span>, say. Similar to the GLM and the LMM, we then estimate the parameters based on maximizing the log likelihood of the marginal distribution of <span class="math inline">\(Y\)</span>.</p>
+<p>This works well on paper!</p>
+<p>Compared to the linear mixed model, where <span class="math inline">\(\textbf{b}\)</span> and <span class="math inline">\(Y\)</span> followed a Gaussian distribution and deriving the marginal distribution of <span class="math inline">\(Y\)</span> is straightforward, the same is not true for the GLMM family of models. Here are some of the complications we run into:</p>
+<ol type="1">
+<li><p>The marginal distribution of <span class="math inline">\(Y\)</span> is obtained by integrating over the distribution of the random effects, <span class="math display">\[
+p(y) = \int \cdots \int p(y|\textbf{b}) p(\textbf{b}) \, d\textbf{b}
+\]</span> <span class="math inline">\(p(y)\)</span> does not generally have a closed form (as in the Gaussian-Gaussian case) and this multidimensional integral must be computed by numerical methods.</p></li>
+<li><p>A valid joint distribution of the data might not actually exist. <span class="citation" data-cites="GillilandSchab_2001">Gilliland and Schabenberger (<a href="references.html#ref-GillilandSchab_2001" role="doc-biblioref">2001</a>)</span> show, for example, that if <span class="math inline">\(\textbf{Y}\)</span> is an <span class="math inline">\((n\times 1)\)</span> vector of equicorrelated binary variables with common success probability <span class="math inline">\(\pi\)</span>, then the lower bound of the correlation parameter depends on <span class="math inline">\(n\)</span> and <span class="math inline">\(\pi\)</span>. In other words, if you obtain an estimate of the correlation parameter that falls below that lower bound, there is no probability model that could have possibly generated the data.</p></li>
+<li><p>The incorporation of correlated errors with or without the presence of random effects in the model is questionable when data do not follow a Gaussian distribution. Achieving desired properties of the marginal distribution and the conditional distribution might not be possible if the data are non-Gaussian.</p></li>
+<li><p>Because the marginal distribution is difficult to come by, population-average inference is difficult in GLMM; we do not know the functional form of the marginal mean. The obvious attempt to simply evaluate the inverse link function at the mean of the random effects, <span class="math display">\[
+g^{-1}(\textbf{x}^\prime\boldsymbol{\beta}+ \textbf{z}^\prime\text{E}[\textbf{b}]) = g^{-1}(\textbf{x}^\prime\boldsymbol{\beta}+ 0) = g^{-1}(\textbf{x}^\prime\boldsymbol{\beta})
+\]</span> does not yield the estimate of the marginal mean. Predictions in GLMMs thus focus on the conditional mean, <span class="math inline">\(\mu|\textbf{b}= g^{-1}(\textbf{x}^\prime\boldsymbol{\beta}+ \textbf{z}^\prime\textbf{b})\)</span>. In longitudinal studies, this is the cluster-specific mean.</p></li>
+</ol>
+<p>In short, training generalized linear mixed models is much more complicated than working with their linear counterpart, and we typically have to restrict the types of models under consideration somehow.</p>
+</section>
+<section id="estimation-approaches" class="level3">
+<h3 class="anchored" data-anchor-id="estimation-approaches">Estimation Approaches</h3>
+<p>The approaches to estimating parameters in GLMMs fall broadly into two categories:</p>
+<ol type="1">
+<li><p><strong>Linearization</strong> methods approximate the model based on Taylor series. Similar to fitting a nonlinear or generalized linear model as a series of approximate linear models based on a vector of pseudo data, these methods approximate the GLMM through a series of LMMs. The advantage of the linearization methods is that the approximate LMM can accommodate complex random effects structures and correlated errors. There is no limit to the types of covariance structure you can specify with this approach. The disadvantages of linearization are the absence of a true objective function, the log likelihood of <span class="math inline">\(Y\)</span> is never calculated, the estimates are not maximum likelihood estimates, and they are often biased.</p></li>
+<li><p><strong>Integral approximation</strong> methods compute the log likelihood using numerical techniques such as Laplace approximation, Gauss-Hermite quadrature, Monte Carlo integration and other methods. The advantage of this approach is that the log likelihood of <span class="math inline">\(Y\)</span> is being computed and maximum likelihood estimates are obtained. The disadvantage is the computational demand, increasing quickly with the number of random effects and the number of abscissas in the integral approximation. Integral approximations are thus used for relatively simple models that have only few random effects.</p></li>
+</ol>
+<p>The Laplace and Gauss-Hermite quadrature integral approximations are related. The former is a Gauss-Hermite quadrature with a single quadrature node. The marginal joint distribution of the data in a mixed model is <span class="math display">\[
+\begin{align*}
+p(\textbf{y}) &amp;= \int \cdots \int p(\textbf{y}| \textbf{b}, \boldsymbol{\beta}) p(\textbf{b}| \boldsymbol{\theta}) \, d\textbf{b}\\
+&amp;= \int \cdots \int \exp\{c f(\textbf{y},\boldsymbol{\beta},\boldsymbol{\theta},\textbf{b}\} \, d\textbf{b}
+\end{align*}
+\]</span> for some function <span class="math inline">\(f()\)</span> and constant <span class="math inline">\(c\)</span>. If <span class="math inline">\(c\)</span> is large, the Laplace approximation of <span class="math inline">\(p(\textbf{y})\)</span> is <span class="math display">\[
+\left(\frac{2\pi}{c} \right)^{n_b/2} |-f^{\prime\prime}(\textbf{y}, \boldsymbol{\beta},\boldsymbol{\theta},\tilde{\textbf{b}})|^{-1/2}\exp\left\{cf(\textbf{y},\boldsymbol{\beta},\boldsymbol{\theta},\textbf{b})\right\}
+\]</span> where <span class="math inline">\(f^{\prime\prime}\)</span> is the second derivative of <span class="math inline">\(f\)</span> evaluated at <span class="math inline">\(\tilde{\textbf{b}}\)</span> at which <span class="math inline">\(f\)</span> has a minimum. This looks like a messy expression and requires a sub-optimization to find <span class="math inline">\(\tilde{\textbf{b}}\)</span> such that <span class="math inline">\(f^\prime(\textbf{y},\boldsymbol{\beta},\boldsymbol{\theta},\tilde{\textbf{b}})=0\)</span>, but it is simpler than computing the integral by other means. The Laplace approximation is thus a common method to solving the maximum likelihood problem in GLMMs.</p>
+<p>With longitudinal data, the quality of the Laplace approximation increases with the number of clusters and the number of observations within a cluster.</p>
+</section>
+<section id="glmm-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="glmm-in-r">GLMM in <code>R</code></h3>
+<p>The <code>glmer</code> function in the <code>lme4</code> package fits generalized linear mixed models by adaptive gaussian quadrature and Laplace approximation for relatively simple random effects structures.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Contagious Bovine Pleuropneumonia</p>
+</div>
+<div class="example-container">
+<p>The data set <code>cbpp</code> comes with the <code>lme4</code> library and contains serological incidences of contagious bovine pleuropneumonia (CBPP) in 15 commercial cattle herds in Africa. Blood samples were collected quarterly from the animals of each herd. The data were used to compute the new cases that occurred during the time period.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>cbpp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   herd incidence size period
+1     1         2   14      1
+2     1         3   12      2
+3     1         4    9      3
+4     1         0    5      4
+5     2         3   22      1
+6     2         1   18      2
+7     2         1   21      3
+8     3         8   22      1
+9     3         2   16      2
+10    3         0   16      3
+11    3         2   20      4
+12    4         2   10      1
+13    4         0   10      2
+14    4         2    9      3
+15    4         0    6      4
+16    5         5   18      1
+17    5         0   25      2
+18    5         0   24      3
+19    5         1    4      4
+20    6         3   17      1
+21    6         0   17      2
+22    6         0   18      3
+23    6         1   20      4
+24    7         8   16      1
+25    7         1   10      2
+26    7         3    9      3
+27    7         0    5      4
+28    8        12   34      1
+29    9         2    9      1
+30    9         0    6      2
+31    9         0    8      3
+32    9         0    6      4
+33   10         1   22      1
+34   10         1   22      2
+35   10         0   18      3
+36   10         2   22      4
+37   11         0   25      1
+38   11         5   27      2
+39   11         3   22      3
+40   11         1   22      4
+41   12         2   10      1
+42   12         1    8      2
+43   12         0    6      3
+44   12         0    5      4
+45   13         1   21      1
+46   13         2   24      2
+47   13         0   19      3
+48   13         0   23      4
+49   14        11   19      1
+50   14         0    2      2
+51   14         0    3      3
+52   14         0    2      4
+53   15         1   19      1
+54   15         1   15      2
+55   15         1   15      3
+56   15         0   15      4</code></pre>
+</div>
+</div>
+<p>There are 56 observations for the 15 herds. The outcome of interest is the number of incidences in the herd, a Binomial random variable. <a href="#fig-cbpp-data" class="quarto-xref">Figure&nbsp;<span>29.3</span></a> shows a trellis plot of the incidence proportions over time for each herd. <!---
+
+::: {.cell}
+
+```{.r .cell-code}
+library(dplyr)
+```
+
+::: {.cell-output .cell-output-stderr}
+
+```
+Warning: package 'dplyr' was built under R version 4.3.1
+```
+
+
+:::
+
+::: {.cell-output .cell-output-stderr}
+
+```
+
+Attaching package: 'dplyr'
+```
+
+
+:::
+
+::: {.cell-output .cell-output-stderr}
+
+```
+The following object is masked from 'package:nlme':
+
+    collapse
+```
+
+
+:::
+
+::: {.cell-output .cell-output-stderr}
+
+```
+The following objects are masked from 'package:stats':
+
+    filter, lag
+```
+
+
+:::
+
+::: {.cell-output .cell-output-stderr}
+
+```
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+```
+
+
+:::
+
+```{.r .cell-code}
+cbpp %>% group_by(herd) %>% mutate(ratio = incidence/size) %>% summarize(mean=mean(ratio)) %>% arrange(desc(mean))
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 15 × 2
+   herd    mean
+   <fct>  <dbl>
+ 1 8     0.353 
+ 2 7     0.233 
+ 3 1     0.209 
+ 4 3     0.147 
+ 5 14    0.145 
+ 6 5     0.132 
+ 7 4     0.106 
+ 8 11    0.0918
+ 9 12    0.0812
+10 2     0.0798
+11 6     0.0566
+12 9     0.0556
+13 15    0.0465
+14 10    0.0455
+15 13    0.0327
+```
+
+
+:::
+:::
+
+--></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lattice)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">xyplot</span>(incidence<span class="sc">/</span>size <span class="sc">~</span> period <span class="sc">|</span> herd, </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">data=</span>cbpp, </span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab=</span><span class="st">"CBPP Incidences/Size of herd"</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab=</span><span class="st">"Period"</span>,</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">type=</span><span class="fu">c</span>(<span class="st">'g'</span>,<span class="st">'p'</span>,<span class="st">'l'</span>),</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">layout=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">5</span>), </span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">as.table=</span><span class="cn">TRUE</span>,</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">strip =</span> <span class="cf">function</span>(...) {</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>           <span class="fu">strip.default</span>(..., </span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>                         <span class="at">strip.names =</span><span class="cn">TRUE</span>, </span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>                         <span class="at">strip.levels=</span><span class="cn">TRUE</span>,</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>                         <span class="at">sep=</span><span class="st">" "</span>)</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>       },</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">par.strip.text =</span> <span class="fu">list</span>(<span class="at">cex =</span> <span class="fl">0.8</span>), </span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>       )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-cbpp-data" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cbpp-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="mixed_files/figure-html/fig-cbpp-data-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="mixed_files/figure-html/fig-cbpp-data-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cbpp-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;29.3: Proportion of CBPP incidences over time by herd. Herds are ordered by the max incidence.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The following code fits a Binomial GLMM with a linear fixed-effects trend in measurement period and a random intercept for each herd.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>glmm_bin1 <span class="ot">&lt;-</span> <span class="fu">glmer</span>(<span class="fu">cbind</span>(incidence, size<span class="sc">-</span>incidence) <span class="sc">~</span> <span class="fu">as.numeric</span>(period) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> herd),</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> cbpp, </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">family =</span> binomial)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glmm_bin1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: cbind(incidence, size - incidence) ~ as.numeric(period) + (1 |  
+    herd)
+   Data: cbpp
+
+     AIC      BIC   logLik deviance df.resid 
+   192.6    198.6    -93.3    186.6       53 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.2566 -0.7991 -0.4361  0.5804  3.0664 
+
+Random effects:
+ Groups Name        Variance Std.Dev.
+ herd   (Intercept) 0.4402   0.6635  
+Number of obs: 56, groups:  herd, 15
+
+Fixed effects:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)         -0.9323     0.3017  -3.090    0.002 ** 
+as.numeric(period)  -0.5592     0.1219  -4.589 4.46e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr)
+as.nmrc(pr) -0.721</code></pre>
+</div>
+</div>
+<p>The estimates of the fixed effects are <span class="math inline">\(\widehat{\boldsymbol{\beta}}\)</span> = [-0.9323, -0.5592]. The variance of the herd-specific random intercept is <span class="math inline">\(\text{Var}[b_0]\)</span> = 0.4402.</p>
+<p>The sum of the fixed and random coefficients for each level of the subject variable can be accessed with the <code>coef</code> function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(glmm_bin1)<span class="sc">$</span>herd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   (Intercept) as.numeric(period)
+1  -0.34835215         -0.5591817
+2  -1.24765551         -0.5591817
+3  -0.51230864         -0.5591817
+4  -0.90306342         -0.5591817
+5  -1.15990160         -0.5591817
+6  -1.34165149         -0.5591817
+7  -0.03187951         -0.5591817
+8  -0.25253439         -0.5591817
+9  -1.16998259         -0.5591817
+10 -1.48970916         -0.5591817
+11 -1.03196921         -0.5591817
+12 -1.00348124         -0.5591817
+13 -1.64774468         -0.5591817
+14  0.10556969         -0.5591817
+15 -1.47191143         -0.5591817</code></pre>
+</div>
+</div>
+<p>All herds have the same slope coefficient, -0.5592. The intercept varies from herd to herd.</p>
+<hr>
+<p>Is it reasonable to add a random slope in addition to the random intercept? We can test this with a likelihood ratio test (LRT):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>glmm_bin2 <span class="ot">&lt;-</span> <span class="fu">glmer</span>(<span class="fu">cbind</span>(incidence, size<span class="sc">-</span>incidence) <span class="sc">~</span> <span class="fu">as.numeric</span>(period) <span class="sc">+</span> </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                         (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">as.numeric</span>(period) <span class="sc">|</span> herd) ,</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> cbpp, </span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">family =</span> binomial)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">anova</span>(glmm_bin1,glmm_bin2,<span class="at">type=</span><span class="st">"LRT"</span>)</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>a</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: cbpp
+Models:
+glmm_bin1: cbind(incidence, size - incidence) ~ as.numeric(period) + (1 | herd)
+glmm_bin2: cbind(incidence, size - incidence) ~ as.numeric(period) + (1 + as.numeric(period) | herd)
+          npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)
+glmm_bin1    3 192.57 198.65 -93.285   186.57                     
+glmm_bin2    5 194.18 204.30 -92.088   184.18 2.3946  2      0.302</code></pre>
+</div>
+</div>
+<p>The model with a random slope adds two parameters, the variance of the random slope, <span class="math inline">\(\sigma^2_1\)</span> and the covariance between random intercept and random slope,<span class="math inline">\(\sigma_{01}\)</span>. The LRT has a test statistic of 2.3946 with <span class="math inline">\(p\)</span>-value of 0.302. The addition of the random slope does not significantly improve the model; we stick with the random intercept model.</p>
+<p><a href="#fig-cbpp-trellis-fit" class="quarto-xref">Figure&nbsp;<span>29.4</span></a> shows the predicted probabilities along with the observed incidence ratios for each herd. These predictions on the scale of the data (the probability scale) are obtained with</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>pred_re <span class="ot">&lt;-</span> <span class="fu">predict</span>(glmm_bin1,<span class="at">re.form=</span><span class="cn">NULL</span>,<span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>pred_fe <span class="ot">&lt;-</span> <span class="fu">predict</span>(glmm_bin1,<span class="at">re.form=</span><span class="cn">NA</span>  ,<span class="at">type=</span><span class="st">"response"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>re.form=NULL</code> adds all random effects in the linear predictor, <code>re.form=NA</code> sets the random effects to zero.</p>
+<p>The blue line is the “population average” which is the predicted value on the data scale obtained by setting the random effects to zero. This is not an unbiased estimate of the incidence probability of the average herd. The linear trend in observation period on the logit scale maps to a nonlinear trend on the probability scale.</p>
+<p>Notice that predicted values can be computed for all periods, even if a herd was measured during only some periods. For example, herd #8 was observed only once, but a subject-specific prediction is possible for all periods because a subject-specific intercept <span class="math inline">\(\widehat{b}_{0(8)}\)</span> is available.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-cbpp-trellis-fit" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cbpp-trellis-fit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="mixed_files/figure-html/fig-cbpp-trellis-fit-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4"><img src="mixed_files/figure-html/fig-cbpp-trellis-fit-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cbpp-trellis-fit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;29.4: “Population-average” (blue) and subject-specific (red) predictions in CBPP study.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;29.1: Reaction times by subject in sleep deprivation study</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;29.2: Population-average (blue) and subject-specific (red) predictions in sleep study.</span>
+<span class="glightbox-desc lightbox-desc-3">Figure&nbsp;29.3: Proportion of CBPP incidences over time by herd. Herds are ordered by the max incidence.</span>
+<span class="glightbox-desc lightbox-desc-4">Figure&nbsp;29.4: “Population-average” (blue) and subject-specific (red) predictions in CBPP study.</span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-Belenky_et_al" class="csl-entry" role="listitem">
+Belenky, Gregory, Nancy J. Wesensten, David R. Thorne, Maria L. Thomas, Helen C. Sing, Daniel P. Redmond, Michael B. Russo, and Thomas J. Balkin. 2003. <span>“Patterns of Performance Degradation and Restoration During Sleep Restriction and Subsequent Recovery: A Sleep Dose-Response Study.”</span> <em>Journal of Sleep Research</em> 12: 1--12.
+</div>
+<div id="ref-GillilandSchab_2001" class="csl-entry" role="listitem">
+Gilliland, D., and O. Schabenberger. 2001. <span>“Limits on Pairwise Association for Equi-Correlated Binary Variables.”</span> <em>Journal of Applied Statistical Sciences</em> 10: 279--285.
+</div>
+<div id="ref-Harville1976" class="csl-entry" role="listitem">
+Harville, D. A. 1976. <span>“Extension of the Gauss-Markov Theorem to Include the Estimation of Random Effects.”</span> <em>The Annals of Statistics</em> 4: 384–95.
+</div>
+<div id="ref-Henderson1950" class="csl-entry" role="listitem">
+Henderson, C. R. 1950. <span>“The Estimation of Genetic Parameters.”</span> <em>The Annals of Mathematical Statistics</em> 21 (2): 309–10.
+</div>
+<div id="ref-Henderson1984" class="csl-entry" role="listitem">
+R., Henderson. C. 1984. <em>Applications of Linear Models in Animal Breeding</em>. University of Guelph.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./corrdata.html" class="pagination-link" aria-label="Correlated Data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./ann.html" class="pagination-link" aria-label="Artificial Neural Networks">
+        <span class="nav-page-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

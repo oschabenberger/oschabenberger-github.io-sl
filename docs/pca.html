@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 22&nbsp; Principal Component Analysis (PCA)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./clustering.html" rel="next">
+<link href="./unsuper_intro.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./unsuper_intro.html">Unsupervised Learning</a></li><li class="breadcrumb-item"><a href="./pca.html"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">22.1</span> Introduction</a></li>
+  <li><a href="#eigenvalue-decomposition" id="toc-eigenvalue-decomposition" class="nav-link" data-scroll-target="#eigenvalue-decomposition"><span class="header-section-number">22.2</span> Eigenvalue Decomposition</a></li>
+  <li><a href="#computing-the-pca-in-r" id="toc-computing-the-pca-in-r" class="nav-link" data-scroll-target="#computing-the-pca-in-r"><span class="header-section-number">22.3</span> Computing the PCA in <code>R</code></a></li>
+  <li><a href="#predicting-in-a-pca" id="toc-predicting-in-a-pca" class="nav-link" data-scroll-target="#predicting-in-a-pca"><span class="header-section-number">22.4</span> Predicting in a PCA</a></li>
+  <li><a href="#scree-plot" id="toc-scree-plot" class="nav-link" data-scroll-target="#scree-plot"><span class="header-section-number">22.5</span> Scree Plot</a></li>
+  <li><a href="#biplot" id="toc-biplot" class="nav-link" data-scroll-target="#biplot"><span class="header-section-number">22.6</span> Biplot</a></li>
+  <li><a href="#to-scale-or-not-to-scale" id="toc-to-scale-or-not-to-scale" class="nav-link" data-scroll-target="#to-scale-or-not-to-scale"><span class="header-section-number">22.7</span> To Scale or Not To Scale</a></li>
+  <li><a href="#imputation-through-matrix-completion" id="toc-imputation-through-matrix-completion" class="nav-link" data-scroll-target="#imputation-through-matrix-completion"><span class="header-section-number">22.8</span> Imputation through Matrix Completion</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./unsuper_intro.html">Unsupervised Learning</a></li><li class="breadcrumb-item"><a href="./pca.html"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-pca" class="quarto-section-identifier"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="22.1">
+<h2 data-number="22.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">22.1</span> Introduction</h2>
+<p>Principal component analysis (PCA) is one of the most important methods of unsupervised learning with many applications:</p>
+<ul>
+<li><p><strong>Summarization</strong>: summarize a <span class="math inline">\(p\)</span>-dimensional matrix <span class="math inline">\(\textbf{X}_{(n\times p)}\)</span> through a lower-dimensional matrix <span class="math inline">\(\textbf{Z}_{(n\times m)}\)</span>. <span class="math inline">\(m\)</span> is usually much smaller than <span class="math inline">\(p\)</span>, and in many cases <span class="math inline">\(m=2\)</span>, especially if the results are to be presented grahically.</p></li>
+<li><p><strong>Visualization</strong>: Instead of all <span class="math inline">\({p\choose 2}\)</span> two-way scatterplots between <span class="math inline">\(p\)</span> variables, display a single scatterplot of the first two principal components.</p></li>
+<li><p><strong>Dimension reduction</strong>: Use the first <span class="math inline">\(m\)</span> principal components as inputs to a regression model (see PCR, <a href="regfeature.html#sec-pcr" class="quarto-xref"><span>Section 9.3.2</span></a>). Apply a clustering algorithm such as <span class="math inline">\(k\)</span>-means clustering to the first <span class="math inline">\(m\)</span> principal components.</p></li>
+<li><p><strong>Imputation</strong>: Use principal components iteratively to complete a numerical matrix that contains missing values.</p></li>
+</ul>
+<p>Given the many applications it is no surprise that PCA is a key method in the toolbox of data scientists and machine learners. It goes back to 1901, when it was invented by Karl Pearson.</p>
+<p>A principal component is a linear combination of the <span class="math inline">\(p\)</span> inputs. The elements of the <span class="math inline">\(j\)</span><sup>th</sup> component <strong>score</strong> vector are calculated as follows: <span class="math display">\[
+z_{ij} = \psi_{1j} x_{i1} + \psi_{2j} x_{i2} + \cdots + \psi_{pj} x_{ip} \quad i=1,\cdots,n; j=1,\cdots,p
+\]</span> The coefficients <span class="math inline">\(\psi_{kj}\)</span> are called the <strong>rotations</strong> or <strong>loadings</strong> of the principal components. In constructing the linear combination, the <span class="math inline">\(x\)</span>s are always centered to have a mean of zero and are usually scaled to have standard deviation one. More on whether to scale the data for PCA follows below.</p>
+<p>The scores <span class="math inline">\(z_{ij}\)</span> are then collected into a score vector <span class="math inline">\(\textbf{z}_j = [z_{1j}, \cdots, z_{nj}]\)</span> for the <span class="math inline">\(j\)</span><sup>th</sup> component. Note that for each observation <span class="math inline">\(i\)</span> there are <span class="math inline">\(p\)</span> inputs and <span class="math inline">\(p\)</span> scores. So what have we gained? Instead of the <span class="math inline">\(p\)</span> vectors <span class="math inline">\(\textbf{x}_1, \cdots, \textbf{x}_p\)</span> we now have the <span class="math inline">\(p\)</span> vectors <span class="math inline">\(\textbf{z}_1, \cdots, \textbf{z}_p\)</span>. Because of the way in which the <span class="math inline">\(\psi_{kj}\)</span> are found, the PCA scores have very special properties:</p>
+<ul>
+<li><p>They have zero mean (if the data was centered):<span class="math inline">\(\sum_{i=1}^n z_{ij} = 0\)</span></p></li>
+<li><p>They are uncorrelated: <span class="math inline">\(\text{Corr}[z_j, z_k] = 0, \forall j \ne k\)</span></p></li>
+<li><p><span class="math inline">\(\text{Var}\left[\sum_{j=1}^p z_j\right] = \sum_{j=1}^p \text{Var}[z_j] = p\)</span> (if data was scaled)</p></li>
+<li><p>The components are ordered in terms of their variance <span class="math inline">\(\Rightarrow \text{Var}[z_1] &gt; \text{Var}[z_2] &gt; \cdots &gt; \text{Var}[z_p]\)</span></p></li>
+</ul>
+<p>This is useful in many ways:</p>
+<ol type="1">
+<li><p>The components provide a decomposition of the variability in the data. The first component explains the greatest proportion of the variability, the second component explains the next largest proportion of variability and so forth.</p></li>
+<li><p>The contributions of the components are independent, each component is orthogonal to the other components. For example the second component is a linear combination of the <span class="math inline">\(X\)</span>s that models a relationship not captured by the first (or any other) component.</p></li>
+<li><p>The loadings for each component inform about the particular linear relationship. The magnitude of the loading coefficients reflects which inputs are driving the linear relationship. For example, when all coefficients are of similar magnitude, the component expresses some overall, average trend. When a few coefficients stand out it suggests that the associated attributes explain most of the variability captured by the component.</p></li>
+<li><p>To summarize high-dimensional data, we can ignore those components that explain a small amount of variability and turn a high-dimensional problem into a lower-dimensional one. Often, only the first two principal components are used to visualize the data and for further analysis.</p></li>
+</ol>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Principal</strong> versus <strong>Principle</strong>.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>A principle refers to a fundamental law or rule, for example, “the principles of Christianity” or “the principle of judicial review”. You might agree with someone in principle, but disagree with their approach. A principal, on the other hand, refers to something head, chief, main, or leading. The principal of the school is the head of the school. They are leading the school. The principal reason for doing something is the main reason for doing it.</p>
+<p>PCA is <strong>principal</strong> component analysis because the leading components are the main accountants of variability.</p>
+</div>
+</div>
+</div>
+<p>An alternative interpretation of the principal components is to find <span class="math inline">\(p\)</span> vectors <span class="math inline">\(\textbf{z}_1,\cdots,\textbf{z}_p\)</span> as linear combinations of the <span class="math inline">\(\textbf{x}_1,\cdots,\textbf{x}_p\)</span> such that</p>
+<ul>
+<li><p><span class="math inline">\(\textbf{z}_1\)</span> explains the most variability of the <span class="math inline">\(X\)</span>s</p></li>
+<li><p><span class="math inline">\(\textbf{z}_2\)</span> explains the second-most variability of the <span class="math inline">\(X\)</span>s</p></li>
+<li><p>… and so forth</p></li>
+<li><p>and the <span class="math inline">\(\textbf{z}\)</span> are orthogonal: <span class="math inline">\(\textbf{z}_j^\prime\textbf{z}_k = 0, \forall j,k\)</span>.</p></li>
+<li><p><span class="math inline">\(\textbf{z}_1\)</span> is a projection of the <span class="math inline">\(X\)</span>s in the direction that explains the <strong>most</strong> variability in the data.</p></li>
+<li><p><span class="math inline">\(\textbf{z}_2\)</span> is a projection of the <span class="math inline">\(X\)</span>s in the direction that explains the <strong>second-most</strong> variability in the data.</p></li>
+<li><p>the <span class="math inline">\(\textbf{z}_j\)</span> represent jointly perpendicular directions through the space of the original variables.</p></li>
+</ul>
+<p>Viewing the components as projections into perpendicular directions hints at one technique for calculating the rotation matrix <span class="math inline">\(\boldsymbol{\Psi} = [\psi_{kj}]\)</span> rotation and the variance decomposition: through a matrix factorization into eigenvalues and eigenvectors.</p>
+</section>
+<section id="eigenvalue-decomposition" class="level2" data-number="22.2">
+<h2 data-number="22.2" class="anchored" data-anchor-id="eigenvalue-decomposition"><span class="header-section-number">22.2</span> Eigenvalue Decomposition</h2>
+<p>The PCA can be computed with a singular value decomposition (SVD) of the matrix <span class="math inline">\(\textbf{X}\)</span> or with an eigendecomposition of the covariance or correlation matrix of <span class="math inline">\(\textbf{X}\)</span>. The SVD is numerically more stable than the eigendecomposition, but we can demonstrate the computations easily using eigenvalues and eigenvectors.</p>
+<p>The eigendecomposition of a square <span class="math inline">\(n \times n\)</span> matrix <span class="math inline">\(\textbf{A}\)</span> is <span class="math display">\[
+\textbf{A}= \textbf{Q}\boldsymbol{\Lambda}\textbf{Q}^{-1}
+\]</span> where <span class="math inline">\(\textbf{Q}\)</span> is the <span class="math inline">\(n \times n\)</span> matrix containing the <strong>eigenvectors</strong> of <span class="math inline">\(\textbf{A}\)</span> and <span class="math inline">\(\boldsymbol{\Lambda}\)</span> is a diagonal matrix with the <strong>eigenvalues</strong> of <span class="math inline">\(\textbf{A}\)</span> on the diagonal. If <span class="math inline">\(\textbf{A}\)</span> is symmetric, then <span class="math inline">\(\textbf{Q}\)</span> is orthogonal and <span class="math inline">\(\textbf{Q}^{-1} = \textbf{Q}^\prime\)</span>. The eigendecomposition of a real symmetric matrix is thus</p>
+<p><span class="math display">\[
+\textbf{A}= \textbf{Q}\boldsymbol{\Lambda}\textbf{Q}^\prime
+\]</span> How can we interpret eigenvectors and eigenvalues? The <span class="math inline">\(n\times 1\)</span> vector <span class="math inline">\(\textbf{q}\)</span> is an eigenvector of <span class="math inline">\(\textbf{A}\)</span>, if it satisfies the linear equation <span class="math display">\[
+\textbf{A}\textbf{q} = \lambda\textbf{q}
+\]</span> for a scalar <span class="math inline">\(\lambda\)</span>. This scalar is called the eigenvalue corresponding to <span class="math inline">\(\textbf{q}\)</span>. There are <span class="math inline">\(n\)</span> eigenvectors and when they are arranged as the columns of a matrix you get <span class="math inline">\(\textbf{Q}\)</span>.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Eigenanalysis of Correlation Matrix</p>
+</div>
+<div class="example-container">
+<p>In <code>R</code> you can obtain the eigenvectors and eigenvalues of a square matrix with the <code>eigen</code> function. Principal components can be computed with the <code>prcomp</code> or the <code>princomp</code> functions, both included in the base <code>stats</code> package. <code>prcomp</code> uses the singular-value decomposition of <span class="math inline">\(\textbf{X}\)</span>, <code>princomp</code> relies on the eigendecomposition of the covariance matrix.</p>
+<p>The following data were used to illustrate PCA scores in <a href="regfeature.html#sec-pcr" class="quarto-xref"><span>Section 9.3.2</span></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">"x1"</span><span class="ot">=</span><span class="fu">c</span>(<span class="fl">0.344167</span> ,<span class="fl">0.363478</span>,<span class="fl">0.196364</span>,<span class="fl">0.2</span>     ,<span class="fl">0.226957</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>                          <span class="fl">0.204348</span> ,<span class="fl">0.196522</span>,<span class="fl">0.165</span>   ,<span class="fl">0.138333</span>,<span class="fl">0.150833</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"x2"</span><span class="ot">=</span><span class="fu">c</span>(<span class="fl">0.363625</span> ,<span class="fl">0.353739</span>,<span class="fl">0.189405</span>,<span class="fl">0.212122</span>,<span class="fl">0.22927</span> ,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                          <span class="fl">0.233209</span> ,<span class="fl">0.208839</span>,<span class="fl">0.162254</span>,<span class="fl">0.116175</span>,<span class="fl">0.150888</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"x3"</span><span class="ot">=</span><span class="fu">c</span>(<span class="fl">0.805833</span> ,<span class="fl">0.696087</span>,<span class="fl">0.437273</span>,<span class="fl">0.590435</span>,<span class="fl">0.436957</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                          <span class="fl">0.518261</span> ,<span class="fl">0.498696</span>,<span class="fl">0.535833</span>,<span class="fl">0.434167</span>,<span class="fl">0.482917</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"x4"</span><span class="ot">=</span><span class="fu">c</span>(<span class="fl">0.160446</span> ,<span class="fl">0.248539</span>,<span class="fl">0.248309</span>,<span class="fl">0.160296</span>,<span class="fl">0.1869</span>  ,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                          <span class="fl">0.0895652</span>,<span class="fl">0.168726</span>,<span class="fl">0.266804</span>,<span class="fl">0.36195</span> ,<span class="fl">0.223267</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                   )</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         x1       x2       x3        x4
+1  0.344167 0.363625 0.805833 0.1604460
+2  0.363478 0.353739 0.696087 0.2485390
+3  0.196364 0.189405 0.437273 0.2483090
+4  0.200000 0.212122 0.590435 0.1602960
+5  0.226957 0.229270 0.436957 0.1869000
+6  0.204348 0.233209 0.518261 0.0895652
+7  0.196522 0.208839 0.498696 0.1687260
+8  0.165000 0.162254 0.535833 0.2668040
+9  0.138333 0.116175 0.434167 0.3619500
+10 0.150833 0.150888 0.482917 0.2232670</code></pre>
+</div>
+</div>
+<p>There are ten observations of four variables. Let’s take as input for the eigendecomposition the correlation matrix of the data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> <span class="fu">cor</span>(data)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>c</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           x1         x2         x3         x4
+x1  1.0000000  0.9832580  0.8359297 -0.2761887
+x2  0.9832580  1.0000000  0.8539085 -0.4397088
+x3  0.8359297  0.8539085  1.0000000 -0.2890121
+x4 -0.2761887 -0.4397088 -0.2890121  1.0000000</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> <span class="fu">eigen</span>(c)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>e<span class="sc">$</span>values </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.9570820972 0.8438197077 0.1985106437 0.0005875513</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>e<span class="sc">$</span>vectors</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           [,1]       [,2]        [,3]        [,4]
+[1,] -0.5550620 0.23539598  0.45961271  0.65211273
+[2,] -0.5741828 0.05247306  0.33623520 -0.74465196
+[3,] -0.5297817 0.20752636 -0.82067111  0.05256496
+[4,]  0.2855723 0.94803382  0.04691458 -0.13220959</code></pre>
+</div>
+</div>
+<p>The <code>eigen</code> function returns the diagonal elements of <span class="math inline">\(\boldsymbol{\Lambda}\)</span> in <code>e$values</code> and the matrix <span class="math inline">\(\textbf{Q}\)</span> of eigenvectors in <code>e$vectors</code>. The input matrix of the decomposition can be reconstructed from those:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> e<span class="sc">$</span>vectors <span class="sc">%*%</span> <span class="fu">diag</span>(e<span class="sc">$</span>values) <span class="sc">%*%</span> <span class="fu">t</span>(e<span class="sc">$</span>vectors)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>((c <span class="sc">-</span> A),<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   x1 x2 x3 x4
+x1  0  0  0  0
+x2  0  0  0  0
+x3  0  0  0  0
+x4  0  0  0  0</code></pre>
+</div>
+</div>
+<p>What happens if we multiply the <span class="math inline">\(10 \times 4\)</span> data matrix with the <span class="math inline">\(4\times 4\)</span> matrix of eigenvectors of the correlation matrix? First, we center and scale the data. The result is a <span class="math inline">\(10 \times 4\)</span> matrix of linear transformations. These are the <strong>scores</strong> of the PCA.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>data_c <span class="ot">&lt;-</span> <span class="fu">scale</span>(data,<span class="at">center=</span><span class="cn">TRUE</span>,<span class="at">scale=</span><span class="cn">TRUE</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>scores <span class="ot">&lt;-</span> data_c <span class="sc">%*%</span> e<span class="sc">$</span>vectors</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>scores</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            [,1]       [,2]        [,3]          [,4]
+ [1,] -3.2478623  0.2815532 -0.43998889 -0.0292581389
+ [2,] -2.5101127  1.2574623  0.42484650  0.0254701453
+ [3,]  0.9925370  0.1935176  0.46544557 -0.0005376776
+ [4,] -0.1908526 -0.6286757 -0.49817675  0.0413147515
+ [5,]  0.2550067 -0.4593212  0.77973866  0.0014573403
+ [6,] -0.3285776 -1.6137133  0.05490332 -0.0226596733
+ [7,]  0.2862026 -0.6907719  0.08654684 -0.0123166161
+ [8,]  1.0581238  0.4785600 -0.48496730 -0.0088830663
+ [9,]  2.3797940  1.3913628 -0.09775326 -0.0229367993
+[10,]  1.3057412 -0.2099739 -0.29059469  0.0283497342</code></pre>
+</div>
+</div>
+<p>The scores have mean 0, their variances equal the eigenvalues of the correlation matrix, their variances sum to <span class="math inline">\(p=4\)</span>, and they are uncorrelated.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(scores,<span class="dv">2</span>,mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  8.881784e-17 -4.690692e-16 -3.330669e-17 -1.134509e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(scores,<span class="dv">2</span>,var)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.9570820972 0.8438197077 0.1985106437 0.0005875513</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">apply</span>(scores,<span class="dv">2</span>,var))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cor</span>(scores),<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]    1    0    0    0
+[2,]    0    1    0    0
+[3,]    0    0    1    0
+[4,]    0    0    0    1</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="computing-the-pca-in-r" class="level2" data-number="22.3">
+<h2 data-number="22.3" class="anchored" data-anchor-id="computing-the-pca-in-r"><span class="header-section-number">22.3</span> Computing the PCA in <code>R</code></h2>
+<p>We prefer the <code>prcomp</code> function to compute the PCA over the <code>princomp</code> function because it is based on the singular value decomposition, which is numerically more stable than the eigendecomposition. (Singular values are the square roots of the eigenvalues and since eigenvalues can be very close to zero working with square roots stabilizes the calculations.)</p>
+<p>By default, <code>prcomp</code> centers the data but does not scale it. Add <code>scale.=TRUE</code> to scale the data as well.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>pca <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(data,<span class="at">retx=</span><span class="cn">TRUE</span>,<span class="at">scale.=</span><span class="cn">TRUE</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>pca</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Standard deviations (1, .., p=4):
+[1] 1.71961685 0.91859660 0.44554533 0.02423946
+
+Rotation (n x k) = (4 x 4):
+          PC1        PC2         PC3         PC4
+x1 -0.5550620 0.23539598  0.45961271 -0.65211273
+x2 -0.5741828 0.05247306  0.33623520  0.74465196
+x3 -0.5297817 0.20752636 -0.82067111 -0.05256496
+x4  0.2855723 0.94803382  0.04691458  0.13220959</code></pre>
+</div>
+</div>
+<p><code>prcomp</code> reports the standard deviations (<code>pca$dev</code>) and rotation matrix <span class="math inline">\(\boldsymbol{\Psi}\)</span> (<code>pca$rotation</code>). You will recognize the rotation as the matrix of eigenvectors from the previous analysis and the standard deviations as the square roots of the variances of the scores computed earlier. When <code>retx=TRUE</code> is specified, the function returns the PCA scores in <code>pca$x</code>.</p>
+<p>The sum of the variances of the principal components is <span class="math inline">\(p=4\)</span> and it can be used to break down the variance into proportions explained by the components.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Importance of components:
+                          PC1    PC2     PC3     PC4
+Standard deviation     1.7196 0.9186 0.44555 0.02424
+Proportion of Variance 0.7393 0.2109 0.04963 0.00015
+Cumulative Proportion  0.7393 0.9502 0.99985 1.00000</code></pre>
+</div>
+</div>
+<p>The first principal component, with somewhat equal loading coefficients for <span class="math inline">\(X_1\)</span>, <span class="math inline">\(X_2\)</span>, and <span class="math inline">\(X_3\)</span>, explains 73.927% of the overall variance. The second component, which is dominated by <span class="math inline">\(X_4\)</span>, explains an additional 21.095% of the variance.</p>
+</section>
+<section id="predicting-in-a-pca" class="level2" data-number="22.4">
+<h2 data-number="22.4" class="anchored" data-anchor-id="predicting-in-a-pca"><span class="header-section-number">22.4</span> Predicting in a PCA</h2>
+<p>You can predict a new observation using principal components by calculating the component scores for the new obs. For example, suppose the input values for the new data point are the square roots of the values for the first observation:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>xx <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(data[<span class="dv">1</span>,]) <span class="co"># the "new" observation</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(pca, <span class="at">newdata=</span>xx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        PC1      PC2      PC3       PC4
+1 -6.202193 4.362812 1.553425 0.5424985</code></pre>
+</div>
+</div>
+<p>The predicted value is a vector, with one element for each of the components. To reconstruct the predicted value, we can apply the rotation matrix to the new observation. Before doing so, the values need to be centered and scaled to match the derivation of the rotations. It is thus important to apply <strong>the same</strong> centering and scaling values that were used on the training data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>xx_centered_and_scaled <span class="ot">&lt;-</span> (xx <span class="sc">-</span> pca<span class="sc">$</span>center)<span class="sc">/</span>pca<span class="sc">$</span>scale</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">as.matrix</span>(xx_centered_and_scaled) <span class="sc">%*%</span> pca<span class="sc">$</span>rotation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        PC1      PC2      PC3       PC4
+1 -6.202193 4.362812 1.553425 0.5424985</code></pre>
+</div>
+</div>
+</section>
+<section id="scree-plot" class="level2" data-number="22.5">
+<h2 data-number="22.5" class="anchored" data-anchor-id="scree-plot"><span class="header-section-number">22.5</span> Scree Plot</h2>
+<p>How should we choose the number of principal components to use in subsequent analyses? If the goal is summarization or visualization <span class="math inline">\(m=2\)</span> is common. If the components are input to a regression model, cross-validation can be used in PCR (<a href="regfeature.html#sec-pcr" class="quarto-xref"><span>Section 9.3.2</span></a>). In other situations you have to choose <span class="math inline">\(m\)</span> such that a “fair” amount of variation is explained. To help with that, a <strong>scree</strong> plot is commonly used. Scree describes the small rock material that accumulates at the base of a mountain or steep rock formation (<a href="#fig-scree" class="quarto-xref">Figure&nbsp;<span>22.1</span></a>). The scree forms a sharp transition from the rocky cliff to the area of the rock fragments.</p>
+<div id="fig-scree" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/ScreeWikipedia.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22.1: Scree at the base of a mountain. Source: <a href="https://en.wikipedia.org/wiki/Scree">Wikipedia</a>
+</figcaption>
+</figure>
+</div>
+<p>In principal component analysis the scree plot displays the proprtion of variance explained against the number of components.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Hitters Data (ISLR2)</p>
+</div>
+<div class="example-container">
+<p>For the <code>Hitters</code> baseball data set from <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">2021</a>)</span>, the PCA scree plot is obtained as follows:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>pca_hit <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(Hitters[,<span class="dv">1</span><span class="sc">:</span><span class="dv">13</span>],<span class="at">.scale=</span><span class="cn">TRUE</span>) </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">summary</span>(pca_hit)<span class="sc">$</span>importance[<span class="dv">2</span>,],</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">type=</span><span class="st">"b"</span>,</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">"Proportion of Variance Explained"</span>,</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">"Principal Component"</span>,</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">las=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
+<figcaption>Scree plot for first thirteen attributes of <code>Hitters</code> data.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The sharp “knee” (“elbow”) at <span class="math inline">\(m=2\)</span> shows that most of the variability is captured by the first principal component.</p>
+</div>
+</div>
+</section>
+<section id="biplot" class="level2" data-number="22.6">
+<h2 data-number="22.6" class="anchored" data-anchor-id="biplot"><span class="header-section-number">22.6</span> Biplot</h2>
+<p>The <strong>biplot</strong> of a PCA displays the scores and loadings for two principal components in the same visualization. Typically, it is produced using the first two components as these account for the most variability. The scores <span class="math inline">\(z_{ij}\)</span> are shown in the biplot as a scatter, the rotations are displayed as arrows. Points that are close to each other on the biplot have similar values of the inputs. The length of an arrow depicts the contribution of the variable, long arrows correspond to large coefficients in the rotation matrix. The angle of the arrows shows the correlation with other variables:</p>
+<ul>
+<li>uncorrelated variables have perpendicular arrows</li>
+<li>highly correlated variables have arrows that point in the same direction</li>
+</ul>
+<div class="example">
+<div class="example-header">
+<p>Example: PCA for Iris Data</p>
+</div>
+<div class="example-container">
+<p>For the Iris data, the first two principal component account for 95% of the variability in the four flower measurements.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>pca_iris <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(iris[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>],<span class="at">retx=</span><span class="cn">TRUE</span>,<span class="at">scale.=</span><span class="cn">TRUE</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>pca_iris</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Standard deviations (1, .., p=4):
+[1] 1.7083611 0.9560494 0.3830886 0.1439265
+
+Rotation (n x k) = (4 x 4):
+                    PC1         PC2        PC3        PC4
+Sepal.Length  0.5210659 -0.37741762  0.7195664  0.2612863
+Sepal.Width  -0.2693474 -0.92329566 -0.2443818 -0.1235096
+Petal.Length  0.5804131 -0.02449161 -0.1421264 -0.8014492
+Petal.Width   0.5648565 -0.06694199 -0.6342727  0.5235971</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pca_iris)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Importance of components:
+                          PC1    PC2     PC3     PC4
+Standard deviation     1.7084 0.9560 0.38309 0.14393
+Proportion of Variance 0.7296 0.2285 0.03669 0.00518
+Cumulative Proportion  0.7296 0.9581 0.99482 1.00000</code></pre>
+</div>
+</div>
+<p>The raw data for the biplot (<a href="#fig-iris-biplot" class="quarto-xref">Figure&nbsp;<span>22.2</span></a>) of the first two components are the first two columns of the rotation matrix and the first two columns of the score matrix:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>pca_iris<span class="sc">$</span>rotation[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                    PC1         PC2
+Sepal.Length  0.5210659 -0.37741762
+Sepal.Width  -0.2693474 -0.92329566
+Petal.Length  0.5804131 -0.02449161
+Petal.Width   0.5648565 -0.06694199</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>pca_iris<span class="sc">$</span>x[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            PC1         PC2
+ [1,] -2.257141 -0.47842383
+ [2,] -2.074013  0.67188269
+ [3,] -2.356335  0.34076642
+ [4,] -2.291707  0.59539986
+ [5,] -2.381863 -0.64467566
+ [6,] -2.068701 -1.48420530
+ [7,] -2.435868 -0.04748512
+ [8,] -2.225392 -0.22240300
+ [9,] -2.326845  1.11160370
+[10,] -2.177035  0.46744757
+[11,] -2.159077 -1.04020587
+[12,] -2.318364 -0.13263400
+[13,] -2.211044  0.72624318
+[14,] -2.624309  0.95829635
+[15,] -2.191399 -1.85384655
+[16,] -2.254661 -2.67731523
+[17,] -2.200217 -1.47865573
+[18,] -2.183036 -0.48720613
+[19,] -1.892233 -1.40032757
+[20,] -2.335545 -1.12408360</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">biplot</span>(pca_iris,<span class="at">cex=</span><span class="fl">0.75</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-iris-biplot" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-iris-biplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="pca_files/figure-html/fig-iris-biplot-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="pca_files/figure-html/fig-iris-biplot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-iris-biplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22.2: Biplot for first two principal components of Iris data.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>There are two systems of axes on the biplot. The axes on the bottom and on the left are for the scores of the principal components. The axes on the right and on the top are for the variable arrows (the rotations). Note that the <code>Sepal.Width</code> rotation for the first two components is [-0.2693474, -0.9232957] but the arrow does not point at that coordinate. The <code>biplot</code> function applies a scaling to the scores and the arrows, which you can suppress by adding <code>scale=0</code> to the function call.</p>
+<p>We see from the biplot that the scores cluster in distinct groups. The arrow for <code>Sepal.Width</code> is pointing away from the arrows of the other variables, which suggests that it is not highly correlated with the other flower measurements. The length and width of the petals are very highly correlated, however; their arrows point into nearly the same direction. This can be verified by computing the correlation matrix of the measurements:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(iris[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    1.0000000  -0.1175698    0.8717538   0.8179411
+Sepal.Width    -0.1175698   1.0000000   -0.4284401  -0.3661259
+Petal.Length    0.8717538  -0.4284401    1.0000000   0.9628654
+Petal.Width     0.8179411  -0.3661259    0.9628654   1.0000000</code></pre>
+</div>
+</div>
+<p>Using the <code>autoplot</code> function in the <code>ggfortify</code> library allows you to color the scores in the biplot by another variable. We see that the distinct group of scores low in PC1 correspond to the <em>Iris setosa</em> species.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggfortify)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(pca_iris, <span class="at">data=</span>iris, <span class="at">color=</span><span class="st">"Species"</span>, </span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">loadings=</span><span class="cn">TRUE</span>, <span class="at">loadings.label=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pca_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><em>I. setosa</em> has large sepal widths and the negative rotation coefficient for <code>Sepal.Width</code> in PC1 separates the species in that dimension from the other species.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>iris <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(Species) <span class="sc">%&gt;%</span> </span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>         <span class="fu">summarize</span>(<span class="at">min=</span><span class="fu">min</span>(Sepal.Width), </span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">max=</span><span class="fu">max</span>(Sepal.Width),</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mean=</span><span class="fu">mean</span>(Sepal.Width))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+  Species      min   max  mean
+  &lt;fct&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 setosa       2.3   4.4  3.43
+2 versicolor   2     3.4  2.77
+3 virginica    2.2   3.8  2.97</code></pre>
+</div>
+</div>
+</div>
+</div>
+<p>Looking at the sign of the rotation coefficients is helpful to determine which input variables increase or decrease a component compared to other inputs. However, you cannot interpret the sign as increasing or decreasing a target variable. The rotation matrix of a principal component analysis is unique <strong>up to sign</strong>. Two software packages might produce the same rotation matrices, but with different signs of the coefficients. The <code>princomp</code> function in <code>R</code> has a <code>fix_sign=</code> option that controls the sign of the first loading coefficient to be positive.</p>
+</section>
+<section id="to-scale-or-not-to-scale" class="level2" data-number="22.7">
+<h2 data-number="22.7" class="anchored" data-anchor-id="to-scale-or-not-to-scale"><span class="header-section-number">22.7</span> To Scale or Not To Scale</h2>
+<p>The variables should always be centered to have mean 0, so that the loadings have the same origin. Should the variables also be scaled to have the same variance?</p>
+<p>In general, scaling is recommended whenever the results of an analysis depends on units of measurements. For example, when calculating distances it matters whether time is measured in days, hours, minutes, or seconds. The choice of units should not affect the outcome of the analysis. Similarly, large things tend to have greater variability than small things. Since the principal components are arranged in the order of variability explained, variables that have very large variances (because of their units of measurement or size) will dominate the components unless scaling is applied.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: U.S. Arrests</p>
+</div>
+<div class="example-container">
+<p>The <code>USArrests</code> data set contains statistics, in arrests per 100,000 residents for assault, murder, and rape in each of the 50 U.S. states in 1973. Also given is the percent of the population living in urban areas. The data set comes with <code>R</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(USArrests)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           Murder Assault UrbanPop Rape
+Alabama      13.2     236       58 21.2
+Alaska       10.0     263       48 44.5
+Arizona       8.1     294       80 31.0
+Arkansas      8.8     190       50 19.5
+California    9.0     276       91 40.6
+Colorado      7.9     204       78 38.7</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(USArrests,<span class="dv">2</span>,sd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Murder   Assault  UrbanPop      Rape 
+ 4.355510 83.337661 14.474763  9.366385 </code></pre>
+</div>
+</div>
+<p>The standard deviations of the four variables is quite different, that of <code>Assault</code> is 20-times larger than that of the <code>Murder</code> variable.</p>
+<p>We now perform PCA without and with scaling of the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>pca_unscaled <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(USArrests,<span class="at">retx=</span><span class="cn">TRUE</span>,<span class="at">scale.=</span><span class="cn">FALSE</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>pca_unscaled</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Standard deviations (1, .., p=4):
+[1] 83.732400 14.212402  6.489426  2.482790
+
+Rotation (n x k) = (4 x 4):
+                PC1         PC2         PC3         PC4
+Murder   0.04170432 -0.04482166  0.07989066 -0.99492173
+Assault  0.99522128 -0.05876003 -0.06756974  0.03893830
+UrbanPop 0.04633575  0.97685748 -0.20054629 -0.05816914
+Rape     0.07515550  0.20071807  0.97408059  0.07232502</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pca_unscaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Importance of components:
+                           PC1      PC2    PC3     PC4
+Standard deviation     83.7324 14.21240 6.4894 2.48279
+Proportion of Variance  0.9655  0.02782 0.0058 0.00085
+Cumulative Proportion   0.9655  0.99335 0.9991 1.00000</code></pre>
+</div>
+</div>
+<p>The first principal component in the unscaled analysis explains 96.55% of the variability. The component is dominated by the <code>Assault</code> variable, with a loading coefficient of 0.9952.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>pca_scaled <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(USArrests,<span class="at">retx=</span><span class="cn">TRUE</span>,<span class="at">scale.=</span><span class="cn">TRUE</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>pca_scaled</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Standard deviations (1, .., p=4):
+[1] 1.5748783 0.9948694 0.5971291 0.4164494
+
+Rotation (n x k) = (4 x 4):
+                PC1        PC2        PC3         PC4
+Murder   -0.5358995 -0.4181809  0.3412327  0.64922780
+Assault  -0.5831836 -0.1879856  0.2681484 -0.74340748
+UrbanPop -0.2781909  0.8728062  0.3780158  0.13387773
+Rape     -0.5434321  0.1673186 -0.8177779  0.08902432</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pca_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Importance of components:
+                          PC1    PC2     PC3     PC4
+Standard deviation     1.5749 0.9949 0.59713 0.41645
+Proportion of Variance 0.6201 0.2474 0.08914 0.04336
+Cumulative Proportion  0.6201 0.8675 0.95664 1.00000</code></pre>
+</div>
+</div>
+<p>In the scaled analysis the variables are on equal footing with respect to their dispersion. The loading coefficients are more evenly sized in the first principal component which explains 62.01% of variability in the scaled analysis. The <code>Assault</code> variable is not allowed to dominate the component analysis because of its large variance compared to the other variables.</p>
+<p>The biplots for the scaled and unscaled analysis are markedly different. The dominance of <code>Assault</code> in the unscaled analysis makes it difficult (impossible) to meaningfully interpret the biplot (<a href="#fig-pca-biplot-scaled-unscaled" class="quarto-xref">Figure&nbsp;<span>22.3</span></a>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="fu">biplot</span>(pca_unscaled,<span class="at">cex=</span><span class="fl">0.6</span>)</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="fu">biplot</span>(pca_scaled,<span class="at">cex=</span><span class="fl">0.6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-pca-biplot-scaled-unscaled" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pca-biplot-scaled-unscaled-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="pca_files/figure-html/fig-pca-biplot-scaled-unscaled-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="pca_files/figure-html/fig-pca-biplot-scaled-unscaled-1.png" class="img-fluid figure-img" style="width:75.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pca-biplot-scaled-unscaled-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22.3: Biplots in unscaled (left) and scaled (right) analysis.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>In the next section we encounter a situation where we center but do not scale the <span class="math inline">\(\textbf{X}\)</span> matrix, when values of the inputs are reconstructed.</p>
+</section>
+<section id="imputation-through-matrix-completion" class="level2" data-number="22.8">
+<h2 data-number="22.8" class="anchored" data-anchor-id="imputation-through-matrix-completion"><span class="header-section-number">22.8</span> Imputation through Matrix Completion</h2>
+<p>In the introduction to this chapter we expressed the PCA scores as a linear function of the inputs: <span class="math display">\[
+z_{ij} = \psi_{1j} x_{i1} + \psi_{2j} x_{i2} + \cdots + \psi_{pj} x_{ip} = \sum_{k=1}^p \psi_{kj}x_{ik}
+\]</span></p>
+<p>This relationship can be reversed, expressing the inputs as a linear combination of the PCA scores and the rotations: <span class="math display">\[
+x_{ij} = \sum_{k=1}^p z_{ik}\psi_{kj}
+\]</span></p>
+<p>To demonstrate, we can reconstruct the values for the first observation for the Iris data set from its PCA results. First, we only center the data and do not scale:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>pca_iris_ns <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(iris[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>],<span class="at">retx=</span><span class="cn">TRUE</span>,<span class="at">scale.=</span><span class="cn">FALSE</span>)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>pca_iris_ns<span class="sc">$</span>rotation</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="do">##                      PC1         PC2         PC3        PC4</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length  0.36138659 -0.65658877  0.58202985  0.3154872</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width  -0.08452251 -0.73016143 -0.59791083 -0.3197231</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length  0.85667061  0.17337266 -0.07623608 -0.4798390</span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width   0.35828920  0.07548102 -0.54583143  0.7536574</span></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(pca_iris_ns<span class="sc">$</span>x[<span class="dv">1</span>,] <span class="sc">*</span> pca_iris_ns<span class="sc">$</span>rotation[<span class="dv">1</span>,]) <span class="sc">+</span> pca_iris_ns<span class="sc">$</span>center[<span class="dv">1</span>]</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length </span></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a><span class="do">##          5.1</span></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(pca_iris_ns<span class="sc">$</span>x[<span class="dv">1</span>,] <span class="sc">*</span> pca_iris_ns<span class="sc">$</span>rotation[<span class="dv">2</span>,]) <span class="sc">+</span> pca_iris_ns<span class="sc">$</span>center[<span class="dv">2</span>]</span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width </span></span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a><span class="do">##         3.5</span></span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(pca_iris_ns<span class="sc">$</span>x[<span class="dv">1</span>,] <span class="sc">*</span> pca_iris_ns<span class="sc">$</span>rotation[<span class="dv">3</span>,]) <span class="sc">+</span> pca_iris_ns<span class="sc">$</span>center[<span class="dv">3</span>]</span>
+<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length </span></span>
+<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a><span class="do">##          1.4</span></span>
+<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(pca_iris_ns<span class="sc">$</span>x[<span class="dv">1</span>,] <span class="sc">*</span> pca_iris_ns<span class="sc">$</span>rotation[<span class="dv">4</span>,]) <span class="sc">+</span> pca_iris_ns<span class="sc">$</span>center[<span class="dv">4</span>]</span>
+<span id="cb57-19"><a href="#cb57-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width </span></span>
+<span id="cb57-20"><a href="#cb57-20" aria-hidden="true" tabindex="-1"></a><span class="do">##         0.2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If the PCA was centered and scaled, the reconstruction of the variables needs to take the scaling factor into account:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(pca_iris<span class="sc">$</span>x[<span class="dv">1</span>,] <span class="sc">*</span> pca_iris<span class="sc">$</span>rotation[<span class="dv">1</span>,])<span class="sc">*</span>pca_iris<span class="sc">$</span>scale[<span class="dv">1</span>] <span class="sc">+</span> pca_iris<span class="sc">$</span>center[<span class="dv">1</span>]</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length </span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="do">##          5.1</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(pca_iris<span class="sc">$</span>x[<span class="dv">1</span>,] <span class="sc">*</span> pca_iris<span class="sc">$</span>rotation[<span class="dv">2</span>,])<span class="sc">*</span>pca_iris<span class="sc">$</span>scale[<span class="dv">2</span>] <span class="sc">+</span> pca_iris<span class="sc">$</span>center[<span class="dv">2</span>]</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width </span></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a><span class="do">##         3.5</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(pca_iris<span class="sc">$</span>x[<span class="dv">1</span>,] <span class="sc">*</span> pca_iris<span class="sc">$</span>rotation[<span class="dv">3</span>,])<span class="sc">*</span>pca_iris<span class="sc">$</span>scale[<span class="dv">3</span>] <span class="sc">+</span> pca_iris<span class="sc">$</span>center[<span class="dv">3</span>]</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length </span></span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a><span class="do">##          1.4</span></span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(pca_iris<span class="sc">$</span>x[<span class="dv">1</span>,] <span class="sc">*</span> pca_iris<span class="sc">$</span>rotation[<span class="dv">4</span>,])<span class="sc">*</span>pca_iris<span class="sc">$</span>scale[<span class="dv">4</span>] <span class="sc">+</span> pca_iris<span class="sc">$</span>center[<span class="dv">4</span>]</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width </span></span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a><span class="do">##         0.2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>These calculations match the first observation:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>iris[<span class="dv">1</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+1          5.1         3.5          1.4         0.2  setosa</code></pre>
+</div>
+</div>
+<p>If only a subset of the principal components is used, we obtain an approximation of the input value. If <span class="math inline">\(M &lt; p\)</span>, then</p>
+<p><span class="math display">\[
+x^*_{ij} = \sum_{k=1}^M z_{ik}\psi_{kj} \approx  x_{ij}
+\]</span> In fact, <span class="math inline">\(x^*_{ij}\)</span> is the best <span class="math inline">\(M\)</span>-dimensional approximation to <span class="math inline">\(x_{ij}\)</span> in terms of having the smallest Euclidean distance.</p>
+<p>The sepal width of the first observation can be approximated based on the first two principal components as</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(pca_iris_ns<span class="sc">$</span>x[<span class="dv">1</span>,] <span class="sc">*</span> pca_iris_ns<span class="sc">$</span>rotation[<span class="dv">2</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]) <span class="sc">+</span> pca_iris_ns<span class="sc">$</span>center[<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sepal.Width 
+   3.513403 </code></pre>
+</div>
+</div>
+<p>If principal component analysis can be used to approximate the observed input values, then it can be used to predict unobserved values. This is the idea behind using PCA to impute missing values, a technique known as <strong>matrix completion</strong>. The advantage of using PCA to fill in missing values in matrices is to draw on the correlations between the variables, as compared to imputing missing values by column means, which ignores information from other variables.</p>
+<p>It is important to point out, however, that this form of imputation is only appropriate if the missingness process is <strong>missing completely at random</strong> (MCAR): the missingness is unrelated to any study variable, including the target variable. For example, if a measurement cannot be taken because an instrument randomly stopped functioning, the missing value occurred completely at random. If the measurement cannot be taken because the instrument cannot record objects of that size, then the process is not MCAR.</p>
+<p>An iterative algorithm for matrix completion is described in $12.3 of <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">2021</a>)</span> and implemented in the <code>eimpute</code> library in <code>R</code>. The algorithm starts with imputing missing values with the means of the observed data and iterates the following steps:</p>
+<ol type="1">
+<li>Perform a low-rank PCA, that is, a PCA with <span class="math inline">\(M &lt; p\)</span>.</li>
+<li>Replace the unobserved values with approximations based on the PCA scores and rotation.</li>
+<li>Compute the mean squared error between observed <span class="math inline">\(x_{ij}\)</span> and predicted <span class="math inline">\(x^*_{ij}\)</span>. As long as the mean squared error continues to decrease, return to step 1.</li>
+</ol>
+<p><a href="#fig-iris-imputation" class="quarto-xref">Figure&nbsp;<span>22.4</span></a> displays observed and imputed values for the Iris data set when 20% of the observations are randomly set to missing (by assigning <code>NA</code>). Two methods of imputation are used: using the column means, and a low-rank PCA approximation with 2 principal components using <code>eimpute(x=iris_miss,r=2)</code>.</p>
+<p>There are only four possible imputed values when using the column means, all missing values for a particular variable are replaced with the same column mean. The PCA imputation produces much more variety in the imputed values since it draws on the correlations between the variables.</p>
+<p>Because missing values were introduced artificially, we have access to the true values and can compute the correlation between original and imputed values. This correlation is 0.83 for the imputation based on column means and 0.93 for the imputation based on the PCA.</p>
+<!----
+
+::: {.cell}
+
+```{.r .cell-code}
+orig <- iris_mat[miss]   # the values that were set to missing
+imputed <- iris_imputed$x.imp[miss]  # their PCA imputed values
+meansdata <- iris_means_mat[miss]  # their means-imputed values
+
+cor(orig,unlist(meansdata))
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] 0.8308972
+```
+
+
+:::
+
+```{.r .cell-code}
+cor(orig,imputed)
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] 0.9257541
+```
+
+
+:::
+:::
+
+--->
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-iris-imputation" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-iris-imputation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pca_files/figure-html/fig-iris-imputation-1.png" class="img-fluid figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-iris-imputation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22.4: Comparison of original and imputed values for Iris data with 20% missingness.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;22.2: Biplot for first two principal components of Iris data.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;22.3: Biplots in unscaled (left) and scaled (right) analysis.</span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-James2013_ISLR2" class="csl-entry" role="listitem">
+James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2021. <em>An Introduction to Statistical Learning: With Applications in r, 2nd Ed.</em> Springer. <a href="https://www.statlearning.com/">https://www.statlearning.com/</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./unsuper_intro.html" class="pagination-link" aria-label="Introduction to Unsupervised Learning">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./clustering.html" class="pagination-link" aria-label="Cluster Analysis">
+        <span class="nav-page-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"closeEffect":"zoom","openEffect":"zoom","descPosition":"bottom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

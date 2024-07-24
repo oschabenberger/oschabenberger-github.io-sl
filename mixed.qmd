@@ -1,0 +1,728 @@
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+# Mixed Models for Longitudinal Data {#sec-mixed-longitudinal}
+
+## Introduction
+
+### Motivation
+
+In the previous chapter we analyzed longitudinal data with correlated error models. The example in @sec-apples-corr-errors analyzed diameter measurements of 80 apples over a 12-week period. The fixed-effect model was a linear relationship between diameter and measurement time. If subscript $i$ identifies the apple and subscript $j$ the measurement occasion, the model for an individual observation is
+$$
+Y_{ij} = \beta_0 + \beta_1 x_{ij} + \epsilon_{ij}, \quad i=1,\cdots,80
+$$
+The graph of the fitted model with an autocorrelation structure of the $\epsilon_{ij}$ is shown in @fig-apple-corr-error. All apples share the same intercept and slope. That seems problematic, some apples are clearly not represented well by that overall trend. In the vernacular of mixed models, this overall trend is called the **population average** trend for reasons that will become apparent soon. 
+
+How can we introduce more subject-specific behavior to capture that apples differ in their growth behavior? An obvious step would be to vary the intercepts and slopes between apples. The model
+$$
+Y_{ij} = \beta_{0i} + \beta_{1i} x_{ij} + \epsilon_{ij}, \quad i=1,\cdots,80
+$$ {#eq-many-fixed-effects}
+
+has a cluster-specific intercept and a cluster-specific intercept. These 80 intercepts and 80 slopes capture the variability in the fixed-effects among the clusters (apples).
+
+Is there a more parsimonious way to express this variability? Replace in @eq-many-fixed-effects $\beta_{0i}$ with $\beta_0 + b_0$ and $\beta_{1i}$ with $\beta_1 + b_1$:
+$$
+Y_{ij} = (\beta_0 + b_{0i}) + (\beta_1 + b_{1i}) x_{ij} + \epsilon_{ij}, \quad i=1,\cdots,80
+$$ {#eq-random-int-and-slope}
+
+The $b_{0i}$ and $b_{1i}$ terms in this model are **random variables**, not fixed effects. Specifically, we assume that $b_{0i} \sim G(0,\sigma^2_0)$ and 
+$b_{1i} \sim G(0,\sigma^2_1)$. We are back to having only two fixed effects: $\beta_0$ and $\beta_1$. A specific apple's intercept is expressed as a random deviation from the overall intercept. A specific apple's slope is expressed as a random deviation from the overall slope.
+
+Another way of thinking about the intercepts and slopes in @eq-random-int-and-slope is as follows: an effect consists of two elements: a fixed, overall, contribution and a random draw from a Gaussian distribution that is specific to the cluster (to the apple). Because the random effect is centered at 0, the overall contribution describes the behavior of the average apple. Adding the random draw yields the apple-specific effect. This explains the terms **population-average** and **subject-specific** effects. The behavior of the average apple is described by the population-average model
+$$
+\Exp[Y_{ij}] = \beta_0 + \beta_1 x_{ij}
+$$
+The apple-specific behavior is described by the conditional model
+$$
+\Exp[Y_{ij} | b_{0i}, b_{1i}] = (\beta_0 + b_{0i}) + (\beta_1 + b_{1i}) x_{ij} 
+$$
+
+What have we gained by introducing random effects $b_{0i}$ and $b_{1i}$ in @eq-random-int-and-slope compared to @eq-many-fixed-effects?
+
+1. A very natural way of expressing variability as normal random variation about a fixed value.
+
+2. A more parsimonious way of expressing the variability in intercepts and slopes. Instead of 160 parameters in the mean function (80 $\beta_{0i}$s and 80 $\beta_{1i}$s) we have only four parameters: $\beta_0, \beta_1, \Var[b_{0i}] = \sigma^2_0, \Var[b_{1i}] = \sigma^2_1$.
+
+3. The ability to model the population average behavior and the cluster-specific behavior within the same model.
+
+4. A straightforward way to address questions such as "do the slopes vary between clusters"? This is simply a test of $H: \sigma^2_1 = 0$. If a random variable with mean 0 has variance 0, then it is the constant 0. If $\Var[b_{1i}] = 0, then $\beta_1 + b_{1i} = \beta_1$ and a common slope for all subjects is appropriate.
+
+### Definition
+
+:::{.definition}
+::::{.definition-header}
+Definition: Mixed Model
+::::
+::::{.definition-container}
+A **mixed model** is a statistical model that contains multiple sources of random variation in addition to systematic (=fixed) effects. The random sources of variation separate into those describing the variability of model components and the variability of the target given all other effects. 
+
+Every major family of statistical model features a mixed model version. There are, for example, linear mixed models, nonlinear mixed models, generalized linear mixed models, generalized additive mixed models, and so on.
+::::
+:::
+
+Counting the number of sources of random variation in the definition of a mixed model deserves some explanation. The issue arises because some models have a natural formulation in terms of additive errors. For example, the linear model for clustered data
+$$
+\bY_i = \bX_i\bbeta + \bepsilon_i
+$$
+expresses the distributional properties of cluster target vector $\bY_i$ through the distributional properties of the model errors $\bepsilon_i \sim (\bzero,\bR_i)$. This model contains one source of random variation, $\bepsilon_i$. Adding a second random component, $\bZ_i\bb_i$ where $\bb_i \sim (\bzero,\bD)$ is a random vector, creates a (linear) mixed model:
+$$
+\bY_i = \bX_i\bbeta + \bZ_i \bb_i + \bepsilon_i
+$$
+This model now has two random sources of variation, $\bepsilon_i$ and $\bb_i$. The distribution of $\bY_i$ now can be interpreted in a population-average sense and in a cluster-specific sense:
+$$
+\begin{align*}
+\bY_i &\sim (\bX_i\bbeta, \bZ_i\bD\bZ_i^\prime + \bR_i) \\
+\bY_i | \bb_i &\sim (\bX_i\bbeta + \bZ_i\bb_i, \bR_i)
+\end{align*}
+$$
+---
+
+In a generalized linear model the errors do not have an additive formulation. Instead, the distributional properties of the target are specified directly. For example, suppose that $\bY_i$ is a vector of (0,1) values that specify the disease state of an individual over time. For example, $Y_{i1} = 1$ if subject $i$ has the disease at the first observation occasion, and $Y_{ij} = 0$ if the subject does not have the disease at the $j$^th^ occasion. A generalized linear mixed model for this situation might specify 
+$$
+\begin{align*}
+\bY_i | \bb_i &\sim \text{Bernoulli}(\boldsymbol{\pi}_i) \\
+\text{logit}(\pi_{ij} | \bb_i) &= \bx_{ij}^\prime \bbeta + \bz_{ij}^\prime\bb_i \\
+\end{align*}
+$$
+The expression for the linear predictor contains one random variable, $\bb_i$. The second source of random variation is implied through assuming that $\bY_i$ conditional on the random effects, has a Bernoulli distribution.
+
+### Predicting Random Effects
+
+Let's return to the model with random intercept and random slopes in the apple example, @eq-random-int-and-slope. The conditional (cluster-specific) and marginal (population-average) interpretations are elegant. With an estimate of $\beta_0$ and $\beta_1$, we can predict the population-average trend of apples as 
+$$
+\widehat{Y}_{ij} = \widehat{\beta}_0 + \widehat{\beta}_1 x_{ij}
+$$
+How do we compute a cluster-specific prediction for the $i$^th^ apple when $b_{0i}$ and $b_{1i}$ are unobservable random variables? We cannot estimate random variables, but fortunately, we can **predict** them. Based on the observed data and the distributional assumptions, values $\tilde{b}_{0i}$ and $\tilde{b}_{1i}$ can be found that are in some sense "best" guesses for the unobservable random variables. With those values the cluster-specific predictions can be computed:
+$$
+(\widehat{Y}_{ij} | b_{0i}=\tilde{b}_{0i}, \,b_{1i}=\tilde{b}_{1i}) = \widehat{\beta}_0 + \tilde{b}_{0i} + (\widehat{\beta}_1 + \tilde{b}_{1i}) x_{ij}
+$$
+Predictors of the random effects can be motivated in a number of ways, for example, by maximizing the joint density of $\bepsilon$ and $\bb$ [@Henderson1950; @Henderson1984] or by considering optimal unbiased predictors under squared-error loss [@Harville1976].
+
+:::{.callout-tip title="Prediction of Random Variables" collapse="true"}
+We have encountered the issue of estimating parameters versus predicting random variables before. When predicting the target value for a new observation in regression models, we have a choice of estimating $\Exp[Y | x_0]$, the mean of the target at $x_0$, or predicting $Y | x_0$, the value of the random variable $Y$ at $x_0$. In discussing regression models, this is often presented as the difference between predicting the average at $x_0$ or a single observation at $x_0$.
+
+In the classical linear model, the predicted values are the same for both, $\widehat{y} = \bx_0\widehat{\bbeta}$. What differs is the precision of that quantity. If we look for unbiased estimators that minimize squared error loss, then the relevant loss for predicting the mean is $\Var[\widehat{Y} - \Exp[Y|x_0]]$ and for predicting $Y|x_0$ it is $\Var[\widehat{Y}-Y]$. The former is the variance of $\widehat{Y}$, the latter is the variance of a difference (since $Y$ is a random variable)
+:::
+
+So the good news is that by modeling the variation in the model terms through random effects, rather than through many fixed effects, we can calculate the solutions for the random effects and predict a cluster-specific response. This has an interesting implication for forecasting new values. We can forecast an apple's diameter at any time point $x_0$, even if it falls beyond the measurement period:
+$$
+(\widehat{Y}_{ij} | b_{0i}=\tilde{b}_{0i}, \,b_{1i}=\tilde{b}_{1i}, x=x_0) = \widehat{\beta}_0 + \tilde{b}_{0i} + (\widehat{\beta}_1 + \tilde{b}_{1i}) x_0
+$$
+How would we predict the response of a new apple, one that did not participate in the study? Our best estimates of the intercept and slope for this new apple are the population-average estimates $\widehat{\beta}_0$ and $\widehat{\beta}_1$. Unless we have reason to believe the new apple is not represented by the training data, we predict its diameter as
+$$
+\widehat{Y}^* | x=x_0 = \widehat{\beta}_0 + \widehat{\beta}_1 x_0
+$$
+What values for $\tilde{b}_0$ and $\tilde{b}_1$ are best for this new apple? If diameter measurements are available, and the apple did not contribute to the analysis, we can compute the predictors of the random effects. If diameter measurements are not available---the more realistic case---the random effects are best predicted with their mean, which is zero. In other words, the population-average prediction is the best we can do for new observations.
+
+
+## Linear Mixed Models
+
+:::{.callout-note}
+Before "LMM" became the acronym for Large Language Model, it was the acronym for the Linear Mixed Model. LMM in this chapter refers to the linear mixed model.
+:::
+
+### Setup
+
+Mixed models apply to many data structures. Longitudinal clustered data is a special situation where the data breaks into $k$ clusters of size $n_1, \cdots, n_k$. Split-plot experimental designs also have a linear mixed model representation, for example. To cover the more general case of the linear mixed model we do not explicitly call out the clusters with index $i$. This makes the notation a bit cleaner. If you are thinking about a clustered data structure, where $\bY_i$ is the $(n_i \times 1)$ vector of responses for cluster $i$, $\bX_i$ is an associated matrix of inputs for the fixed effects, and $\bZ_i$ is the matrix of inputs for the random effects, we now stack and re-arrange these as follows:
+$$
+\bY = \left [\begin{array}{c} \bY_1 \\ \vdots \\ \bY_k \end{array} \right] 
+\quad
+\bX = \left [ \begin{array}{c} \bX_1 \\ \vdots \\ \bX_k \end{array}\right] 
+\quad
+\bb = \left [\begin{array}{c} \bb_1 \\ \vdots \\ \bb_k \end{array} \right] 
+\quad
+\bepsilon = \left [\begin{array}{c} \bepsilon_1 \\ \vdots \\ \bepsilon_k \end{array} \right] 
+$$
+The overall input matrix for the random effects is a block-diagonal matrix
+$$
+\bZ = \left[ 
+	\begin{array}{cccc}
+		\bZ_1 & \bzero  & \cdots & \bzero \\
+		\bzero & \bZ_2  & \cdots & \bzero \\
+		\vdots & \vdots & \ddots & \vdots \\
+		\bzero & \bzero & \cdots & \bZ_k
+	\end{array}
+\right]
+$$
+and the covariance matrices of the random effects and the model errors also take on a block-diagonal structure:
+
+$$
+\Var[\bb] = \bG = \left[ 
+	\begin{array}{cccc}
+		\bG^* & \bzero  & \cdots & \bzero \\
+		\bzero & \bG^* & \cdots & \bzero \\
+		\vdots & \vdots & \ddots & \vdots \\
+		\bzero & \bzero & \cdots & \bG^*
+	\end{array}
+\right]
+\qquad
+\Var[\bb] = \bR = \left[ 
+	\begin{array}{cccc}
+		\bR_1 & \bzero  & \cdots & \bzero \\
+		\bzero & \bR_2 & \cdots & \bzero \\
+		\vdots & \vdots & \ddots & \vdots \\
+		\bzero & \bzero & \cdots & \bR_k
+	\end{array}
+\right]
+$$
+The variance matrix $\Var[\bb_i] = \bG^*$ is the same for all clusters. The variance matrix of the $\bepsilon_i$ can differ from cluster to cluster, for example, when the observation times differ between clusters or in the presence of missing values.
+
+With the re-arrangement from the clustered case out of the way, the general linear mixed model can be written as follows:
+$$
+\begin{align*}
+\bY &= \bX\bbeta + \bZ\bb + \bepsilon \\
+\bb &\sim G(\bzero,\bG) \\
+\bepsilon &\sim G(\bzero,\bR) \\
+\Cov[\bb,\bepsilon] &= \bzero
+\end{align*}
+$$ {#eq-general-lmm}
+
+The assumption of Gaussian distributions for the random effects and the errors is common, it makes the subsequent analysis simple compared to any alternative specification. It should be noted that this implies a Gaussian distribution for $\bY$ as well. Applying the results for the multivariate Gaussian (@sec-multi-gaussian), the conditional and marginal (population-average) distribution of $\bY$ is
+
+$$
+\begin{align*}
+\bY | \bb &\sim G(\bX\bbeta + \bZ\bb, \bR) \\
+\bY &\sim G(\bX\bbeta, \bV) \\
+\bV &= \bZ\bG\bZ^\prime + \bR
+\end{align*}
+$$
+
+### Estimation and Prediction
+
+The general linear mixed model @eq-general-lmm contains parameters that need to be estimated and random variables that need to be predicted. The parameters are the **fixed effects** $\bbeta$ and the **covariance parameters** that define $\bG$ and $\bR$. In the longitudinal, clustered case, $\bR$ has an autocovariance structure and $\bG$ is often an unstructured matrix. For example, with a random intercept and a random slope, an unstructured $\bG^*$ takes on the form
+$$
+\bG^* = \left[\begin{array}{cc} \sigma^2_0 & \sigma_{01} \\ \sigma_{01} & \sigma^2_1 \end{array}\right]
+$$
+$\sigma^2_0$ and $\sigma^2_1$ are the variances of the random intercept and slope, respectively, and $\sigma_{01}$ is their covariance. Many other covariance structures are possbile for $\bG$, including autocovariance structures when the random effects have a temporal or spatial structure. 
+
+We collect all covariance parameters into the vector $\btheta = [\btheta_G, \btheta_R]$ and write the variance matrix of the data as a function of $\btheta$:
+$$
+\Var[\bY] = \bV(\btheta) = \bZ\bG(\btheta_G)\bZ^\prime + \bR(\btheta_R)
+$$
+
+#### Fixed effects and random effects
+
+The **mixed model equations** are estimating equations for $\bbeta$ and $\bb$ given that we know the covariance parameters $\btheta$. These equations gp back to [@Henderson1950; Henderson1984] who derived them in the context of animal breeding. Henderson's thought process was as follows: to derive estimating equations similar to the normal equations in least-squares estimation, consider the joint distribution of $[\bepsilon, \bb]$. We want to find the values $\widehat{\bbeta}$ and $\widehat{\bb}$ which maximize this distribution.Since $\bepsilon = \bY - \bX\bbeta - \bZ\bb$ and $\bb$ are jointly Gaussian distributed and because $\Cov[\bepsilon,\bb] = \bzero$, maximizing their joint distribution for known $\bG$ and $\bR$ is equivalent to minimizing
+$$
+Q = \bb^\prime\bG^{-1}\bb + (\by - \bX\bbeta - \bZ\bb)^\prime\bR^{-1}(\by - \bX\bbeta - \bZ\bb)
+$$
+$Q$ is the sum of two quadratic forms, one in the random effects, the other in the model errors. Taking derivatives of $Q$ with respect to $\bb$ and $\bbeta$, setting to zero and rearranging yields the mixed model equations:
+
+$$
+\left[\begin{array}{cc} \bX^\prime\bR^{-1}\bX & \bX^\prime\bR^{-1}\bZ \\
+\bZ^\prime\bR^{-1}\bX & \bZ^\prime\bR^{-1}\bZ + \bG^{-1}\end{array}\right] 
+\left[\begin{array}{c} \bbeta \\ \bb \end{array}\right] = 
+\left[\begin{array}{c} \bX^\prime\bR^{-1}\by \\ \bZ^\prime\bR^{-1}\by \end{array}\right]
+$$ {#eq-mixed-model-equations}
+
+The solutions to @eq-mixed-model-equations are
+$$
+\begin{align*}
+\widehat{\bbeta} &= \left(\bX^\prime\bV^{-1}\bX\right)^{-1}\bX^\prime\bV^{-1}\by \\
+\widehat{\bb} &= \bG\bZ^\prime\bV^{-1}(\by - \bX\widehat{\bbeta})
+\end{align*}
+$$
+The estimator of the fixed effects has the form of a generalized least squares estimator. The predictor of the random effects is a linear combination of the fitted residuals. Both results make sense. The random effects measure how much the conditional means differ from the marginal (population-average) prediction.
+
+:::{.callout-note}
+Henderson's method is not maximum likelihood although it was initially referred to as "joint likelihood estimation". It is simply an intuitive way to motivate estimating equations for $\bbeta$ and $\bb$. @Harville1976 established that the solution to the mixed model equations is a best linear unbiased predictor (BLUP) for $\bb$ and remains the BLUP if the generalized least squares estimator for $\bbeta$ is substituted. 
+:::
+
+The mixed model equations @eq-mixed-model-equations are fascinating for another reason. Suppose we choose to estimate the inputs in $\bZ$ not as random effects, but as fixed effects. That is, the model would be a linear model
+$$
+\bY = \bX\bbeta_x + \bZ\bbeta_z + \bepsilon, \qquad \bepsilon \sim (\bzero,\bR)
+$$
+The generalized least squares estimating equations for $\bbeta = [\bbeta_x, \bbeta_z]$ would be
+
+$$
+\left[\begin{array}{cc} \bX^\prime\bR^{-1}\bX & \bX^\prime\bR^{-1}\bZ \\
+\bZ^\prime\bR^{-1}\bX & \bZ^\prime\bR^{-1}\bZ \end{array}\right] 
+\left[\begin{array}{c} \bbeta_x \\ \bbeta_z \end{array}\right] = 
+\left[\begin{array}{c} \bX^\prime\bR^{-1}\by \\ \bZ^\prime\bR^{-1}\by \end{array}\right]
+$$
+These equations are very similar to the mixed model equations, except for the term $+\bG^{-1}$ in the lower right cell of the first matrix. What does that mean? The inverse variance matrix $\bG^{-1}$ acts like a **shrinkage** factor in the prediction of $\bb$. If the variances of the random effects are small, the effect of $\bG^{-1}$ on the estimating equations is large and the $\bb$ will be shrunk toward zero compared to the fixed-effect estimates. On the contrary, when the variances of the random effects are large, there will be less shrinkage in the random effects solution.
+
+#### Covariance parameters
+
+Covariance parameters can be derived by a number of principles, once the parameter estimates are obtained you plug them into $\bG$ and $\bR$ and solve the mixed model equations. The most important estimation principles for the estimation of covariance parameters are maximum likelihood (ML) and restricted (residual) maximum likelihood (REML) based on the marginal distribution of $\bY$, as for the general correlated error model discussed in @sec-corr-error-models.
+
+Since $\bY$ is multivariate Gaussian, minus twice the negative log likelihood is 
+$$
+-2 \ell(\btheta,\bbeta;\by) = \log |\bV(\btheta)| + (\by-\bX\bbeta)^\prime\bV(\btheta)^{-1}(\by-\bX\bbeta) + c
+$$ {#eq-minus2-loglike}
+where $c$ is a constant that does not depend on the parameters. Given $\btheta$, the minimum of $-2 \ell(\btheta,\bbeta;\by)$ with respect to $\bbeta$ has a closed-form solution in the GLS estimator $\widehat{\bbeta} = (\bX^\prime\bV^{-1}\bX)^{-1}\bX^\prime\bV^{-1}\by$. Plugging this estimator back into @eq-minus2-loglike leads to a function in $\btheta$ only. The ML estimates of $\btheta$ are found by numerically minimizing this **profiled** log-likelihood.
+
+In the case of REML, instead of the log-likelihood of $\bY$ one maximizes the log-likelihood of $\bK\bY$ where $\bK$ is a matrix of error contrasts chosen such that $\bK\bX = \bzero$. A common choice of $\bK$ leads to the following expression for minus twice the restricted log-likelihood
+$$
+-2 \ell(\btheta;\by) = \log |\bV(\btheta)| + \log |\bX^\prime\bV(\btheta)^{-1}\bX| + (\by-\bX\bbeta)^\prime\bV(\btheta)^{-1}(\by-\bX\bbeta) + c_R
+$$ {#eq-minus2-restricted-loglike}
+
+This is the same objective function as @eq-minus2-loglike except for the second log determinant term (and the inconsequential constant terms). Also notice that the REML log-likelihood is a function of only the covariance parameters. The fixed effects are not profiled from @eq-minus2-restricted-loglike. The fixed effects are removed by considering the special transformation $\bK\bY$.
+
+REML estimators of the covariance parameters are generally less biased than ML estimates, and are sometimes unbiased. They are preferred for this reason. However, the restricted log-likelihood in @eq-minus2-restricted-loglike does not contain information about the fixed effects. You **cannot** use the restricted log-likelihood to perform likelihood ratio tests for hypotheses about the fixed effects.
+
+### Choosing Random Effects
+
+When a mixed model arises in the context of an experimental design---such as a split-plot design---the assignment of fixed and random effects is dictated by the experimental design. In other situations, there is more latitude in choosing fixed and random effects. 
+
+
+:::{.example}
+::::{.example-header}
+Example: Sleep Study.
+::::
+::::{.example-container}
+The data for this example are part of the `lme4` library in `R` and represent the average reaction time (in milliseconds) for subjects in a sleep deprivation study. The data are a subset of a larger study described in @Belenky_et_al. 
+
+@fig-sleep-data shows the response profiles for the 18 subjects in the study. In general, the reaction times increase with increasing sleep deprivation. However, there is clearly substantial subject-to-subject variability in the profiles. Some subjects (\#309, \#310) do not respond to sleep deprivation very much compared to others (\#308, \#337, for example). The trend of reaction time versus duration of sleep deprivation could be linear for most subjects, quadratic for some. 
+
+If we assume a linear trend for all subjects, do the intercepts and slopes vary across subjects or only the intercepts or only the slopes?
+
+```{r, warning=FALSE, message=FALSE, fig.asp=0.7}
+#| fig.cap: Reaction times by subject in sleep deprivation study
+#| label: fig-sleep-data
+#| lightbox:
+#| 
+library(lme4)
+library(lattice)
+xyplot(Reaction ~ Days | Subject, 
+       data=sleepstudy,
+       xlab="Days of Sleep Deprivation",
+       ylab="Reaction Time (ms)",
+       strip = function(...) {
+           strip.default(..., 
+                         strip.names =TRUE, 
+                         strip.levels=TRUE,
+                         sep=" ")
+       },
+       par.strip.text = list(cex = 0.8), 
+       type=c("p"),
+       layout=c(6,3,1),
+       as.table=TRUE
+       )
+```
+::::
+:::
+
+As a general rule, if a coefficient of a linear model appears in the random part of the model it should be included in the fixed effects part. Otherwise it might not be reasonable to assume that the random effects have a zero mean. In the sleep deprivation study, this means a model such as 
+$$
+Y_{ij} = \beta_0 + b_{1i} x_{ij} + \epsilon_{ij}
+$$
+with a random slope but no fixed-effect slope is not appropriate. In order for the $b_{1i}$ to satisfy a zero-mean assumption, there needs an overall (population-average) slope in the model:
+
+$$
+Y_{ij} = \beta_0 + \beta_1 x_{ij} + b_{1i} x_{ij} + \epsilon_{ij}
+$$
+In other words, the columns in $\bZ$ also appear in $\bX$. The reverse is not necessarily so. Not varying the intercepts or slopes by subject is perfectly acceptable. 
+
+### Linear Mixed Models in `R`
+
+Linear mixed models cam be fit in `R` with the `lme4` and `nlme` packages. `nlme` fits LMMs with the `lme` function and nonlinear mixed models with the `nlme()` function by ML or REML. `lme4` fits LMMs with the `lmer()` function by ML or REML, generalized linear models with the `glmer()` function by ML, and nonlinear mixed models with the `nlmer()` function by ML. 
+
+
+:::{.example}
+::::{.example-header}
+Example: Sleep Study (Cont'd)
+::::
+::::{.example-container}
+We use `lme` for the analysis of the sleep study data because it allows us to specify random effects **and** a correlated within-subject error structure. The model we have in mind is
+$$
+\begin{align*}
+Y_{ij} &= \beta_0 + \beta_1 d_{j} + b_{0i} + b_{1i}d_j + \epsilon_{ij} \\
+\bG^* &= \left [\begin{array}{cc}\sigma^2_0 & \sigma_{01} \\ \sigma_{01} & \sigma^2_1 \end{array}\right] \\
+\Cov[\epsilon_{ij},\epsilon_{ik}] &= \sigma^2 \rho^{|d_j - d_k|}
+\end{align*}
+$$
+where $Y_{ij}$ is the sleep deprivation of subject $i$ on day $d_j$ ($i=1,\cdots,18$). This is a linear mixed model with random intercept and slopes and correlated errors. The autocovariance structure is that of a continuous AR(1) process. There are a total of seven parameters in this model:
+
+- the population-average intercept $\beta_0$ and the population-average slope $\beta_1$
+- the variances of the random effects, $\sigma^2_0$ and $\sigma^2_1$ and their covariance $\sigma_{01}$
+- rhe variance of the errors, $\sigma^2$
+- the autocorrelation $\phi$
+
+The following statements fit this model by REML (the default) using `lme`.
+
+The `fixed=` argument specifies the fixed effects of the model, an intercept is included automatically. The `random=` argument specifies the random effects and the clusters after a vertical slash. The intercept is **not** automatically included in the random effect specification. The covariance structure is specified with the `correlation=` argument using the same syntax as the correlated error model in @sec-apples-corr-errors. The `control=` argument changes the numerical optimizer from the default to a general purpose algorithm.
+
+```{r lmm_sleep, warning=FALSE, message=FALSE}
+library(nlme)
+lmixcorr <- lme(fixed = Reaction ~ Days,
+                random = ~ 1 + Days | Subject,
+                data=sleepstudy, 
+                correlation=corAR1(form = ~Days | Subject),
+                control=lmeControl(opt="optim"),
+                method="REML")
+
+summary(lmixcorr)
+```
+
+The estimates of the fixed effects are 
+$\widehat{\beta}_0$ = `{r} round(lmixcorr$coefficients$fixed[1],4)` and
+$\widehat{\beta}_1$ = `{r} round(lmixcorr$coefficients$fixed[2],4)`.
+
+The estimates of the covariance parameters are 
+$\widehat{\sigma}^2_0$ = `{r} round(lmixcorr$sigma^2 * coef(lmixcorr$modelStruct$reStruct,unconstrained=F)[1],4)`,
+$\widehat{\sigma}^2_1$ = `{r} round(lmixcorr$sigma^2 * coef(lmixcorr$modelStruct$reStruct,unconstrained=F)[3],4)`, and
+$\widehat{\sigma}_{01}$ = `{r} round(lmixcorr$sigma^2 * coef(lmixcorr$modelStruct$reStruct,unconstrained=F)[2],4)`.
+The `lme` output reports the square roots of the variances (`Std Dev`) and reports the correlation between $b_{0i}$ and $b_{1i}$ rather than the covariance.
+
+The estimate of the autocorrelation parameter is
+$\widehat{\phi}$ = `{r} round( coef(lmixcorr$modelStruct$corStruct,unconstrained=F)[1],4)`.
+
+---
+
+The model with random effects and autocorrelated errors has a restricted log-likelihood of `{r} round(lmixcorr$logLik,4)`. We can test if the addition of the correlation process significantly improves the model by comparing this model against one without the correlation structure. If we fit both models by REML, this is a valid likelihood ratio test of $H: \phi = 0$. 
+
+```{r}
+lmix <- lme(fixed = Reaction ~ Days,
+            random = ~ 1 + Days | Subject,
+            data=sleepstudy, 
+            control=lmeControl(opt="optim"),
+            method="REML")
+
+a <- anova(lmix,lmixcorr)
+a
+```
+
+The model without correlated errors has a restricted log likelihood of `{r} round(lmix$logLik,4)`. Twice the difference of the log-likelihoods is the test statistic for the LRT, `{r} round(a$L.Ratio[2],4)`. There is one restriction on the full model, $\phi=0$, hence this is a 1-degree of freedom test. The $p$-value is very small, we reject the hypothesis that $\phi = 0$. The correlated error structure is significant, we continue our investigation with the `lmixcorr` model.
+
+---
+
+The fixed and random effects can be extracted with the respective access functions:
+
+```{r}
+fixed.effects(lmixcorr)
+refs <- random.effects(lmixcorr)
+round(refs,5)
+```
+The random effects are organized as a matrix, the columns correspond to the intercept and slope, the rows correspond to subjects. To predict the response for the average study participant, we use intercept and slope estimates
+$\widehat{\beta}_0$ = `{r} round(lmixcorr$coefficients$fixed[1],4)` and
+$\widehat{\beta}_1$ = `{r} round(lmixcorr$coefficients$fixed[2],4)`.
+
+To predict the sleep deprivation of subject \#333, we use the subject-specific intercept and slope
+$\widehat{\beta}_0 + b_{0,333}$ = `{r} round(lmixcorr$coefficients$fixed[1],4)` + `{r} round(refs[7,1],4)` =
+`{r} round(lmixcorr$coefficients$fixed[1] +refs[7,1],4)`, 
+$\widehat{\beta}_1 + b_{1,333}$ = `{r} round(lmixcorr$coefficients$fixed[2],4)` + `{r} round(refs[7,2],4)` =
+`{r} round(lmixcorr$coefficients$fixed[1] +refs[7,2],4)`.
+
+- With increasing time of sleep deprivation, which subject has the smallest 
+increase in reaction time and which subject has the largest increase?
+
+To answer this question we can look at the min and max of the random slope predictors:
+
+```{r}
+min(random.effects(lmixcorr)[,2])
+which.min(random.effects(lmixcorr)[,2]) # subject 309
+
+max(random.effects(lmixcorr)[,2])
+which.max(random.effects(lmixcorr)[,2]) # subject 337
+
+```
+
+Subjects 330, 334, 370, and 371 are similar to the population average.
+They have the smallest subject-specific intercept and slope adjustment. 
+
+This is also confirmed in @fig-sleep-trellis-fit below. The subject-specific
+and population-average predictions for these four subjects overlay closely.
+
+- What is the predicted reaction time on day 4 for an individual who did not 
+participate in the study?
+
+To answer this question we have to rely on the population average effects since we do not have
+a solution for the random effects predictor.
+
+```{r}
+pred <- fixed.effects(lmixcorr)[1] + 4*fixed.effects(lmixcorr)[2]
+cat ("Predicted reaction time of a new subject at day 4 = ", pred)
+```
+
+You can also use the `predict()` function but when you do that for a 
+subject that is not in the study you get a NA. To get around that and
+obtain the population-average predictions, specify the `level=` option
+of `predict()`. Check the doc on `predict.lme()` for details. If you specify
+`level=0` it does not matter what you pass for the Subject variable. You can 
+even leave it out of the data frame.
+
+```{r}
+# Subject in the study, population-average predictions
+data <- data.frame("Days"=4,"Subject"=308)
+predict(lmixcorr,newdata=data,level=0)
+
+# Subject not in the study, population-average predictions
+data <- data.frame("Days"=4,"Subject"=1000)
+predict(lmixcorr,newdata=data,level=0)
+
+# No subject specified, population-average predictions
+data <- data.frame("Days"=4) #,"Subject"=1000)
+predict(lmixcorr,newdata=data,level=0)
+```
+
+To obtain population-average and subject-specific predictions for all subjects specify a vector of level values
+
+```{r}
+predvals <- predict(lmixcorr,level=c(0:1),na.action=na.omit)
+predvals[1:20,] #showing only the first 20 of 180 records
+```
+
+---
+
+@fig-sleep-trellis-fit displays the population-average and subject-specific predictions of the reaction times for all 18 subjects. The population-average trend (blue) is the same in all panels. The subject-specific trends vary from panel to panel. Subject 330 behaves very much like the population average. Subject 337 has a very different slope, their reaction time increases much more quickly than that of the average subject.
+The linear mixed model with autocorrelated error captures a remarkable degree of variability, based on only seven parameters.
+
+``` {r sleep_trellis, fig.asp=0.7, fig.align='center', out.width="90%"}
+#| fig.cap: Population-average (blue) and subject-specific (red) predictions in sleep study.
+#| label: fig-sleep-trellis-fit
+#| lightbox:
+#| 
+xyplot(Reaction ~ Days | Subject, 
+       data=sleepstudy,
+       xlab="Days of sleep deprivation",
+       ylab="Reaction time (ms)",
+       type=c("p"),
+       as.table=TRUE,
+       layout=c(6,3,1),
+       panel=function(x,y,...) {
+           grpname <- dimnames(trellis.last.object())[[1]][packet.number()]
+           panel.xyplot(x,y,...)
+           panel.lines(x,predvals$predict.Sub[predvals$Sub == grpname],
+                       col="red",lwd=1.5)
+           panel.lines(x,predvals$predict.fixed[predvals$Sub == grpname],
+                       col="blue",lwd=1.5)
+           },
+       strip = function(...) {
+           strip.default(..., 
+                         strip.names =TRUE, 
+                         strip.levels=TRUE,
+                         sep=" ")
+       },
+       par.strip.text = list(cex = 0.8), 
+       ) 
+```
+
+::::
+:::
+
+## Generalized Linear Mixed Models (GLMM) {#sec-glmm}
+
+### Introduction
+
+The transition from the classical linear model to generalized linear models (GLM) in @sec-glm added to the linear model
+
+- that the distribution of $Y$ is a member of the exponential family of distributions
+- an invertible link function $g(\mu)$ that maps between the scale of the data (the scale of the response) and the input variables.
+
+Common to both model families is to express the effect of the input variables through a linear predictor
+$$
+\eta = \bx^\prime \bbeta
+$$
+A GLM, written in vector form, can thus be summarized as follows:
+$$
+\begin{align*}
+Y       &\sim P_{expo} \\
+\Exp[Y] &= \mu(\bbeta) \\
+g(\mu)  &= \eta \\
+\eta    &= \bx^\prime\bbeta
+\end{align*}
+$$
+
+The extension to a mixed-model version, the **generalized linear mixed model** (GLMM) seems obvious: extend the linear predictor with random variables $\bb$:
+$$
+\begin{align*}
+Y | \bb &\sim P_{expo} \\
+g(\mu)  &= \bx^\prime\bbeta + \bz^\prime \bb \\
+\eta    &= \bx^\prime\bbeta + \bz^\prime \bb
+\end{align*}
+$$
+where $\bb$ follows some distribution, a $G(\bzero,\bG)$, say. Similar to the GLM and the LMM, we then estimate the parameters based on maximizing the log likelihood of the marginal distribution of $Y$. 
+
+This works well on paper!
+
+Compared to the linear mixed model, where $\bb$ and $Y$ followed a Gaussian distribution and deriving the marginal distribution of $Y$ is straightforward, the same is not true for the GLMM family of models. Here are some of the complications we run into:
+
+1. The marginal distribution of $Y$ is obtained by integrating over the distribution of the random effects, 
+$$
+p(y) = \int \cdots \int p(y|\bb) p(\bb) \, d\bb
+$$
+$p(y)$ does not generally have a closed form (as in the Gaussian-Gaussian case) and this multidimensional integral must be computed by numerical methods.
+
+2. A valid joint distribution of the data might not actually exist. @GillilandSchab_2001 show, for example, that if $\bY$ is an $(n\times 1)$ vector of equicorrelated binary variables with common success probability $\pi$, then the lower bound of the correlation parameter depends on $n$ and $\pi$. In other words, if you obtain an estimate of the correlation parameter that falls below that lower bound, there is no probability model that could have possibly generated the data.
+
+3. The incorporation of correlated errors with or without the presence of random effects in the model is questionable when data do not follow a Gaussian distribution. Achieving desired properties of the marginal distribution and the conditional distribution might not be possible if the data are non-Gaussian.
+
+4. Because the marginal distribution is difficult to come by, population-average inference is difficult in GLMM; we do not know the functional form of the marginal mean. The obvious attempt to simply evaluate the inverse link function at the mean of the random effects, 
+$$
+g^{-1}(\bx^\prime\bbeta + \bz^\prime\Exp[\bb]) = g^{-1}(\bx^\prime\bbeta + 0) = g^{-1}(\bx^\prime\bbeta) 
+$$
+does not yield the estimate of the marginal mean. Predictions in GLMMs thus focus on the conditional mean, $\mu|\bb = g^{-1}(\bx^\prime\bbeta + \bz^\prime\bb)$. In longitudinal studies, this is the cluster-specific mean.
+
+In short, training generalized linear mixed models is much more complicated than working with their linear counterpart, and we typically have to restrict the types of models under consideration somehow.
+
+### Estimation Approaches
+
+The approaches to estimating parameters in GLMMs fall broadly into two categories:
+
+1. **Linearization** methods approximate the model based on Taylor series. Similar to fitting a nonlinear or generalized linear model as a series of approximate linear models based on a vector of pseudo data, these methods approximate the GLMM through a series of LMMs. The advantage of the linearization methods is that the approximate LMM can accommodate complex random effects structures and correlated errors. There is no limit to the types of covariance structure you can specify with this approach. The disadvantages of linearization are the absence of a true objective function, the log likelihood of $Y$ is never calculated, the estimates are not maximum likelihood estimates, and they are often biased.
+
+2. **Integral approximation** methods compute the log likelihood using numerical techniques such as Laplace approximation, Gauss-Hermite quadrature, Monte Carlo integration and other methods. The advantage of this approach is that the log likelihood of $Y$ is being computed and maximum likelihood estimates are obtained. The disadvantage is the computational demand, increasing quickly with the number of random effects and the number of abscissas in the integral approximation. Integral approximations are thus used for relatively simple models that have only few random effects.
+
+The Laplace and Gauss-Hermite quadrature integral approximations are related. The former is a Gauss-Hermite quadrature with a single quadrature node. The marginal joint distribution of the data in a mixed model is
+$$
+\begin{align*}
+p(\by) &= \int \cdots \int p(\by | \bb, \bbeta) p(\bb | \btheta) \, d\bb \\
+&= \int \cdots \int \exp\{c f(\by,\bbeta,\btheta,\bb \} \, d\bb
+\end{align*}
+$$
+for some function $f()$ and constant $c$. If $c$ is large, the Laplace approximation of $p(\by)$ is 
+$$
+\left(\frac{2\pi}{c} \right)^{n_b/2} |-f^{\prime\prime}(\by, \bbeta,\btheta,\tilde{\bb})|^{-1/2}\exp\left\{cf(\by,\bbeta,\btheta,\bb)\right\}
+$$
+where $f^{\prime\prime}$ is the second derivative of $f$ evaluated at $\tilde{\bb}$ at which $f$ has a minimum. This looks like a messy expression and requires a sub-optimization to find $\tilde{\bb}$ such that $f^\prime(\by,\bbeta,\btheta,\tilde{\bb})=0$, but it is simpler than computing the integral by other means. The Laplace approximation is thus a common method to solving the maximum likelihood problem in GLMMs.
+
+With longitudinal data, the quality of the Laplace approximation increases with the number of clusters and the number of observations within a cluster.
+
+### GLMM in `R`
+
+The `glmer` function in the `lme4` package fits generalized linear mixed models by adaptive gaussian quadrature and Laplace approximation for relatively simple random effects structures.
+
+:::{.example}
+::::{.example-header}
+Example: Contagious Bovine Pleuropneumonia
+::::
+::::{.example-container}
+The data set `cbpp` comes with the `lme4` library and contains serological incidences of contagious bovine pleuropneumonia (CBPP) in 15 commercial cattle herds in Africa. Blood samples were collected quarterly from the animals of each herd. The data were used to compute the new cases that occurred during the time period.
+
+```{r, warning=FALSE, message=FALSE}
+library(lme4)
+cbpp
+```
+There are 56 observations for the 15 herds. The outcome of interest is the number of incidences in the herd, a Binomial random variable.
+@fig-cbpp-data shows a trellis plot of the incidence proportions over time for each herd.
+<!---
+```{r}
+library(dplyr)
+cbpp %>% group_by(herd) %>% mutate(ratio = incidence/size) %>% summarize(mean=mean(ratio)) %>% arrange(desc(mean))
+```
+-->
+
+
+```{r, warning=FALSE, message=FALSE, fig.asp=0.8, fig.align='center', out.width="90%"}
+#| fig.cap: Proportion of CBPP incidences over time by herd. Herds are ordered by the max incidence.
+#| label: fig-cbpp-data
+#| lightbox:
+#| 
+library(lattice)
+xyplot(incidence/size ~ period | herd, 
+       data=cbpp, 
+       ylab="CBPP Incidences/Size of herd",
+       xlab="Period",
+       type=c('g','p','l'),
+       layout=c(3,5), 
+       as.table=TRUE,
+       strip = function(...) {
+           strip.default(..., 
+                         strip.names =TRUE, 
+                         strip.levels=TRUE,
+                         sep=" ")
+       },
+       par.strip.text = list(cex = 0.8), 
+       )
+```
+
+The following code fits a Binomial GLMM with a linear fixed-effects trend in measurement period and a random intercept for each herd.
+
+```{r, warning=FALSE, message=FALSE}
+glmm_bin1 <- glmer(cbind(incidence, size-incidence) ~ as.numeric(period) + (1 | herd),
+                   data = cbpp, 
+                   family = binomial)
+
+summary(glmm_bin1)
+```
+The estimates of the fixed effects are $\widehat{\bbeta}$ = [`{r} round(attr(glmm_bin1,"beta"),4)`]. The variance of the herd-specific random intercept is $\Var[b_0]$ = `{r} round(attr(glmm_bin1,"theta")^2,4)`.
+
+The sum of the fixed and random coefficients for each level of the subject variable can be accessed with the `coef` function:
+
+```{r}
+coef(glmm_bin1)$herd
+```
+All herds have the same slope coefficient, `{r} round(attr(glmm_bin1,"beta")[2],4)`. The intercept varies from herd to herd.
+
+--- 
+
+Is it reasonable to add a random slope in addition to the random intercept? We can test this with a likelihood ratio test (LRT):
+
+```{r}
+glmm_bin2 <- glmer(cbind(incidence, size-incidence) ~ as.numeric(period) + 
+                         (1 + as.numeric(period) | herd) ,
+                   data = cbpp, 
+                   family = binomial)
+
+a <- anova(glmm_bin1,glmm_bin2,type="LRT")
+a
+```
+```{r, include=FALSE}
+apval <- a$`Pr(>Chisq)`[2]
+```
+
+
+The model with a random slope adds two parameters, the variance of the random slope, $\sigma^2_1$ and the covariance between random intercept and random slope,$\sigma_{01}$. The LRT has a test statistic of `{r} round(a$Chisq[2],4)` with $p$-value of `{r} round(apval,4)`. The addition of the random slope does not significantly improve the model; we stick with the random intercept model.
+
+@fig-cbpp-trellis-fit shows the predicted probabilities along with the observed incidence ratios for each herd. These predictions on the scale of the data (the probability scale) are obtained with
+
+```{r}
+pred_re <- predict(glmm_bin1,re.form=NULL,type="response")
+pred_fe <- predict(glmm_bin1,re.form=NA  ,type="response")
+```
+
+`re.form=NULL` adds all random effects in the linear predictor, `re.form=NA` sets the random effects to zero.
+
+The blue line is the "population average" which is the predicted value on the data scale obtained by setting the random effects to zero. This is not an unbiased estimate of the incidence probability of the average herd. The linear trend in observation period on the logit scale maps to a nonlinear trend on the probability scale.
+
+Notice that predicted values can be computed for all periods, even if a herd was measured during only some periods. For example, herd \#8 was observed only once, but a subject-specific prediction is possible for all periods because a subject-specific intercept $\widehat{b}_{0(8)}$ is available.
+
+``` {r cbpp_trellis, echo=FALSE, fig.asp=0.7, fig.align='center', out.width="90%"}
+#| fig.cap: '"Population-average" (blue) and subject-specific (red) predictions in CBPP study.'
+#| label: fig-cbpp-trellis-fit
+#| lightbox:
+
+period_ <- rep(1:4,15)
+herd_ <- NULL
+for (i in 1:15) {herd_ <- c(herd_,rep(i,4))}
+newx = data.frame(herd=herd_,period=period_)
+
+pred_re <- predict(glmm_bin1,newdata=newx,re.form=NULL,type="response")
+pred_fe <- predict(glmm_bin1,newdata=newx,re.form=NA  ,type="response")
+preds <- cbind(newx,pred_re,pred_fe)
+newdf <- merge(preds,cbpp,by=c("herd","period"),all.x=TRUE)
+newdf$herd <- as.factor(newdf$herd)
+
+xyplot(incidence/size ~ period | herd, 
+       data=newdf,
+       ylab="Observed ratio and Predicted Probs.",
+       xlab="Period",
+       type=c('g','p','l'),
+       layout=c(3,5), 
+       as.table=TRUE,
+       strip = function(...) {
+           strip.default(..., 
+                         strip.names =TRUE, 
+                         strip.levels=TRUE,
+                         sep=" ")
+       },
+       par.strip.text = list(cex = 0.8), 
+       panel=function(x,y,...) {
+          grpname <- dimnames(trellis.last.object())[[1]][packet.number()]
+          panel.xyplot(x,y,...)
+          panel.lines(x,newdf$pred_re[newdf$herd == grpname],
+                       col="red",lwd=1.5)
+           panel.lines(x,newdf$pred_fe[newdf$herd == grpname],
+                       col="blue",lwd=1.5)
+           },
+       ) 
+```
+
+```{r}
+```
+::::
+:::

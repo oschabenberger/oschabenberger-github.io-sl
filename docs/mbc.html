@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 24&nbsp; Model-based Clustering</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./arules.html" rel="next">
+<link href="./clustering.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./unsuper_intro.html">Unsupervised Learning</a></li><li class="breadcrumb-item"><a href="./mbc.html"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#finite-mixture-models" id="toc-finite-mixture-models" class="nav-link active" data-scroll-target="#finite-mixture-models"><span class="header-section-number">24.1</span> Finite Mixture Models</a></li>
+  <li><a href="#gaussian-mixture-models" id="toc-gaussian-mixture-models" class="nav-link" data-scroll-target="#gaussian-mixture-models"><span class="header-section-number">24.2</span> Gaussian Mixture Models</a></li>
+  <li><a href="#modeling-variance-covariance-matrices" id="toc-modeling-variance-covariance-matrices" class="nav-link" data-scroll-target="#modeling-variance-covariance-matrices"><span class="header-section-number">24.3</span> Modeling Variance-covariance Matrices</a></li>
+  <li><a href="#model-based-clustering-with-mclust-in-r" id="toc-model-based-clustering-with-mclust-in-r" class="nav-link" data-scroll-target="#model-based-clustering-with-mclust-in-r"><span class="header-section-number">24.4</span> Model-based Clustering with <code>Mclust</code> in <code>R</code></a>
+  <ul>
+  <li><a href="#first-look-at-mclust" id="toc-first-look-at-mclust" class="nav-link" data-scroll-target="#first-look-at-mclust">First Look at <code>Mclust</code></a></li>
+  <li><a href="#classification-and-uncertainty" id="toc-classification-and-uncertainty" class="nav-link" data-scroll-target="#classification-and-uncertainty">Classification and Uncertainty</a></li>
+  <li><a href="#examining-covariance-structures" id="toc-examining-covariance-structures" class="nav-link" data-scroll-target="#examining-covariance-structures">Examining Covariance Structures</a></li>
+  <li><a href="#full-analysis-choosing-k-and-covariance-structure" id="toc-full-analysis-choosing-k-and-covariance-structure" class="nav-link" data-scroll-target="#full-analysis-choosing-k-and-covariance-structure">Full Analysis Choosing <span class="math inline">\(k\)</span> and Covariance Structure</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./unsuper_intro.html">Unsupervised Learning</a></li><li class="breadcrumb-item"><a href="./mbc.html"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-mbc" class="quarto-section-identifier"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><span class="math inline">\(K\)</span>-means and hierarchical clustering discussed in <a href="clustering.html" class="quarto-xref"><span>Chapter 23</span></a> have in common that an observation is assigned to exactly one cluster; this is referred to as <strong>hard clustering</strong>. Also, the methods are nonparametric in the sense that no distributional assumptions were made. The clusters are based solely on the distance (dissimilarity) between data points. The goal of clustering is finding regions that contain modes in the distribution of <span class="math inline">\(p(\textbf{X})\)</span>. The implicit assumption of <span class="math inline">\(K\)</span>-means and hierarchical clustering is that regions where many data points are close according to the chosen distance metric are regions where the density <span class="math inline">\(p(\textbf{X})\)</span> is high.</p>
+<p>In <strong>model-based</strong> clustering, this is made explicit through assumptions about the form of <span class="math inline">\(p(\textbf{X})\)</span>, the joint distribution of the variables. An important side effect of its probabilistic formulation is that observations no longer belong to just one cluster. They have a non-zero probability to belong to any cluster, a property referred to as <strong>soft clustering</strong>. An advantage of this approach lies in the possibility to assign a measure of uncertainty to cluster assignments.</p>
+<p>A common assumption is that the distribution of <span class="math inline">\(\textbf{X}\)</span> follows a <strong>finite mixture model</strong> (FMM), that is, it comprises a finite number <span class="math inline">\(k\)</span> of component distributions.</p>
+<section id="finite-mixture-models" class="level2" data-number="24.1">
+<h2 data-number="24.1" class="anchored" data-anchor-id="finite-mixture-models"><span class="header-section-number">24.1</span> Finite Mixture Models</h2>
+<p>In general, a finite mixture distribution is a weighted sum of <span class="math inline">\(k\)</span> probability distributions where the weights sum to one: <span class="math display">\[
+p(Y) = \sum_{j=1}^k \pi_j \, p_j(Y) \quad \quad \sum_{j=1}^k \pi_j = 1
+\]</span> <span class="math inline">\(p_j(Y)\)</span> is called the <span class="math inline">\(j\)</span><sup>th</sup> component of the mixture and <span class="math inline">\(\pi_j\)</span> is the <span class="math inline">\(j\)</span><sup>th</sup> mixing probability, also referred to as the <span class="math inline">\(j\)</span><sup>th</sup> mixture weight. The finite mixture is called <strong>homogeneous</strong> when the <span class="math inline">\(p_j(Y)\)</span> are of the same family, and <strong>heterogeneous</strong> when they are from different distributional families. An important example of a heterogeneous mixture, discussed in <a href="regdiscrete.html#sec-zero-inflation" class="quarto-xref"><span>Section 11.6</span></a>, is a zero-inflated model for counts, a two-component mixture of a constant distribution and a classical distribution for counts such as the Poisson or Negative Binomial.</p>
+<p>The class of finite mixture models (FMM) is very broad and the models can get quite complicated. For example, each <span class="math inline">\(p_j(Y)\)</span> could be a generalized linear model and its mean can depend on inputs and parameters. The mixing probabilities can also be modeled as functions of inputs and parameters using logistic (2-component models) or multinomial model types.</p>
+<p>How do mixtures of distributions come about? An intuitive motivation is through a <strong>latent variable</strong> process. A discrete random variable <span class="math inline">\(S\)</span> takes on states <span class="math inline">\(j=1,\cdots,k\)</span> with probabilities <span class="math inline">\(\pi_j\)</span>. It is called a latent variable because we cannot observe it directly. We only observe its influence on the distribution of <span class="math inline">\(Y\)</span>, the variable we are interested in, and that depends on <span class="math inline">\(S\)</span>. This dependence results in a different conditional distribution of <span class="math inline">\(Y\)</span> for each of the possible states of <span class="math inline">\(S\)</span>, <span class="math inline">\(p(Y| S=j)\)</span>. We can then derive the <strong>marginal</strong> distribution of <span class="math inline">\(Y\)</span>, the distribution we are interested in, by integrating out (summing over) <span class="math inline">\(S\)</span> in the joint distribution</p>
+<p><span class="math display">\[\begin{align*}
+p(Y) &amp;= \sum_{j=1}^k \Pr(Y, S=j) \\
+        &amp;= \sum_{j=1}^k \Pr(S=j) \, p(Y|S=j) = \sum_{j=1}^k \pi_j \, p_j(Y)
+\end{align*}\]</span></p>
+<p>This is the same as computing the weighted sum over the conditional distributions–the finite mixture formulation. We cannot observe <span class="math inline">\(S\)</span> directly, it exerts its influence on <span class="math inline">\(Y\)</span> through the likelihood of its states (<span class="math inline">\(\pi_j\)</span>) and the conditional distributions of <span class="math inline">\(Y|S=j\)</span>.</p>
+</section>
+<section id="gaussian-mixture-models" class="level2" data-number="24.2">
+<h2 data-number="24.2" class="anchored" data-anchor-id="gaussian-mixture-models"><span class="header-section-number">24.2</span> Gaussian Mixture Models</h2>
+<p>A special case of FMMs are Gaussian mixtures where the component distributions are multivariate Gaussian. (See <a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 4.7</span></a> for a review of the multivariate Gaussian distribution.) The mixture distribution in model-based clustering is <span class="math display">\[
+p(\textbf{X}) = \sum_{j=1}^k \pi_j \, G(\boldsymbol{\mu}_j,\boldsymbol{\Sigma}_j)
+\]</span></p>
+<p>Each <span class="math inline">\(G(bmu_j,\boldsymbol{\Sigma}_j)\)</span> is a <span class="math inline">\(p\)</span>-variate Gaussian, <span class="math inline">\(\boldsymbol{\mu}_j\)</span> and <span class="math inline">\(\boldsymbol{\Sigma}_j\)</span> are the <span class="math inline">\((p \times 1)\)</span> mean vector and the <span class="math inline">\((p \times p)\)</span> covariance matrix of the <span class="math inline">\(j\)</span>th component. These need to be estimated. In terms of clusters, <span class="math inline">\(\boldsymbol{\mu}_j\)</span> is the center of the <span class="math inline">\(j\)</span><sup>th</sup> cluster and <span class="math inline">\(\boldsymbol{\Sigma}_j\)</span> determines the volume, shape, and orientation of the <span class="math inline">\(j\)</span><sup>th</sup> cluster.</p>
+<p><a href="#fig-biv-gaussian" class="quarto-xref">Figure&nbsp;<span>24.1</span></a> shows contours of the density for two bivariate (<span class="math inline">\(p=2\)</span>) Gaussian distributions. The distribution on the right has <span class="math display">\[\boldsymbol{\mu}_1 = \left [ \begin{array}{c}1 \\ 0\end{array} \right ]
+\qquad
+\boldsymbol{\Sigma}_1 = \left [ \begin{array}{cc} 1 &amp; 0.5 \\ 0.5 &amp; 2\\
+\end{array} \right]
+\]</span> and the distribution on the left has</p>
+<p><span class="math display">\[\boldsymbol{\mu}_2 = \left [ \begin{array}{c}-1.6 \\ 1\end{array} \right ]
+\qquad
+\boldsymbol{\Sigma}_2 = \left [ \begin{array}{cc} 1.5 &amp; 0 \\ 0 &amp; 1\\
+\end{array} \right]
+\]</span> When the variance-covariance matrix is diagonal, the contours align with the axes of the coordinate system, stretching in the direction of greater variance. The covariance between <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> introduces a rotation of the contours in the graphic on the right.</p>
+<div id="fig-biv-gaussian" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-biv-gaussian-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/BivariateGaussians.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/BivariateGaussians.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-biv-gaussian-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24.1: Contours of bivariate (<span class="math inline">\(p=2\)</span>) Gaussian distributions. The mean vector centers the distribution in the coordinate system. The variances stretch in the direction of <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>. The distribution on the right is rotated in the coordinate system because of the correlation between the variables.
+</figcaption>
+</figure>
+</div>
+<div id="fig-gauss-mix" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gauss-mix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/GaussianMixture.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gauss-mix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24.2: A two component mixture of bivariate Gaussian distributions.
+</figcaption>
+</figure>
+</div>
+<p>The Gaussian mixture model (GMM) can be viewed as a soft version of <span class="math inline">\(K\)</span>-means clustering. The latter assigns an observation to exactly one of <span class="math inline">\(K\)</span> clusters—a hard assignment. The GMM assigns <strong>probabilities</strong> of cluster membership to each observation based on <span class="math inline">\(G(\boldsymbol{\mu}_1,\boldsymbol{\Sigma}_1), \cdots, G(\boldsymbol{\mu}_k,\boldsymbol{\Sigma}_k)\)</span>. GMM allows for a “gray area”; an observation has a non-zero probability to belong to any of the <span class="math inline">\(k\)</span> clusters (<a href="#fig-gauss-mix" class="quarto-xref">Figure&nbsp;<span>24.2</span></a>).</p>
+</section>
+<section id="modeling-variance-covariance-matrices" class="level2" data-number="24.3">
+<h2 data-number="24.3" class="anchored" data-anchor-id="modeling-variance-covariance-matrices"><span class="header-section-number">24.3</span> Modeling Variance-covariance Matrices</h2>
+<p>To train a Gaussian mixture model on data we need to estimate the following parameters: <span class="math inline">\(k\)</span>, the number of components, <span class="math inline">\(\boldsymbol{\mu}_1, \cdots, \boldsymbol{\mu}_k\)</span>, the means of the distributions, and <span class="math inline">\(\boldsymbol{\Sigma}_1, \cdots, \boldsymbol{\Sigma}_k\)</span>, the variance-covariance matrices of the distributions (covariance matrix for short). Each <span class="math inline">\(\boldsymbol{\mu}_j\)</span> is a <span class="math inline">\(p \times 1\)</span> vector and each <span class="math inline">\(\boldsymbol{\Sigma}_j\)</span> is a <span class="math inline">\(p \times p\)</span> matrix with up to <span class="math inline">\(p(p+1)/2\)</span> unique entries. The total number of potential unknowns in a GMM is thus <span class="math display">\[
+k \times (p + p(p+1)/2) = k\frac{3p + p^2}{2}
+\]</span></p>
+<p>A mixture with <span class="math inline">\(k=5\)</span> components and <span class="math inline">\(p=10\)</span> variables has 325 unknowns. For <span class="math inline">\(p=20\)</span> this grows to 1,150 unknowns. That is not a large number compared to say, an artificial neural network, but it is a substantial number for estimation by maximum likelihood or Bayesian methods. To reduce the number of parameters and to add interpretability, the class of mixtures considered is constrained by imposing structure on the covariance matrices of the Gaussian distributions.</p>
+<p>The most constrained covariance model is to assume that the variables are uncorrelated and have the same variance across the <span class="math inline">\(k\)</span> clusters (an equal variance model): <span class="math display">\[
+\boldsymbol{\Sigma}_1 = \boldsymbol{\Sigma}_2 = \cdots = \boldsymbol{\Sigma}_k = \sigma^2 \textbf{I}
+\]</span></p>
+<p>The next most constrained model allows for a different variance in each cluster but maintains uncorrelated inputs: <span class="math display">\[
+\boldsymbol{\Sigma}_j = \sigma^2\textbf{I}
+\]</span> To capture the relevant covariance structures in model-based clustering, <span class="citation" data-cites="FraleyRaftery_2002">Fraley and Raftery (<a href="references.html#ref-FraleyRaftery_2002" role="doc-biblioref">2002</a>)</span> start from the eigendecomposition of <span class="math inline">\(\boldsymbol{\Sigma}\)</span> and use the general parameterization <span class="math display">\[
+\boldsymbol{\Sigma}_j = \lambda_j \textbf{D}_j \textbf{A}_j \textbf{D}_j^\prime
+\]</span></p>
+<p><span class="math inline">\(\textbf{D}_j\)</span> is an orthogonal matrix of eigenvectors, <span class="math inline">\(\textbf{A}_j\)</span> is a diagonal matrix whose elements are proportional to the eigenvalues, and <span class="math inline">\(\lambda_j\)</span> is a proportionality constant. The highly constrained equal variance model corresponds to the special case <span class="math inline">\(\boldsymbol{\Sigma}_j = \lambda \textbf{I}\)</span> and the heterogeneous variance model corresponds to <span class="math inline">\(\boldsymbol{\Sigma}_j = \lambda_j \textbf{I}\)</span>.</p>
+<p>The idea behind this parameterization is to hold elements constant across clusters or vary them, and because <span class="math inline">\(\lambda\)</span>, <span class="math inline">\(\textbf{D}\)</span>, and <span class="math inline">\(\textbf{A}\)</span> represent different aspects of the shape of the covariance matrix, one arrives at a reasonable set of possible models to consider and to compare. The geometric aspects of the component distributions captured by the three elements of the decomposition are</p>
+<ul>
+<li><span class="math inline">\(\textbf{A}_j\)</span> determines the shape of the <span class="math inline">\(j\)</span><sup>th</sup> mixture</li>
+<li><span class="math inline">\(\textbf{D}_j\)</span> determines the orientation (rotation) of the <span class="math inline">\(j\)</span><sup>th</sup> mixture</li>
+<li><span class="math inline">\(\lambda_j\)</span> determines the volume of the <span class="math inline">\(j\)</span><sup>th</sup> mixture</li>
+</ul>
+<p>For example, the model <span class="math display">\[
+\boldsymbol{\Sigma}_j = \lambda \textbf{D}_j \textbf{A}\textbf{D}_j^\prime
+\]</span> imposes equal volume and equal shape across the clusters, but allows for cluster-specific orientation of the distributions.</p>
+<p>One could use other parameterizations of covariance matrices, for example, expressing covariances as functions of distance between values—the parameterization shown here is implemented in the <code>Mclust</code> function of the popular <code>mclust</code> package in <code>R</code>.</p>
+<p>‘mclust’ uses a three-letter code to identify a specific covariance model (<a href="#tbl-mclust-models" class="quarto-xref">Table&nbsp;<span>24.1</span></a>)</p>
+<div id="tbl-mclust-models" class="striped quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mclust-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;24.1: Covariance models for <span class="math inline">\(p &gt; 1\)</span> implemented in <code>mclust</code>.
+</figcaption>
+<div aria-describedby="tbl-mclust-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 15%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><strong>mclust Code</strong></th>
+<th style="text-align: center;"><span class="math inline">\(\boldsymbol{\Sigma}_j\)</span></th>
+<th style="text-align: left;"><strong>Volume</strong></th>
+<th style="text-align: left;"><strong>Shape</strong></th>
+<th style="text-align: left;"><strong>Orientation</strong></th>
+<th style="text-align: left;"><strong>Notes</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>EII</code></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda \textbf{I}\)</span></td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: left;">Identity</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">Spherical</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>VII</code></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda_j \textbf{I}\)</span></td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Identity</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">Spherical</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>EEI</code></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda \textbf{A}\)</span></td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: left;">Coord. axes</td>
+<td style="text-align: left;">Diagonal</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>VEI</code></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda_j \textbf{A}\)</span></td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: left;">Coord. axes</td>
+<td style="text-align: left;">Diagonal</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>EVI</code></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda \textbf{A}_j\)</span></td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Coord. axes</td>
+<td style="text-align: left;">Diagonal</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>VVI</code></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda_j \textbf{A}_j\)</span></td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Coord. axes</td>
+<td style="text-align: left;">Diagonal</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>EEE</code></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda\textbf{D}\textbf{A}\textbf{D}^\prime\)</span></td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: left;">Elliptical</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>EEV</code></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda\textbf{D}_j \textbf{A}\textbf{D}_j^\prime\)</span></td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Elliptical</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>VEV</code></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda_j\textbf{D}_j \textbf{A}\textbf{D}_j^\prime\)</span></td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Equal</td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Elliptical</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>VVV</code></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda_j\textbf{D}_j \textbf{A}_j\textbf{D}_j^\prime\)</span></td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Elliptical</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The first six models in <a href="#tbl-mclust-models" class="quarto-xref">Table&nbsp;<span>24.1</span></a> have diagonal covariance matrices, the inputs are independent (lack of correlation does equal independence for Gaussian random variables). Models EEE, EEV, VEV, and VVV capture correlations among the <span class="math inline">\(X\)</span>s and vary different aspects of <span class="math inline">\(\boldsymbol{\Sigma}_j\)</span> across the clusters. The EEE model applies the same covariance matrix in all clusters, EEV varies orientation, VEV varies orientation and volume, and VVV varies all aspects across clusters.</p>
+<p>The choice of covariance model should not be taken lightly, it has considerable impact on the clustering analysis. Assuming independent inputs is typically not reasonable. However, if model-based clustering is applied to the components of a PCA, this assumption is met. Some of the models in <a href="#tbl-mclust-models" class="quarto-xref">Table&nbsp;<span>24.1</span></a> are nested and can be compared through a hypothesis test. But in addition to choosing the covariance model, we also need to choose <span class="math inline">\(k\)</span>, the number of clusters. One approach is to compare the model-<span class="math inline">\(k\)</span> combinations by way of BIC, the Bayesian information criterion, introduced in <a href="bma.html#sec-bayes-factors-bic" class="quarto-xref"><span>Section 20.2.1</span></a>.</p>
+<p>BIC is based on the log-likelihood, which is accessible because we have a full distributional specification, and a penalty term that protects against overfitting. Before applying model-based clustering in a full analysis to select <span class="math inline">\(k\)</span> and the covariance models, let’s examine how to interpret the results of model-based clustering and some of the covariance structures for the Iris data.</p>
+</section>
+<section id="model-based-clustering-with-mclust-in-r" class="level2" data-number="24.4">
+<h2 data-number="24.4" class="anchored" data-anchor-id="model-based-clustering-with-mclust-in-r"><span class="header-section-number">24.4</span> Model-based Clustering with <code>Mclust</code> in <code>R</code></h2>
+<p>Model-based clustering based on a finite mixture of Gaussian distributions is implemented in the <code>Mclust</code> function of the <code>mclust</code> package in <code>R</code>. Maximum likelihood estimates are derived by EM (Expectation-Maximization) algorithm and models are compared via BIC. An iteration of the EM algorithm comprises two steps. The E-step computes at the current estimates an <span class="math inline">\((n \times k)\)</span> matrix <span class="math inline">\(\textbf{Z}\)</span> of conditional probabilities that observation <span class="math inline">\(i=1,\cdots,n\)</span> belongs to component <span class="math inline">\(j=1,\cdots,k\)</span>. The M-step updates the parameter estimates given the matrix <span class="math inline">\(\textbf{Z}\)</span>.</p>
+<section id="first-look-at-mclust" class="level3">
+<h3 class="anchored" data-anchor-id="first-look-at-mclust">First Look at <code>Mclust</code></h3>
+<div class="example">
+<div class="example-header">
+<p>Example: Equal Variance Structure for Iris Data</p>
+</div>
+<div class="example-container">
+<p>The <code>G=</code> and <code>modelNames=</code> option im <code>Mclust</code> are used to specify the number of components in the mixture (the number of clusters) and the covariance model. The defaults are <code>G=1:9</code> and all available covariance models based on whether <span class="math inline">\(p=1\)</span> or <span class="math inline">\(p&gt;1\)</span> and whether <span class="math inline">\(n &gt; p\)</span> or <span class="math inline">\(n \le p\)</span>.</p>
+<p>The following statements fit a 3-component mixture with <code>EII</code> covariance model to the numerical variables in the Iris data. The <code>EII</code> model is the most restrictive multivariate model, assuming diagonal covariance matrices and equal variances across variables and clusters (see <a href="#tbl-mclust-models" class="quarto-xref">Table&nbsp;<span>24.1</span></a>). This model is probably not appropriate for the Iris data but simple enough to interpret the results from the analysis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mclust)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>mb_eii <span class="ot">&lt;-</span> <span class="fu">Mclust</span>(iris[,<span class="sc">-</span><span class="dv">5</span>],<span class="at">G=</span><span class="dv">3</span>,<span class="at">verbose=</span><span class="cn">FALSE</span>, <span class="at">modelNames=</span><span class="st">"EII"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>mb_eii<span class="sc">$</span>parameters<span class="sc">$</span>pro</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.3333956 0.4135728 0.2530316</code></pre>
+</div>
+</div>
+<p>The three Gaussian distributions mix with probabilities <span class="math inline">\(\widehat{\pi}_1 =\)</span> 0.3334, <span class="math inline">\(\widehat{\pi}_2 =\)</span> 0.4136, and <span class="math inline">\(\widehat{\pi}_3 =\)</span> 0.253.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mb_eii<span class="sc">$</span>parameters<span class="sc">$</span>mean</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  [,1]     [,2]     [,3]
+Sepal.Length 5.0060172 5.903268 6.848623
+Sepal.Width  3.4278263 2.748010 3.074750
+Petal.Length 1.4622880 4.400526 5.732651
+Petal.Width  0.2461594 1.432036 2.074895</code></pre>
+</div>
+</div>
+<p>The first component has a mean of <span class="math inline">\(\widehat{\boldsymbol{\mu}}_1\)</span> = [5.006, 3.4278, 1.4623, 0.2462]. The following lists the covariance matrices in the three clusters, the model forces them to be diagonal, to have the same variance for all variables and across the clusters, <span class="math inline">\(\widehat{\lambda}_j\)</span> = 0.1331.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mb_eii<span class="sc">$</span>parameters<span class="sc">$</span>variance</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$modelName
+[1] "EII"
+
+$d
+[1] 4
+
+$G
+[1] 3
+
+$sigma
+, , 1
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    0.1330939   0.0000000    0.0000000   0.0000000
+Sepal.Width     0.0000000   0.1330939    0.0000000   0.0000000
+Petal.Length    0.0000000   0.0000000    0.1330939   0.0000000
+Petal.Width     0.0000000   0.0000000    0.0000000   0.1330939
+
+, , 2
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    0.1330939   0.0000000    0.0000000   0.0000000
+Sepal.Width     0.0000000   0.1330939    0.0000000   0.0000000
+Petal.Length    0.0000000   0.0000000    0.1330939   0.0000000
+Petal.Width     0.0000000   0.0000000    0.0000000   0.1330939
+
+, , 3
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    0.1330939   0.0000000    0.0000000   0.0000000
+Sepal.Width     0.0000000   0.1330939    0.0000000   0.0000000
+Petal.Length    0.0000000   0.0000000    0.1330939   0.0000000
+Petal.Width     0.0000000   0.0000000    0.0000000   0.1330939
+
+
+$Sigma
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    0.1330939   0.0000000    0.0000000   0.0000000
+Sepal.Width     0.0000000   0.1330939    0.0000000   0.0000000
+Petal.Length    0.0000000   0.0000000    0.1330939   0.0000000
+Petal.Width     0.0000000   0.0000000    0.0000000   0.1330939
+
+$sigmasq
+[1] 0.1330939
+
+$scale
+[1] 0.1330939</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="classification-and-uncertainty" class="level3">
+<h3 class="anchored" data-anchor-id="classification-and-uncertainty">Classification and Uncertainty</h3>
+<p>Based on the underlying <span class="math inline">\(\textbf{Z}\)</span> matrix of the EM algorithm at convergence, the observations can be classified based on the highest probability. For observation #53, for example, <span class="math inline">\(\textbf{z}_{53}\)</span> = [0, 0.3068, 0.6932]. The probability is highest that the observation belongs to the third component, hence its cluster membership is classified as 3.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(mb_eii<span class="sc">$</span>z[<span class="dv">53</span>,],<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0000 0.3068 0.6932</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mb_eii<span class="sc">$</span>classification[<span class="dv">53</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
+</div>
+</div>
+<p>One of the big advantages of model-based clustering is the ability to quantify the uncertainty associated with a cluster assignment. How confident are we in assigning observation #53 to cluster 3? We are certain that it does not belong to cluster 1, but there is a non-zero probability that the observation belongs to cluster 2. You can retrieve the uncertainty associated with the classification of each observation in the <code>uncertainty</code> vector. For observations 50—55, for example:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(mb_eii<span class="sc">$</span>uncertainty[<span class="dv">50</span><span class="sc">:</span><span class="dv">55</span>],<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0000 0.3289 0.0015 0.3068 0.0000 0.0031</code></pre>
+</div>
+</div>
+<p>There is no uncertainty associated with classifying #50. An examination of <span class="math inline">\(\textbf{z}_{50}\)</span> shows that <span class="math inline">\(z_{50,1} = 1.0\)</span>. There is uncertainty associated with the next three observations, and it is higher for #51 and #53 than for #52.</p>
+<p>The uncertainty is simply the complement of the highest component probability. For #53, this is 1-0.6932 = 0.3068. The following code validates this for all observations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> <span class="fu">apply</span>(mb_eii<span class="sc">$</span>z,<span class="dv">1</span>,which.max)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>probs <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>,<span class="fu">length</span>(c))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(c)) {probs[i] <span class="ot">&lt;-</span> mb_eii<span class="sc">$</span>z[i,c[i]]}</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(mb_eii<span class="sc">$</span>uncertainty <span class="sc">-</span> (<span class="dv">1</span><span class="sc">-</span>probs))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>Finally, you can plot the classification, uncertainty, and density contours for the analysis by choosing the <code>what=</code> parameter of the <code>plot</code> method.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mb_eii, <span class="at">what=</span><span class="st">"classification"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mbc_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mb_eii, <span class="at">what=</span><span class="st">"uncertainty"</span>,<span class="at">dimens=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mbc_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mb_eii, <span class="at">what=</span><span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mbc_files/figure-html/unnamed-chunk-7-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The classification and uncertainty plots are overlaid with the densities of the components. The parallel alignment of the densities with the coordinate axes reflects the absence of correlations among the variables. The volume of the densities does not capture the variability of most attributes, many points fall outsode of the density contour—the equal variance assumption across variables and clusters is not justified.</p>
+</section>
+<section id="examining-covariance-structures" class="level3">
+<h3 class="anchored" data-anchor-id="examining-covariance-structures">Examining Covariance Structures</h3>
+<div class="example">
+<div class="example-header">
+<p>Example: Other Covariance Structures for Iris Data</p>
+</div>
+<div class="example-container">
+<p>Now let’s look at how the choice of covariance structure affects the results of the cluster analysis. The following statements fit 3-component models with four additional covariance structures:</p>
+<ul>
+<li>VII: Spherical Model, variance varies among clusters</li>
+<li>VEI: Diagonal Model, variance varies among attributes and clusters</li>
+<li>EEE: Elliptical Model, same non-diagonal covariance among clusters</li>
+<li>VEV: Elliptical Model, different covariance matrices with same shape</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>mb_vii <span class="ot">&lt;-</span> <span class="fu">Mclust</span>(iris[,<span class="sc">-</span><span class="dv">5</span>],<span class="at">G=</span><span class="dv">3</span>,<span class="at">verbose=</span><span class="cn">FALSE</span>, <span class="at">modelNames=</span><span class="st">"VII"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>mb_vei <span class="ot">&lt;-</span> <span class="fu">Mclust</span>(iris[,<span class="sc">-</span><span class="dv">5</span>],<span class="at">G=</span><span class="dv">3</span>,<span class="at">verbose=</span><span class="cn">FALSE</span>, <span class="at">modelNames=</span><span class="st">"VEI"</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>mb_eee <span class="ot">&lt;-</span> <span class="fu">Mclust</span>(iris[,<span class="sc">-</span><span class="dv">5</span>],<span class="at">G=</span><span class="dv">3</span>,<span class="at">verbose=</span><span class="cn">FALSE</span>, <span class="at">modelNames=</span><span class="st">"EEE"</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>mb_vev <span class="ot">&lt;-</span> <span class="fu">Mclust</span>(iris[,<span class="sc">-</span><span class="dv">5</span>],<span class="at">G=</span><span class="dv">3</span>,<span class="at">verbose=</span><span class="cn">FALSE</span>, <span class="at">modelNames=</span><span class="st">"VEV"</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>mb_vii<span class="sc">$</span>parameters<span class="sc">$</span>variance<span class="sc">$</span>sigma</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>, , 1
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length     0.075755    0.000000     0.000000    0.000000
+Sepal.Width      0.000000    0.075755     0.000000    0.000000
+Petal.Length     0.000000    0.000000     0.075755    0.000000
+Petal.Width      0.000000    0.000000     0.000000    0.075755
+
+, , 2
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    0.1629047   0.0000000    0.0000000   0.0000000
+Sepal.Width     0.0000000   0.1629047    0.0000000   0.0000000
+Petal.Length    0.0000000   0.0000000    0.1629047   0.0000000
+Petal.Width     0.0000000   0.0000000    0.0000000   0.1629047
+
+, , 3
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    0.1635866   0.0000000    0.0000000   0.0000000
+Sepal.Width     0.0000000   0.1635866    0.0000000   0.0000000
+Petal.Length    0.0000000   0.0000000    0.1635866   0.0000000
+Petal.Width     0.0000000   0.0000000    0.0000000   0.1635866</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>mb_vii<span class="sc">$</span>bic</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -853.8144</code></pre>
+</div>
+</div>
+<p>For the VII model, the covariance matrices are uncorrelated and the variances of the inputs are the same. Compared to the EII model of the previous run, the variances now differ across the clusters.</p>
+<p>Note that <code>mclust</code> computes the BIC statistic in a “larger-is-better” form—see the note in <a href="bma.html#sec-bayes-factors-bic" class="quarto-xref"><span>Section 20.2.1</span></a> on the two versions of the BIC criterion.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mb_vei<span class="sc">$</span>parameters<span class="sc">$</span>variance<span class="sc">$</span>sigma</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>, , 1
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    0.1190231  0.00000000    0.0000000   0.0000000
+Sepal.Width     0.0000000  0.07153324    0.0000000   0.0000000
+Petal.Length    0.0000000  0.00000000    0.0803479   0.0000000
+Petal.Width     0.0000000  0.00000000    0.0000000   0.0169908
+
+, , 2
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    0.2655657   0.0000000    0.0000000  0.00000000
+Sepal.Width     0.0000000   0.1596058    0.0000000  0.00000000
+Petal.Length    0.0000000   0.0000000    0.1792731  0.00000000
+Petal.Width     0.0000000   0.0000000    0.0000000  0.03791006
+
+, , 3
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length    0.3380558   0.0000000    0.0000000  0.00000000
+Sepal.Width     0.0000000   0.2031725    0.0000000  0.00000000
+Petal.Length    0.0000000   0.0000000    0.2282084  0.00000000
+Petal.Width     0.0000000   0.0000000    0.0000000  0.04825817</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>mb_vei<span class="sc">$</span>bic</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -779.1566</code></pre>
+</div>
+</div>
+<p>The VEI model introduces different variances for the attributes and has a larger (better) BIC than the VEI model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>mb_eee<span class="sc">$</span>parameters<span class="sc">$</span>variance<span class="sc">$</span>sigma</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>, , 1
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length   0.26392812  0.08980761   0.16970269  0.03931039
+Sepal.Width    0.08980761  0.11191917   0.05105566  0.02992418
+Petal.Length   0.16970269  0.05105566   0.18674400  0.04198254
+Petal.Width    0.03931039  0.02992418   0.04198254  0.03965846
+
+, , 2
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length   0.26392812  0.08980761   0.16970269  0.03931039
+Sepal.Width    0.08980761  0.11191917   0.05105566  0.02992418
+Petal.Length   0.16970269  0.05105566   0.18674400  0.04198254
+Petal.Width    0.03931039  0.02992418   0.04198254  0.03965846
+
+, , 3
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length   0.26392812  0.08980761   0.16970269  0.03931039
+Sepal.Width    0.08980761  0.11191917   0.05105566  0.02992418
+Petal.Length   0.16970269  0.05105566   0.18674400  0.04198254
+Petal.Width    0.03931039  0.02992418   0.04198254  0.03965846</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>mb_eee<span class="sc">$</span>bic</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -632.9647</code></pre>
+</div>
+</div>
+<p>The EEE model introduced covariances between the inputs but keeps the covariance matrices constant across clusters. Its BIC value of -632.965 is a further improvement over that of the VEI model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>mb_vev<span class="sc">$</span>parameters<span class="sc">$</span>variance<span class="sc">$</span>sigma</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>, , 1
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length   0.13320850  0.10938369  0.019191764 0.011585649
+Sepal.Width    0.10938369  0.15495369  0.012096999 0.010010130
+Petal.Length   0.01919176  0.01209700  0.028275400 0.005818274
+Petal.Width    0.01158565  0.01001013  0.005818274 0.010695632
+
+, , 2
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length   0.22572159  0.07613348   0.14689934  0.04335826
+Sepal.Width    0.07613348  0.08024338   0.07372331  0.03435893
+Petal.Length   0.14689934  0.07372331   0.16613979  0.04953078
+Petal.Width    0.04335826  0.03435893   0.04953078  0.03338619
+
+, , 3
+
+             Sepal.Length Sepal.Width Petal.Length Petal.Width
+Sepal.Length   0.42943106  0.10784274   0.33452389  0.06538369
+Sepal.Width    0.10784274  0.11596343   0.08905176  0.06134034
+Petal.Length   0.33452389  0.08905176   0.36422115  0.08706895
+Petal.Width    0.06538369  0.06134034   0.08706895  0.08663823</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>mb_vev<span class="sc">$</span>bic</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -562.5522</code></pre>
+</div>
+</div>
+<p>The VEV model allows for correlated attributes and varies volume and orientation across clusters, keeping the shape of the densities the same. Its BIC value of -562.552 indicates a further improvement over the previous models.</p>
+</div>
+</div>
+</section>
+<section id="full-analysis-choosing-k-and-covariance-structure" class="level3">
+<h3 class="anchored" data-anchor-id="full-analysis-choosing-k-and-covariance-structure">Full Analysis Choosing <span class="math inline">\(k\)</span> and Covariance Structure</h3>
+<p>The choice of covariance structures and the number of mixture components can be combined into a single analysis.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Selecting Structure and Number of Components</p>
+</div>
+<div class="example-container">
+<p>To obtain a full analysis of relevant covariance structures for <span class="math inline">\(1 \le k \le 9\)</span>, simply do not specify the <code>G=</code> or <code>modelNames=</code> arguments. Alternatively, you can limit the number of combinations considered by specifying vectors for these options.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>mbc <span class="ot">&lt;-</span> <span class="fu">Mclust</span>(iris[,<span class="sc">-</span><span class="dv">5</span>],<span class="at">verbose=</span><span class="cn">FALSE</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mbc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>---------------------------------------------------- 
+Gaussian finite mixture model fitted by EM algorithm 
+---------------------------------------------------- 
+
+Mclust VEV (ellipsoidal, equal shape) model with 2 components: 
+
+ log-likelihood   n df       BIC       ICL
+       -215.726 150 26 -561.7285 -561.7289
+
+Clustering table:
+  1   2 
+ 50 100 </code></pre>
+</div>
+</div>
+<p>Based on <span class="math inline">\(9 \times 10 = 90\)</span> models considered, <code>Mclust</code> choose the VEV structure with <span class="math inline">\(k=2\)</span> mixture components. Its BIC value is -561.7285. You can see the BIC values of all 90 models and a list of the top three models in the <code>BIC</code> object:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>mbc<span class="sc">$</span>BIC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bayesian Information Criterion (BIC): 
+         EII        VII        EEI        VEI        EVI        VVI       EEE
+1 -1804.0854 -1804.0854 -1522.1202 -1522.1202 -1522.1202 -1522.1202 -829.9782
+2 -1123.4117 -1012.2352 -1042.9679  -956.2823 -1007.3082  -857.5515 -688.0972
+3  -878.7650  -853.8144  -813.0504  -779.1566  -797.8342  -744.6382 -632.9647
+4  -893.6140  -812.6048  -827.4036  -748.4529  -837.5452  -751.0198 -646.0258
+5  -782.6441  -742.6083  -741.9185  -688.3463  -766.8158  -711.4502 -604.8131
+6  -715.7136  -705.7811  -693.7908  -676.1697  -774.0673  -707.2901 -609.8543
+7  -731.8821  -698.5413  -713.1823  -680.7377  -813.5220  -766.6500 -632.4947
+8  -725.0805  -701.4806  -691.4133  -679.4640  -740.4068  -764.1969 -639.2640
+9  -694.5205  -700.0276  -696.2607  -702.0143  -767.8044  -755.8290 -653.0878
+        VEE       EVE       VVE       EEV       VEV       EVV       VVV
+1 -829.9782 -829.9782 -829.9782 -829.9782 -829.9782 -829.9782 -829.9782
+2 -656.3270 -657.2263 -605.1841 -644.5997 -561.7285 -658.3306 -574.0178
+3 -605.3982 -666.5491 -636.4259 -644.7810 -562.5522 -656.0359 -580.8396
+4 -604.8371 -705.5435 -639.7078 -699.8684 -602.0104 -725.2925 -630.6000
+5        NA -723.7199 -632.2056 -652.2959 -634.2890        NA -676.6061
+6 -609.5584 -661.9497 -664.8224 -664.4537 -679.5116        NA -754.7938
+7        NA -699.5102 -690.6108 -709.9530 -704.7699 -809.8276 -806.9277
+8 -654.8237 -700.4277 -709.9392 -735.4463 -712.8788 -831.7520 -830.6373
+9        NA -729.6651 -734.2997 -758.9348 -748.8237 -882.4391 -883.6931
+
+Top 3 models based on the BIC criterion: 
+    VEV,2     VEV,3     VVV,2 
+-561.7285 -562.5522 -574.0178 </code></pre>
+</div>
+</div>
+<p>Model-<span class="math inline">\(k\)</span> combinations shown as <code>NA</code> failed to converge based on the default settings of the EM algorithm; these can be tweaked with the <code>control=</code> option of <code>Mclust</code>. The BIC of the winning combination is</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(<span class="fu">na.omit</span>(<span class="fu">apply</span>(mbc<span class="sc">$</span>BIC,<span class="dv">1</span>,max)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -561.7285</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which.max</span>(<span class="fu">na.omit</span>(<span class="fu">apply</span>(mbc<span class="sc">$</span>BIC,<span class="dv">1</span>,max)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2 
+2 </code></pre>
+</div>
+</div>
+<p>The plot of the BIC values shows two distinct groups of models (<a href="#fig-iris-mbc-bic" class="quarto-xref">Figure&nbsp;<span>24.3</span></a>). The models with diagonal covariance structure generally have lower (worse) BIC values if <span class="math inline">\(k &lt; 6\)</span>. The difference between <span class="math inline">\(k=2\)</span> and <span class="math inline">\(k=3\)</span> is generally small for the models with correlations. [VEV, <span class="math inline">\(k=3\)</span>] is a close competitor to the overall “best” model, [VEV, <span class="math inline">\(k=2\)</span>]. Since we know that there are three species in the data set one might be tempted to go with <span class="math inline">\(k=3\)</span>. In fact, it seems that the <span class="math inline">\(k=2\)</span> model separates <em>I. setosa</em> in one cluster from the other two species (<a href="#fig-iris-mbc-class" class="quarto-xref">Figure&nbsp;<span>24.4</span></a>).</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mbc, <span class="at">what=</span><span class="st">"BIC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-iris-mbc-bic" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-iris-mbc-bic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="mbc_files/figure-html/fig-iris-mbc-bic-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="mbc_files/figure-html/fig-iris-mbc-bic-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-iris-mbc-bic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24.3: BIC versus number of mixture components for all ten covariance models.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mbc, <span class="at">what=</span><span class="st">"classification"</span>,<span class="at">cex=</span><span class="fl">0.75</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-iris-mbc-class" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-iris-mbc-class-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mbc_files/figure-html/fig-iris-mbc-class-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-iris-mbc-class-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24.4: Classification based on model-based clustering with VEV model, <span class="math inline">\(k=2\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;24.1: Contours of bivariate (<span class="math inline">\(p=2\)</span>) Gaussian distributions. The mean vector centers the distribution in the coordinate system. The variances stretch in the direction of <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>. The distribution on the right is rotated in the coordinate system because of the correlation between the variables.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;24.3: BIC versus number of mixture components for all ten covariance models.</span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-FraleyRaftery_2002" class="csl-entry" role="listitem">
+Fraley, Chris, and Adrian E Raftery. 2002. <span>“Model-Based Clustering, Discriminant Analysis, and Density Estimation.”</span> <em>Journal of the American Statistical Association</em> 97 (458): 611–31. <a href="https://doi.org/10.1198/016214502760047131">https://doi.org/10.1198/016214502760047131</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./clustering.html" class="pagination-link" aria-label="Cluster Analysis">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./arules.html" class="pagination-link" aria-label="Association Rules">
+        <span class="nav-page-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","loop":false,"openEffect":"zoom","closeEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

@@ -1,0 +1,533 @@
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+# Parameter Estimation {#sec-estimation}
+
+## Introduction
+
+Statistical models contain two types of unknown quantities, **parameters** and **hyperparameters**. Parameters describe the distributional properties of the data; they are part of the mean function or the variance-covariance structure of the model. They are estimated from the data.
+
+This chapter is not concerned with tuning hyperparameters but with the principles we use to estimate parameters of a model's mean function from data---that is, estimating the internal parameters of the model.
+
+Finding parameter estimates can be expressed as a numerical problem: find the values that minimize some metric of discrepancy between data and the model. The discrepancy can be some measure of **loss** such as squared error between observed and predicted target values $$\left( y_i - \widehat{f}_i(\bx;\btheta) \right)^2$$ or the misclassification error $$
+I(y_i \ne \widehat{f}_i(\bx;\btheta))
+$$ and the loss for the entire data set is summed over all observations, for example $$
+\ell(\by;\btheta) = \sum_{i=1}^n \left( y_i - \widehat{y}_i \right)^2
+$$
+
+The solution to the minimization problem $$\argmin_\btheta \, \ell(\by;\btheta)$$ is the estimator $\widehat{\btheta}$ of the parameters $\btheta$.
+
+In some situations, this minimization problem has a closed-form solution that can be computed directly. In other cases we have to rely on numerical procedures to find a solution iteratively or approximations to simplify a complex or intractable problem. The solution $\widehat{\btheta}$ is unique for some problems and might be one of many solutions, not all equally good.
+
+Expressing parameter estimation as a general minimization problem does not reveal the\
+foundations of important principles in parameter estimation, in particular, least squares and maximum likelihood estimation. We introduce these principles based on geometric and probabilistic considerations, the relationship to function minimization will be obvious.
+
+::: callout-note
+All optimization tasks will be presented as minimization problem. Finding the maximum of a function can be turned into a minimization of its negative value.
+:::
+
+## Least Squares Estimation
+
+Least squares estimation is arguably one of the most important estimation principles and rests on a geometric concept. Suppose we have a model with additive errors, $\bY = \mathbf{f}(\bx; \btheta) + \bepsilon$. The function $\mathbf{f}()$ is an $(n \times 1)$ vector of the mean function evaluations, the $i$^th^ value is $f(\bx_i;\btheta)$. The least squares estimate $\widehat{\btheta}$ of $\btheta$ is the value that is closest to $\bY$ among all possible values $\tilde{\btheta}$.
+
+### Ordinary Least Squares (OLS) {#sec-ols}
+
+Consider the identity
+
+$$\bY = \bf (\bx;\tilde{\btheta}) + \left(\bY - \bf(\bx;\tilde{\btheta}) \right)$$
+
+which expresses the observed data $\bY$ as the sum of fitted values and residuals.
+
+By the Pythagorean theorem, the solution $\widehat{\btheta}$ with the smallest vector of residuals is the orthogonal projection of $\bY$ onto $\bf$, which implies that $$ \left(\bY - \bf(\bx;\widehat{\btheta}) \right)^\prime \bf(\bx;\widehat{\btheta}) = \bzero$$ When $\bf(\bx;\btheta)$ is linear in the parameters, it is common to denote the coefficients (parameters) as $\bbeta$ instead of the more generic $\btheta$. We thus write the standard linear (regression) as $$\bY = \bX\bbeta + \bepsilon$$ and the orthogonality criterion becomes $$\left(\bY - \bX\widehat{\bbeta}\right)^\prime \bX\widehat{\bbeta} = \bzero$$ It is easy to show that this implies $$\bXpX\widehat{\bbeta} = \bX^\prime\bY$$ and if the **cross-product matrix** $\bXpX$ is of full rank, the (ordinary) least squares estimator is $$
+\widehat{\bbeta} = (\bXpX)^{-1}\bX^\prime\bY
+$$ Expressed as the problem of minimizing a loss function, **ordinary least squares** (OLS) is approached as follows. Suppose that we measure loss as squared-error loss $(y_i - \widehat{y}_i)^2$. In the linear model where $\widehat{y}_i = \bx_i^\prime \widehat{\bbeta}$, the loss function is the residual (error) sum of squares $$\text{SSE}(\bbeta) = \bepsilon^\prime\bepsilon = \left( \bY-\bX^\prime\bbeta \right)^\prime \left(\bY-\bX^\prime\bbeta\right)$$ and the minimization problem is $$\argmin_\bbeta \, \text{SSE}(\bbeta)$$
+
+To find the minimum we set to zero the derivative of $\text{SSE}(\bbeta)$ with respect to $\bbeta$. Expanding the residual sum of squares yields $$SSE(\bbeta) = \bY^\prime\bY - 2\bbeta^\prime\bX^\prime\bY + \bbeta^\prime\bXpX\bbeta$$
+
+The derivative (@sec-matrix-differentiation) with respect to $\bbeta$ is $$\frac{\partial\,\text{SSE}(\bbeta)}{\partial\bbeta} = -2\bX^\prime\bY + 2\bXpX\bbeta$$
+
+Setting the derivative to zero and solving yields the **normal equations** as above: $$\bXpX\widehat{\bbeta} = \bX^\prime\bY$$ and the OLS estimator $$\widehat{\bbeta} = (\bXpX)^{-1}\bX^\prime\bY$$ The vector of fitted values, $\widehat{\by}$ is obtained by pre-multiplying with the data matrix
+
+
+\begin{align*}
+    \widehat{\bY} &= \bX^\prime\widehat{\bbeta} = (\bXpX)^{-1}\bX^\prime\bY \\
+                  &= \bH\bY
+\end{align*}
+
+The matrix $\bH$ is called the "Hat" matrix, because pre-multiplying $\bY$ with $\bH$ "puts hats on the $y$s" (@sec-hat-matrix). The last equation shows that the OLS estimator is a linear estimator, $\widehat{y}_i$ is a linear combination of all $y_i$, the weights of the linear combination are given by the entries of the hat matrix.
+
+The statistical properties of the OLS estimator depend on the nature of the random error process. The most common assumption is that the $\epsilon_i$ have zero mean and are *iid*, independently and identically distributed, formally, $\bepsilon \sim (\bzero,\sigma^2\bI)$.
+
+::: callout-note
+The statement $\bepsilon \sim (\bzero,\sigma^2\bI)$ is technically weaker than stating independence, it implies zero correlations among the observations. Independent random variables are uncorrelated, but the reverse is not necessarily true. You can conclude independence from lack of correlations for Gaussian (normal) random variables, but not generally.
+:::
+
+In the *iid* case, the OLS estimator is unbiased, $\Exp[\widehat{\bbeta}] = \bbeta$ and has variance $\Var[\widehat{\bbeta}] = \sigma^2(\bXpX)^{-1}$. In fact, it is a **BLUE** (best linear unbiased estimator) in this situation. No other unbiased estimator has smaller variance than the OLS estimator. However, it is possible that other estimators have smaller **mean squared error** than the OLS estimator, if the introduction of bias is more than offset by a reduction of the variance of the estimator. This is important in high-dimensional problems where the number of predictors ($p$) is large. As $p$ increases, the OLS estimator becomes more unstable, especially if the predictors are highly related to each other (a condition known as multi-collinearity). The values of $\widehat{\bbeta}$ then have a tendency to vary widely. Estimators that limit the variability of the model coefficients through regularization techniques, such as Ridge or Lasso regression, can have considerably lower variance at the expense of some bias, leading to better mean squared error.
+
+::: callout-note
+A Gaussian distribution (normality) assumption is not a requirement of the linear model or of least squares estimation. The OLS estimator has desirable properties even if the errors are not normally distributed. However, making statements about the significance of the $\beta_j$ requires additional assumptions such as $\bepsilon \sim G(\bzero,\sigma^2\bI)$.
+
+When $\bepsilon \sim G(\bzero,\sigma^2\bI)$, the OLS estimator is not only BLUE but a minimum variance unbiased estimator (**MVUE**), best among all unbiased estimators, not only those estimators linear in $\bY$.
+:::
+
+#### Least squares from scratch {#sec-least-squares-from-scratch}
+
+To understand statistical computing, it is a good idea to implement some algorithms from scratch. That also helps to identify the numbers reported by statistical software. Here we implement the OLS estimator from scratch in `R` using the `fitness` data set. The data comprise measurements of aerobic capacity and other attributes on 31 men involved in a physical fitness course at N.C. State University.
+
+Aerobic capacity is the ability of the heart and lungs to provide the body with oxygen. It is a measure of fitness and expressed as the oxygen intake in ml per kg body weight per minute. Measuring aerobic capacity is expensive and time consuming compared to attributes such as age, weight, and pulse. The question is whether aerobic capacity can be predicted from the easily measurable attributes. If so, a predictive equation can reduce time and effort to assess aerobic capacity.
+
+The variables are
+
+-   **Age**: age in years
+
+-   **Weight**: weight in kg
+
+-   **Oxygen**: oxygen intake rate (ml per kg body weight per minute)
+
+-   **RunTime**: time to run 1.5 miles (minutes)
+
+-   **RestPulse**: heart rate while resting
+
+-   **RunPulse**: heart rate while running (same time Oxygen rate measured)
+
+-   **MaxPulse**: maximum heart rate recorded while running
+
+The linear model we have in mind is $$
+\text{Oxygen}_i = \beta_0 + \beta_1\text{Age}_i + \beta_2\text{Weight}_i + \beta_3\text{RunTime}_i + \beta_4\text{RestPulse}_i + \beta_5\text{RunPulse}_i + \beta_6\text{MaxPulse}_i + \epsilon_i
+$$ and the $\epsilon_i$ are assumed zero-mean random variables with common variance $\sigma^2$.
+
+The following code loads the data from the `ads` DuckDB database.
+
+```{r}
+suppressWarnings(library("duckdb"))
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+fit <- dbGetQuery(con, "SELECT * FROM fitness")
+
+head(fit)
+```
+
+```{r, echo=FALSE}
+dbDisconnect(con)
+```
+
+The target variable for the linear model is `Oxygen`, the remaining variables are inputs to the regression. The next statements create the $\by$ vector and the $\bX$ matrix for the model. Note that the first column of $\bX$ is a vector of ones, representing the "input" for the intercept $\beta_0$.
+
+```{r}
+y <- as.matrix(fit[,which(names(fit)=="Oxygen")])
+X <- as.matrix(cbind(Intcpt=rep(1,nrow(fit)), 
+                     fit[,which(names(fit)!="Oxygen")]))
+head(X)
+```
+
+Next we are building the $\bXpX$ matrix and compute its inverse, $(\bXpX)^{-1}$, with the `solve()` function. `t()` transposes a matrix and `%*%` indicates that we are performing matrix multiplication rather than elementwise multiplication.
+
+```{r}
+XpX <- t(X) %*% X
+XpXInv <- solve(XpX)
+```
+
+We can verify that `XpxInv` is indeed the inverse of `XpX` by multiplying the two. This should yield the identity matrix
+
+```{r}
+round(XpX %*% XpXInv,3)
+```
+
+Next we compute the OLS estimate of $\bbeta$ and the predicted values $\widehat{\by} = \bX\widehat{\bbeta}$.
+
+```{r}
+beta_hat <- XpXInv %*% t(X) %*% y
+beta_hat
+
+y_hat <- X %*% beta_hat
+```
+
+The estimate of the intercept is $\widehat{\beta}_0$ = `{r} beta_hat[1]`, the estimate of the coefficient for `Age` is $\widehat{\beta}_1$ = `{r} beta_hat[2]` and so on.
+
+The residuals $\widehat{\bepsilon} = \by - \widehat{\by}$, the error sum of squares
+
+$$\text{SSE} = (\by - \widehat{\by} )^\prime (\by - \widehat{\by}) = \sum_{i=1}^n \left(y_i - \widehat{y}_i\right)^2$$ and the estimate of the residual variance $$\widehat{\sigma}^2 = \frac{1}{n-r(\bX)} \, \text{SSE}$$
+
+are computed as
+
+```{r}
+library("Matrix")
+
+residuals <- y - y_hat
+SSE <- sum(residuals^2)
+n <- nrow(fit)
+rankX <- rankMatrix(XpX)[1]
+sigma2_hat <- SSE/(n - rankX)
+
+SSE
+sigma2_hat
+```
+
+We used the `rankMatrix` function in the `Matrix` package to compute the rank of $\bX$, which is identical to the rank of $\bXpX$. With these quantities available, the variance-covariance matrix of $\widehat{\bbeta}$, $$\Var[\widehat{\bbeta}] = \sigma^2 (\bXpX)^{-1}$$ can be estimated by substituting $\widehat{\sigma}^2$. The standard errors of the regression coefficient estimates are the square roots of the diagonal values of this matrix.
+
+```{r}
+Var_beta_hat <- sigma2_hat * XpXInv
+se_beta_hat <- sqrt(diag(Var_beta_hat))
+se_beta_hat
+```
+
+Now let's compare our results to the output from the `lm()` function in `R`.
+
+```{r}
+linmod <- lm(Oxygen ~ ., data=fit)
+summary(linmod)
+```
+
+Based on the quantities calculated earlier, the following code reproduces the `lm` summary.
+
+```{r}
+tvals <- beta_hat/se_beta_hat
+pvals <- 2*(1-pt(abs(tvals),n-rankX))
+result <- cbind(beta_hat, se_beta_hat, tvals, pvals)
+colnames(result) <- c("Estimate", "Std. Error", "t value", "Pr(>|t|)")
+round(result,5)
+
+cat("\nResidual standard error: ", sqrt(sigma2_hat)," on ", n-rankX, "degrees of freedom\n")
+SST <- sum( (y -mean(y))^2 )
+cat("Multiple R-squared: ", 1-SSE/SST, 
+    "Adjusted R-squared: ", 1 - (SSE/SST)*(n-1)/(n-rankX), "\n")
+Fstat <- ((SST-SSE)/(rankX-1)) / (SSE/(n-rankX))
+cat("F-statistic: ", Fstat, "on ", 
+    rankX-1, "and", n-rankX, "DF, p-value:", 1-pf(Fstat,rankX-1,n-rankX))
+
+```
+
+### Weighted and Generalized Least Squares {#sec-wls-gls}
+
+Another interesting feature of the OLS estimator is that it does not depend on the variability of the model errors. Whether $\sigma^2$ is large or small, the OLS estimator is only a function of $\bY$ and $\bX$. However, the error variance affects the variability of $\widehat{\bbeta}$.
+
+When the error distribution is more complex than the *iid* case, the variance and covariances of the errors must be taken into account for least squares estimators to retain their optimality. The first case is that of uncorrelated errors that have unequal variances, a situation known as **heteroscedasticity**. The variance-covariance matrix of the $\bepsilon$ is then a diagonal matrix. Let's call the inverse of the variance-covariance matrix $\bW$. $\bW$ is a $(n \times n)$ diagonal matrix with $1/\sigma^2_i$, the inverse of the variance of the $i$^th^ observation, in the $i$^th^ diagonal cell. The **weighted least squares** estimator $$
+\widehat{\bbeta}_{WLS} = (\bX^\prime\bW\bX)^{-1}\bX^\prime\bW\bY
+$$ is the optimal estimator in this situation.
+
+::: callout-tip
+A weighted analysis is the correct approach when the weights are inversely proportional to the variance of the observations. This makes sense if we think of the weights as expressing how strongly the analysis should depend on a particular observation. A larger variance means that we are less certain about the observed value and thus should give the observation less weight.
+:::
+
+In the weighted model the variance-covariance matrix of the errors are diagonal, the observations have unequal variances but are uncorrelated. If the errors are correlated, the variance-covariance matrix is not diagonal. Suppose that $\bepsilon \sim (\bzero, \bV)$, the optimal least squares estimator is the **generalized least squares** estimator $$
+\widehat{\bbeta}_{GLS} = (\bX^\prime\bV^{-1}\bX)^{-1}\bX^\prime\bV^{-1}\bY
+$$
+
+This seems like a small change from the weighted case, replacing $\bW$ with $\bV$. So what is the big deal? In weighted analyses the weights are often known, at least up to a multiple. For example, when the variability of the target variable increases proportionally with one of the inputs, $x_2$ say, then $\bW$ is essentially known. In situations where we apply GLS estimation, $\bV$ is often not known and depends itself on parameters. The overall model then composes a model for the mean function that depends on $\bbeta$ and a model for the error structure that depends on $\btheta$:
+
+\begin{align*}
+    \bY &= \bX\bbeta + \bepsilon \\
+    \bepsilon & \sim (\bzero, \bV(\btheta))
+\end{align*}
+
+and both sets of parameters must be derived from the data. This is somewhat of a cat-and-mouse game. You need to know $\bbeta$ to estimate $\btheta$ and the estimates of $\btheta$ depend on $\bbeta$. This tension is resolved by the **estimated generalized least squares** principle. Given an estimate of $\btheta$, you compute the estimated GLS estimator $$
+\widehat{\bbeta}_{EGLS} =  (\bX^\prime\bV(\widehat{\btheta})^{-1}\bX)^{-1}\bX^\prime\bV(\widehat{\btheta})^{-1}\bY
+$$
+
+With an updated estimate of $\bbeta$ you use a different estimation principle to compute an updated estimate of $\btheta$. This is the principle behind restricted maximum likelihood, a likelihood-based estimation principle important for mixed models.
+
+### Nonlinear Least Squares {#sec-nonlinear-least-squares}
+
+The linear structure of the model $\bY = \bX\bbeta + \bepsilon$ leads to a closed form solution of the least squares problem $$\widehat{\bbeta} = (\bXpX)^{-1}\bX^\prime\bY$$
+
+When the model is nonlinear in the parameters, $\bY = \bf(\bx;\btheta) + \bepsilon$, finding the solution that minimizes
+
+$$
+\text{SSE} = \left(\bY - \bf(\bx;\btheta)\right)^\prime \left(\bY - \bf(\bx;\btheta)\right)
+$$ {#eq-nonlin-sse}
+
+is not so straightforward, it requires an iterative approach. Starting from some initial guess for $\btheta$, call it $\widehat{\btheta}^{(0)}$, we iteratively update the guess until we have arrived at step $t$ at $\widehat{\btheta}^{(t)}$ such that $$
+\frac{\partial \,\text{SSE}}{\partial\btheta} \lvert_{\widehat{\btheta}^{(t)}} = \bzero
+$$ The left hand side of the previous expression is read as the derivative of SSE with respect to $\btheta$, evaluated at $\widehat{\btheta}^{t}$.
+
+Common iterative approaches to solve this optimization problem involve the Gauss-Newton and Newton-Raphson algorithms. We introduce the **Gauss-Newton** method here. The basic idea is that we can approximate the nonlinear mean function with a linear version that depends on some current values for $\btheta$. Linear least squares can be applied to the linearized form to compute an update of the estimate for $\btheta$. With the updated estimate the approximation can be refined and another least squares step is performed. This sequence is repeated until some convergence criterion is met.
+
+We start by approximating $\bf(\bx;\btheta)$ with a first-order Taylor series about $\btheta^{(0)}$ $$
+    \bf(\bx; \btheta) \approx \bf(\bx;\btheta^{(0)}) + \bF^{(0)}(\btheta-\btheta^{(0)})
+$$ where $\bF^{(0)}$ is a matrix of derivatives of $\bf(\bx;\btheta)$ evaluated at the value $\btheta^{(0)}$. The residual $\by - \bf(\bx;\btheta)$ can now be approximated as $\br(\btheta^{(0)}) = \by - \bf(\bx;\btheta^{(0)}) - \bF^{(0)}(\btheta - \btheta^{(0)})$. Substitute this expression into @eq-nonlin-sse we get an approximate error sums of squares
+
+$$
+\text{SSE} \approx \br(\btheta^{(0)})^\prime \br(\btheta^{(0)}) - 2 \br(\btheta^{(0)})\bF^{(0)}(\btheta - \btheta^{(0)}) + 
+(\btheta - \btheta^{(0)})^\prime \bF^{(0)\prime}\bF^{(0)} (\btheta - \btheta^{(0)}) 
+$$ Taking derivatives with respect to $\btheta$ and setting to zero results in the following condition $$
+(\btheta - \btheta^{(0)}) = \left(\bF^{(0)\prime}\bF^{(0)}\right)^{-1}\bF^{(0)\prime}\br(\btheta^{(0)})
+$$ This is a really interesting expression. Imagine replacing on the right hand side $\bF^{(0)}$ with $\bX$ and $\br(\btheta^{(0)})$ with $\by$. The right hand side is an ordinary least squares solution in a linear model where the $x$-matrix is given by the derivatives of the nonlinear model and the target variable is the difference between the actual $y$-values and the approximated mean function. The left hand side of the equation is the difference between the parameter estimate and our current guess. This suggests the following iterative updates $$
+    \btheta^{(t+1)} = \btheta^{(t)} + \left(\bF^{(t)\prime}\bF^{(t)}\right)^{-1}\bF^{(t)\prime}\br(\btheta^{(t)})
+$$
+
+and is known as the Gauss-Newton algorithm.
+
+#### Gauss-Newton from scratch
+
+Just like with the OLS problem, we are going to implement a nonlinear least squares solution from scratch, based on the linear algebra presented in this section. The nonlinear model chosen for this exercise has two parameters, $\btheta = [\theta_1, \theta_2]$, one input variable $x$, and mean function $$
+    f(x; \btheta) = 1 - \theta_1 \exp \{-x^{\theta_2}\}
+$$ We fit this model to a tiny data set with just five observations
+
+```{r}
+y <- c(0.1, 0.4, 0.6, 0.9)
+x <- c(0.2, 0.5, 0.7, 1.8)
+```
+
+The derivatives of the mean function with respect to the parameters are given by
+
+\begin{align*}
+  \frac{\partial f(x;\btheta)}{\partial \theta_1} &= -\exp\{-x^{\theta_2}\} \\
+  \frac{\partial f(x;\btheta)}{\partial \theta_2} &= \theta_1 \log(x) x^{\theta_2} \exp\{-x^{\theta_2}\}
+\end{align*}
+
+and we can write a simple `R` function to compute the derivative matrix $\bF$ based on a current estimate of $\btheta$. The function `getres` computes $\br(\btheta^{(t)})$.
+
+```{r}
+getF <- function(x, theta) {
+    exterm <- exp(-x^theta[2])
+    der1 <- -exterm
+    der2 <- theta[1] * log(x) * (x^theta[2]) * exterm
+    return(cbind(der1,der2))
+}
+
+getres <- function(y,x,theta) {
+    fx <- 1 - theta[1] * exp(-x^theta[2])
+    return(y - fx)
+}
+```
+
+Now all we need is starting values $\btheta^{(0)}$ and a loop that iterates until the estimation routine has converged. It is a good idea to not take a full Gauss-Newton step in the updates since there is no guarantee that SSE is lower at iterate $t+1$ than at iterate $t$. We thus multiply the update to the current value by the hyperparameter $\alpha < 1$. In machine learning, this step size is known as the **learning rate**. A full implementation of the Gauss-Newton algorithm could determine $\alpha$ dynamically at each iteration through a line search algorithm.
+
+```{r}
+maxiter <- 50          # the max number of iterations
+alpha <- 0.5           # the learning rate
+theta <- c(1, 1.3)     # the starting values
+tol <- 1e-6            # the convergence tolerance
+
+for (iter in 1:maxiter) {
+    X <- getF(x,theta)
+    r <- getres(y,x,theta)
+    
+    # The linear least squares update
+    new_theta <- theta + alpha * (solve(t(X) %*% X) %*% t(X) %*% r)
+
+    # Now we check a convergence criterion. We take the maximum relative
+    # change in the parameter estimates. If that is less than some tolerance
+    # the algorithm is considered converged.
+    crit <- max(abs(new_theta-theta)/abs(theta))
+    if (crit < tol) {
+        cat( "Algorithm converged after", iter," iterations! SSE =", sum(r^2), "\n" )
+        print (new_theta)
+        break
+    } else {
+        theta <- new_theta
+        print (crit)
+    }
+}
+
+```
+
+After 17 iterations with a learning rate (step size) of $\alpha=0.5$ the algorithm converged on parameter estimates $\widehat{\theta}_1$ = 0.9366 and $\widehat{\theta}_2$ = 1.2791.
+
+We can validate these results with the `nls` function from the `nls2` package.
+
+```{r}
+library(nls2)
+nonlin_data <- data.frame(cbind(y=y,x=x))
+f_x <- y ~ 1 - theta1 * exp(-x^theta2)
+nls(f_x, 
+    start=list(theta1=1, theta2=1.3), 
+    data=nonlin_data)
+    
+```
+
+## Maximum Likelihood Estimation
+
+Maximum likelihood estimation (MLE) is an intuitive and important estimation principle in statistics. It is based on the distributional properties of the data, hence it applies to stochastic data modeling. If the observed data $\by$ are the realization of a data-generating random mechanism, then it makes sense to examine the probability distribution of the data and choose as parameter estimates those values that make it most likely to have observed the data. In other words, we use the probability distribution to find the most likely explanation for the data--hence the name **maximum likelihood**.
+
+Making progress with MLE requires that we know the joint distribution of the random vector $\bY$, an $n$-dimensional distribution. The distribution depends on a vector $\btheta$ of unknown parameters and we denote it as $f(\by; \btheta)$.
+
+::: callout-note
+Whenever you calculate a maximum likelihood estimator, you are making assumptions about the distribution of the data. If software packages report MLEs, check the documentation regarding distributional assumptions.
+:::
+
+When the observations are independent, the joint density is the product of the individual densities, $$f(\by; \btheta) = \prod_{i=1}^n \, f(y_i; \btheta)$$
+
+For example, the joint mass function of $n$ *iid* Bernoulli($\pi$) random variables is $$
+    f(\by; \pi) = \prod_{i=1}^n \, \pi^{y_i} \, (1-\pi)^{1-y_i}
+$$
+
+The **likelihood function** is the joint density or mass function of the data, but we interpret it as a function of the parameters evaluated at the data, whereas the density (mass) function is a function of the data evaluated at the parameter values. The **log-likelihood** function is the natural log of the likelihood function, denoted $\mathcal{l}(\btheta; \by)$. The parameters that maximize the likelihood function also maximize the log of the function. Logarithms are much easier to work with since they turn products into summations and exponents into multipliers.
+
+::: example
+::: example-header
+Example: Likelihood Function for Poisson Data
+:::
+
+::: example-container
+If $Y_1, \cdots, Y_n$ are a random sample from a Poisson($\lambda$) distribution, the log-likelihood function is
+
+$$
+    \mathcal{l}(\lambda; \by) = \sum_{i=1}^n \left( y_i \log(\lambda) - \lambda - \log(y_i!) \right ) = 
+    \log(\lambda)\sum_{i=1}^n y_i - n\lambda - \sum_{i=1}^n \log(y_i!)
+$$ Setting the derivative with respect to $\lambda$ to zero yields $$
+    \frac{1}{\lambda}\sum_{i=1}^n y_i = n
+$$ The MLE of $\lambda$ is $\widehat{\lambda} = \overline{y}$, the sample mean.
+
+Suppose that $n=4$ and we observe $\by = [3, 4, 2, 2]$. The sample mean is $\overline{y} = 2.75$. The following `R` code computes the log-likelihood function $\mathcal{l}(\lambda; \by)$ for different values of $\lambda$. The log-likelihood function has a maximum at $\overline{y} = 2.75$.
+
+```{r, out.width="75%", fig.align="center"}
+y <- c(3, 4, 2, 2)
+n <- length(y)
+sumy <- sum(y)
+sumlogfac <- sum(log(factorial(y)))
+lambda <- seq(0.1, 5, 0.1)
+loglike <- log(lambda)*sumy - n*lambda - sumlogfac
+
+plot(lambda,loglike,type="l",bty="l",lwd=1.5,
+     xlab=expression(lambda),
+     ylab="log likelihood")
+abline(v=mean(y),lty="dotted",lwd=1.5,col="red")
+
+```
+:::
+:::
+
+::: example
+::: example-header
+Example: MLE for iid Bernoulli Experiments
+:::
+
+::: example-container
+To find the maximum likelihood estimator of $\pi$ in $n$ *iid* Bernoulli($\pi$) experiments, we need to find the value $\widehat{\pi}$ that maximizes the log-likelihood function
+
+\begin{align*}
+    \mathcal{l}(\pi; \by) &= \log\left(\prod_{i=1}^n \, \pi^{y_i} \, (1-\pi)^{1-y_i}\right) \\
+                          &= \sum_{i=1}^n \, y_i\log(\pi) + (1-y_i)\log(1-\pi)
+\end{align*}
+
+$\mathcal{l}(\pi; \by) = \sum_i y_i\log(\pi) + (1-y_i)\log(1-\pi)$. The derivative with respect to $\pi$ is
+
+\begin{align*}
+    \frac{\partial \mathcal{l}(\pi; \by)}{\partial \pi} &= \frac{1}{\pi}\sum_{i=1}^n y_i - \frac{1}{1-\pi}\sum_{i=1}^n(1-y_i) \\
+    &= \frac{1}{\pi} n\overline{y} - \frac{1}{1-\pi}(n - n\overline{y})
+\end{align*}
+
+Setting the derivative to zero and rearranging terms we get
+
+\begin{align*}
+    \frac{1-\widehat{\pi}}{\widehat{\pi}} &= \frac{n-n\overline{y}}{n\overline{y}} \\
+    \frac{1}{\widehat{\pi}} &= \frac{n - n\overline{y}}{n\overline{y}} + 1 \\
+    \widehat{\pi} &= \overline{y}
+\end{align*}
+
+The MLE of $\pi$ is the sample mean.
+:::
+:::
+
+Maximum likelihood estimation is popular because it is an intuitive principle if we accept a random data-generating mechanism. MLEs have very appealing properties, for example, they are **invariant** estimators. If $\widehat{\theta}$ is the MLE of $\theta$, then $g(\widehat{\theta})$ is the maximum likelihood estimator of $g(\theta)$
+
+::: example
+::: example-header
+Example: MLEs of Confidence Intervals
+:::
+
+::: example-container
+In generalized linear models, a linear predictor is related to a transformation of the mean through the link function $$
+    g(\mu) = \eta = \beta_0 + \beta_1x_1 + \cdots + \beta_p x_p
+$$ For example, if the data are Poisson random variables, $g(\cdot)$ is typically the log function (the log link). The coefficient estimates have a linear interpretation on the logarithmic scale. Suppose $\bbeta$ is estimated by maximum likelihood and is used to construct a 95% confidence interval $[\widehat{\eta}_{.025},\widehat{\eta}_{.975}]$ for $\eta$.
+
+You can transform from $\eta$ to $\mu$ by inverting the link function, $\mu = g^{-1}(\mu)$. Thus, $$ 
+    \left[ \exp\{\widehat{\eta}_{.025}\}, \exp\{\widehat{\eta}_{.975}\} \right]
+$$ is a 95% confidence interval for $\mu$.
+:::
+:::
+
+For a finite sample size, MLEs are not necessarily optimal estimators but they have appealing properties as the sample size grows. As $n \rightarrow \infty$, maximum likelihood estimators
+
+-   are consistent, that means they converge in probability to the true value
+
+-   are normally distributed
+
+-   are efficient, that means no other estimator has asymptotically smaller mean squared error
+
+### Linear Model with Gaussian Errors
+
+Suppose we want to find an estimator for $\bbeta$ in the linear model $\bY = \bX\bbeta + \bepsilon$ where the model errors follow a Gaussian distribution with mean $\bzero$ and variance $\bV$. $\bY$ then follows a Gaussian distribution because it is a linear function of $\bepsilon$ (see @sec-multi-gaussian). The probability density function of $\bY$ is
+
+$$f\left( \bY \right)=\frac{\left| \bV \right|^{- 1/2}}{(2\pi)^{\frac{n}{2}}}\exp\left\{ - \frac{1}{2}\left( \bY - \bX\bbeta \right)^\prime\bV^{- 1}\left( \bY - \bX\bbeta \right) \right\}$$
+
+This joint distribution of the data can be used to derive the maximum likelihood estimator (MLE) of $\bbeta$. Maximum likelihood estimation considers this as a function of $\bbeta$ rather than a function of $\bY.$ Maximizing this likelihood function $\mathcal{l}(\bbeta;\bY)$ is equivalent to maximizing its logarithm and working on the log scale is much simpler. The log-likelihood function for this problem is given by
+
+$\log\mathcal{l}\left( \bbeta;\bY \right\} = l\left( \bbeta;\bY \right) = - \frac{1}{2}\log\left( \left| \bV \right| \right) - \frac{n}{2}\log(2\pi) - \frac{1}{2}\left( \bY - \bX\bbeta \right)^\prime\bV^{- 1}\left( \bY - \bX\bbeta \right)$
+
+Finding the maximum of this function with respect to $\bbeta$ is equivalent to minimizing the quadratic form $$\left( \bY - \bX\bbeta \right)^\prime\bV^{-1}\left( \bY - \bX\bbeta \right)$$ with respect to $\bbeta$. Applying the results about matrix differentiation from @sec-matrix-differentiation leads to
+
+\begin{align*}
+\frac{\partial}{\partial\bbeta}\left( \bY - \bX\bbeta \right)^\prime\bV^{- 1}\left( \bY - \bX\bbeta \right) &= \frac{\partial}{\partial\bbeta}\left\{ \bY^\prime\bV^{- 1}\bY - 2\bY^\prime\bV^{- 1}\bX\bbeta + \bbeta^\prime\bX^\prime\bV^{- 1}\bX\bbeta \right\} \\
+
+  &= - 2\bX^\prime\bV^{- 1}\bY + 2\bX^\prime\bV^{- 1}\bX\bbeta
+\end{align*}
+
+The derivative is zero when $\bX^\prime\bV^{- 1}\bY = \bX^\prime\bV^{- 1}\bX\bbeta$.
+
+If $\bX$ is of full column rank, then $\bX^\prime\bV^{- 1}\bX$ is non-singular and its inverse exists. Pre-multiplying both sides of the equation with that inverse yields the solution
+
+\begin{align*}
+    \bX^\prime\bV^{- 1}\bY &= \bX^\prime\bV^{- 1}\bX\widehat{\bbeta} \\
+
+    \left( \bX^{\prime}\bV^{- 1}\bX \right)^{- 1}\bX^\prime\bV^{- 1}\bY &= {\left( \bX^{\prime}\bV^{- 1}\bX \right)^{- 1}\bX}^\prime\bV^{- 1}\bX\widehat{\bbeta} \\
+
+    \left( \bX^{\prime}\bV^{- 1}\bX \right)^{- 1}\bX^\prime\bV^{- 1}\bY &= \widehat{\bbeta}
+\end{align*}
+
+The maximum likelihood estimator of $\bbeta$ is the **generalized** least squares estimator
+
+$$\widehat{\bbeta}_{GLS} = \left( \bX^{\prime}\bV^{- 1}\bX \right)^{- 1}\bX^\prime\bV^{- 1}\bY$$
+
+A special case arises when the model errors $\bepsilon$ are uncorrelated and the variance matrix $\bV$ is a diagonal matrix:
+
+$$\bV = \begin{bmatrix}
+\sigma_{1}^{2} & \cdots & 0 \\
+ \vdots & \ddots & \vdots \\
+0 & \cdots & \sigma_{n}^{2}
+\end{bmatrix}$$
+
+Since the errors are Gaussian distributed, we know that the errors are then independent. The MLE of $\bbeta$ is the **weighted** least squares estimator
+
+$$
+\widehat{\bbeta}_{WLS} = \left(\bX^\prime\bW\bX\right)^{-1}\bX^\prime\bW\bY
+$$ where $\bW = \bV^{-1}$.
+
+A further special case arises when the diagonal entries are all the same,
+
+$$\bV = \begin{bmatrix}
+\sigma^{2}\  & \cdots & 0 \\
+ \vdots & \ddots & \vdots \\
+0 & \cdots & \sigma^{2}
+\end{bmatrix} = \sigma^{2}\bI$$
+
+We can write the error distribution in this case as $\bepsilon \sim G\left(\bzero,\sigma^{2}\bI \right)$ and the model for $\bY$ as $\bY \sim G\left( \bX\bbeta,\sigma^{2}\bI \right)$.
+
+Under this *iid* assumption for the Gaussian linear model we can substitute $\sigma^{2}\bI$ for $\bV$ in the formula for $\widehat{\bbeta}$. The maximum likelihood estimator for $\bbeta$ is the ordinary least squares estimator:
+
+$$\widehat{\bbeta}_{OLS} = \left( \bX^{\prime}\bX \right)^{- 1}\bX^\prime\bY$$
+
+Notice that $\sigma^{2}$ cancels out of the formula; the value of the OLS estimator does not depend on the intrinsic variability of the data. However, the variability of the OLS estimator does depend on $\sigma^{2}$ (and on $\bX$).
+
+Now that we have found the MLE of $\bbeta$, the parameters in the mean function, we can also derive the MLE of the parameters in the variance-covariance structure of the multi-variate Gaussian. Let's do this for the *iid* case, $\bepsilon \sim G(\bzero,\sigma^2\bI)$. The joint density of the data can then be written as $$
+    f(\bY) = \prod_{i=1}^n (2 \pi\sigma^2)^{-1/2} \exp\left\{-\frac{1}{2\sigma^2} (y_i - \bx_i^\prime\bbeta)^2\right\}
+$$ Taking logs and arranging terms, the log-likelihood function for $\sigma^2$ is $$
+\mathcal{l}(\sigma^2; \by) = -\frac{n}{2}\log(2\pi\sigma^2) -\frac{1}{2\sigma^2}\sum_{i=1}^n(y_i - \bx_i\prime\bbeta)^2
+$$
+
+Taking the derivative of $\mathcal{l}(\sigma^2; \by)$ with respect to $\sigma^2$, setting it to zero and arranging terms results in $$
+    \frac{1}{\sigma^4}\sum_{i=1}^n(y_i - \bx_i\prime\bbeta)^2 = \frac{n}{\sigma^2}
+$$ The MLE of $\sigma^2$ in this case is $$
+    \widehat{\sigma}^2 = \frac{1}{n}\sum_{i=1}^n(y_i - \bx_i\prime\bbeta)^2 
+$$ The MLE of $\sigma^2$ looks similar to the estimator we used in the OLS case, $$
+    \frac{1}{n-r(\bX)} \sum_{i=1}^n(y_i - \bx_i\prime \widehat{\bbeta})^2 = \frac{1}{n-r(\bX)} \, \text{SSE}
+$$ with two important differences. The divisor in the MLE is $n$ instead of $n-r(\bX)$ and the MLE uses $\bbeta$ rather than the OLS estimator $\widehat{\bbeta}$ in the sum-of-squares term. In practice, we would substitute the MLE for $\bbeta$ to compute $\widehat{\sigma}^2$, so that the least squares-based estimator and the maximum likelihood estimator differ only in the divisor. Consequently, they cannot be both unbiased estimators of $\sigma^2$. Which should we choose?
+
+We can think of the divisor $n-r(\bX)$ as accounting for the actual degrees of freedom, the amount of information if you will, in the estimator. Since we are using an estimate of $\bbeta$ to compute SSE, we have "used up" information in the amount of the rank of $\bX$. This is the same rationale that computes the estimate of the sample variance as $$
+    s^2 = \frac{1}{n-1} \sum_{i=1}^n \left(y_i - \overline{y}\right)^2
+$$ because we are using the sample mean $\overline{y}$ in the computation rather than the true mean. Once the sample mean is known, only $(n-1)$ of the $y_i$ can be chosen freely, the value of the last one is determined.
+
+The reason the MLE divides by $n$ instead of $n-r(\bX)$ is that it uses $\bbeta$ and does not need to account for information already "used up" in the estimation of the mean function. If you substitute $\widehat{\bbeta}$ for $\bbeta$, the MLE of $\sigma^2$ is a biased estimator.

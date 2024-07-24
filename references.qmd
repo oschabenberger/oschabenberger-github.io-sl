@@ -1,0 +1,411 @@
+# References {.unnumbered}
+
+::: {#refs}
+
+@inproceedings{Agrawal_etal_1993,
+author = {Agrawal, Rakesh and Imieli\'{n}ski, Tomasz and Swami, Arun},
+title = {Mining association rules between sets of items in large databases},
+year = {1993},
+isbn = {0897915925},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/170035.170072},
+doi = {10.1145/170035.170072},
+abstract = {We are given a large database of customer transactions. Each transaction consists of items purchased by a customer in a visit. We present an efficient algorithm that generates all significant association rules between items in the database. The algorithm incorporates buffer management and novel estimation and pruning techniques. We also present results of applying this algorithm to sales data obtained from a large retailing company, which shows the effectiveness of the algorithm.},
+booktitle = {Proceedings of the 1993 ACM SIGMOD International Conference on Management of Data},
+pages = {207–216},
+numpages = {10},
+location = {Washington, D.C., USA},
+series = {SIGMOD '93}
+}
+
+@article{Belenky_et_al,
+title={Patterns of performance degradation and restoration during sleep restriction and subsequent recovery: a sleep dose-response study},
+author={Gregory Belenky and Nancy J. Wesensten and David R. Thorne and
+Maria L. Thomas and Helen C. Sing and Daniel P. Redmond and Michael B. Russo and Thomas J. Balkin},
+year={2003},
+journal={Journal of Sleep Research},
+volume={12},
+pages={1–-12}
+}
+
+@book{Boeckmanetal1992,
+title={NONMEM Users Guide: Part V, Introductory Guide},
+author={Boeckmann, A.J. and Sheiner, L.B. and Beal, S.L.},
+year={1992},
+publisher={NONMEM Project Group, University of California, San Francisco}
+}
+
+@article{Borne_2021,
+title={Association Rule Mining — Not Your Typical ML Algorithm},
+author={Borne, Kirk},
+journal={Medium},
+year={2021},
+url={https://medium.com/@kirk.borne/association-rule-mining-not-your-typical-ml-algorithm-97acda6b86c2}
+}
+
+@article{GEPBox1976,
+author={Box, George E. P.},
+title={Science and Statistics},
+journal={Journal of the American Statistical Association},
+year={1976},
+volume={71},
+number={356},
+pages={791--799},
+publisher={American Statistical Association}
+}
+
+@article{Breiman1996,
+author={Leo Breiman},
+title={Bagging Predictors},
+journal={Machine Learning},
+year={1996},
+volume={24},
+pages={123--140},
+publisher={Kluwer Academic}
+}
+
+@article{Breiman2001,
+author={Leo Breiman},
+title={Random Forests},
+journal={Machine Learning},
+volume={45},
+number={5-32},
+year={2001},
+publisher={Kluwer Academic}
+}
+
+@article{BreimanTwoCultures,
+title={Statistical Modeling: The Two Cultures},
+author={Leo Breiman},
+journal={Statistical Science},
+year={2001},
+volume={16},
+number={3},
+pages={199--231},
+}
+
+@article{Cleveland1997,
+author = {William S. Cleveland},
+title = {Robust Locally Weighted Regression and Smoothing Scatterplots},
+journal = {Journal of the American Statistical Association},
+volume = {74},
+number = {368},
+pages = {829--836},
+year = {1979},
+publisher = {Taylor \& Francis},
+doi = {10.1080/01621459.1979.10481038},
+URL = { https://www.tandfonline.com/doi/abs/10.1080/01621459.1979.10481038},
+eprint = { https://www.tandfonline.com/doi/pdf/10.1080/01621459.1979.10481038}
+}
+
+
+@book{Davidian1995,
+title={Nonlinear Models for Repeated Measurement Data},
+author={Davidian, M. and Giltinan, D.M.},
+year={1995},
+publisher={Chapman \& Hall, London}
+}
+
+@article{FerrariCribariNeto,
+title={Beta Regression for Modeling Rates and Proportions},
+author={Ferrari, S.L.P. and Cribari-Neto, F.},
+journal={Journal of Applied Statistics},
+year={2004},
+volume={31},
+number={7},
+pages={799--815}
+}
+
+@article{FraleyRaftery_2002,
+author = {Chris Fraley and Adrian E Raftery},
+title = {Model-Based Clustering, Discriminant Analysis, and Density Estimation},
+journal = {Journal of the American Statistical Association},
+volume = {97},
+number = {458},
+pages = {611--631},
+year = {2002},
+publisher = {Taylor \& Francis},
+doi = {10.1198/016214502760047131},
+URL = {https://doi.org/10.1198/016214502760047131}
+}
+
+@article{FurnivalWilson1974,
+title={Regression by Leaps and Bounds},
+author={Furnival, George M. and Wilson, Robert W.},
+journal={Technometrics},
+year={1974},
+volume={16},
+number={4},
+pages={499--511},
+publisher={Taylor \& Francis, Ltd., American Statistical Association}
+}
+
+@book{Garcia-Portugues2024,
+title={Notes for Predictive Modeling},
+author={Garc\'ia-Portugu\'es, E.},
+year={2024},
+note={Version 5.10.1. ISBN 978-84-09-29679-8},
+url={https://bookdown.org/egarpor/PM-UC3M/}
+}
+
+@article{GillilandSchab_2001,
+author={Gilliland, D. and Schabenberger, O.},
+year={2001},
+title={Limits on Pairwise Association for Equi-correlated Binary Variables},
+journal={Journal of Applied Statistical Sciences},
+volume={10},
+pages={279–-285}
+}
+
+@book{Goodfellow-et-al-2016,
+    title={Deep Learning},
+    author={Ian Goodfellow and Yoshua Bengio and Aaron Courville},
+    publisher={MIT Press},
+    note={\url{http://www.deeplearningbook.org}},
+    year={2016}
+}
+
+@article{Gower1971,
+title={A General Coefficient of Similarity and Some of Its Properties},
+author={Gower, J.C.},
+volume={27},
+number={4},
+pages={857--871}
+}
+
+@article{GrueHeiberg,
+title={Notes on the History of Normality--Reflections on the Work of Quetelet and Galton},
+author={Grue, Lars and Heiberg, Arvid},
+journal={Scandinavian Journal of Disability Research},
+year={2006},
+volume={8},
+number={4},
+pages={232--246}
+}
+
+@article{Hartigan1979,
+title={Algorithm AS 136: A K-Means Clustering Algorithm},
+author={Hartigan, J.A. and Wong, M.A.},
+year={1979},
+journal={Journal of the Royal Statistical Society. Series C (Applied Statistics)},
+volume={28},
+number={1},
+pages={100--108}
+}
+
+
+@article{Harville1976,
+title={Extension of the Gauss-Markov theorem to include the estimation of random effects},
+author={Harville, D.A.},
+journal={The Annals of Statistics},
+volume={4},
+year={1976},
+pages={384--395}
+}
+
+@book{HastieTibshirani,
+author={Hastie, T.J. and Tibshirani, R.},
+title={Generalized Additive Models},
+year={1990},
+publisher={Chapman \& Hall, London}
+}
+
+@book{hastie_ESL,
+  added-at = {2008-05-16T16:17:42.000+0200},
+  address = {New York, NY, USA},
+  author = {Hastie, Trevor and Tibshirani, Robert and Friedman, Jerome},
+  biburl = {https://www.bibsonomy.org/bibtex/2f58afc5c9793fcc8ad8389824e57984c/sb3000},
+  interhash = {d585aea274f2b9b228fc1629bc273644},
+  intrahash = {f58afc5c9793fcc8ad8389824e57984c},
+  keywords = {ml statistics},
+  publisher = {Springer New York Inc.},
+  series = {Springer Series in Statistics},
+  timestamp = {2008-05-16T16:17:43.000+0200},
+  title = {The Elements of Statistical Learning},
+  year = 2001
+}
+
+@article{Henderson1950,
+title={The estimation of genetic parameters},
+author={Henderson, C.R.},
+journal={The Annals of Mathematical Statistics},
+year={1950},
+volume={21},
+number={2},
+pages={309--310}
+}
+
+@book{Henderson1984,
+title={Applications of Linear Models in Animal Breeding},
+author={Henderson. C. R.},
+year={1984},
+publisher={University of Guelph}
+}
+
+@article{Hinneetal2020,
+author = {Max Hinne and Quentin F. Gronau and Don van den Bergh and Eric-Jan Wagenmakers},
+title ={A Conceptual Introduction to Bayesian Model Averaging},
+journal = {Advances in Methods and Practices in Psychological Science},
+volume = {3},
+number = {2},
+pages = {200-215},
+year = {2020},
+doi = {10.1177/2515245919898657},
+URL = { https://doi.org/10.1177/2515245919898657},
+eprint = {https://doi.org/10.1177/2515245919898657}
+}
+
+@book{James2013_ISLR2,
+  author = {James, Gareth and Witten, Daniela and Hastie, Trevor and Tibshirani, Robert},
+  keywords = {general_machine_learning},
+  publisher = {Springer},
+  title = {An Introduction to Statistical Learning: with Applications in R, 2nd ed. },
+  url = {https://www.statlearning.com/},
+  year = 2021
+}
+
+@book{james2023_ISLP,
+  title={An Introduction to Statistical Learning: With Applications in Python},
+  author={James, G. and Witten, D. and Hastie, T. and Tibshirani, R. and Taylor, J.},
+  isbn={9783031387487},
+  url={https://www.statlearning.com/},
+  year={2023},
+  publisher={Springer International Publishing}
+}
+
+@book{Kleinbaum2013,
+title={Applied Regression Analysis and Other Multivariable Methods, 5 ed.},
+author={Kleinbaum, David G. and Kupper, Lawrence L. and Nizam, A. and Rosenberg, Eli S.},
+year={2013},
+isbn={9781285051086},
+publisher={Cengage Learning}
+}
+
+@article{Mallows1973,
+title={Some Comments on $C_p$},
+author={Mallows, C.L.},
+year={1973},
+journal={Technometrics},
+volume={15},
+number={4},
+pages={661--675}
+}
+
+@book{McCullaghNelder,
+title={Generalized Linear Models, 2nd ed.},
+author={McCullagh, P. and Nelder Frs, J.A.},
+year={1989},
+publisher={Chapman \& Hall, New York}
+}
+
+@article{McCullochPitts,
+author={McCulloch, Warren S. and Pitts, Walter},
+title={A Logical Calculus of the Ideas Immanent in Nervous Activity},
+journal={Bulletin of Mathematical Biophysics},
+volume={5},
+year={1943},
+pages={115--133}
+}
+
+@book{Meadetal1993,
+title={Statistical Methods in Agriculture and Experimental Biology},
+year={1993},
+author={Mead, R. and Curnow, R.N. and Hasted, A.M.},
+publisher={CRC Press, New York and Boca Raton, FL},
+}
+
+
+@article{Miller1984,
+title={Selection of Subsets of Regression Variables},
+author={Miller, Alan J.},
+journal={Journal of the Royal Statistical Society, Series A.},
+year={1984},
+volume={147},
+number={3},
+pages={389--425},
+publisher={Blackwell Publishing for the Royal Statistical Society}
+}
+
+@article{PinheiroBates1995,
+author={Pinheiro, J.C. and Bates, D.M.},
+title={Approximations to the Log-Likelihood Function in the Nonlinear Mixed-Effects Model},
+year={1995},
+volume={4},
+pages={12--35},
+journal={Journal of Computational and Graphical Statistics},
+}
+
+@article{Prater1956,
+author={Prater, N.H.},
+title={Estimate Gasoline Yields from Crudes},
+journal={Petroleum Refiner},
+year={1956},
+volume={35},
+number={3}
+}
+
+@article{Raftery1995,
+author={Adrian E. Raftery},
+title={Bayesian Model Selection in Social Research},
+year={1995},
+volume={25},
+pages={111--163},
+journal={Sociological Methodology},
+publisher={American Statistical Association}
+}
+
+@book{Ratkowsky1983,
+title={Nonlinear Regression Modeling},
+author={Ratkowsky, D.A.},
+year={1983},
+publisher={Marcel Dekker, New York}
+}
+
+@book{Ratkowsky1990,
+title={Handbook of Nonlinear Regression Models},
+author={Ratkowsky, D.A.},
+year={1990},
+publisher={Marcel Dekker, New York}
+}
+
+@book{Schabenberger2001,
+title={Contemporary Statistical Models for the Plant and Soil Sciences},
+author={Schabenberger, O. and Pierce, Francis J.},
+year={2001},
+publisher={CRC Press, Boca Raton}
+}
+
+
+@article{Schabenbergeretal1999,
+title={Statistical tests for hormesis and effective dosages in herbicide dose response},
+author={Schabenberger, O. and Tharp, B.E. and Kells, J.J. and Penner, D.},
+journal={Agronomy Journal},
+year={1999},
+volume={91},
+pages={713--721}
+}
+
+@article{Scrucca_etal_2016,
+title={mclust5: Clustering, Classification and Density Estimation using Gaussian Finite Mixture Models},
+author={Scrucca, L. and Fop, M. and Murphy, T. Brendan and Raftery, Adrian E.},
+journal={The R Journal},
+year={2016},
+volume={21},
+url={https://journal.r-project.org/archive/2016/RJ-2016-021/RJ-2016-021.pdf}
+}
+
+@inproceedings{Vaswani_etal_2017,
+author = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N. and Kaiser, \L{}ukasz and Polosukhin, Illia},
+title = {Attention is all you need},
+year = {2017},
+publisher = {Curran Associates Inc.},
+address = {Red Hook, NY, USA},
+booktitle = {Proceedings of the 31st International Conference on Neural Information Processing Systems},
+pages = {6000–6010},
+numpages = {11},
+location = {Long Beach, California, USA},
+series = {NIPS'17}
+}
+
+:::

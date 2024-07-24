@@ -1,0 +1,301 @@
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+# Model-based Clustering {#sec-mbc}
+
+$K$-means and hierarchical clustering discussed in @sec-clustering have in common that an observation is assigned to exactly one cluster; this is referred to as **hard clustering**. Also, the methods are nonparametric in the sense that no distributional assumptions were made. The clusters are based solely on the distance (dissimilarity) between data points. The goal of clustering is finding regions that contain modes in the distribution of $p(\bX)$. The implicit assumption of $K$-means and hierarchical clustering is that regions where many data points are close according to the chosen distance metric are regions where the density $p(\bX)$ is high.
+
+In **model-based** clustering, this is made explicit through assumptions about the form of $p(\bX)$, the joint distribution of the variables. An important side effect of its probabilistic formulation is that observations no longer belong to just one cluster. They have a non-zero probability to belong to any cluster, a property referred to as **soft clustering**. An advantage of this approach lies in the possibility to assign a measure of uncertainty to cluster assignments. 
+
+A common assumption is that the distribution of $\bX$ follows a **finite mixture model** (FMM), that is, it comprises a finite number $k$ of component distributions.
+
+## Finite Mixture Models
+
+In general, a finite mixture distribution is a weighted sum of $k$ probability distributions where the weights sum to one:
+$$
+p(Y) = \sum_{j=1}^k \pi_j \, p_j(Y) \quad \quad \sum_{j=1}^k \pi_j = 1
+$$
+$p_j(Y)$ is called the $j$^th^ component of the mixture and $\pi_j$ is the $j$^th^ mixing probability, also referred to as the $j$^th^ mixture weight. The finite mixture is called **homogeneous** when the $p_j(Y)$ are of the same family, and **heterogeneous** when they are from different distributional families. An important example of a heterogeneous mixture, discussed in @sec-zero-inflation, is a zero-inflated model for counts, a two-component mixture of a constant distribution and a classical distribution for counts such as the Poisson or Negative Binomial.
+
+
+The class of finite mixture models (FMM) is very broad and the models can get quite complicated. For example, each $p_j(Y)$ could be a generalized linear model and its mean can depend on inputs and parameters. The mixing probabilities can also be modeled as functions of inputs and parameters using logistic (2-component models) or multinomial model types.
+
+How do mixtures of distributions come about? An intuitive motivation is through a **latent variable** process. A discrete random variable $S$ takes on states $j=1,\cdots,k$ with probabilities $\pi_j$. It is called a latent variable because we cannot observe it directly. We only observe its influence on the distribution of $Y$, the variable we are interested in, and that depends on $S$. This dependence results in a different conditional distribution of $Y$ for each of the possible states of $S$, $p(Y| S=j)$. We can then derive the **marginal** distribution of $Y$, the distribution we are interested in, by integrating out (summing over) $S$ in the joint distribution
+
+\begin{align*}
+p(Y) &= \sum_{j=1}^k \Pr(Y, S=j) \\
+		&= \sum_{j=1}^k \Pr(S=j) \, p(Y|S=j) = \sum_{j=1}^k \pi_j \, p_j(Y)
+\end{align*}
+
+This is the same as computing the weighted sum over the conditional distributions--the finite mixture formulation.
+We cannot observe $S$ directly, it exerts its influence on $Y$ through the likelihood of its states ($\pi_j$) and the conditional distributions of $Y|S=j$.
+
+## Gaussian Mixture Models
+
+A special case of FMMs are Gaussian mixtures where the component distributions are multivariate Gaussian. (See @sec-multi-gaussian for a review of the multivariate Gaussian distribution.) The mixture distribution in model-based clustering is 
+$$
+p(\bX) = \sum_{j=1}^k \pi_j \, G(\bmu_j,\bSigma_j)
+$$
+
+Each $G(bmu_j,\bSigma_j)$ is a $p$-variate Gaussian, $\bmu_j$ and $\bSigma_j$ are the $(p \times 1)$ mean vector and the $(p \times p)$ covariance matrix of the $j$th component. These need to be estimated. In terms of clusters, $\bmu_j$ is the center of the $j$^th^ cluster and $\bSigma_j$ determines the volume, shape, and orientation of the $j$^th^ cluster. 
+
+@fig-biv-gaussian shows contours of the density for two bivariate ($p=2$) Gaussian distributions. 
+The distribution on the right has 
+$$\boldsymbol{\mu}_1 = \left [ \begin{array}{c}1 \\ 0\end{array} \right ]
+\qquad
+\boldsymbol{\Sigma}_1 = \left [ \begin{array}{cc} 1 & 0.5 \\ 0.5 & 2\\
+\end{array} \right]
+$$
+and the distribution on the left has
+
+$$\boldsymbol{\mu}_2 = \left [ \begin{array}{c}-1.6 \\ 1\end{array} \right ]
+\qquad
+\boldsymbol{\Sigma}_2 = \left [ \begin{array}{cc} 1.5 & 0 \\ 0 & 1\\
+\end{array} \right]
+$$
+When the variance-covariance matrix is diagonal, the contours align with the axes of the coordinate system, stretching in the direction of greater variance. The covariance between $X_1$ and $X_2$ introduces a rotation of the contours in the graphic on the right.
+
+![Contours of bivariate ($p=2$) Gaussian distributions. The mean vector centers the distribution in the coordinate system. The variances stretch in the direction of $X_1$ and $X_2$. The distribution on the right is rotated in the coordinate system because of the correlation between the variables.](images/BivariateGaussians.png){#fig-biv-gaussian fig-align="center" width="90%" .lightbox}
+
+![A two component mixture of bivariate Gaussian distributions.](images/GaussianMixture.png){#fig-gauss-mix fig-align="center" width="85%"}
+
+The Gaussian mixture model (GMM) can be viewed as a soft version of $K$-means clustering. The latter assigns an observation to exactly one of $K$ clusters---a hard assignment. The GMM assigns **probabilities** of cluster membership to each observation based on $G(\bmu_1,\bSigma_1), \cdots, G(\bmu_k,\bSigma_k)$. GMM allows for a "gray area"; an observation has a non-zero probability to belong to any of the $k$ clusters (@fig-gauss-mix).
+
+## Modeling Variance-covariance Matrices
+
+To train a Gaussian mixture model on data we need to estimate the following parameters: $k$, the number of components, $\bmu_1, \cdots, \bmu_k$, the means of the distributions, and $\bSigma_1, \cdots, \bSigma_k$, the variance-covariance matrices of the distributions (covariance matrix for short). Each $\bmu_j$ is a $p \times 1$ vector and each $\bSigma_j$ is a $p \times p$ matrix with up to $p(p+1)/2$ unique entries. The total number of potential unknowns in a GMM is thus 
+$$
+k \times (p + p(p+1)/2) = k\frac{3p + p^2}{2}
+$$
+
+A mixture with $k=5$ components and $p=10$ variables has 325 unknowns. For $p=20$ this grows to 1,150 unknowns. That is not a large number compared to say, an artificial neural network, but it is a substantial number for estimation by maximum likelihood or Bayesian methods. To reduce the number of parameters and to add interpretability, the class of mixtures considered is constrained by imposing structure on the covariance matrices of the Gaussian distributions.
+
+The most constrained covariance model is to assume that the variables are uncorrelated and have the same variance across the $k$ clusters (an equal variance model):
+$$
+\bSigma_1 = \bSigma_2 = \cdots = \bSigma_k = \sigma^2 \bI
+$$
+
+The next most constrained model allows for a different variance in each cluster but maintains uncorrelated inputs:
+$$
+\bSigma_j = \sigma^2\bI
+$$
+To capture the relevant covariance structures in model-based clustering, @FraleyRaftery_2002 start from the eigendecomposition of $\bSigma$ and use the general parameterization
+$$
+\bSigma_j = \lambda_j \bD_j \bA_j \bD_j^\prime
+$$
+
+$\bD_j$ is an orthogonal matrix of eigenvectors, $\bA_j$ is a diagonal matrix whose elements are proportional to the eigenvalues, and $\lambda_j$ is a proportionality constant. The highly constrained equal variance model corresponds to the special case $\bSigma_j = \lambda \bI$ and the heterogeneous variance model corresponds to $\bSigma_j = \lambda_j \bI$.
+
+The idea behind this parameterization is to hold elements constant across clusters or vary them, and because $\lambda$, $\bD$, and $\bA$ represent different aspects of the shape of the covariance matrix, one arrives at a reasonable set of possible models to consider and to compare. The geometric aspects of the component distributions captured by the three elements of the decomposition are
+
+- $\bA_j$ determines the shape of the $j$^th^ mixture
+- $\bD_j$ determines the orientation (rotation) of the $j$^th^ mixture
+- $\lambda_j$ determines the volume of the $j$^th^ mixture
+
+For example, the model
+$$
+\bSigma_j = \lambda \bD_j \bA \bD_j^\prime
+$$
+imposes equal volume and equal shape across the clusters, but allows for cluster-specific orientation of the distributions.
+
+One could use other parameterizations of covariance matrices, for example, expressing covariances as functions of distance between values---the parameterization shown here is implemented in the `Mclust` function of the popular `mclust` package in `R`.
+
+'mclust' uses a three-letter code to identify a specific covariance model (@tbl-mclust-models)
+
+| **mclust Code** | $\bSigma_j$ | **Volume** | **Shape** | **Orientation** | **Notes** |
+|:------:|:-------:|:---------|:---------|:---------|:---------|
+| `EII`    | $\lambda \bI$    | Equal | Identity | NA |  Spherical|
+| `VII`    | $\lambda_j \bI$  | Variable | Identity | NA | Spherical |
+|
+| `EEI`    | $\lambda \bA$    | Equal | Equal  | Coord. axes |  Diagonal |
+| `VEI`    | $\lambda_j \bA$  | Variable | Equal | Coord. axes | Diagonal |
+| `EVI`    | $\lambda \bA_j$  | Equal | Variable | Coord. axes | Diagonal |
+| `VVI`    | $\lambda_j \bA_j$| Variable | Variable | Coord. axes | Diagonal |
+|
+| `EEE`    | $\lambda\bD \bA\bD^\prime$ | Equal | Equal | Equal | Elliptical |
+| `EEV`    | $\lambda\bD_j \bA\bD_j^\prime$ | Equal | Equal | Variable | Elliptical |
+| `VEV`    | $\lambda_j\bD_j \bA\bD_j^\prime$ | Variable | Equal | Variable | Elliptical |
+| `VVV`    | $\lambda_j\bD_j \bA_j\bD_j^\prime$ | Variable | Variable | Variable | Elliptical |
+
+: Covariance models for $p > 1$ implemented in `mclust`. {#tbl-mclust-models .striped}
+
+The first six models in @tbl-mclust-models have diagonal covariance matrices, the inputs are independent (lack of correlation does equal independence for Gaussian random variables). Models EEE, EEV, VEV, and VVV capture correlations among the $X$s and vary different aspects of $\bSigma_j$ across the clusters. The EEE model applies the same covariance matrix in all clusters, EEV varies orientation, VEV varies orientation and volume, and VVV varies all aspects across clusters.
+
+The choice of covariance model should not be taken lightly, it has considerable impact on the clustering analysis. Assuming independent inputs is typically not reasonable. However, if model-based clustering is applied to the components of a PCA, this assumption is met. Some of the models in @tbl-mclust-models are nested and can be compared through a hypothesis test. But in addition to choosing the covariance model, we also need to choose $k$, the number of clusters. One approach is to compare the model-$k$ combinations by way of BIC, the Bayesian information criterion, introduced in @sec-bayes-factors-bic.
+
+BIC is based on the log-likelihood, which is accessible because we have a full distributional specification, and a penalty term that protects against overfitting. Before applying model-based clustering in a full analysis to select $k$ and the covariance models, let's examine how to interpret the results of model-based clustering and some of the covariance structures for the Iris data.
+
+## Model-based Clustering with `Mclust` in `R`
+
+Model-based clustering based on a finite mixture of Gaussian distributions is implemented in the `Mclust` function of the `mclust` package in `R`. Maximum likelihood estimates are derived by EM (Expectation-Maximization) algorithm and models are compared via BIC. An iteration of the EM algorithm comprises two steps. The E-step computes at the current estimates an $(n \times k)$ matrix $\bZ$ of conditional probabilities that observation $i=1,\cdots,n$ belongs to component $j=1,\cdots,k$. The M-step updates the parameter estimates given the matrix $\bZ$. 
+
+### First Look at `Mclust`
+
+:::{.example}
+::::{.example-header}
+Example: Equal Variance Structure for Iris Data
+::::
+::::{.example-container}
+The `G=` and `modelNames=` option im `Mclust` are used to specify the number of components in the mixture (the number of clusters) and the covariance model. The defaults are `G=1:9` and all available covariance models based on whether $p=1$ or $p>1$ and whether $n > p$ or $n \le p$.
+
+The following statements fit a 3-component mixture with `EII` covariance model to the numerical variables in the Iris data. The `EII` model is the most restrictive multivariate model, assuming diagonal covariance matrices and equal variances across variables and clusters (see @tbl-mclust-models). This model is probably not appropriate for the Iris data but simple enough to interpret the results from the analysis.
+
+```{r, warning=FALSE, message=FALSE}
+library(mclust)
+mb_eii <- Mclust(iris[,-5],G=3,verbose=FALSE, modelNames="EII")
+mb_eii$parameters$pro
+```
+The three Gaussian distributions mix with probabilities 
+$\widehat{\pi}_1 =$ `{r} round(mb_eii$parameters$pro[1],4)`, 
+$\widehat{\pi}_2 =$ `{r} round(mb_eii$parameters$pro[2],4)`, and
+$\widehat{\pi}_3 =$ `{r} round(mb_eii$parameters$pro[3],4)`.
+
+```{r}
+mb_eii$parameters$mean
+```
+The first component has a mean of $\widehat{\bmu}_1$ = [`{r} round(mb_eii$parameters$mean[,1],4)`].
+The following lists the covariance matrices in the three clusters, the model forces them to be diagonal, to have the same variance for all variables and across the clusters, $\widehat{\lambda}_j$ = `{r} round(mb_eii$parameters$variance$sigmasq,4)`.
+
+```{r}
+mb_eii$parameters$variance
+```
+::::
+:::
+
+### Classification and Uncertainty
+
+Based on the underlying $\bZ$ matrix of the EM algorithm at convergence, the observations can be classified based on the highest probability. For observation \#53, for example, $\bz_{53}$ = [`{r} round(mb_eii$z[53,],4)`]. The probability is highest that the observation belongs to the third component, hence its cluster membership is classified as 3.
+
+```{r}
+round(mb_eii$z[53,],4)
+mb_eii$classification[53]
+```
+
+One of the big advantages of model-based clustering is the ability to quantify the uncertainty associated with a cluster assignment. How confident are we in assigning observation \#53 to cluster 3? We are certain that it does not belong to cluster 1, but there is a non-zero probability that the observation belongs to cluster 2. You can retrieve the uncertainty associated with the classification of each observation in the `uncertainty` vector. For observations 50---55, for example:
+
+```{r}
+round(mb_eii$uncertainty[50:55],4)
+```
+
+There is no uncertainty associated with classifying \#50. An examination of $\bz_{50}$ shows that $z_{50,1} = 1.0$. There is uncertainty associated with the next three observations, and it is higher for \#51 and \#53 than for \#52.
+
+The uncertainty is simply the complement of the highest component probability. For \#53, this is 1-`{r} round(mb_eii$z[53,3],4)` = `{r} round(mb_eii$uncertainty[53],4)`. The following code validates this for all observations.
+
+```{r}
+c <- apply(mb_eii$z,1,which.max)
+probs <- rep(0,length(c))
+for (i in seq_along(c)) {probs[i] <- mb_eii$z[i,c[i]]}
+sum(mb_eii$uncertainty - (1-probs))
+```
+
+Finally, you can plot the classification, uncertainty, and density contours for the analysis by choosing the `what=` parameter of the `plot` method.
+
+```{r, fig.asp=1.0, out.width="75%", fig.align="center", warning=FALSE, message=FALSE}
+plot(mb_eii, what="classification")
+plot(mb_eii, what="uncertainty",dimens=c(1,2))
+plot(mb_eii, what="density")
+```
+
+The classification and uncertainty plots are overlaid with the densities of the components. The parallel alignment of the densities with the coordinate axes reflects the absence of correlations among the variables. The volume of the densities does not capture the variability of most attributes, many points fall outsode of the density contour---the equal variance assumption across variables and clusters is not justified.
+
+### Examining Covariance Structures
+
+:::{.example}
+::::{.example-header}
+Example: Other Covariance Structures for Iris Data
+::::
+::::{.example-container}
+Now let's look at how the choice of covariance structure affects the results of the cluster analysis.
+The following statements fit 3-component models with four additional covariance structures:
+
+- VII: Spherical Model, variance varies among clusters 
+- VEI: Diagonal Model, variance varies among attributes and clusters 
+- EEE: Elliptical Model, same non-diagonal covariance among clusters
+- VEV: Elliptical Model, different covariance matrices with same shape
+
+```{r}
+mb_vii <- Mclust(iris[,-5],G=3,verbose=FALSE, modelNames="VII")
+mb_vei <- Mclust(iris[,-5],G=3,verbose=FALSE, modelNames="VEI")
+mb_eee <- Mclust(iris[,-5],G=3,verbose=FALSE, modelNames="EEE")
+mb_vev <- Mclust(iris[,-5],G=3,verbose=FALSE, modelNames="VEV")
+
+mb_vii$parameters$variance$sigma
+mb_vii$bic
+```
+
+For the VII model, the covariance matrices are uncorrelated and the variances of the inputs are the same. Compared to the EII model of the previous run, the variances now differ across the clusters.
+
+Note that `mclust` computes the BIC statistic in a "larger-is-better" form---see the note in @sec-bayes-factors-bic on the two versions of the BIC criterion.
+
+```{r}
+mb_vei$parameters$variance$sigma
+mb_vei$bic
+```
+
+The VEI model introduces different variances for the attributes and has a larger (better) BIC than the VEI model.
+
+```{r}
+mb_eee$parameters$variance$sigma
+mb_eee$bic
+```
+
+The EEE model introduced covariances between the inputs but keeps the covariance matrices constant across clusters. Its BIC value of `{r} round(mb_eee$bic,3)` is a further improvement over that of the VEI model.
+
+```{r}
+mb_vev$parameters$variance$sigma
+mb_vev$bic
+```
+The VEV model allows for correlated attributes and varies volume and orientation across clusters, keeping the shape of the densities the same. Its BIC value of `{r} round(mb_vev$bic,3)` indicates a further improvement over the previous models.
+::::
+:::
+
+### Full Analysis Choosing $k$ and Covariance Structure
+
+The choice of covariance structures and the number of mixture components can be combined into a single analysis.
+
+:::{.example}
+::::{.example-header}
+Example: Selecting Structure and Number of Components
+::::
+::::{.example-container}
+To obtain a full analysis of relevant covariance structures for $1 \le k \le 9$, simply do not specify the `G=` or `modelNames=` arguments. Alternatively, you can limit the number of combinations considered by specifying vectors for these options.
+
+```{r}
+mbc <- Mclust(iris[,-5],verbose=FALSE)
+summary(mbc)
+```
+
+Based on $9 \times 10 = 90$ models considered, `Mclust` choose the VEV structure with $k=2$ mixture components. Its BIC value is `{r} round(summary(mbc)$bic,4)`. You can see the BIC values of all 90 models and a list of the top three models in the `BIC` object:
+
+```{r}
+mbc$BIC
+```
+
+Model-$k$ combinations shown as `NA` failed to converge based on the default settings of the EM algorithm; these can be tweaked with the `control=` option of `Mclust`. The BIC of the winning combination is
+
+```{r}
+max(na.omit(apply(mbc$BIC,1,max)))
+which.max(na.omit(apply(mbc$BIC,1,max)))
+```
+
+The plot of the BIC values shows two distinct groups of models (@fig-iris-mbc-bic). The models with diagonal covariance structure generally have lower (worse) BIC values if $k < 6$. The difference between $k=2$ and $k=3$ is generally small for the models with correlations. [VEV, $k=3$] is a close competitor to the overall "best" model, [VEV, $k=2$]. Since we know that there are three species in the data set one might be tempted to go with $k=3$. In fact, it seems that the $k=2$ model separates *I. setosa* in one cluster from the other two species (@fig-iris-mbc-class).
+
+``` {r, fig.align="center", out.width="90%", fig.asp=0.8}
+#| fig.cap: BIC versus number of mixture components for all ten covariance models.
+#| label: fig-iris-mbc-bic
+#| lightbox:
+#| 
+plot(mbc, what="BIC")
+```
+
+``` {r, fig.align="center", out.width="90%", fig.asp=1.0}
+#| label: fig-iris-mbc-class
+#| fig.cap: Classification based on model-based clustering with VEV model, $k=2$.
+#| 
+plot(mbc, what="classification",cex=0.75)
+```
+::::
+:::

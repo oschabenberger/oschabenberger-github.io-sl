@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 2&nbsp; Statistical Models</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./biasvariance.html" rel="next">
+<link href="./intro.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./statmodels.html">Foundation</a></li><li class="breadcrumb-item"><a href="./statmodels.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-is-in-a-model" id="toc-what-is-in-a-model" class="nav-link active" data-scroll-target="#what-is-in-a-model"><span class="header-section-number">2.1</span> What is in a Model?</a>
+  <ul>
+  <li><a href="#two-cultures" id="toc-two-cultures" class="nav-link" data-scroll-target="#two-cultures">Two Cultures</a></li>
+  <li><a href="#statistical-learning-and-machine-learning" id="toc-statistical-learning-and-machine-learning" class="nav-link" data-scroll-target="#statistical-learning-and-machine-learning">Statistical Learning and Machine Learning</a></li>
+  <li><a href="#stochastic-and-statistical-models" id="toc-stochastic-and-statistical-models" class="nav-link" data-scroll-target="#stochastic-and-statistical-models">Stochastic and Statistical Models</a></li>
+  <li><a href="#model-types" id="toc-model-types" class="nav-link" data-scroll-target="#model-types">Model Types</a></li>
+  </ul></li>
+  <li><a href="#sec-model-components" id="toc-sec-model-components" class="nav-link" data-scroll-target="#sec-model-components"><span class="header-section-number">2.2</span> Model Components</a>
+  <ul>
+  <li><a href="#mean-function" id="toc-mean-function" class="nav-link" data-scroll-target="#mean-function">Mean function</a></li>
+  <li><a href="#systematic-component" id="toc-systematic-component" class="nav-link" data-scroll-target="#systematic-component">Systematic component</a></li>
+  <li><a href="#random-component" id="toc-random-component" class="nav-link" data-scroll-target="#random-component">Random component</a></li>
+  <li><a href="#sec-target-variables" id="toc-sec-target-variables" class="nav-link" data-scroll-target="#sec-target-variables">Response (Target) variable</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./statmodels.html">Foundation</a></li><li class="breadcrumb-item"><a href="./statmodels.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-stat-models" class="quarto-section-identifier"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="what-is-in-a-model" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="what-is-in-a-model"><span class="header-section-number">2.1</span> What is in a Model?</h2>
+<p>The term <em>model</em> is pervasive in our field, and we likely come to this conversation with different notions of what constitutes a model. Before going any further in the discussion, let’s discuss the concept of a model in the context of data science.</p>
+<div id="fig-simple-model" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-simple-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/BasicModel.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-simple-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.1: A simple representation of a model that processes inputs with algorithmic logic and produces output.
+</figcaption>
+</figure>
+</div>
+<p>From the 30,000 foot view a model is simply a mechanism to process some input and produce a corresponding output (<a href="#fig-simple-model" class="quarto-xref">Figure&nbsp;<span>2.1</span></a>).</p>
+<p>The input to drive the model algorithm is almost always some form of data. The algorithm that processes the inputs can be based on data, but that is not necessarily so. Suppose the problem we are trying to solve is to ascertain an individuals annual federal income tax. The problem is solved with a model that takes as <strong>input</strong> the individuals financial situation. This information is typically known without error as information about income, property taxes, expenses, etc. is well documented. The <strong>algorithm</strong> processing this input is a translation of the relevant information in the federal income tax laws into machine instructions. The <strong>output</strong> is the amount of money owed to the government or expected as a refund.</p>
+<p>Now suppose that for some reason the input data in the tax problem is not known without error. For example, income from tips, medical expenses or charitable contributions might be best guesses rather than exact amounts. Income data could be noisy because foreign income is converted at fluctuating exchange rates. If the input data is the realization of stochastic (random) influences, should we modify the algorithm?</p>
+<p>When the input data to an algorithm is the result of observing random variation, we are looking to the algorithms of the model to find the signal in the data, to de-noise it. The signal located in the data is then transformed into the model output. Most models we build in data science are of this kind because the data we work with is inherently noisy. The reasons for the random variations are many: selecting observation from a larger population at random, applying treatments to randomly chosen experimental units, variations in measurement instruments and procedures, variations in the environment in which a phenomenon is observed, and so on.</p>
+<p>The algorithms we use depend on the goals of the analysis, properties of the data, assumptions we are willing to make, attributes we look for in competitive models, and personal preferences.</p>
+<section id="two-cultures" class="level3">
+<h3 class="anchored" data-anchor-id="two-cultures">Two Cultures</h3>
+<p>While everyone agrees that models in data science incorporate uncertainty, and that uncertainty is expressed in terms of randomly varying model elements, there is not agreement how to incorporate randomness into the model formulation and analysis. In an influential 2001 paper, “<a href="https://projecteuclid.org/journals/statistical-science/volume-16/issue-3/Statistical-Modeling--The-Two-Cultures-with-comments-and-a/10.1214/ss/1009213726.full">Statistical Modeling: The Two Cultures</a>”, Leo Breiman contrasted two schools of thoughts: statistical (data) modeling and algorithmic modeling <span class="citation" data-cites="BreimanTwoCultures">(<a href="references.html#ref-BreimanTwoCultures" role="doc-biblioref">Breiman 2001</a>)</span>.</p>
+<p><strong>Statistical (data) modeling</strong> assumes that the data are generated by a stochastic data model. The model captures the essence of the random processes that gave the rise to the observed data. The data set at hand is one particular realization of those random processes. If the study were repeated, another data set would be realized, containing different numbers, but with the same stochastic properties. According to Breiman, 98% of statisticians subscribe to this approach.</p>
+<p><strong>Algorithmic modeling</strong>, on the other hand, makes no assumption about the underlying data model, treats the data mechanism as unknown, and is more common in fields outside of statistics. In Breiman’s words:</p>
+<blockquote class="blockquote">
+<p><em>Perhaps the damaging consequence of the insistence on data models is that statisticians have ruled themselves out of some of the most interesting and challenging statistical problems that have arisen out of the rapidly increasing ability of computers to store and manipulate data. These problems are increasingly present in many fields, both scientific and commercial, and solutions are being found by nonstatisticians</em>.</p>
+</blockquote>
+<p>The goal of algorithmic models is more predictive accuracy than confirmatory inference and hypothesis testing. The model is supposed to approximate an unknown relationship between inputs and outputs well enough to provide satisfactory accuracy in predicting outputs of previously unseen inputs. Neural networks, decision trees, and support vector machines are examples of algorithmic tools that found rapid adoption outside of statistics. Machine learning as it emerged from computer science is a manifestation of algorithmic modeling.</p>
+<p>In data modeling, theory focuses on the probabilistic properties of the model and of quantities derived from it. In algorithmic modeling, the focus is on the properties of the algorithm itself: starting values, optimization, convergence behavior, parallel execution, hyperparameter tuning, and so on.</p>
+<p>Breiman’s article was widely discussed—the invited comments by leading statisticians at the end of the paper give a sample of opinions.</p>
+<p>Both views, algorithmic and statistical, are correct and useful, and taking different views based on the situation does not cause cognitive dissonance. When we are working with large data sets, appealing to a random mechanism that generated the data is not necessarily straightforward (or meaningful):</p>
+<ul>
+<li><p>How do we describe the mechanism that yields the web-scraped corpus of text on which large language models (LLMs) are trained?</p></li>
+<li><p>What random elements are at work when you mine the database of customer interactions of a company? The database contains all transactions with all customers.</p></li>
+<li><p>Is a sampling mechanism adequate to capture variability in images collected on the internet?</p></li>
+<li><p>When we are concerned with apples randomly selected from randomly trees in an orchard, it is natural to consider the hierarchical sampling mechanism to model the between-tree and within-tree variability.</p></li>
+<li><p>When a medical treatment and a placebo are assigned to two groups of randomly chosen subjects, we are<br>
+able to make causal statements about the treatment effects because other effects not accounted for are balanced out by the randomization. We will take full advantage of that probability mechanism in analyzing the experimental data.</p></li>
+</ul>
+<p>Overall, our approach is a statistical modeling approach, models contain explicit random elements that allow us to study the statistical properties of quantities derived from the trained model and make uncertainty statements—under the assumption that the probabilistic assumptions made are justifiable.</p>
+<p>George E.P. Box is credited with coining the much-used phrase “all models are wrong, but some are useful” <span class="citation" data-cites="GEPBox1976">(<a href="references.html#ref-GEPBox1976" role="doc-biblioref">Box 1976</a>)</span>. The phrase appears partially (“all models are wrong”) twice in his 1976 paper on <a href="http://www-sop.inria.fr/members/Ian.Jermyn/philosophy/writings/Boxonmaths.pdf">Science and Statistics</a>:</p>
+<blockquote class="blockquote">
+<p><em>Since all models are wrong the scientist cannot obtain a “correct” one by excessive elaboration.</em></p>
+<p><em>Since all models are wrong the scientist must be alert to what is importantly wrong.</em></p>
+</blockquote>
+<p>The takeaway is that any model is an abstraction of a phenomenon and we strive to find a useful abstraction. The model does not attempt to reproduce the phenomenon. The tax algorithm converts the essence of the tax code into machine instructions, it is not an electronic copy of the entire law. The purpose is to accurately calculate an entity’s tax, anything else can be stripped away. An algorithm processing noisy data that reproduces the data is uninteresting. The goal is to abstract the data in such a way to allow separating the signal from the noise and to convert the signal into the desired output.</p>
+<p>The first G.E.P. Box quote instructs us not to overdo it in building models; this translates to the problem of <strong>overfitting</strong> in data science, crafting a model that follows the training data too closely and as a result does not generalize well to new data points. If the goal is to predict, classify, or cluster the unseen then generalizability of the model is key. A model to forecast stock prices or trading volumes is judged by how well it can predict the future, not by how well it can predict the past. The adequate level of generalization for that model must be wrung from current and past stock prices. Finding the appropriate level of abstraction is resolved by striking the right balance in the <strong>bias-and-variance tradeoff</strong> (see <a href="biasvariance.html" class="quarto-xref"><span>Chapter 3</span></a>).</p>
+<p>The second G.E.P. Box quote instructs us that models are abstracting away features of the phenomenon. If these are important features, the model is not useful. In the best case this model does not meet its goal and is revised or abandoned. In the worst case the model can lead to bad decisions and harmful outcomes.</p>
+<p>No matter how complex the model, we need to strive to understand how it works (interpret the model), not just what it does. If a model is not intrinsically interpretable then we need to strive to explain the forces that drive the model, keeping in mind that we are then making statements about the model and not about the underlying phenomenon we have abstracted.</p>
+</section>
+<section id="statistical-learning-and-machine-learning" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-learning-and-machine-learning">Statistical Learning and Machine Learning</h3>
+<p>Much is being made of the difference between statistical models and machine learning models, or to be more precise, between statistical learning (SL) and machine learning (ML).</p>
+<div class="definition">
+<div class="definition-header">
+<p>Definition: Statistical Learning</p>
+</div>
+<div class="definition-container">
+<p><strong>Statistical Learning</strong> is the process of understanding data through the application of tools that describe structure and relationships in data. Models are formulated based on the structure of data to predict outcomes from inputs, to test hypothesis about relationships, to group data, or to reduce the dimensionality of a problem.</p>
+</div>
+</div>
+<p>Statistical learning emphasizes prediction more than the testing of hypothesis, as compared to statistical modeling. Many model classes used in statistical learning are the same models one uses to test hypothesis about patterns and relationships in data. Emphasis of prediction over hypothesis testing—or vice versa—flows from the nature of the problem we are trying to solve. The same model can be developed with focus on predictive capability or with focus on interpretability. We do not want to overdo the distinction between statistical learning and s tatistical modeling: statistical learning uses statistical models.</p>
+<p>Learning is the process of converting experience into knowledge and machine learning is an automated way of learning by using computers. Rather than directly programming computers to perform a task, machine learning is used when the tasks are not easily described and communicated (e.g., driving, reading, image recognition) or when the tasks exceed human capabilities (e.g., analyzing large and complex data sets). Modern machine learning discovered data as a resource for learning and that is where statistical learning and machine learning meet.</p>
+<p>SL and ML have more in common, than what separates them:</p>
+<ul>
+<li><p>The input to a learning algorithm is data; the raw material is the same.</p></li>
+<li><p>The data are thought of as randomly generated, there is some sense of variability in the data that is attributed to random sources.</p></li>
+<li><p>Both disciplines distinguish supervised and unsupervised forms of learning</p></li>
+<li><p>They use many of the same models and algorithms for regression, classification, clustering, dimension reduction, etc.</p></li>
+</ul>
+<p>Machine learning uses observed data to describe relationships and “causes”; the emphasis is on predicting new and/or future outcomes. There is comparatively little emphasis on experimentation and hypothesis testing.</p>
+<p>A key difference between SL and ML is what Breiman describes as the difference between data modeling and algorithmic modeling. The difference aligns closely with statistical and machine learning thinking. In data modeling, theory focuses on the probabilistic properties of the model and of quantities derived from it. In algorithmic modeling, the focus is on the properties of the algorithm itself. Consequently, statisticians are concerned with the asymptotic distributional behavior of estimators and methods as <span class="math inline">\(n \rightarrow \infty\)</span>. Machine learning focuses on finite sample properties and ask what accuracy can be expected based on the available data.</p>
+<p>The strong assumptions statisticians make about the stochastic data-generating mechanism that produced the data set in hand as a realization are not found in machine learning. That does not mean that machine learning models are free of stochastic elements and assumptions—quite the contrary. It means that statisticians use the data-generating mechanism as the foundation for conclusions rather than the data alone.</p>
+<p>When you look at a <em>p</em>-value in a table of parameter estimates, you rely on all assumptions about distributional properties of the data, correctness of the model, and (asymptotic) distributional behavior of the estimator. They flow explicitly from the data-generating mechanism or implicitly from somewhere else. Otherwise, the <em>p</em>-value does not make much sense. (Many argue that <em>p</em>-values are not very helpful and possibly even damaging to decision making but this is not the point of this discussion.)</p>
+<p>If you express the relationship between a target variable <span class="math inline">\(Y\)</span> and inputs <span class="math inline">\(x_1, \cdots, x_p\)</span> as</p>
+<p><span class="math display">\[
+Y = f(x_1,\cdots,x_p) + \epsilon
+\]</span></p>
+<p>where <span class="math inline">\(\epsilon\)</span> is a random variable, it does not matter whether you perform data modeling or algorithmic modeling. We need to think about <span class="math inline">\(\epsilon\)</span> and its properties. How does <span class="math inline">\(\epsilon\)</span> affect the algorithm, the prediction accuracy, the uncertainty of statements about <span class="math inline">\(Y\)</span> or <span class="math inline">\(f(x_1, \cdots, x_p)\)</span>? That is why all data professionals need to understand about stochastic models and statistical models.</p>
+</section>
+<section id="stochastic-and-statistical-models" class="level3">
+<h3 class="anchored" data-anchor-id="stochastic-and-statistical-models">Stochastic and Statistical Models</h3>
+<div class="definition">
+<div class="definition-header">
+<p>Definition: Stochastic Model</p>
+</div>
+<div class="definition-container">
+<p>A <strong>stochastic</strong> model describes the probability distribution of outcomes by allowing one or more of the model elements to be random variables.</p>
+</div>
+</div>
+<p>Suppose we are charged with developing a model to predict recurrence of cancer. There are many possible aspects that influence the outcome:</p>
+<ul>
+<li>Age, gender</li>
+<li>Medical history</li>
+<li>Lifestyle factors (nutrition, exercise, smoking, …)</li>
+<li>Type of cancer</li>
+<li>Size of the largest tumor</li>
+<li>Site of cancer</li>
+<li>Time since diagnostic, time from treatment</li>
+<li>Type of treatment</li>
+<li>and so on</li>
+</ul>
+<p>If we were to try and build a deterministic model that predicts cancer recurrence perfectly, all influences would have to be taken into account and their impact on the outcome would have to be incorporated correctly. That would be an incredibly complex model, and impractical.</p>
+<p>By taking a stochastic approach we acknowledge that there are processes that affect the variability in cancer recurrence we observe from patient to patient. The modeling can now focus on the most important factors and how they drive cancer recurrence. The other factors are included through random effects. If the model captures the salient factors and their impact correctly, and the variability contributed by other factors is not too large, and not systematic, the model is very useful. It possibly is much more useful than an inscrutably complex model that tries to accommodate all influences perfectly.</p>
+<p>The simplest stochastic model for cancer recurrence is to assume that the outcome is a Bernoulli (Binary) random variable taking on two states (cancer recurs, cancer does not recur) with probabilities <span class="math inline">\(\pi\)</span> and <span class="math inline">\(1-\pi\)</span>. If we code the two states numerically, cancer recurs as 1, cancer does not recur as 0, the probability mass function of cancer recurrence is that of the random variable <span class="math inline">\(Y\)</span>,</p>
+<p><span class="math display">\[
+\Pr(Y=y) = \left \{ \begin{array}{cl} \pi &amp; y=1 \\ 1-\pi &amp; y = 0\end{array} \right .
+\]</span></p>
+<div class="definition">
+<div class="definition-header">
+<p>Definition: Statistical Model</p>
+</div>
+<div class="definition-container">
+<p>A <strong>statistical model</strong> is a stochastic model that contains unknown constants, called parameters. Parameters are estimated based on data. Parameters are constants, not random variables. The estimator of a parameter that depends on data is a random variable since the data are random.</p>
+</div>
+</div>
+<p>The parameter in our cancer model is <span class="math inline">\(\pi\)</span>, the probability that <span class="math inline">\(Y\)</span> takes on the value 1. In statistics, this probability is often called the “success” probability and its complement is called the “failure” probability. We prefer to call them the “event” and “non-event” probabilities instead. The event is the binary outcome coded as a 1.</p>
+<p>Because we cannot visit with all cancer patients, a sample of patients is used to estimate <span class="math inline">\(\pi\)</span>. This process introduces uncertainty into the estimator of <span class="math inline">\(\pi\)</span>, a larger sample will lead to a more precise (a less uncertain) estimator.</p>
+<p>The model is overly simplistic in that it captures all possible effects on cancer recurrence in the single quantity <span class="math inline">\(\pi\)</span>. Regardless of age, gender, type of cancer, etc., we would predict a randomly chosen cancer patient’s likelihood to experience a recurrence as <span class="math inline">\(\pi\)</span>. To incorporate input variables that affect the rate of recurrence we need to add structure to <span class="math inline">\(\pi\)</span>. A common approach in statistical learning and in machine learning is that inputs have a linear effect on a transformation of the probability <span class="math inline">\(\pi\)</span>:</p>
+<p><span class="math display">\[
+g(\pi) = \beta_0 + \beta_1 x_1+\cdots + \beta_p x_p
+\]</span></p>
+<p>When <span class="math inline">\(g(\pi)\)</span> is the logit function</p>
+<p><span class="math display">\[\log\left \{ \frac{\pi}{1-\pi} \right\}\]</span></p>
+<p>this is called a <strong>logistic</strong> regression model. <span class="math inline">\(x_1,\cdots,x_p\)</span> are the inputs of the model, <span class="math inline">\(\beta_0, \cdots, \beta_p\)</span> are the parameters of the model. <span class="math inline">\(\beta_0\)</span> is the intercept, <span class="math inline">\(\beta_1, \cdots , \beta_p\)</span> are the coefficients associated with the input variables. The logit transform maps the problem onto a scale where the effects of the inputs are linear. In other words, a unit change in <span class="math inline">\(x_j\)</span> leads to a <span class="math inline">\(\beta_j\)</span>-change in the logit of the event probability—it does not lead to a <span class="math inline">\(\beta_j\)</span>-change in the event probability.</p>
+<p>If we accept that the basic structure of the logistic model applies to the problem of predicting cancer occurrence, we use our sample of patient data to</p>
+<ul>
+<li><p>estimate the parameters <span class="math inline">\(\beta_0, \cdots, \beta_p\)</span>;</p></li>
+<li><p>determine which inputs and how many inputs are adequate: we need to determine <span class="math inline">\(p\)</span> and the specific input variables;</p></li>
+<li><p>determine whether the logit function is the appropriate transformation to linearity.</p></li>
+</ul>
+<p>The effect of the inputs is called linear on <span class="math inline">\(g(\pi)\)</span>, if <span class="math inline">\(g(\pi)\)</span> is a linear function of the parameters. To test whether this is the case, take derivatives of the function with respect to all parameters. If the derivatives do not depend on parameters, the effect is linear.</p>
+<p><span class="math display">\[\begin{align*}
+\frac{\partial g(\pi)}{\partial\beta_{0}} &amp;= 1 \\
+
+\frac{\partial g(\pi)}{\partial\beta_{1}} &amp;= x_{1}\\
+
+\frac{\partial g(\pi)}{\partial\beta_{p}} &amp;= x_{p}
+\end{align*}\]</span></p>
+<p>None of the derivatives depends on any of the <span class="math inline">\((\beta_{0},\ldots,\beta_{p})\)</span>; <span class="math inline">\(g(\pi)\)</span> is linear in the parameters. A non-linear function is non-linear in at least one parameter.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Plateau (hockey stick) Model</p>
+</div>
+<div class="example-container">
+<p>A plateau model reaches a certain amount of output and remains flat afterwards. When the model prior to the plateau is a simple linear model, the plateau model is also called a hockey-stick model.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/PlateauModel.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+<p>The point at which the plateau is reached is called a change point. Suppose the change point is denoted <span class="math inline">\(\alpha\)</span>. The hockey-stick model can be written as</p>
+<p><span class="math display">\[
+\text{E}\lbrack Y\rbrack = \left\{
+\begin{matrix}
+\beta_{0} + \beta_{1}x      &amp; x \leq \alpha \\
+\beta_{0} + \beta_{1}\alpha &amp; x &gt; \alpha
+\end{matrix} \right.
+\]</span></p>
+<p>If <span class="math inline">\(\alpha\)</span> is an unknown parameters that is estimated from the data, this is a non-linear model.</p>
+</div>
+</div>
+</section>
+<section id="model-types" class="level3">
+<h3 class="anchored" data-anchor-id="model-types">Model Types</h3>
+<p>Much of data science methodology is to select the right approach (algorithm) based on input data, learning methodology (supervised, unsupervised, semi-supervised, self-supervised) and analysis goal (prediction, recommendation, classification, clustering, dimension reduction, sequential decisioning), to train the model, and to deploy the model. <a href="#fig-proj-dsmodels" class="quarto-xref">Figure&nbsp;<span>2.2</span></a> is an attempt at structuring the input, algorithm, and output components of a model in the data science context. The diagram is complex and yet woefully incomplete and is intended to give you an idea of the diversity of methods and the many ways we can look at things. For example, in discussing input data we could highlight how data are stored, how fast it is moving, the degree to which the data is structured, the data types, and so forth. There are many other categorizations of data one could have listed.</p>
+<p>The categorization of algorithms-—what many consider the models in the narrow sense—-leaves out semi-supervised learning, self-supervised learning, transfer learning, and other learning methods. Volumes of books and papers have been written about every item in the list of algorithms and many algorithms are represented by a simple description. Multilayer networks, for example, include artificial neural networks, deep networks such as convolutional and recurrent networks, and transformer architectures such as GPT.</p>
+<div id="fig-proj-dsmodels" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center" alt="Structuring and categorizing input, algorithm, and output in data science models.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-proj-dsmodels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/DataScienceModels.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/DataScienceModels.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Structuring and categorizing input, algorithm, and output in data science models."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-proj-dsmodels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.2: Structuring and categorizing input, algorithm, and output in data science models.
+</figcaption>
+</figure>
+</div>
+<p>It might seem like a daunting task to command the plethora of complexity displayed in the previous figure, understand all the pros and cons, grok the idiosyncrasies of software implementations, write code to train the model(s), communicate the results, and possibly implement a solution within a business context. That is what we are here for; let us get started.</p>
+</section>
+</section>
+<section id="sec-model-components" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="sec-model-components"><span class="header-section-number">2.2</span> Model Components</h2>
+<p>The expression for the logistic regression model</p>
+<p><span class="math display">\[g(\pi) = \beta_0 + \beta_1 x_1 + \ldots + \beta_p x_p\]</span></p>
+<p>looks quite different from the model introduced earlier,</p>
+<p><span class="math display">\[Y = f\left( x_{1},\ldots,x_{p} \right) + \epsilon\]</span></p>
+<p>Where is the connection?</p>
+<p>The error term <span class="math inline">\(\epsilon\)</span> is a random variable and we need to specify some of its distributional properties to make progress. At a minimum we provide the mean and variance of <span class="math inline">\(\epsilon\)</span>. If the model is correct—correct on average—then the error terms should have a mean of zero and not depend on any input variables (whether those in the model or other inputs). A common assumption is that the variance of the errors is a constant and not a function of other effects (fixed or random). The two assumptions are summarized as <span class="math inline">\(\epsilon \sim \left( 0,\sigma^{2} \right)\)</span>; read as <span class="math inline">\(\epsilon\)</span> follows a distribution with mean 0 and variance <span class="math inline">\(\sigma^{2}\)</span>.</p>
+<section id="mean-function" class="level4">
+<h4 class="anchored" data-anchor-id="mean-function">Mean function</h4>
+<p>Now we can take the expected value of the model and find that</p>
+<p><span class="math display">\[
+\text{E}\lbrack Y\rbrack = \text{E}\left\lbrack f\left( x_{1},\ldots,x_{p} \right) + \epsilon \right\rbrack = f\left( x_{1},\ldots,x_{p} \right) + \text{E}\lbrack\epsilon\rbrack = f\left( x_{1},\ldots,x_{p} \right)
+\]</span></p>
+<p>Because the errors have zero mean <strong>and</strong> because the function <span class="math inline">\(f\left( x_1,\ldots, x_p \right)\)</span> does not contain random variables, <span class="math inline">\(f\left( x_1,\ldots, x_p \right)\)</span> is the expected value (mean) of <span class="math inline">\(Y\)</span>. <span class="math inline">\(f\left( x_1,\ldots,x_p \right)\)</span> is thus called <strong>mean function</strong> of the model.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Curvilinear models</p>
+</div>
+<div class="example-container">
+<p>Polynomial models such as a quadratic model <span class="math display">\[Y = \beta_{0} + \beta_{1}x + \beta_{2}x^{2} + \epsilon\]</span> or cubic model <span class="math display">\[Y = \beta_{0} + \beta_{1}x + \beta_{2}x^{2} + \beta_{3}x^{3} + \epsilon\]</span> have a curved appearance when <span class="math inline">\(Y\)</span> is plotted against <span class="math inline">\(x\)</span>. They are linear models, however.</p>
+<p>To test this, take derivatives of the mean function with respect to the parameters. For the quadratic model the partial derivatives with respect to <span class="math inline">\(\beta_{0}\)</span>, <span class="math inline">\(\beta_{1}\)</span>, and <span class="math inline">\(\beta_{2}\)</span> are 1, <span class="math inline">\(x\)</span>, and <span class="math inline">\(x^{2}\)</span>, respectively. The model is linear in the parameters.</p>
+<p>To emphasize that the models are not just straight lines in <span class="math inline">\(x\)</span>, a linear model with curved appearance is called curvilinear.</p>
+</div>
+</div>
+<p>What does the mean function look like in the logistic regression model? The underlying random variable <span class="math inline">\(Y\)</span> has a Bernoulli distribution. Its mean is</p>
+<p><span class="math display">\[\text{E}\lbrack Y\rbrack = \sum y\, \Pr(Y = y) = 1 \times \pi + 0 \times (1 - \pi) = \pi\]</span></p>
+<p>The logit function <span class="math display">\[g(\pi) = \log \left\{ \frac{\pi}{1 - \pi} \right\}\]</span> is invertible and the model <span class="math display">\[g(\pi) = \beta_0 + \beta_1 x_{1} + \ldots + \beta_p x_p\]</span></p>
+<p>can be written as</p>
+<p><span class="math display">\[\text{E}\lbrack Y\rbrack = \pi = g^{- 1}\left( \beta_{0} + \beta_{1}x_{1} + \ldots + \beta_{p}x_{p} \right)\]</span></p>
+<p>The mean function of the logistic model is also a function of the inputs. It is easy to show that if <span class="math inline">\(g(\pi)\)</span> is the logit function the mean function is</p>
+<p><span class="math display">\[\pi = \frac{1}{1 + \exp\left\{ - \beta_0 - \beta_1 x_1 - \cdots - \beta_p x_p \right\}}\]</span> The logistic regression model is linear in the parameters on the logit scale (<span class="math inline">\(g(\pi)\)</span>). It is a non-linear model on the probability scale; also called the response scale. Logistic regression models belong to a larger class of statistical models, the <strong>generalized linear models</strong> (GLM). The function that maps the mean of the data onto a scale where effects are linear is called the <strong>link</strong> function. It is thus common to refer to the link scale when interpreting the regression coefficients <span class="math inline">\(\beta_0, \cdots, \beta_p\)</span> and the response scale when interpreting the mean of the data.</p>
+</section>
+<section id="systematic-component" class="level4">
+<h4 class="anchored" data-anchor-id="systematic-component">Systematic component</h4>
+<p>The mean functions <span class="math display">\[f\left( x_{1},\ldots,x_{p} \right)\]</span> and <span class="math display">\[\frac{1}{1 + \exp\left\{ - \beta_{0} - \beta_{1}x_{1} - \ldots - \beta_p x_p \right\} }\]</span> look rather different, except for the input variables <span class="math inline">\(x_{1},\ldots,x_{p}\)</span>.</p>
+<p>For the model <span class="math inline">\(Y = f\left( x_{1},\ldots,x_{p} \right) + \epsilon\)</span> we left it open how the mean function depends on parameters. There are three general approaches.</p>
+<p>The systematic component has the form of a <strong>linear predictor</strong>, that is, a linear combination of the inputs. The linear predictor is frequently denoted as <span class="math inline">\(\eta\)</span>:</p>
+<p><span class="math display">\[\eta = \beta_{0} + \beta_1 x_1 + \cdots + \beta_p x_p\]</span></p>
+<p>The parameter <span class="math inline">\(\beta_0\)</span> is called the <strong>intercept</strong> of the linear predictor. Although optional, it is included in most models to capture the effect on the mean if no input variables are present. Models with a linear predictor and an intercept have <span class="math inline">\(p + 1\)</span> parameters in the mean function.</p>
+<p>The logistic regression model also contains a linear predictor. Depending on whether you write the model in terms of <span class="math inline">\(g(\pi)\)</span> or <span class="math inline">\(\pi\)</span>, the expressions are</p>
+<p><span class="math display">\[g(\pi) = \eta\]</span></p>
+<p><span class="math display">\[\pi = \frac{1}{1 + \exp\{ - \eta \}}\]</span></p>
+<p>The mean function can be a <strong>general non-linear</strong> function of the parameters. The number of input variables and the number of parameters can be quite different.</p>
+<p>The Mitscherlich model is popular in agricultural studies of plant growth as a function of an input such as a fertilizer. The plant species is a commercial crop. If <span class="math inline">\(Y\)</span> denotes plant yield and <span class="math inline">\(x\)</span> the amount of input, the Mitscherlich model is</p>
+<p><span class="math display">\[Y = f(x,\xi,\lambda,\kappa) + \epsilon = \lambda + (\xi - \lambda)\exp\left\{ - \kappa x \right\} + \epsilon\]</span></p>
+<p>The mean function <span class="math inline">\(f\)</span>() depends on one input variable <span class="math inline">\(x\)</span> and three parameters <span class="math inline">\((\xi,\lambda,\kappa)\)</span>. Taking derivatives, it is easily established that the mean function is non-linear. For example,</p>
+<p><span class="math display">\[\frac{\partial f(x,\xi,\lambda,\kappa)}{\partial\xi} = \exp\{ - \kappa x \}\]</span></p>
+<p>The derivative with respect to <span class="math inline">\(\xi\)</span> depends on the <span class="math inline">\(\kappa\)</span> parameter.</p>
+<p>Non-linear models like the Mitscherlich equation are appealing because they are intrinsically interpretable. The parameters have meaning in terms of the subject domain:</p>
+<ul>
+<li><p><span class="math inline">\(\xi\)</span> is the crop yield if no fertilizer is applied, the mean of <span class="math inline">\(Y\)</span> at <span class="math inline">\(x = 0\)</span>. This is the baseline yield.</p></li>
+<li><p><span class="math inline">\(\lambda\)</span> is the upper yield asymptote as <span class="math inline">\(x\)</span> increases.</p></li>
+<li><p><span class="math inline">\(\kappa\)</span> relates to a rate of change, how quickly the yield increases from <span class="math inline">\(\xi\)</span> and reaches <span class="math inline">\(\kappa\)</span>.</p></li>
+</ul>
+<p><a href="#fig-mitscherlich" class="quarto-xref">Figure&nbsp;<span>2.3</span></a> shows the Mitscherlich model fitted to a set of plant yield data, the input variable is the nitrogen rate applied (in kg/ha). Visual estimates for the baseline yield and the asymptotic yield are <span class="math inline">\(\widehat{\xi} = 40\)</span> and <span class="math inline">\(\widehat{\lambda} = 80\)</span>.</p>
+<div id="fig-mitscherlich" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mitscherlich-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/Mitscherlich.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/Mitscherlich.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mitscherlich-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.3: Mitscherlich yield equation for plant yield as a function of nitrogen rate fitted to a set of data.
+</figcaption>
+</figure>
+</div>
+<p>Interpretability of the parameters enables mapping of research questions to the model:</p>
+<ul>
+<li><p>Is the asymptotic yield greater than 75?<br>
+This can be answered with a confidence interval for the estimate of <span class="math inline">\(\lambda\)</span>.</p></li>
+<li><p>At what level of <span class="math inline">\(x\)</span> does yield achieve 75% of the maximum?<br>
+This is an inverse prediction problem. Set yield to 75% of <span class="math inline">\(\lambda\)</span> and solve the model for <span class="math inline">\(x\)</span>.</p></li>
+<li><p>The rate of change in yield is less than ½ unit once <span class="math inline">\(x = 100\)</span> are applied.<br>
+This can be answered with a hypothesis test for <span class="math inline">\(\kappa\)</span>.</p></li>
+</ul>
+<p>The third method of specifying the systematic component is to not write it as a function of inputs and parameters. This is common for non-parametric methods such as smoothing splines, local regression, generalized additive models, and kernel methods. These models still have parameters, but the relationship between inputs and parameters is implied through the method of training the models.</p>
+<p>The systematic component of a smoothing spline in one input variable, for example, can be written as</p>
+<p><span class="math display">\[
+f(x)= \sum_{m=1}^M \beta_m h_m(x)
+\]</span></p>
+<p>where the <span class="math inline">\(h_m(x)\)</span> functions are based on natural cubic splines, B-splines, or other spline expansions.</p>
+<p>LOESS is a local polynomial regression method that fits a weighted model to data within a window. Data points near the center of the window receive more weight than data points further away. For example, a LOESS model of degree 2 fits a weighted quadratic polynomial model to the data captured in the window. Within window <span class="math inline">\(k\)</span>, the model takes the form</p>
+<p><span class="math display">\[Y = \beta_{0k} + \beta_{1k}x + \beta_{2k}x^2 + \epsilon\]</span></p>
+<p>As the window moves across the range of <span class="math inline">\(x\)</span>, different observations are captured in the window. The underlying model in each window is a quadratic polynomial but the values of the parameter estimates change from window to window. We do not write the systematic component of the model as a single function that applies to the entire range of <span class="math inline">\(x\)</span>.</p>
+</section>
+<section id="random-component" class="level4">
+<h4 class="anchored" data-anchor-id="random-component">Random component</h4>
+<p>The random components of a statistical model are the stochastic elements that describe the distribution of the target variable <span class="math inline">\(Y\)</span>. By now we are convinced that most data we work with are to some degree the result of random processes and that incorporating randomness into models makes sense. The model does not need to be correct for every observation, but it needs to be correct on average—an additive zero-mean random error is OK. Even if all influences on the output <span class="math inline">\(Y\)</span> were known, it might be impossible to measure them, or to include them correctly into the model. Randomness is often introduced deliberately by sampling observations from a population or by randomly assigning treatments to experimental units. Finally, stochastic models are often simpler and easier to explain than other models. Among competing explanations, the simpler one wins (Occam’s Razor).</p>
+<p>We have encountered so far two ways to reflect randomness in a statistical model:</p>
+<ul>
+<li><p>By adding an additive error term to a mean function</p></li>
+<li><p>By describing the distribution of the target variable</p></li>
+</ul>
+<p>The Mitscherlich model is an example of the first type of specification:</p>
+<p><span class="math display">\[Y = f(x,\xi,\lambda,\kappa) + \epsilon = \lambda + (\xi - \lambda)\exp\left\{ - \kappa x \right\} + \epsilon\]</span></p>
+<p>Under the assumption that <span class="math inline">\(\epsilon \sim \left( 0,\sigma^{2} \right)\)</span>, it follows that <span class="math inline">\(Y\)</span> is randomly distributed with mean <span class="math inline">\(f(x,\xi,\lambda,\kappa)\)</span> and variance <span class="math inline">\(\sigma^{2}\)</span>; <span class="math inline">\(Y \sim \left( f(x,\xi,\lambda,\kappa),\sigma^{2} \right)\)</span>. If the model errors were normally distributed, <span class="math inline">\(\epsilon \sim N\left( 0,\sigma^{2} \right)\)</span>, then <span class="math inline">\(Y\)</span> would also be normally distributed. Randomness is contagious.</p>
+<p>The logistic regression model is an example of the second type of specification:</p>
+<p><span class="math display">\[g\left( \text{E}\lbrack Y\rbrack \right) = \beta_{0} + \beta_{1}x_{1} + \ldots + \beta_{p}x_{p}\]</span></p>
+<p>and <span class="math inline">\(Y\)</span> follows a Bernoulli distribution.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It does not make sense to write the model with an additive error term unless the target variable is continuous.</p>
+</div>
+</div>
+<p>Models can have more than one random element. In the cancer recurrence example, suppose we want to explicitly associate a random effect with each patient, <span class="math inline">\(b_{i} \sim \left( 0,\sigma_{b}^{2} \right)\)</span>, say. The modified model is now</p>
+<p><span class="math display">\[g\left( \pi\ |\ b_{i} \right) = \beta_{0} + b_{i} + \ \beta_{1}x_{1} + \ldots + \beta_{p}x_{p}\]</span></p>
+<p>Conditional on the patient-specific value of <span class="math inline">\(b_{i}\)</span> the model is still a logistic model with intercept <span class="math inline">\(\beta_{0} + b_{i}\)</span>. Because the parameters <span class="math inline">\(\beta_{0},\ \cdots,\beta_{p}\)</span> are constants (not random variables), they are also referred to as <strong>fixed effects</strong>. Models that contain both random and fixed effects are called <strong>mixed models</strong>.</p>
+<p>Mixed models occur naturally when the sampling process is hierarchical.</p>
+<p>For example, you select apples on trees in an orchard to study the growth of apples over time. You select at random 10 trees in the orchard and chose 25 apples at random on each tree. The apple diameters are then measured in two-week intervals. To represent this data structure, we need a few subscripts.</p>
+<p>Let <span class="math inline">\(Y_{ijk}\)</span> denote the apple diameter at the <span class="math inline">\(k\)</span><sup>th</sup> measurement of the <span class="math inline">\(j\)</span><sup>th</sup> apple from the <span class="math inline">\(i\)</span><sup>th</sup> tree. A possible decomposition of the variability of the <span class="math inline">\(Y_{ijk}\)</span> could be</p>
+<p><span class="math display">\[Y_{ijk} = \beta_{0} + a_{i} + \eta_{ijk} + \epsilon_{ijk}\]</span></p>
+<p>where <span class="math inline">\(\beta_0\)</span> is an overall (fixed) intercept, <span class="math inline">\(a_i \sim \left( 0,\sigma_{a}^{2} \right)\)</span> is a random tree effect, <span class="math inline">\(\eta_{ijk}\)</span> is an effect specific to apple and measurement time, and <span class="math inline">\(\epsilon_{ijk} \sim \left( 0,\sigma_{\epsilon}^{2} \right)\)</span> are the model errors. This is a mixed model because we have multiple random effects (<span class="math inline">\(a_{i}\)</span> and <span class="math inline">\(\epsilon_{ijk}\)</span>). In addition, we need to decide how to parameterize <span class="math inline">\(\eta_{ijk}\)</span>. Suppose that a simple linear regression trend is reasonable for each apple over time. Estimating a separate slope and intercept for each of the 10 x 25 apples would result in a model with over 500 parameters. A more parsimonious parameterization is to assume that the apples share a tree-specific (fixed) intercept and slope and to model the apple-specific deviations from the tree-specific trends with random variables:</p>
+<p><span class="math display">\[\eta_{ijk} = \left( \beta_{0i} + b_{0ij} \right) + {(\beta}_{1i} + b_{1ij})t_{ijk}\]</span></p>
+<p><span class="math inline">\(t_{ijk}\)</span> is the time that a given apple on a tree is measured. The apple-specific intercept offsets from the tree-specific intercepts <span class="math inline">\(\beta_{0i}\)</span> are model as random variables <span class="math inline">\(b_{0ij} \sim \left( 0,\sigma_{b_{0}}^{2} \right)\)</span>. Similarly, <span class="math inline">\(b_{1ij} \sim \left( 0,\sigma_{b_{1}}^{2} \right)\)</span> models the apple-specific offset for the slopes as random variables. Putting everything together we obtain</p>
+<p><span class="math display">\[Y_{ijk} = \beta_{0} + \left( \beta_{0i} + b_{0ij} \right) + {(\beta}_{1i} + b_{1ij})t_{ijk} + \epsilon_{ijk}\]</span></p>
+<p>Note that <span class="math inline">\(a_{i}\)</span> was no longer necessary in this model, that role is now played by <span class="math inline">\(\beta_{0i}\)</span>.</p>
+<p>The total number of parameters in this model is 24 (1 overall intercept, 10 tree-specific intercepts, 10 tree-specific slopes, and 3 variances (<span class="math inline">\(\sigma_{\epsilon}^{2}, \sigma_{b_{0}}^{2}\)</span>, <span class="math inline">\(\sigma_{b_{1}}^{2}\)</span>).</p>
+<p>This is a relatively complex model and included here only to show how the sampling design can be incorporated into the model formulation to achieve interpretable and parsimonious models and how this naturally leads to multiple random effects.</p>
+<p>A further refinement of this model is to recognize that the measurements over time for each apple are likely not independent. Furthermore, diameter measurements on the same apple close in time are more strongly correlated than measurements further apart. Incorporating this correlation structure into the models leads to a <strong>mixed model with correlated errors</strong>.</p>
+</section>
+<section id="sec-target-variables" class="level4">
+<h4 class="anchored" data-anchor-id="sec-target-variables">Response (Target) variable</h4>
+<p>A model has inputs that are processed by an algorithm to produce an output. When the output is a variable to be predicted, classified, or grouped, we refer to it with different—but interchangeable—names as the <strong>response</strong> variable, or the <strong>target</strong> variable, or the <strong>dependent</strong> variable. We are not particular about what you call the variable, as long as we agree on what we are talking about—the left-hand side of the model.</p>
+<p>The target variable is a random variable and can be of different types. This matters greatly because we have to match distributional assumptions to the natural type of the target. Applying an analytic method designed for continuous variables that can take on infinitely many values to a binary variable that takes on two values is ill advised. However, it happens. A lot.</p>
+<p>The first distinction is whether the target variable is continuous or discrete.</p>
+<ul>
+<li><p><strong>Continuous</strong>: the number of possible values of the variable is not countable. Typical examples are physical measurements such as weight, height, length, pressure, temperature. If the values of a variable are countable but the cardinality is high, applying methods for continuous data can make sense—for example, number of days since birth.</p></li>
+<li><p><strong>Discrete</strong>: the number of possible values is countable. Even if the number of possible values is infinite, the variable is still discrete. The number of fish caught per day does not have a theoretical upper limit, although it is highly unlikely that a weekend warrior will catch 1,000 fish. A commercial fishing vessel might.</p></li>
+</ul>
+<p>Discrete variables are further divided into the following groups:</p>
+<ul>
+<li><p><strong>Count Variables</strong>: the values are true counts, obtained by enumeration. There are two types of counts:</p>
+<ul>
+<li><p><strong>Counts per unit</strong>: the count relates to a unit of measurement, e.g., the number of fish caught per day, the number of customer complaints per quarter, the number of chocolate chips per cookie, the number of cancer incidences per 100,000.</p></li>
+<li><p><strong>Proportions (Counts out of a total)</strong>: the count can be converted to a proportion by dividing it with a maximum value. Examples are the number of heads out of 10 coin tosses, the number of larvae out of 20 succumbing to an insecticide,</p></li>
+</ul></li>
+<li><p><strong>Categorical Variables</strong>: the values consist of labels, even if numbers are used for labeling.</p>
+<ul>
+<li><p><strong>Nominal variables</strong>: The labels are unordered, for example the variable “fruit” takes on the values “apple”, “peach”, “tomato” (yes, tomatoes are fruit but do not belong in fruit salad).</p></li>
+<li><p><strong>Ordinal variables</strong>: the category labels can be arranged in a natural order in a lesser-greater sense. Examples are 1—5 star reviews or ratings of severity (“mild”, “modest”, “severe”).</p></li>
+<li><p><strong>Binary variables</strong>: take on exactly two values (dead/alive, Yes/No, 1/0, fraud/not fraud, diseased/not diseased)</p></li>
+</ul></li>
+</ul>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;2.2: Structuring and categorizing input, algorithm, and output in data science models.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;2.3: Mitscherlich yield equation for plant yield as a function of nitrogen rate fitted to a set of data.</span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-GEPBox1976" class="csl-entry" role="listitem">
+Box, George E. P. 1976. <span>“Science and Statistics.”</span> <em>Journal of the American Statistical Association</em> 71 (356): 791–99.
+</div>
+<div id="ref-BreimanTwoCultures" class="csl-entry" role="listitem">
+Breiman, Leo. 2001. <span>“Statistical Modeling: The Two Cultures.”</span> <em>Statistical Science</em> 16 (3): 199–231.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./intro.html" class="pagination-link" aria-label="Introduction">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./biasvariance.html" class="pagination-link" aria-label="Bias Variance Tradeoff">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","openEffect":"zoom","loop":false,"closeEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

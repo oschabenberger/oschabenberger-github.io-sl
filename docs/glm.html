@@ -1,0 +1,2511 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 26&nbsp; Generalized Linear Models</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./gam.html" rel="next">
+<link href="./arules.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./glm.html">Supervised Learning III: Advanced Topics</a></li><li class="breadcrumb-item"><a href="./glm.html"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-glm-intro" id="toc-sec-glm-intro" class="nav-link active" data-scroll-target="#sec-glm-intro"><span class="header-section-number">26.1</span> Introduction</a></li>
+  <li><a href="#sec-glm-Pexpo" id="toc-sec-glm-Pexpo" class="nav-link" data-scroll-target="#sec-glm-Pexpo"><span class="header-section-number">26.2</span> Exponential Family of Distributions</a>
+  <ul>
+  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
+  <li><a href="#the-bernoulli-in-exponential-form" id="toc-the-bernoulli-in-exponential-form" class="nav-link" data-scroll-target="#the-bernoulli-in-exponential-form">The Bernoulli in Exponential Form</a></li>
+  <li><a href="#distributions" id="toc-distributions" class="nav-link" data-scroll-target="#distributions">Distributions</a>
+  <ul class="collapse">
+  <li><a href="#discrete-distributions" id="toc-discrete-distributions" class="nav-link" data-scroll-target="#discrete-distributions">Discrete distributions</a></li>
+  <li><a href="#continuous-distributions" id="toc-continuous-distributions" class="nav-link" data-scroll-target="#continuous-distributions">Continuous distributions</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#sec-glm-link" id="toc-sec-glm-link" class="nav-link" data-scroll-target="#sec-glm-link"><span class="header-section-number">26.3</span> Link Functions</a></li>
+  <li><a href="#sec-glm-estimation" id="toc-sec-glm-estimation" class="nav-link" data-scroll-target="#sec-glm-estimation"><span class="header-section-number">26.4</span> Parameter Estimation</a>
+  <ul>
+  <li><a href="#maximum-likelihood" id="toc-maximum-likelihood" class="nav-link" data-scroll-target="#maximum-likelihood">Maximum Likelihood</a></li>
+  <li><a href="#sec-glm-irls" id="toc-sec-glm-irls" class="nav-link" data-scroll-target="#sec-glm-irls">Iteratively Reweighted Least Squares (IRLS)</a></li>
+  </ul></li>
+  <li><a href="#sec-glm-gamma-example" id="toc-sec-glm-gamma-example" class="nav-link" data-scroll-target="#sec-glm-gamma-example"><span class="header-section-number">26.5</span> Example: Gamma Regression</a>
+  <ul>
+  <li><a href="#the-data-real-estate-values-in-albemarle-county-virginia" id="toc-the-data-real-estate-values-in-albemarle-county-virginia" class="nav-link" data-scroll-target="#the-data-real-estate-values-in-albemarle-county-virginia">The Data, Real Estate Values in Albemarle County, Virginia</a></li>
+  <li><a href="#fitting-a-gamma-regression-model" id="toc-fitting-a-gamma-regression-model" class="nav-link" data-scroll-target="#fitting-a-gamma-regression-model">Fitting a Gamma Regression Model</a></li>
+  <li><a href="#likelihood-ratio-test" id="toc-likelihood-ratio-test" class="nav-link" data-scroll-target="#likelihood-ratio-test">Likelihood Ratio Test</a></li>
+  </ul></li>
+  <li><a href="#example-beta-regression" id="toc-example-beta-regression" class="nav-link" data-scroll-target="#example-beta-regression"><span class="header-section-number">26.6</span> Example: Beta Regression</a></li>
+  <li><a href="#sec-glm-overdispersion" id="toc-sec-glm-overdispersion" class="nav-link" data-scroll-target="#sec-glm-overdispersion"><span class="header-section-number">26.7</span> Overdispersion</a>
+  <ul>
+  <li><a href="#scaled-analysis" id="toc-scaled-analysis" class="nav-link" data-scroll-target="#scaled-analysis">Scaled Analysis</a></li>
+  <li><a href="#mixing-models" id="toc-mixing-models" class="nav-link" data-scroll-target="#mixing-models">Mixing Models</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./glm.html">Supervised Learning III: Advanced Topics</a></li><li class="breadcrumb-item"><a href="./glm.html"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-glm" class="quarto-section-identifier"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="sec-glm-intro" class="level2" data-number="26.1">
+<h2 data-number="26.1" class="anchored" data-anchor-id="sec-glm-intro"><span class="header-section-number">26.1</span> Introduction</h2>
+<p>We have encountered generalized linear models (GLMs) throughout the material and one could argue why they belong into a segment of advanced supervised learning techniques. After all, generalized linear models are very common today. We have placed them here because this part of the material is more “mathy” than previous sections and we want to dive a bit more into the distributional properties of the models in this part of the material than in other parts.</p>
+<p>The <strong>generalization</strong> of GLMs is found in a comparison to the classical linear model with Gaussian errors: <span class="math display">\[
+Y = \textbf{x}^\prime\boldsymbol{\beta}+ \epsilon, \quad \epsilon \sim \textit{ iid } G(0, \sigma^2)
+\]</span> Because of the linearity property of Gaussian random variables, the normality of <span class="math inline">\(\epsilon\)</span> transfers to <span class="math inline">\(Y\)</span>: <span class="math inline">\(Y \sim \textit{ iid } G(\textbf{x}^\prime\boldsymbol{\beta},\sigma^2)\)</span>. We are now relaxing several elements of this model:</p>
+<ol type="1">
+<li>The distribution of <span class="math inline">\(Y\)</span> does not have to be Gaussian.</li>
+<li>The relationship between the inputs and the mean of <span class="math inline">\(Y\)</span> does not have to be linear in the coefficients.</li>
+<li>The model does not have an additive error structure.</li>
+<li>The target variables do not have to have the same variance.</li>
+</ol>
+<p>However, the relaxation of the model conditions is not without limits. Rather than allowing <span class="math inline">\(Y\)</span> to have <em>any</em> distribution, its distribution has to be a member of a special family of probability distributions. Rather than allowing any arbitrary nonlinear relationship between inputs and target, only certain (invertible) transformations are permitted; the effect of the inputs remains linear on <em>some</em> scale, although it is usually not the scale of the mean. Rather than allowing any arbitrary variance, the variance of the targets can be unequal but it is determined through the distribution itself.</p>
+<p>This sounds like we are placing many restrictions on the relaxations but it turns out that the class of generalized linear models is very broad and general. A generalized linear model has the following components:</p>
+<ol type="1">
+<li>The distribution of <span class="math inline">\(Y\)</span> is a member of the exponential family of distributions (<a href="#sec-glm-Pexpo" class="quarto-xref"><span>Section 26.2</span></a>).</li>
+<li>The effects are a linear combination of the inputs, called the <strong>linear predictor</strong> <span class="math inline">\(\eta = \textbf{x}^\prime\boldsymbol{\beta}\)</span>.</li>
+<li>The linear predictor <span class="math inline">\(\eta = \textbf{x}^\prime\boldsymbol{\beta}\)</span> is related to the mean through a link function <span class="math inline">\(g(\mu) = \eta\)</span> (<a href="#sec-glm-link" class="quarto-xref"><span>Section 26.3</span></a>).</li>
+</ol>
+<p>A further generalization of the generalization is achieved by modeling the effects of the inputs through smooth local elements (see <a href="reglocal.html" class="quarto-xref"><span>Chapter 12</span></a>), and not just through global effects. The linear predictor now is a combination of smooth functions of the inputs, <span class="math display">\[
+\eta = \beta_0 + f_1(x_1) + f_2(x_2) + \cdots
+\]</span> This is the structure of <strong>generalized additive</strong> models (GAMs). A semi-parametric version combines global effects with smooth local effects, for e example <span class="math display">\[
+\eta = \beta_0 + \beta_1 x_1 + f_2(x_2)
+\]</span> These linear predictor types make up the family of <strong>generalized models</strong> in <a href="#fig-glm-mindmap" class="quarto-xref">Figure&nbsp;<span>26.1</span></a>.</p>
+<div id="fig-glm-mindmap" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-glm-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/GeneralizedMindMap.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/GeneralizedMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-glm-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.1: Generalized model mind map
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="sec-glm-Pexpo" class="level2" data-number="26.2">
+<h2 data-number="26.2" class="anchored" data-anchor-id="sec-glm-Pexpo"><span class="header-section-number">26.2</span> Exponential Family of Distributions</h2>
+<section id="definition" class="level3">
+<h3 class="anchored" data-anchor-id="definition">Definition</h3>
+<p>The exponential family of distributions, <span class="math inline">\(P_{expo}\)</span> comprises important discrete and continuous distributions (<a href="#fig-glm-mindmap" class="quarto-xref">Figure&nbsp;<span>26.1</span></a>), <strong>the</strong> exponential distribution is one particular member of the family. How do we know whether a distribution belongs to the family? If you can write its mass or density function in a particular form, then the distribution is a member. We follow here (for the most part) the notation in the seminal work on GLMs by <span class="citation" data-cites="McCullaghNelder">McCullagh and Nelder Frs (<a href="references.html#ref-McCullaghNelder" role="doc-biblioref">1989</a>)</span>.</p>
+<div class="definition">
+<div class="definition-header">
+<p>Definition: Exponential Family of Distributions</p>
+</div>
+<div class="definition-container">
+<p>The distribution of random variable <span class="math inline">\(Y\)</span> is a member of <span class="math inline">\(P_{expo}\)</span>, the exponential family of distributions, if its density or mass function can be written as <span id="eq-pexpo-form"><span class="math display">\[
+p(y) = \exp\left\{(y\theta - b(\theta))/\psi + c(y,\psi)\right\}
+\tag{26.1}\]</span></span></p>
+<p>for some functions <span class="math inline">\(b(\cdot)\)</span> and <span class="math inline">\(c(\cdot)\)</span>.</p>
+<p><span class="math inline">\(\theta\)</span> is called the <strong>natural parameter</strong> and <span class="math inline">\(\psi\)</span> is related to the scale (dispersion) of <span class="math inline">\(Y\)</span>. Not all members of <span class="math inline">\(P_{expo}\)</span> feature this parameter. Those that do are said to be in the two-parameter exponential family.</p>
+<p>When <span class="math inline">\(\theta\)</span> is expressed as a function of the mean <span class="math inline">\(\mu = \text{E}[Y]\)</span>, the function <span class="math inline">\(\theta(\mu)\)</span> is called the <strong>canonical (natural) link</strong> function of the distribution.</p>
+<p>Distributions in the exponential family have many fascinating properties. Among them,</p>
+<p><span class="math display">\[\frac{\partial b(\theta(\mu))}{\partial \theta} = b^\prime(\theta) = \mu\]</span></p>
+<p><span class="math display">\[\frac{\partial^2 b(\theta(\mu))}{\partial \theta^2} = b^{\prime\prime}(\theta) = \text{Var}[Y]\]</span> The first result states that <span class="math inline">\(b^\prime(\theta) = \mu\)</span> is the <strong>inverse canonical link</strong> function. <span class="math inline">\(b^{\prime\prime}(\theta)\)</span>, when written as a function of <span class="math inline">\(\mu\)</span>, is called the <strong>variance function</strong> of the distribution.</p>
+</div>
+</div>
+</section>
+<section id="the-bernoulli-in-exponential-form" class="level3">
+<h3 class="anchored" data-anchor-id="the-bernoulli-in-exponential-form">The Bernoulli in Exponential Form</h3>
+<p>The expressions for mass functions or densities we have worked with so far are not written in the form of <span class="math inline">\(P_{expo}\)</span>. The mass function of the Bernoulli() distribution, for example, is usually written as <span class="math display">\[
+p(y) = \pi^y (1-\pi)^{1-y}, \quad y \in \{0,1\}
+\]</span> If we rewrite this to fit <a href="#eq-pexpo-form" class="quarto-xref">Equation&nbsp;<span>26.1</span></a>, we should be able to peel off <span class="math inline">\(\theta\)</span>, <span class="math inline">\(b(\theta)\)</span>, then we can identify link function and variance function of the generalized linear model. Let’s start by replacing <span class="math inline">\(\pi\)</span>, the event probability of the Bernoulli with the symbol <span class="math inline">\(\mu\)</span>, <span class="math inline">\(\pi\)</span> is the mean of <span class="math inline">\(Y\)</span> after all. Then, put the mass function into an exponent while applying logarithms and collect terms: <span class="math display">\[
+\begin{align*}
+p(y) &amp;= \mu^y (1-\mu)^{1-y} \\
+     &amp;= \exp\{y \log \mu + (1-y) \log (1-\mu) \} \\
+     &amp;= \exp\left\{y \log\left(\frac{\mu}{1-\mu} \right) + \log(1-\mu)\right\}
+\end{align*}
+\]</span> Compare this expression to <a href="#eq-pexpo-form" class="quarto-xref">Equation&nbsp;<span>26.1</span></a> and identify:</p>
+<ol type="1">
+<li><span class="math inline">\(\theta(\mu) = \log(\mu/(1-\mu))\)</span></li>
+<li><span class="math inline">\(b(\theta) = -\log(1-\mu)\)</span></li>
+<li><span class="math inline">\(\psi = 1\)</span></li>
+<li><span class="math inline">\(c(y,\psi) = 0\)</span>.</li>
+</ol>
+<p>Solve 1. for <span class="math inline">\(\mu\)</span> and plug into 2. to get <span class="math inline">\(b(\theta) = \log(1+e^\theta)\)</span>. Now you can take first and second derivatives with respect to <span class="math inline">\(\theta\)</span>: <span class="math display">\[
+\begin{align*}
+b^\prime(\theta) &amp;= e^\theta/(1+e^{\theta}) = \mu\\
+b^{\prime\prime}(\theta) &amp;= \mu(1-\mu)
+\end{align*}
+\]</span> The canonical (natural) link function for the Bernoulli distribution is the <strong>logit</strong> function: <span class="math inline">\(\text{logit}(\mu) = \log(\mu/(1-\mu))\)</span>. The inverse link function <span class="math inline">\(b^\prime(\theta)\)</span> is the logistic function <span class="math display">\[
+b^\prime(\theta) = \frac{e^\theta}{1+e^{\theta}} = \frac{1}{1+e^{-\theta}}
+\]</span> Logistic regression derives its name from this inverse link function.</p>
+<p>The specification of a generalized linear model for binary data is now complete by equating the natural parameter with the linear predictor: <span class="math display">\[
+\begin{align*}
+Y &amp;\sim \text{Bernoulli}(\mu) \\
+\eta         &amp;= \textbf{x}^\prime\boldsymbol{\beta}\\
+g(\mu)       &amp;= \log \left(\frac{\mu}{1-\mu} \right) = \eta \\
+g^{-1}(\eta) &amp;= \frac{1}{1+e^{-\eta}} = \mu
+\end{align*}
+\]</span></p>
+<p>We generally use the notation <span class="math inline">\(g(\mu)\)</span> for the link function and <span class="math inline">\(g^{-1}(\mu)\)</span> for the inverse link function, rather than <span class="math inline">\(\theta(\mu)\)</span> and <span class="math inline">\(b^\prime(\theta)\)</span> as suggested by the <span class="math inline">\(P_{expo}\)</span> notation. The reason for the general notation is that the canonical link is just one of the possible link functions, we are free to choose others (<a href="#sec-glm-link" class="quarto-xref"><span>Section 26.3</span></a>). Using the canonical link in the specification of a GLM typically has certain computational advantages, but for some distributions the canonical link is not a good mapping between mean and linear predictor.</p>
+</section>
+<section id="distributions" class="level3">
+<h3 class="anchored" data-anchor-id="distributions">Distributions</h3>
+<p>We now review some of the discrete and continuous distributions in <span class="math inline">\(P_{expo}\)</span></p>
+<section id="discrete-distributions" class="level4">
+<h4 class="anchored" data-anchor-id="discrete-distributions">Discrete distributions</h4>
+<section id="bernoulli" class="level5">
+<h5 class="anchored" data-anchor-id="bernoulli">Bernoulli</h5>
+<p>The most elementary random experiment is the Bernoulli experiment, two possible outcomes <span class="math inline">\(Y=1\)</span> and <span class="math inline">\(Y=0\)</span> occur with probability <span class="math inline">\(\pi\)</span> and <span class="math inline">\(1-\pi\)</span>, respectively. The outcome coded <span class="math inline">\(Y=1\)</span> is called the <strong>event</strong> of the experiment. The outcome coded <span class="math inline">\(Y=0\)</span> is called the <strong>non-event</strong>. As we established earlier, the Bernoulli(<span class="math inline">\(\pi\)</span>) distribution is a member of the exponential family with mean <span class="math inline">\(\pi\)</span>, canonical link <span class="math inline">\(\log(\pi/(1-\pi))\)</span> and variance function <span class="math inline">\(\pi(1-\pi)\)</span> (<a href="#fig-bernoulli-mass" class="quarto-xref">Figure&nbsp;<span>26.2</span></a>).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-bernoulli-mass" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bernoulli-mass-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="glm_files/figure-html/fig-bernoulli-mass-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bernoulli-mass-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.2: Bernoulli(0.7) probability mass function.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Although elementary, the Bernoulli(<span class="math inline">\(\pi\)</span>) is very important as the underlying model for logistic regression and because many other distributions are defined in terms of Bernoulli experiments.Consider a sequence <span class="math inline">\(Y_1, Y_2, \cdots\)</span> of <strong>independent</strong> Bernoulli(<span class="math inline">\(\pi\)</span>) experiments. The following members of <span class="math inline">\(P_{expo}\)</span> are defined in terms of the <span class="math inline">\(Y_i\)</span>:</p>
+<ol type="1">
+<li>Binomial<span class="math inline">\((n,\pi)\)</span>: the number of events in <span class="math inline">\(n\)</span> experiments.</li>
+<li>Geometric<span class="math inline">\((\pi)\)</span>: the number of experiments until 1st event.</li>
+<li>Geometric<span class="math inline">\(^*(\pi)\)</span>: the number of non-events before the 1st event</li>
+<li>Negative Binomial<span class="math inline">\((k,\pi)\)</span>: the number of experiments until <span class="math inline">\(k\)</span>th event.</li>
+<li>Negative Binomial<span class="math inline">\(^*(k,\pi)\)</span>: the number of non-events before the <span class="math inline">\(k\)</span>th event.</li>
+</ol>
+</section>
+<section id="binomial" class="level5">
+<h5 class="anchored" data-anchor-id="binomial">Binomial</h5>
+<p>The number of events <span class="math inline">\(X = \sum_{i=1}^n Y_i\)</span> in a sequence <span class="math inline">\(Y_1, Y_2, \cdots, Y_n\)</span> of independent Bernoulli (<span class="math inline">\(\pi\)</span>) events is a Binomial(<span class="math inline">\(n,\pi\)</span>) random variable <span class="math display">\[
+\begin{align*}
+    p(x) &amp;= {n \choose x} \pi^x \, (1-\pi)^{n-x} \quad x=0,1,\cdots, n \\
+    \text{E}[X] &amp;= n\pi \\
+    \text{Var}[X] &amp;= n\pi(1-\pi)
+\end{align*}
+\]</span></p>
+<p><span class="math inline">\({n \choose x}\)</span> is the binomial coefficient: <span class="math inline">\({n \choose x} = \frac{n!}{x!(n-x)!}\)</span>, the number of ways in which an unordered subset of size <span class="math inline">\(k\)</span> can be chosen from <span class="math inline">\(n\)</span> items.</p>
+<p>The support of the Binomial(<span class="math inline">\(n,\pi\)</span>) is <span class="math inline">\(0,\cdots,n\)</span>. You cannot observe fewer than 0 events and you cannot observe more than <span class="math inline">\(n\)</span> events (<a href="#fig-binomial-mass" class="quarto-xref">Figure&nbsp;<span>26.3</span></a>). The Binomial is thus a suitable probability model for count data that represents the number of events out of a total number. For example, the number of livestock herds out of all herds in a state that show incidences of pneumonia or the number of defective items out of a lot of 100 items. Such count variables are sometimes referred to as counts with a natural denominator.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-binomial-mass" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-binomial-mass-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="glm_files/figure-html/fig-binomial-mass-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-binomial-mass-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.3: Binomial(<span class="math inline">\(8,0.3\)</span>) probability mass function.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="negative-binomial-and-geometric" class="level5">
+<h5 class="anchored" data-anchor-id="negative-binomial-and-geometric">Negative Binomial and Geometric</h5>
+<p>The Geometric and Negative Binomial distributions have infinite support, <span class="math inline">\(Y \in \{0,1, \cdots\}\)</span>. Having to wait very long until the 1<sup>st</sup> (or <span class="math inline">\(k\)</span><sup>th</sup>) event occurs is unlikely if <span class="math inline">\(\pi\)</span> is large but it is not impossible. The Geometric distribution is obviously a special case of the Negative Binomial for <span class="math inline">\(k=1\)</span>. These models are frequently used to model counts that do not have a natural demoninator, for example, the number of occurrences per day, per 100,000 population, or per mile.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-geometric-mass" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-geometric-mass-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="glm_files/figure-html/fig-geometric-mass-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-geometric-mass-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.4: Geometric(<span class="math inline">\(0.5\)</span>) probability mass function.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-negbin-mass" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-negbin-mass-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="glm_files/figure-html/fig-negbin-mass-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-negbin-mass-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.5: Negative Binomial(<span class="math inline">\(5,0.7\)</span>) probability mass function.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="poisson" class="level5">
+<h5 class="anchored" data-anchor-id="poisson">Poisson</h5>
+<p>A random variable has a Poisson distribution with parameter <span class="math inline">\(\lambda\)</span> if its mass function is given by</p>
+<p><span class="math display">\[
+\begin{align*}
+\Pr(Y=y) &amp;= \frac{e^{-\lambda} \lambda^y} {y!} \quad y=0,1,\cdots\\
+    &amp;= \exp\{ y \log(\lambda) - \lambda - \log(y!) \}
+\end{align*}
+\]</span> From the last expression you see the components in the <span class="math inline">\(P_{expo}\)</span> family:</p>
+<ul>
+<li>Canonical link: <span class="math inline">\(\theta = \log(\lambda)\)</span></li>
+<li><span class="math inline">\(b(\theta) = e^\theta\)</span></li>
+<li><span class="math inline">\(b^\prime(\theta) = b^{\prime\prime}(\theta) = e^\theta\)</span></li>
+<li><span class="math inline">\(\text{E}[Y] = \text{Var}[Y] = \lambda\)</span></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-poisson-mass" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-poisson-mass-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="glm_files/figure-html/fig-poisson-mass-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-poisson-mass-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.6: Poisson(2.4) (left) and Poisson(0.2) (right) probability mass functions.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>If events occur independently and at a constant rate, the number of events per unit is a Poisson random variable. The Poisson is not directly related to Bernoulli experiment but there is a connection through the Poisson approximation to the Binomial. In a Binomial<span class="math inline">\((n,\pi)\)</span> process, if <span class="math inline">\(n \rightarrow \infty\)</span> and <span class="math inline">\(n\pi \rightarrow \lambda\)</span>, then the probabilities can be approximated by those of a Poisson<span class="math inline">\((\lambda)\)</span> process (<a href="#fig-poisson-bin-approx" class="quarto-xref">Figure&nbsp;<span>26.7</span></a>).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-poisson-bin-approx" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-poisson-bin-approx-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="glm_files/figure-html/fig-poisson-bin-approx-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-poisson-bin-approx-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.7: Binomial(200,0.05) (left) and Poisson(10) (right) probability mass functions.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="example">
+<div class="example-header">
+<p>Example: Poisson Approximation to Binomial</p>
+</div>
+<div class="example-container">
+<p>If three dice are rolled the probability of three sixes turning up is <span class="math inline">\(1/6^3 = 1/216 = 0.0046\)</span>. If three dice are rolled 200 times, what is the probability of at least one triple six?</p>
+<p>This is a <span class="math inline">\(X \sim\)</span> Binomial(200,1/216) experiment and we are interested in <span class="math inline">\(1-\Pr(X=0)\)</span> <span class="math display">\[
+    \Pr(\text{at least one triple six}) = 1 -  {200 \choose 0} \left ( \frac{1}{216}\right )^0  \left(\frac{215}{216}\right)^{200} = 0.6046
+\]</span> The Poisson approximation of this probability relies on <span class="math inline">\(Y \sim \text{Poisson}(\lambda=200/216)\)</span> <span class="math display">\[
+    \Pr(\text{at least one triple six}) \approx 1 - \frac{(200/216)^0 } {0!} \exp\left\{ -\frac{200}{216} \right \} = 0.6038
+\]</span> The calculation is much simpler and accurate to 2 decimal places.</p>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-normal-poisson-approx" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-normal-poisson-approx-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="glm_files/figure-html/fig-normal-poisson-approx-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-normal-poisson-approx-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.8: istogram &amp; Density of 10,000 Poisson(20) and Normal(20,20) draws.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The Poisson can in turn be approximated by a Gaussian distribution. As <span class="math inline">\(\lambda \rightarrow \infty\)</span>, the Poisson<span class="math inline">\((\lambda)\)</span> p.m.f. approaches the density of a G<span class="math inline">\((\lambda,\lambda)\)</span> random variable. The approximation holds for <span class="math inline">\(\lambda &gt; 100\)</span> but is not bad even for <span class="math inline">\(\lambda &gt; 20\)</span> (<a href="#fig-normal-poisson-approx" class="quarto-xref">Figure&nbsp;<span>26.8</span></a>).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/BinomialApproximation.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2" title="Approximation of Binomial and Poisson probabilities"><img src="images/BinomialApproximation.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%" alt="Approximation of Binomial and Poisson probabilities"></a></p>
+</figure>
+</div>
+<figcaption>Approximation of Binomial and Poisson probabilities</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="continuous-distributions" class="level4">
+<h4 class="anchored" data-anchor-id="continuous-distributions">Continuous distributions</h4>
+<section id="gaussian" class="level5">
+<h5 class="anchored" data-anchor-id="gaussian">Gaussian</h5>
+<p>The most important continuous distribution in statistics is the Gaussian, denoted G<span class="math inline">\((\mu,\sigma^2)\)</span>. A random variable <span class="math inline">\(Y\)</span> has a Gaussian distribution if its density function is given by <span class="math display">\[
+f(y) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left\{-\frac{1}{2\sigma^2}(y-\mu)^2 \right \} \quad -\infty &lt; y &lt; \infty
+\]</span></p>
+<p>The parameters of the G(<span class="math inline">\(\mu,\sigma^2)\)</span> represent the mean and variance of <span class="math inline">\(Y\)</span>: <span class="math display">\[
+\text{E}[Y] = \mu \quad \text{Var}[Y] = \sigma^2
+\]</span></p>
+<p>The distribution with <span class="math inline">\(\mu = 0\)</span>, <span class="math inline">\(\sigma^2 = 1\)</span> is called the standard Gaussian distribution.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The Gaussian distribution is sometimes parameterized in terms of the mean and <strong>standard deviation</strong> of <span class="math inline">\(Y\)</span>. When using software make sure you know what the quantities represent. For example, you specify the mean and standard deviation with the <code>dnorm</code>, <code>pnorm</code>, <code>qnorm</code>, and <code>rnorm</code> functions in <code>R</code>.</p>
+</div>
+</div>
+<p>The Gaussian distribution is often referred to as the Normal distribution. We prefer the term Gaussian because there is nothing normal about the Normal distribution. Most attributes are not normally distributed, despite frequent assumptions to the contrary. The density has a classical, symmetric bell shape, centered at <span class="math inline">\(\mu\)</span> (<a href="#fig-normal-densities" class="quarto-xref">Figure&nbsp;<span>26.9</span></a>).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-normal-densities" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-normal-densities-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="glm_files/figure-html/fig-normal-densities-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-normal-densities-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.9: Probability density functions of three Gaussian distributions.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="What is normal?">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+What is normal?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>We eschew the use of the term normal to describe the Gaussian distribution for another reason: the connection of the concept of normality and this distribution to eugenics. The Belgian astronomer, statistician and mathematician Adolphe Quetelet (1796–1847) introduced the generalized notion of the normal. He studied the distribution of physical attributes and determined that the normal, the most representative, value of an attribute is its average. Discrepancies above and below the average were considered “errors”. Early applications of the Gaussian distribution were in the study of measurement errors. C.F. Gauss used the distribution to represent errors in the measurement of celestial bodies.</p>
+<p>Prior to Quetelet, the view of “norm” and “normality” was associated with carpentry. The carpenter square is also called the norm, and in normal construction everything is at right angles. With Quetelet, the middle of the distribution, the center, became the “new normal.” There is nothing objectionable so far.</p>
+<p>However, this view did not sit well with Fancis Galton, who introduced the term eugenics. Galton replaced the term “error” with standard deviation and considered variability within a human population as potential for racial progress <span class="citation" data-cites="GrueHeiberg">(<a href="references.html#ref-GrueHeiberg" role="doc-biblioref">Grue and Heiberg 2006</a>)</span>. The bell shape of the normal distribution was not used to focus our attention on the average, as Quetelet did. Galton introduced quartiles to categorize the area under the normal into sections of greater and lesser genetic worth. That is not normal!</p>
+</div>
+</div>
+</div>
+<p>The Gaussian has remarkable properties that make it stand out and that make it particularly easy to work with—compared to other distributions. For example,</p>
+<ul>
+<li><p><strong>Linearity</strong>. A linear combination of Gaussian random variables is also Gaussian distributed. If <span class="math inline">\(Y \sim G(\mu,\sigma^2)\)</span>, then <span class="math inline">\(X = aY + b \sim G(a\mu + b, a^2\sigma^2)\)</span>. An immediate corollary is that the sample mean from a Gaussian distribution is also Gaussian distributed: if <span class="math inline">\(Y_i \sim \textit{ iid } G(\mu,\sigma^2)\)</span>, then <span class="math inline">\(\overline{Y} \sim G(\mu,\sigma^2/n)\)</span></p></li>
+<li><p><strong>Mean-variance decoupling</strong>. The mean and the variance of a Gaussian distribution are not linked. The variance is not a function of the mean, as is the case for other members of the exponential family of distributions.</p></li>
+<li><p><strong>Correlation and Independence</strong>. When two variables are jointly (bi-variate) Gaussian distributed, the absence of a correlation implies the independence of the random variables. This follows from the fact that with a zero covariance the joint distribution factors into the product of the marginal distributions (see <a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 4.7</span></a>)</p></li>
+<li><p><strong>Sampling Distributions</strong>. When drawing random samples from a G(<span class="math inline">\(\mu,\sigma^2\)</span>), the probability distribution of simple transformations of sufficient statistics are well understood. For example, <span class="math display">\[
+\frac{\overline{Y}-\mu}{s/\sqrt{n}}
+\]</span> follows a <span class="math inline">\(t_{n-1}\)</span> distribution with <span class="math inline">\(n-1\)</span> degrees of freedom. This forms the basis of hypothesis tests about the mean <span class="math inline">\(\mu\)</span>.</p></li>
+<li><p><strong>Asymptotic Gaussianity</strong>. As sample size increases, the distribution of many estimators and statistics approaches a Gaussian distribution. This is the basis for using hypothesis tests, constructing confidence and prediction intervals, etc. based on a Gaussian distribution in sufficiently large samples.</p></li>
+</ul>
+<p>Maybe most importantly, the <strong>Central Limit Theorem</strong> tells us that even if we do not sample from a G(<span class="math inline">\(\mu, \sigma^2\)</span>) distribution, the distribution of the sample mean asymptotically follows a G(<span class="math inline">\(\mu,\sigma^2/n\)</span>) distribution.</p>
+<div class="definition">
+<div class="definition-header">
+<p>Central Limit Theorem</p>
+</div>
+<div class="definition-container">
+<p>Let <span class="math inline">\(Y_{1},\cdots,Y_{n}\)</span> be independent and identically distributed random variables with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^{2} &lt; \infty.\)</span> The distribution of</p>
+<p><span class="math display">\[\frac{\overline{Y} - \mu}{\sigma/\sqrt{n}}\]</span></p>
+<p>converges to that of a standard Gaussian random variable as <span class="math inline">\(n \rightarrow \infty\)</span>.</p>
+</div>
+</div>
+<p>In summary, the importance of the Gaussian distribution does not stem from attributes being Gaussian distributed. It follows because statistics such as parameter estimators asymptotically follow a Gaussian distribution. Another interesting property of the Gaussian distribution is its support: <span class="math inline">\(-\infty &lt; Y &lt; \infty\)</span>. Many continuous attributes take on only positive values, length, weight, lifetime, etc. This does not rule out the use of the Gaussian distribution for those attributes, with a sufficiently large mean the probability of negative values is essentially zero. On the contrary, it triggers the question which continuous distributions in <span class="math inline">\(P_{expo}\)</span> have support <span class="math inline">\(Y &gt; 0\)</span>, or <span class="math inline">\(0 &lt; Y &lt; 1\)</span> and are possibly candidates</p>
+</section>
+<section id="exponential" class="level5">
+<h5 class="anchored" data-anchor-id="exponential">Exponential</h5>
+<p>The exponential distribution is a useful probability model for modeling continuous lifetimes (<a href="#fig-expo-densities" class="quarto-xref">Figure&nbsp;<span>26.10</span></a>). It is related to Poisson processes. If events occur continuously and independently at a constant rate <span class="math inline">\(\lambda\)</span>, the number of events is a Poisson random variable. The time between the events is an exponential random variable, denoted <span class="math inline">\(Y \sim\)</span> Expo(<span class="math inline">\(\lambda\)</span>).</p>
+<p><span class="math display">\[p(y) = \lambda e^{- \lambda y},\ \ \ \ y \geq 0\]</span></p>
+<p><span class="math display">\[F(y) = 1 - e^{- \lambda y},\ \ \ y \geq 0\]</span></p>
+<p><span class="math display">\[\text{E}\lbrack Y\rbrack = \frac{1}{\lambda}\ \ \ \ \ \ \text{Var}\lbrack Y\rbrack = \frac{1}{\lambda^{2}}\]</span></p>
+<p>Like the discrete Geometric(<span class="math inline">\(\pi\)</span>) distribution, the Expo(<span class="math inline">\(\lambda\)</span>) distribution is forgetful,</p>
+<p><span class="math display">\[\Pr{(Y &gt; s + t|Y &gt; t)} = \Pr{(Y &gt; s)}\]</span></p>
+<p>and it turns out that no other continuous function has this <strong>memoryless</strong> property. This property is easily proven using <span class="math inline">\(\Pr(Y &gt; y) = 1 - F(y) = e^{- \lambda y}\)</span>:</p>
+<p><span class="math display">\[\Pr\left( Y &gt; t + s \middle| Y &gt; t \right) = \frac{\Pr{(Y &gt; t + s,Y &gt; t)}}{\Pr{(Y &gt; t)}} = \frac{Pr(Y &gt; t + s)}{Pr(Y &gt; t)} = \frac{e^{- \lambda(t + s)}}{e^{- \lambda t}} = e^{- \lambda s}\]</span></p>
+<p>The memoryless property of the exponential distribution makes it <strong>not</strong> a good model for human lifetimes. The probability that a 20-year-old will live another 10 years is not the same as the probability that a 75-year-old will live another 10 years. The exponential distribution implies that this would be the case. When modeling earthquakes, it might be reasonable that the probability of an earthquake in the next ten years is the same, regardless of when the last earthquake occurred—the exponential distribution would then be reasonable.</p>
+<p>You don’t have to worry about whether other distributions have this memoryless property in applications where lack of memory would not be appropriate. The exponential distribution is defined by this property, it is the only continuous distribution with lack of memory.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-expo-densities" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-expo-densities-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="glm_files/figure-html/fig-expo-densities-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-expo-densities-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.10: Probability density functions of Exponential random variables.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="gamma" class="level5">
+<h5 class="anchored" data-anchor-id="gamma">Gamma</h5>
+<p>The Expo(<span class="math inline">\(\lambda\)</span>) distribution is a special case of a broader family of distributions, the Gamma(<span class="math inline">\(\alpha,\beta\)</span>) distribution. A random variable <span class="math inline">\(Y\)</span> is said to have a Gamma(<span class="math inline">\(\alpha,\beta\)</span>) distribution if its density function is</p>
+<p><span class="math display">\[f(y) = \frac{1}{\beta^{\alpha}\Gamma(\alpha)}y^{\alpha - 1}e^{- y/\beta},\ \ \ \ \ y \geq 0,\ \alpha,\beta &gt; 0\]</span></p>
+<p>The mean and variance of a Gamma(<span class="math inline">\(\alpha,\beta\)</span>) random variable are given by</p>
+<p><span class="math display">\[\text{E}\lbrack Y\rbrack = \alpha\beta\ \ \ \ \ \text{Var}\lbrack Y\rbrack = \alpha\beta^{2}\]</span></p>
+<p><span class="math inline">\(\alpha\)</span> is called the shape parameter of the distribution and <span class="math inline">\(\beta\)</span> is called the scale parameter. Varying <span class="math inline">\(\alpha\)</span> affects the shape and varying <span class="math inline">\(\beta\)</span> affects the units of measurement (<a href="#fig-gamma-densities" class="quarto-xref">Figure&nbsp;<span>26.11</span></a>). A property of Gamma functions is a constant <strong>coefficient of variation</strong> (CV). CV is defined as the ratio of the standard deviation to the mean of a distribution. For the Gamma(<span class="math inline">\(\alpha,\beta\)</span>) family this coefficient is <span class="math display">\[
+\text{CV} = \frac{\sqrt{\alpha\beta^2}}{\alpha\beta} = \frac{1}{\sqrt{\alpha}}
+\]</span></p>
+<p>The term <span class="math inline">\(\Gamma(\alpha)\)</span> in the denominator of the density function is called the Gamma function,</p>
+<p><span class="math display">\[\Gamma(\alpha) = \int_{0}^{\infty}{y^{\alpha - 1}e^{- y}}dy\]</span></p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-gamma-densities" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gamma-densities-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="glm_files/figure-html/fig-gamma-densities-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gamma-densities-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.11: Probability density functions of Gamma random variables.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Fun fact: if <span class="math inline">\(\alpha\)</span> is an integer, <span class="math inline">\(\Gamma(\alpha) = (\alpha - 1)!\)</span></p>
+</div>
+</div>
+<p>The exponential random variable introduced earlier is a special case of the Gamma family, the Expo(<span class="math inline">\(1/\beta\)</span>) is the same as the Gamma(1,<span class="math inline">\(\beta\)</span>).</p>
+<p>Another special case of the gamma-type random variables is the Chi-square random variable. A random variable <span class="math inline">\(Y\)</span> is said to have a Chi-squared distribution with <span class="math inline">\(\nu\)</span> degrees of freedom, denoted <span class="math inline">\(\chi_{\nu}^{2}\)</span>, if <span class="math inline">\(Y\)</span> is a Gamma(<span class="math inline">\(\frac{\nu}{2},2\)</span>) random variable.</p>
+</section>
+<section id="sec-dist-beta" class="level5">
+<h5 class="anchored" data-anchor-id="sec-dist-beta">Beta</h5>
+<p>A random variable has a Beta distribution with parameters <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>, denoted <span class="math inline">\(Y \sim \text{Beta}(\alpha,\beta)\)</span>, if its density function is given by <span class="math display">\[
+f(y) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}\, y^{\alpha-1}\,(1-y)^{\beta-1}\quad 0 &lt; y &lt; 1
+\]</span> The family of beta distributions takes on varied shapes as seen in <a href="#fig-beta-densities" class="quarto-xref">Figure&nbsp;<span>26.12</span></a>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-beta-densities" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-beta-densities-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="glm_files/figure-html/fig-beta-densities-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-beta-densities-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.12: Probability density functions of Beta random variables.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The ratio of Gamma functions is known as the Beta function and the density can also be written as <span class="math inline">\(f(y) = y^{\alpha-1}(1-y)^{(\beta-1)} / B(\alpha,\beta)\)</span> where <span class="math inline">\(B(\alpha,\beta) = \Gamma(\alpha)\Gamma(\beta)/\Gamma(\alpha+\beta)\)</span>.</p>
+<p>The mean of a <span class="math inline">\(\text{Beta}(\alpha,\beta])\)</span> random variable is <span class="math display">\[\text{E}[Y] = \frac{\alpha}{\alpha+\beta}
+\]</span> and the variance is <span class="math display">\[
+\text{Var}[Y] = \frac{\alpha\beta}{(\alpha+\beta)^2 (\alpha+\beta+1)} = \text{E}[Y]\frac{\beta}{(\alpha+\beta)(\alpha+\beta+1)}
+\]</span></p>
+<p>The support of a Beta random variable is continuous on <span class="math inline">\([0,1]\)</span>, which makes it an attractive candidate for modeling proportions, for example, the proportion of time a vehicle is in maintenance or the proportion of disposable income spent on rent or the market share of a company.</p>
+<p>The Beta distribution can also be used for random variables that are defined on a different scale, <span class="math inline">\(a &lt; Y &lt; b\)</span>, by transforming to the [0,1] scale: <span class="math inline">\(Y^* = (Y-a)/(b-a)\)</span>.</p>
+<p>The <span class="math inline">\(\text{Beta}(1,1)\)</span> is a continuous uniform random variable on [0,1].</p>
+<p>Since <span class="math inline">\(Y\)</span> is continuous, we can define the support of the Beta random variable as <span class="math inline">\(0 \le y \le 1\)</span> or as <span class="math inline">\(0 &lt; y &lt; 1\)</span>. The probability that the continuous random variable takes on exactly the value 0 or 1 is zero. However, in practice you can observe proportions at the extreme of the support; the proportion of income spent on rent by a homeowner is zero. That causes difficulties evaluating the log likelihood function at the boundaries of the support.</p>
+</section>
+</section>
+</section>
+</section>
+<section id="sec-glm-link" class="level2" data-number="26.3">
+<h2 data-number="26.3" class="anchored" data-anchor-id="sec-glm-link"><span class="header-section-number">26.3</span> Link Functions</h2>
+<p>The link function in a GLM plays two important roles. It is the transformation of the mean to a scale where the input effects are linear. Because of this transformation, we can still work with linear structures <span class="math inline">\(\textbf{x}^\prime\boldsymbol{\beta}\)</span> and do not have to resort to general nonlinear transformations. The linearity of the predictor simplifies parameter estimation, prediction, and hypothesis testing.</p>
+<p>The second responsibility of the link function is to ensure that the model predictions are valid. The coefficients in the linear predictor can take on any value on the real line, <span class="math inline">\(-\infty &lt; \beta_j &lt; \infty\)</span>. The predicted means have to comply with the support restrictions of the target variable. For example, the mean of a Bernoulli(<span class="math inline">\(\pi\)</span>) random variable is the probability <span class="math inline">\(0 \le \pi \le 1\)</span>, for the Poisson the mean is <span class="math inline">\(\lambda &gt; 0\)</span>. The inverse link function needs to ensure that <span class="math inline">\(g^{-1}(\eta)\)</span> is a valid quantity for all possible values of <span class="math inline">\(\eta\)</span> (<a href="#fig-inverse-link" class="quarto-xref">Figure&nbsp;<span>26.13</span></a>).</p>
+<div id="fig-inverse-link" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inverse-link-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/InverseLinkConcept.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/InverseLinkConcept.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inverse-link-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.13: The inverse link maps <span class="math inline">\(\eta\)</span> to valid values of the mean and the target data. If <span class="math inline">\(Y \in \{0,1\}\)</span>, then <span class="math inline">\(0 \le \text{E}[Y] \le 1\)</span>.
+</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The link function is a transformation of the <strong>mean</strong>, it is not a transformation of the data. Modeling <span class="math inline">\(\log(\mu) = \textbf{x}^\prime\boldsymbol{\beta}\)</span> is very different from log-transforming the data and assuming a linear model holds on the transformed scale: <span class="math inline">\(\log(Y) = \textbf{x}^\prime\boldsymbol{\beta}+ \epsilon\)</span>. The link function is a transformation of a constant, <span class="math inline">\(\log(Y)\)</span> is the transformation of a random variable. Choosing a different link function does not alter the essential distributional properties of the target variable—a Poisson remains a Poisson, for example. Choosing a different transformation of the target variable changes the distributional properties. If <span class="math inline">\(Y \sim \text{Poisson}(\lambda)\)</span>, neither <span class="math inline">\(log(Y)\)</span> nor <span class="math inline">\(\sqrt{Y}\)</span> is Poisson distributed.</p>
+</div>
+</div>
+<p><a href="#tbl-link-functions" class="quarto-xref">Table&nbsp;<span>26.1</span></a> lists common link functions for important members of the exponential family. In most cases the canonical link is a good place to start. However, for the Gamma distribution, the reciprocal link is not adequate, although it is the natural link. Since the mean of a Gamma random variable is positive, choosing the reciprocal link does not guarantee that <span class="math display">\[
+g^{-1}(\eta) = \frac{1}{\eta} &gt; 0
+\]</span> It is common to choose the log link instead in Gamma regression models. Similar for the Inverse Gaussian distribution, where the inverse canonical link is the square root function and does not permit negative values for <span class="math inline">\(\eta\)</span>. The Gaussian distribution shows how special it is one more time: it is the only distribution for which the canoncial link is the identity function: there is no transformation of the mean, the input effects are linear on the scale of the data.</p>
+<div id="tbl-link-functions" class="striped hover quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-link-functions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;26.1: Common link functions for important members of <span class="math inline">\(P_{expo}\)</span>
+</figcaption>
+<div aria-describedby="tbl-link-functions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table-hover table">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 25%">
+<col style="width: 22%">
+<col style="width: 29%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Distribution</strong></th>
+<th style="text-align: center;"><strong>Link Function</strong></th>
+<th><strong>Name</strong></th>
+<th style="text-align: center;"><strong>Canonical</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Bernoulli</td>
+<td style="text-align: center;"><span class="math inline">\(\text{logit}(\mu) = \log\left (\frac{\mu}{1-\mu}\right )\)</span></td>
+<td>Logit</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+<tr class="even">
+<td></td>
+<td style="text-align: center;"><span class="math inline">\(\Phi^{-1}(\mu)\)</span></td>
+<td>Probit</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td></td>
+<td style="text-align: center;"><span class="math inline">\(\log(-\log(\mu))\)</span></td>
+<td>Log-log</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td></td>
+<td style="text-align: center;"><span class="math inline">\(\log(-\log(1-\mu))\)</span></td>
+<td>Complementary Log-log</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td>Binomial</td>
+<td style="text-align: center;">Same as Bernoulli</td>
+<td></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td>Negative Binomial</td>
+<td style="text-align: center;"><span class="math inline">\(\log(\mu)\)</span></td>
+<td>Log</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+<tr class="odd">
+<td>Poisson</td>
+<td style="text-align: center;"><span class="math inline">\(\log(\mu)\)</span></td>
+<td>Log</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+<tr class="even">
+<td>Gaussian</td>
+<td style="text-align: center;"><span class="math inline">\(\mu = \eta\)</span></td>
+<td>Identity</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+<tr class="odd">
+<td>Gamma</td>
+<td style="text-align: center;"><span class="math inline">\(\mu^{-1}\)</span></td>
+<td>Reciprocal</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+<tr class="even">
+<td></td>
+<td style="text-align: center;"><span class="math inline">\(\log(\mu)\)</span></td>
+<td>Log</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td>Inverse Gaussian</td>
+<td style="text-align: center;"><span class="math inline">\(\mu^{-2}\)</span></td>
+<td>Reciprocal squared</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+<tr class="even">
+<td></td>
+<td style="text-align: center;"><span class="math inline">\(\log(\mu)\)</span></td>
+<td>Log</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td>Beta</td>
+<td style="text-align: center;"><span class="math inline">\(\text{logit}(\mu)= \log\left (\frac{\mu}{1-\mu}\right )\)</span></td>
+<td>Logit</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You can choose any link function that satisfies the properties stated above. The function must be <strong>invertible</strong>, however, so that we can switch back and forth between the scale of the mean and the scale of the linear predictor.</p>
+</div>
+</div>
+</section>
+<section id="sec-glm-estimation" class="level2" data-number="26.4">
+<h2 data-number="26.4" class="anchored" data-anchor-id="sec-glm-estimation"><span class="header-section-number">26.4</span> Parameter Estimation</h2>
+<section id="maximum-likelihood" class="level3">
+<h3 class="anchored" data-anchor-id="maximum-likelihood">Maximum Likelihood</h3>
+<p>The parameters of a generalized linear model are the coefficients in the mean function, <span class="math inline">\(\boldsymbol{\beta}\)</span>, and, where present, the scale parameter <span class="math inline">\(\psi\)</span>. The standard (frequentist) approach is to estimate the parameters by <strong>maximum likelihood</strong>. This is reasonable and straightforward because the distribution of the data is specified and the observations are assumed independent. The log-likelihood of the data is then simply the sum of the log-likelihoods for the observations: <span class="math display">\[
+\ell(\boldsymbol{\mu},\psi;\textbf{y}) = \sum_{i=1}^n \left(y_i\theta(\mu_i) - b(\theta(\mu_i)))/\psi + c(y_i,\psi)\right)
+\]</span> To maximize this log likelihood function with respect to <span class="math inline">\(\beta_k\)</span> we can apply the chain rule of calculus: <span class="math display">\[
+\frac{\partial \ell(\mu,\psi;\textbf{y})}{\partial \beta_k} = \sum_{i=1}^n \frac{\partial \ell(\mu_i,\psi;y_i)}{\partial \theta(\mu_i)}
+\frac{\partial \theta(\mu_i)}{\partial \mu_i}
+\frac{\partial \mu_i}{\partial \eta_i}
+\frac{\partial \eta_i}{\partial \beta_k}
+\]</span> Some manipulations lead to the following expression: <span class="math display">\[
+\frac{\partial \ell(\mu,\psi;\textbf{y})}{\partial \beta_k} = \sum_{i=1}^n \frac{y_i-\mu_i}{\text{Var}[Y_i]}\frac{\mu_i}{\eta_i}x_k
+\]</span> This expression applies whether the link function is canonical or not. When you collect the derivatives for all parameters, finding the maximum likelihood estimates is equivalent to solving<br>
+<span class="math display">\[
+\textbf{F}^\prime\textbf{V}^{-1}(\textbf{y}-\boldsymbol{\mu}) = \textbf{0}
+\]</span> where <span class="math inline">\(\textbf{F}\)</span> is the <span class="math inline">\((n \times p+1)\)</span> matrix of the first derivatives of the mean with respect to the <span class="math inline">\(\beta\)</span>s: <span class="math inline">\(\textbf{F}\)</span> has typical element <span class="math inline">\([\partial \mu/\partial_\beta]_{ij}\)</span>. <span class="math inline">\(\textbf{V}\)</span> is a diagonal matrix that contains the variances of the targets on the diagonal.</p>
+<p>If <span class="math inline">\(\textbf{V}\)</span> were known, this is a weighted least squares problem. Because <span class="math inline">\(\textbf{V}\)</span> depends on <span class="math inline">\(\boldsymbol{\mu}\)</span> in a typical GLM, the ML estimates are found by an iterative procedure, called <strong>iteratively reweighted least squares</strong> (IRLS).</p>
+</section>
+<section id="sec-glm-irls" class="level3">
+<h3 class="anchored" data-anchor-id="sec-glm-irls">Iteratively Reweighted Least Squares (IRLS)</h3>
+<p>The IRLS algorithm can be used to find the maximum likelihood estimates of <span class="math inline">\(\boldsymbol{\beta}\)</span>. To motivate the algorithm we start by a linear approximation (a first-order Taylor series) of the linked <u>observations</u> about an estimate of the mean: <span id="eq-irls-linearization"><span class="math display">\[
+\begin{align*}
+g(y) &amp;= g(\widehat{\mu}) + (y-\widehat{\mu})\left[ \frac{\partial g(y)}{\partial y}\right]_{\vert_{\widehat{\mu}}} \\
+&amp;= g(\widehat{\mu}) + (y-\widehat{\mu})\left[\frac{\partial \eta}{\partial \mu} \right]_{\vert_{\widehat{\mu}}} \\
+&amp;= \widehat{\eta} + (y-\widehat{\mu})\left[\frac{\partial \eta}{\partial \mu} \right]_{\vert_{\widehat{\mu}}}  \\
+&amp;= z
+\end{align*}
+\tag{26.2}\]</span></span></p>
+<p><span class="math inline">\(z\)</span> is called an adjusted dependent variable or a working response variable or a pseudo-response. The final expression in <a href="#eq-irls-linearization" class="quarto-xref">Equation&nbsp;<span>26.2</span></a> can be viewed as a linear model with response variable <span class="math inline">\(z\)</span>, systematic part <span class="math inline">\(\widehat{\eta} = \textbf{x}^\prime\widehat{\boldsymbol{\beta}}\)</span> and error term <span class="math inline">\((y-\mu)[\partial \eta/\partial \mu]\)</span>. The variance of this error term is <span class="math display">\[
+\text{Var}[z] = \left[\frac{\partial \eta}{\partial \mu}\right]^2 \text{Var}[Y]
+\]</span></p>
+<p>The iterative procedure is as follows: given an initial value of <span class="math inline">\(z\)</span>, which requires an initial estimate of <span class="math inline">\(\mu\)</span>, fit a weighted linear model with inputs <span class="math inline">\(\textbf{x}= [x_1,\cdots,x_p]^\prime\)</span> and weights given by the inverse of <span class="math inline">\(\text{Var}[z]\)</span>. The solution to the weighted linear model is an updated parameter vector <span class="math inline">\(\boldsymbol{\beta}\)</span>. Re-calculate <span class="math inline">\(z\)</span> and the weights and repeat the weighted linear regression fit. Continue until the relative change in the parameter estimates, the log likelihood function, the deviance, or some other criterion is negligible. <span class="citation" data-cites="McCullaghNelder">McCullagh and Nelder Frs (<a href="references.html#ref-McCullaghNelder" role="doc-biblioref">1989</a>)</span> show that this procedure converges to the maximum likelihood estimates.</p>
+<p>A nice property of the IRLS algorithm is the ease of finding starting values. The initial value of <span class="math inline">\(z\)</span> that kicks off the iterations does not necessarily require an estimate of <span class="math inline">\(\boldsymbol{\beta}\)</span>. If the link function can be evaluated at the data points (maybe after slight adjustments such as moving data points away from boundary values), then one can start the iterations using the observed data as the initial estimate of <span class="math inline">\(\mu\)</span>. For binary data, for example, initial adjustments to the data values such as <span class="math display">\[
+y^* = \frac{y+c}{y+2c}
+\]</span> can be used to avoid boundary problems. Another technique to get the iterations off the ground is to assume initially that <span class="math inline">\(\boldsymbol{\beta}= \textbf{0}\)</span>.</p>
+</section>
+</section>
+<section id="sec-glm-gamma-example" class="level2" data-number="26.5">
+<h2 data-number="26.5" class="anchored" data-anchor-id="sec-glm-gamma-example"><span class="header-section-number">26.5</span> Example: Gamma Regression</h2>
+<section id="the-data-real-estate-values-in-albemarle-county-virginia" class="level3">
+<h3 class="anchored" data-anchor-id="the-data-real-estate-values-in-albemarle-county-virginia">The Data, Real Estate Values in Albemarle County, Virginia</h3>
+<p>This example is based on <a href="https://library.virginia.edu/data/articles/getting-started-with-gamma-regression">this</a> excellent tutorial at the University of Virginia.</p>
+<p>The data represent real estate information from Albemarle County, Virginia. Of interest is modeling the total value of a home (<code>totalvalue</code>) as a function of predictors such as finished square feet, number of full bathrooms, lot size, etc.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>homes <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM AlbemarleHomes"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(homes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   3025 obs. of  16 variables:
+ $ column00   : num  1 2 3 4 5 6 7 8 9 10 ...
+ $ yearbuilt  : chr  "1754" "1968" "1754" "1934" ...
+ $ finsqft    : num  1254 1192 881 480 720 ...
+ $ cooling    : chr  "No Central Air" "No Central Air" "No Central Air" "No Central Air" ...
+ $ bedroom    : num  1 3 2 0 2 3 2 3 2 0 ...
+ $ fullbath   : num  1 1 1 0 1 1 1 1 1 0 ...
+ $ halfbath   : chr  "0" "0" "0" "0" ...
+ $ lotsize    : num  4.93 1.09 195.93 10 1 ...
+ $ totalvalue : num  124300 109200 141600 69200 139700 ...
+ $ esdistrict : chr  "Brownsville" "Scottsville" "Stony Point" "Crozet" ...
+ $ msdistrict : chr  "Henley" "Walton" "Sutherland" "Henley" ...
+ $ hsdistrict : chr  "Western Albemarle" "Monticello" "Albemarle" "Western Albemarle" ...
+ $ censustract: num  111 113 104 101 102 ...
+ $ age        : num  265 51 265 85 56 265 87 59 69 265 ...
+ $ condition  : chr  "Substandard" "Substandard" "Substandard" "Substandard" ...
+ $ fp         : num  0 0 0 0 0 0 0 1 0 0 ...</code></pre>
+</div>
+</div>
+<p>Computing the coefficient of variation within ranges of <code>finsqft</code> shows that the CV is pretty constant while the variability of home values increases with the square footage of the home. Increasing variability with increasing size is a common phenomenon for many data, biological or otherwise. If the increase in variability–as measured by the standard deviation–is proportional to the mean, the data exhibit a constant coefficient of variation, a property of the Gamma distribution.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>finsqft_cut <span class="ot">&lt;-</span> <span class="fu">cut</span>(<span class="at">x=</span>homes<span class="sc">$</span>finsqft, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>, <span class="dv">4000</span>, <span class="dv">5000</span>, <span class="dv">8000</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(finsqft_cut,homes<span class="sc">$</span>totalvalue,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">"Total Value"</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">"Finished Square Footage"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">las=</span><span class="dv">1</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex.axis=</span><span class="fl">0.8</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="glm_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>homes <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">sqft_cut =</span> finsqft_cut) <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(sqft_cut) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">count=</span><span class="fu">n</span>(), <span class="at">mean=</span><span class="fu">mean</span>(totalvalue), <span class="at">std=</span><span class="fu">sd</span>(totalvalue)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">CV =</span> std<span class="sc">/</span>mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  sqft_cut      count     mean      std    CV
+  &lt;fct&gt;         &lt;int&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
+1 (0,1e+03]       193  168621.   99722. 0.591
+2 (1e+03,2e+03]  1523  285751.  153949. 0.539
+3 (2e+03,3e+03]   901  479938.  184596. 0.385
+4 (3e+03,4e+03]   272  732660.  316818. 0.432
+5 (4e+03,5e+03]    82 1088504.  497282. 0.457
+6 (5e+03,8e+03]    54 1905324. 1112306. 0.584</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(homes<span class="sc">$</span>totalvalue, </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks=</span><span class="dv">30</span>, </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex.main=</span><span class="fl">0.9</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">"Distribution of Home Values"</span>, </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">"value"</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">log</span>(homes<span class="sc">$</span>totalvalue), </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks=</span><span class="dv">30</span>, </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex.main=</span><span class="fl">0.9</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">"Distribution of Log Home Values"</span>, </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">"log(value)"</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="glm_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="fitting-a-gamma-regression-model" class="level3">
+<h3 class="anchored" data-anchor-id="fitting-a-gamma-regression-model">Fitting a Gamma Regression Model</h3>
+<p>We fit the Gamma GLM with the <code>glm</code> function in <code>R</code>. The default link for <code>family=Gamma</code> is the canonical link, which is the inverse. This is not a good link function to model positive target values, since there is no guarantee that the inverse link satisfies the range restriction for the mean of the target variable. We choose the log link instead. The following statements fit a regression model of the form <span class="math display">\[
+\begin{align*}
+\log \text{E}[\text{Total Value}] &amp;= \beta_0 + \beta_1 \, \text{finished sq.ft} \\
+\text{E}[\text{Total Value}] &amp;= \exp\{\beta_0 + \beta_1 \, \text{finished sq.ft}\}
+\end{align*}
+\]</span> assuming that <code>totalvalue</code> follows a Gamma distribution.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>gam_reg <span class="ot">&lt;-</span> <span class="fu">glm</span>(totalvalue <span class="sc">~</span> finsqft, </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data=</span>homes,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">family=</span><span class="fu">Gamma</span>(<span class="at">link=</span><span class="st">"log"</span>))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gam_reg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = totalvalue ~ finsqft, family = Gamma(link = "log"), 
+    data = homes)
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 1.178e+01  1.986e-02  593.18   &lt;2e-16 ***
+finsqft     5.081e-04  8.753e-06   58.04   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for Gamma family taken to be 0.2122692)
+
+    Null deviance: 1206.00  on 3024  degrees of freedom
+Residual deviance:  378.25  on 3023  degrees of freedom
+AIC: 79593
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<p>The model converges in 4 iterations and the maximum likelihood estimates of the coefficients are <span class="math inline">\(\widehat{\beta}_0\)</span> = 11.7823 and <span class="math inline">\(\widehat{\beta}_1\)</span> = 5.1^{-4}.</p>
+<p>The addition of the single input variable <code>finsqft</code> reduces the deviance dramatically, compared to a null model; from 1205.995 to 378.25. The <code>finsqft</code> coefficient is highly significant.</p>
+<hr>
+<p>Suppose we wish to predict the value of a home with 2,500 finished square feet.</p>
+<p>First, let’s do it the hard way, using the coefficients from the output:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(gam_reg<span class="sc">$</span>coefficients,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)     finsqft 
+   11.78227     0.00051 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pred_2500 <span class="ot">&lt;-</span> gam_reg<span class="sc">$</span>coefficients[<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">2500</span> <span class="sc">*</span> gam_reg<span class="sc">$</span>coefficients[<span class="dv">2</span>]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Linear predictor for 2,500 finished square feet: "</span>, pred_2500)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear predictor for 2,500 finished square feet:  13.05243</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Predicted home value with 2,400 finished square feet:"</span>, <span class="fu">exp</span>(pred_2500))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Predicted home value with 2,400 finished square feet: 466225.8</code></pre>
+</div>
+</div>
+<p>The linear combination <span class="math inline">\(\widehat{\beta}_0 + \widehat{\beta}_1 \times 2500\)</span> yields the linear predictor, 13.0524. This value is on the scale of the link function. To obtain the estimated total home value, we have to plug the estimated linear predictor into the inverse link function. The predicted total home value is 4.6622585^{5}. Especially when working with log links, analysts sometimes forget to apply the inverse link function. When the linear predictor is a positive number, it is easily mistaken for the prediction of the mean.</p>
+<p>You can also use the <code>predict</code> function to obtain the predictions. The <code>type=</code> option determines whether the predicted values are calculated for the linear predictor (<code>type="link"</code>) or for the mean response (<code>type="response"</code>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(gam_reg, <span class="at">newdata=</span><span class="fu">data.frame</span>(<span class="at">finsqft=</span><span class="dv">2500</span>),<span class="at">type=</span><span class="st">"link"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       1 
+13.05243 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">predict</span>(gam_reg, <span class="at">newdata=</span><span class="fu">data.frame</span>(<span class="at">finsqft=</span><span class="dv">2500</span>), <span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Predicted home value for 2,500 finished square feet: "</span>, p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Predicted home value for 2,500 finished square feet:  466225.8</code></pre>
+</div>
+</div>
+</section>
+<section id="likelihood-ratio-test" class="level3">
+<h3 class="anchored" data-anchor-id="likelihood-ratio-test">Likelihood Ratio Test</h3>
+<p>Is our model sufficiently complex to capture the variability in total home values? We can compare it to more complex models with a likelihood ratio test, provided the models are nested. The following statements add four input variables to our basic model. The model summary confirms that their partial tests (adding each variable in the presence of the others) are significant.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>gam_reg_full <span class="ot">&lt;-</span> <span class="fu">glm</span>(totalvalue <span class="sc">~</span> finsqft <span class="sc">+</span> cooling <span class="sc">+</span> lotsize <span class="sc">+</span> fullbath <span class="sc">+</span> lotsize, </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data=</span>homes,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family=</span><span class="fu">Gamma</span>(<span class="at">link=</span><span class="st">"log"</span>))</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gam_reg_full)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = totalvalue ~ finsqft + cooling + lotsize + fullbath + 
+    lotsize, family = Gamma(link = "log"), data = homes)
+
+Coefficients:
+                        Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)            1.171e+01  2.137e-02 547.703   &lt;2e-16 ***
+finsqft                3.868e-04  1.032e-05  37.465   &lt;2e-16 ***
+coolingNo Central Air -2.117e-01  2.339e-02  -9.048   &lt;2e-16 ***
+lotsize                7.411e-03  3.748e-04  19.773   &lt;2e-16 ***
+fullbath               1.310e-01  1.082e-02  12.104   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for Gamma family taken to be 0.1475242)
+
+    Null deviance: 1206.00  on 3024  degrees of freedom
+Residual deviance:  287.37  on 3020  degrees of freedom
+AIC: 78753
+
+Number of Fisher Scoring iterations: 9</code></pre>
+</div>
+</div>
+<p>We can test the simultaneous addition of the four variables with a single LRT.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lrtest</span>(gam_reg,gam_reg_full)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Likelihood ratio test
+
+Model 1: totalvalue ~ finsqft
+Model 2: totalvalue ~ finsqft + cooling + lotsize + fullbath + lotsize
+  #Df LogLik Df  Chisq Pr(&gt;Chisq)    
+1   3 -39794                         
+2   6 -39370  3 846.39  &lt; 2.2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>lrtest</code> function in the <code>lmtest</code> package constructs LRTs based on the result returned from calls to <code>logLik</code> for each model. If the result returned from <code>logLik</code> is not a true log likelihood, the results of <code>lrtest</code> are not meaningful. For example, you can request <code>logLik</code> for a model fit by <code>lm</code>, which performs least-squares estimation. There is no distributional assumption in <code>lm</code>, hence there is no likelihood or log likelihood function. The <code>logLik</code> function itself computes the log likelihood indirectly, for example, based on Akaike’s Information Criterion (AIC). For likelihood-based estimation, AIC is defined as <span class="math display">\[
+\text{AIC} = -2\log \ell + 2 k
+\]</span> where <span class="math inline">\(k\)</span> is the total number of model parameters, including scale and covariance parameters. Back-calculating <span class="math inline">\(\log ell\)</span> based on AIC is implicitly making the distributional assumption that underpins the computation of AIC for a particular class of models, even if the estimation is free of a distributional assumption.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="example-beta-regression" class="level2" data-number="26.6">
+<h2 data-number="26.6" class="anchored" data-anchor-id="example-beta-regression"><span class="header-section-number">26.6</span> Example: Beta Regression</h2>
+<p>The typical <code>R</code> functions to fit generalized linear models or generalized additive models are <code>glm</code> and <code>gam::gam</code>. Unfortunately, neither of them support beta-distributed data, although the Beta distribution is in the two-parameter exponential family. Recall from <a href="#sec-dist-beta" class="quarto-xref"><span>Section 26.2.3.2.4</span></a> that a Beta random variable is continuous on <span class="math inline">\([0,1]\)</span> and a plausible model for ratios. Also, every random variable with finite support <span class="math inline">\([a,b]\)</span> can be normalized to lie in the <span class="math inline">\([0,1]\)</span> interval by the transformation <span class="math display">\[
+x_n = \frac{x - a}{b - a}
+\]</span></p>
+<p>The parameterization of the Beta distribution in <a href="#sec-dist-beta" class="quarto-xref"><span>Section 26.2.3.2.4</span></a> is not the most convenient to fit a generalized linear model. As shown there, <span class="math display">\[
+f(y) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}\, y^{\alpha-1}\,(1-y)^{\beta-1}\quad 0 &lt; y &lt; 1
+\]</span></p>
+<p>and <span class="math inline">\(Y\)</span> has mean <span class="math inline">\(\alpha/(\alpha + \beta)\)</span>. <span class="citation" data-cites="FerrariCribariNeto">Ferrari and Cribari-Neto (<a href="references.html#ref-FerrariCribariNeto" role="doc-biblioref">2004</a>)</span> proposed a parameterization in terms of <span class="math inline">\(\mu=\alpha/(\alpha + \beta)\)</span> and a scale parameter <span class="math inline">\(\phi= \alpha + \beta\)</span>: <span class="math display">\[
+f(y) = \frac{\Gamma(\phi)}{\Gamma(\mu\phi)\Gamma((1-\mu)\phi)}\, y^{\mu\phi-1}(1-y)^{(1-\mu)\phi-1}
+\]</span></p>
+<p>In this Beta<span class="math inline">\((\mu,\phi)\)</span> parameterization, <span class="math inline">\(\text{E}[Y] = \mu\)</span> and <span class="math inline">\(\text{Var}[Y] = \mu(1-\mu)/(1+\phi)\)</span>. The variance of the random variable is inversely related to the magnitude of <span class="math inline">\(\phi\)</span>, that is why it is called a <strong>precision</strong> parameter (<span class="math inline">\(1/\phi\)</span> is a dispersion parameter). The mean–variance relationship should look familiar, it is akin to that of the Bernoulli distribution, except for the involvement of the precision parameter. This is not too surprising as both Bernoulli and Beta random variables have means that range from 0 to 1. By the same token, the most common link function in Beta regressions is the logit link.</p>
+<p>You can fit beta regression models in the <span class="citation" data-cites="FerrariCribariNeto">Ferrari and Cribari-Neto (<a href="references.html#ref-FerrariCribariNeto" role="doc-biblioref">2004</a>)</span> parameterization in <code>R</code> with the <code>betareg</code> package and with the <code>glam</code> package. The <code>glam</code> package can also handle generalized additive models (<a href="gam.html" class="quarto-xref"><span>Chapter 27</span></a>) and grew out of a previous project in this course.</p>
+<p>We start with the gasoline yield data by <span class="citation" data-cites="Prater1956">Prater (<a href="references.html#ref-Prater1956" role="doc-biblioref">1956</a>)</span> that is supplied by the <code>betareg</code> package. The target variable is the proportion of crude oil converted to gasoline after distillation and fractionation. Potential input variables to the regression include the gravity and vapor pressure of the crude oil, the temperature at with 10% of the crude oil has vaporized, the temperature at which all gasoline has vaporized, and the batch number. The following code fits the model <span class="math display">\[
+\begin{align*}
+Y &amp;\sim \text{Beta}(\mu,\phi) \\
+\mu &amp;= \frac{1}{1+\exp\{-\eta\}} \\
+\eta &amp;= \beta_0 + \beta_1\text{gravity} + \beta_2\text{pressure} + \beta_3\text{temp10} + \beta_4\text{temp} \\
+\end{align*}
+\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(betareg)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"GasolineYield"</span>, <span class="at">package =</span> <span class="st">"betareg"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>beta_glm1 <span class="ot">&lt;-</span> <span class="fu">betareg</span>(yield <span class="sc">~</span> gravity <span class="sc">+</span> pressure <span class="sc">+</span> temp10 <span class="sc">+</span> temp,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">data=</span>GasolineYield)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">summary</span>(beta_glm1)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>s</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+betareg(formula = yield ~ gravity + pressure + temp10 + temp, data = GasolineYield)
+
+Quantile residuals:
+    Min      1Q  Median      3Q     Max 
+-1.9010 -0.6829 -0.0385  0.5531  2.1314 
+
+Coefficients (mean model with logit link):
+              Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -2.6949422  0.7625693  -3.534 0.000409 ***
+gravity      0.0045412  0.0071419   0.636 0.524871    
+pressure     0.0304135  0.0281007   1.082 0.279117    
+temp10      -0.0110449  0.0022640  -4.879 1.07e-06 ***
+temp         0.0105650  0.0005154  20.499  &lt; 2e-16 ***
+
+Phi coefficients (precision model with identity link):
+      Estimate Std. Error z value Pr(&gt;|z|)    
+(phi)   248.24      62.02   4.003 6.26e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Type of estimator: ML (maximum likelihood)
+Log-likelihood: 75.68 on 6 Df
+Pseudo R-squared: 0.9398
+Number of iterations: 144 (BFGS) + 5 (Fisher scoring) </code></pre>
+</div>
+</div>
+<p>The maximum likelihood estimates of the model coefficients are <span class="math inline">\(\widehat{\beta}_0 =\)</span> -2.6949, <span class="math inline">\(\widehat{\beta}_1 =\)</span> 0.0045, and so forth. The estimate of the precision parameter is <span class="math inline">\(\widehat{\phi} =\)</span> 248.2419.</p>
+<p><a href="#fig-beta-reg-example" class="quarto-xref">Figure&nbsp;<span>26.14</span></a> displays the observed and fitted yield values against the temperature at which gasoline has vaporized (<code>temp</code>).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-beta-reg-example" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-beta-reg-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="glm_files/figure-html/fig-beta-reg-example-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-beta-reg-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.14: Observed (empty circles) and fitted values (filled circles) in beta regression for gasoline yield.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>To fit this model with the GLAM package, you would use</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glam)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> GasolineYield<span class="sc">$</span>yield</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">cbind</span>(GasolineYield<span class="sc">$</span>gravity, </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>           GasolineYield<span class="sc">$</span>pressure,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>           GasolineYield<span class="sc">$</span>temp10, </span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>           GasolineYield<span class="sc">$</span>temp)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>beta_glm2 <span class="ot">&lt;-</span> <span class="fu">glam</span>(X, Y, <span class="at">model=</span><span class="st">"linear"</span>, <span class="at">family=</span><span class="st">"beta"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="sec-glm-overdispersion" class="level2" data-number="26.7">
+<h2 data-number="26.7" class="anchored" data-anchor-id="sec-glm-overdispersion"><span class="header-section-number">26.7</span> Overdispersion</h2>
+<p><strong>Overdispersion</strong> is the condition where the data appear more variable than is permissible under a reference model. If overdispersion is present some aspect of the model is not correct. It is important to address the specific shortcoming that induces the overdispersion. Causes can include one or more of the following</p>
+<ul>
+<li>important input variables are missing from the model</li>
+<li>the data are autocorrelated, for example in time series or longitudinal data</li>
+<li>the data do not follow the assumed probability model</li>
+<li>the data were generated by a mixture of random processes rather than a single mechanism</li>
+</ul>
+<p>Overdispersion is addressed by turning the appropriate knob. If overdispersion is not addressed, the precision of the fitted model is overstated: standard error estimates are too small, confidence and prediction intervals are too narrow, <span class="math inline">\(p\)</span>-values are too small.</p>
+<p>Generalized linear models are notorious for overdispersion issues, because the variability of the data is partially or completely controlled by the mean function. With Poisson data, for example, the variance equals the mean of the distribution. By specifying a GLM for the mean function, we explicitly specify a model for the variance. Two-parameter exponential family models such as the Gaussian, Gamma, and Beta distribution have a scale parameter but there is still a linkage between the mean and the variance. The only distribution where the mean of <span class="math inline">\(Y\)</span> is completely decoupled from the variance is the Gaussian distribution. Gaussian data can never be overdispersed because the reference model can combine any value for the mean with any value for the variance.</p>
+<p>The following example shows how incorrectly modeling count data can induce overdispersion.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Poppy Counts in RCBD</p>
+</div>
+<div class="example-container">
+<p>The following data from <span class="citation" data-cites="Meadetal1993">(<a href="references.html#ref-Meadetal1993" role="doc-biblioref">Mead, Curnow, and Hasted 1993, 144</a>)</span>, are from a randomized complete block design (RCBD) with 4 blocks and 6 experimental treatments. The output variable was the number of poppies on the experimental unit.</p>
+<table class="table">
+<caption>Poppy count data from <span class="citation" data-cites="Meadetal1993">(<a href="references.html#ref-Meadetal1993" role="doc-biblioref">Mead, Curnow, and Hasted 1993</a>)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Treatment</th>
+<th style="text-align: center;">Block 1</th>
+<th style="text-align: center;">Block 2</th>
+<th style="text-align: center;">Block 3</th>
+<th style="text-align: center;">Block 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">A</td>
+<td style="text-align: center;">538</td>
+<td style="text-align: center;">422</td>
+<td style="text-align: center;">377</td>
+<td style="text-align: center;">315</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">B</td>
+<td style="text-align: center;">438</td>
+<td style="text-align: center;">442</td>
+<td style="text-align: center;">319</td>
+<td style="text-align: center;">380</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">C</td>
+<td style="text-align: center;">77</td>
+<td style="text-align: center;">61</td>
+<td style="text-align: center;">157</td>
+<td style="text-align: center;">52</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">D</td>
+<td style="text-align: center;">115</td>
+<td style="text-align: center;">57</td>
+<td style="text-align: center;">100</td>
+<td style="text-align: center;">45</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">E</td>
+<td style="text-align: center;">17</td>
+<td style="text-align: center;">31</td>
+<td style="text-align: center;">87</td>
+<td style="text-align: center;">16</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">F</td>
+<td style="text-align: center;">18</td>
+<td style="text-align: center;">26</td>
+<td style="text-align: center;">77</td>
+<td style="text-align: center;">20</td>
+</tr>
+</tbody>
+</table>
+<p>There appears to be a strong treatment effect, the counts are generally higher for treatments A and B than for E and F. There also appears to be a block effect. Scanning the columns in the table, block 4 seems to have systematically smaller counts than the other blocks.</p>
+<p>In a randomized complete block design with <span class="math inline">\(t\)</span> treatments and <span class="math inline">\(b\)</span> blocks, there are <span class="math inline">\(t\times b\)</span> experimental units. A block of units is characterized by greater similarity of the experimental units within the block than between the blocks. The <span class="math inline">\(t\)</span> treatments are then randomly assigned to the experimental units within each block (<a href="#fig-rcbd" class="quarto-xref">Figure&nbsp;<span>26.15</span></a>). This design captures systematic differences between the blocks and the randomization of treatments within a block balances out the unaccounted effects within the blocks.</p>
+<div id="fig-rcbd" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rcbd-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/RandomizedBlocks.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4"><img src="images/RandomizedBlocks.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rcbd-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.15: Randomized Complete Block Design
+</figcaption>
+</figure>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>poppies <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM poppies"</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>poppies<span class="sc">$</span>block <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(poppies<span class="sc">$</span>block)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>poppies<span class="sc">$</span>block <span class="ot">&lt;-</span> <span class="fu">relevel</span>(poppies<span class="sc">$</span>block,<span class="st">"4"</span>)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>poppies<span class="sc">$</span>tx <span class="ot">&lt;-</span> <span class="fu">relevel</span>(<span class="fu">as.factor</span>(poppies<span class="sc">$</span>treatment),<span class="st">"F"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Suppose we analyze the data as a Poisson model with a treatment factor but leave the block effects out of the model. This is clearly not the correct model as the mean function does not reflect the experimental design.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>poi_tx <span class="ot">&lt;-</span> <span class="fu">glm</span>(count <span class="sc">~</span> tx, <span class="at">data=</span>poppies, <span class="at">family=</span>poisson)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(poi_tx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = count ~ tx, family = poisson, data = poppies)
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  3.56247    0.08422  42.302  &lt; 2e-16 ***
+txA          2.46098    0.08774  28.050  &lt; 2e-16 ***
+txB          2.41579    0.08789  27.485  &lt; 2e-16 ***
+txC          0.90056    0.09987   9.017  &lt; 2e-16 ***
+txD          0.81014    0.10123   8.003 1.21e-15 ***
+txE          0.06852    0.11711   0.585    0.558    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 3868.48  on 23  degrees of freedom
+Residual deviance:  340.89  on 18  degrees of freedom
+AIC: 506.63
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+</div>
+<p>Treatment F was set as the reference level, so the coefficients in the <code>glm</code> output measure differences to that treatment. All treatments are significantly different from F, except for treatment E.</p>
+<p>The large residual deviance relative to its degrees of freedom is troubling, however. In a well-specified model, their ratio should be close to 1. Instead, the ratio is almost 19.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>poi_tx<span class="sc">$</span>deviance <span class="sc">/</span> poi_tx<span class="sc">$</span>df.residual</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 18.93844</code></pre>
+</div>
+</div>
+<p>The model is highly overdispersed. Without block effects, the model is misspecified.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>poi_rcbd <span class="ot">&lt;-</span> <span class="fu">glm</span>(count <span class="sc">~</span> block <span class="sc">+</span> tx, <span class="at">data=</span>poppies, <span class="at">family=</span>poisson)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(poi_rcbd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = count ~ block + tx, family = poisson, data = poppies)
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  3.32803    0.08978  37.067  &lt; 2e-16 ***
+block1       0.37356    0.04516   8.273  &lt; 2e-16 ***
+block2       0.22700    0.04659   4.873 1.10e-06 ***
+block3       0.29939    0.04586   6.529 6.64e-11 ***
+txA          2.46098    0.08774  28.050  &lt; 2e-16 ***
+txB          2.41579    0.08789  27.485  &lt; 2e-16 ***
+txC          0.90056    0.09987   9.017  &lt; 2e-16 ***
+txD          0.81014    0.10123   8.003 1.21e-15 ***
+txE          0.06852    0.11711   0.585    0.558    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 3868.5  on 23  degrees of freedom
+Residual deviance:  264.7  on 15  degrees of freedom
+AIC: 436.44
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+</div>
+<p>The RCBD Poisson model improves the overdispersion but not by much:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>poi_rcbd<span class="sc">$</span>deviance <span class="sc">/</span> poi_rcbd<span class="sc">$</span>df.residual</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 17.6466</code></pre>
+</div>
+</div>
+<p>The mean function is now correctly specified; the explanation for the overdispersion is that the data are not Poisson distributed.</p>
+</div>
+</div>
+<section id="scaled-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="scaled-analysis">Scaled Analysis</h3>
+<p>A “quick fix” of the overdispersion problem is to introduce a scaling factor that adjusts the variability of the data somehow. In the presence of overdispersion the standard errors reported by software are too small. As a consequence, <span class="math inline">\(p\)</span>-values are too small, prediction and confidence intervals are too narrow.</p>
+<p>The quick fix is to adjust the variance-covariance matrix of the model coefficients by the sum of the squared Pearson residuals divided by the residual degrees of freedom. The Pearson residual in a generalized linear model is <span class="math display">\[
+    \frac{y_i - \widehat{\mu}_i}{\sqrt{\widehat{\text{Var}}[y_i]}}
+\]</span> and the adjustment factor is <span class="math display">\[
+\frac{1}{df_{\text{res}}} \sum_{i=1}^n \frac{(y_i - \widehat{\mu}_i)^2}{\widehat{\text{Var}}[y_i]}
+\]</span></p>
+<p>This is sometimes called a quasi-glm analysis. The results of the quasi-poisson analysis for the poppies experiment follows.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Quasi-Poisson Model for Poppy Counts in RCBD</p>
+</div>
+<div class="example-container">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>poi_qp <span class="ot">&lt;-</span> <span class="fu">glm</span>(count <span class="sc">~</span> block <span class="sc">+</span> tx, <span class="at">data=</span>poppies,</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">family=</span>quasipoisson)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The coefficient estimates are identical to those in the Poisson model. The standard errors of the coefficients are increased by a constant factor</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">summary</span>(poi_rcbd)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>s_q <span class="ot">&lt;-</span> <span class="fu">summary</span>(poi_qp)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>s_q<span class="sc">$</span>coefficients[,<span class="dv">2</span>] <span class="sc">/</span> s<span class="sc">$</span>coefficients[,<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)      block1      block2      block3         txA         txB 
+   4.338883    4.338883    4.338883    4.338883    4.338883    4.338883 
+        txC         txD         txE 
+   4.338883    4.338883    4.338883 </code></pre>
+</div>
+</div>
+<p>The factor scaling the standard errors is the square root of the sum of the squared Pearson residuals divided by the residual degrees of freedom.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>pear_res <span class="ot">&lt;-</span> (poi_rcbd<span class="sc">$</span>fitted.values <span class="sc">-</span> poppies<span class="sc">$</span>count)<span class="sc">/</span><span class="fu">sqrt</span>(poi_rcbd<span class="sc">$</span>fitted.values)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>disp_factor <span class="ot">&lt;-</span> <span class="fu">sum</span>(pear_res<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>poi_rcbd<span class="sc">$</span>df.residual</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(disp_factor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4.338883</code></pre>
+</div>
+</div>
+<p>The adjustment can be made directly by supplying the dispersion factor to the summary of the RCBD analysis:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(poi_rcbd,<span class="at">dispersion=</span>disp_factor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = count ~ block + tx, family = poisson, data = poppies)
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  3.32803    0.38956   8.543  &lt; 2e-16 ***
+block1       0.37356    0.19592   1.907   0.0566 .  
+block2       0.22700    0.20213   1.123   0.2614    
+block3       0.29939    0.19897   1.505   0.1324    
+txA          2.46098    0.38067   6.465 1.01e-10 ***
+txB          2.41579    0.38137   6.335 2.38e-10 ***
+txC          0.90056    0.43332   2.078   0.0377 *  
+txD          0.81014    0.43921   1.845   0.0651 .  
+txE          0.06852    0.50813   0.135   0.8927    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 18.8259)
+
+    Null deviance: 3868.5  on 23  degrees of freedom
+Residual deviance:  264.7  on 15  degrees of freedom
+AIC: 436.44
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+</div>
+</div>
+</div>
+<p>The quasi-glm analysis is not the recommended approach for addressing overdispersion. It is a band-aid that covers over the real reasons behind the overdispersion mechanism. The estimates in the quasi-glm analysis are no longer maximum likelihood estimates. A more sophisticated and more appropriate approach to addressing overdispersion is to account for more variability in the system.</p>
+</section>
+<section id="mixing-models" class="level3">
+<h3 class="anchored" data-anchor-id="mixing-models">Mixing Models</h3>
+<p>If the Poisson distribution is not sufficiently dispersed for a count target, what other options are available?</p>
+<p>The Negative Binomial distribution is also a model for count data and permits more variability than the Poisson distribution. It is a popular alternative for the Poisson model in the presence of overdispersion. The Negative Binomial is often derived from independent Bernoulli experiments, similar to the Binomial random variable. While the Binomial(<span class="math inline">\(n,\pi\)</span>) is the sum of <span class="math inline">\(n\)</span> independent Bernoulli(<span class="math inline">\(\pi\)</span>) experiments, the NegBin(<span class="math inline">\(k,\pi\)</span>) random variable is the number of Bernoulli(<span class="math inline">\(\pi\)</span>) trials until the <span class="math inline">\(k\)</span><sup>th</sup> event occurs.</p>
+<p>Another way of motivating the Negative Binomial is through a <strong>mixing process</strong> and this way is particularly insightful in the context of modeling overdispersion.</p>
+<p>In a mixing process one or more parameters are assumed random. The base distribution is considered conditional on the mixing parameter and the mixing distribution is derived as the marginal distribution, integrating (or summing) over the distribution of the mixing parameter. An example will make that easier to understand. Suppose that <span class="math inline">\(Y|\lambda\)</span> has a Poisson(<span class="math inline">\(\lambda\)</span>) distribution and that <span class="math inline">\(\lambda\)</span> is a Gamma(<span class="math inline">\(\alpha,\beta\)</span>) random variable. The mixing distribution, the marginal distribution, is obtained by integrating the conditional distribution over the distribution of the random parameter:</p>
+<p><span class="math display">\[
+p(y) = \Pr(Y=y) = \int_0^\infty p(y|\lambda) f(\lambda) \, d\lambda
+\]</span> The conditional distribution in this integral, <span class="math inline">\(p(y|\lambda)\)</span>, is a Poisson and <span class="math inline">\(f(\lambda)\)</span> is a Gamma distribution. Before looking at the marginal distribution of <span class="math inline">\(Y\)</span> in this <strong>Poisson–Gamma mixing</strong> scheme, is there something we can learn about the mean and variance of <span class="math inline">\(Y\)</span>?</p>
+<p>Suppose <span class="math inline">\(Y\)</span> has a distribution that depends on parameters <span class="math inline">\([\alpha, \beta]\)</span> and has conditional expectation and variance <span class="math display">\[
+\text{E}[Y|\alpha] = \mu(\alpha,\beta) \quad \text{Var}[Y|\alpha] = \sigma^2(\alpha,\beta)
+\]</span> If <span class="math inline">\(\beta\)</span> is a constant and <span class="math inline">\(\alpha\)</span> is a random variable the marginal mean and variance of <span class="math inline">\(Y\)</span> are</p>
+<p><span class="math display">\[\begin{align*}
+  \text{E}[Y] &amp;= \text{E}_\alpha[\text{E}[Y|\alpha]] = \text{E}_\alpha[\mu(\alpha,\beta)] \\
+  \text{Var}[Y] &amp;= \text{Var}_\alpha[\text{E}[Y|\alpha]] + \text{E}_\alpha[\text{Var}[Y|\alpha]] \\
+  &amp;= \text{Var}_\alpha[\mu(\alpha,\beta)] + \text{E}_\alpha\left[\sigma^2(\alpha,\beta)\right]
+\end{align*}\]</span></p>
+<p>What does that mean? The marginal variance is larger than the average variance of the conditional distribution. By introducing a randomly varying parameter, and integrating over its distribution, we arrive at a more dispersed distribution.</p>
+<p>Now back to the Poisson–Gamma mixing problem. It can be shown that if <span class="math inline">\(Y|\lambda \sim \text{Poisson}(\lambda)\)</span>, and <span class="math inline">\(\lambda \sim \text{Gamma}(\alpha,\beta)\)</span> that the marginal distribution of <span class="math inline">\(Y\)</span> is</p>
+<p><span class="math display">\[
+\Pr(Y=y)= {y+\alpha-1\choose\alpha-1} \left(\frac{\beta}{\beta+1}\right)^y \left(\frac{1}{\beta+1}\right)^\alpha
+\]</span></p>
+<p>This is a Negative Binomial distribution with mean <span class="math inline">\(\text{E}[Y] = \alpha\beta\)</span> and variance <span class="math inline">\(\text{Var}[Y] = \alpha\beta(1+\beta)\)</span>. The Negative Binomial is overdispersed relative to the Poisson by the factor <span class="math inline">\((1+\beta)\)</span>.</p>
+<p>Different parameterizations of the Gamma mixing distribution are in use. For example, the Gamma can be parameterized in terms of <span class="math inline">\(\text{E}[\lambda] = \alpha\beta = \mu\)</span> and <span class="math inline">\(\text{Var}[\lambda] = \mu/\phi\)</span>. The resulting Negative Binomial model is then overdispersed by a factor <span class="math inline">\((1+\phi)/\phi\)</span>.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Negative Binomial Analysis for Poppy Counts in RCBD</p>
+</div>
+<div class="example-container">
+<p>You can fit a Negative Binomial model in <code>R</code> with the <code>glm.nb</code> function in the <code>MASS</code> library.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'MASS'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    select</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>nbreg <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(count <span class="sc">~</span> block <span class="sc">+</span> tx, <span class="at">data=</span>poppies,<span class="at">link=</span><span class="st">"log"</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(nbreg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm.nb(formula = count ~ block + tx, data = poppies, link = "log", 
+    init.theta = 11.03966246)
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)   3.0687     0.2129  14.413  &lt; 2e-16 ***
+block1        0.3866     0.1894   2.041 0.041223 *  
+block2        0.2676     0.1901   1.408 0.159181    
+block3        0.8618     0.1872   4.603 4.16e-06 ***
+txA           2.6020     0.2325  11.190  &lt; 2e-16 ***
+txB           2.5906     0.2325  11.140  &lt; 2e-16 ***
+txC           0.9301     0.2381   3.906 9.38e-05 ***
+txD           0.8874     0.2384   3.723 0.000197 ***
+txE           0.0465     0.2474   0.188 0.850899    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for Negative Binomial(11.0397) family taken to be 1)
+
+    Null deviance: 283.530  on 23  degrees of freedom
+Residual deviance:  23.774  on 15  degrees of freedom
+AIC: 253.97
+
+Number of Fisher Scoring iterations: 1
+
+              Theta:  11.04 
+          Std. Err.:  3.57 
+
+ 2 x log-likelihood:  -233.966 </code></pre>
+</div>
+</div>
+<p>The ratio of the residual deviance to its degrees of freedom is about 1.6, much improved compared to any of the Poisson-based models.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>nbreg<span class="sc">$</span>deviance<span class="sc">/</span>nbreg<span class="sc">$</span>df.residual</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.584948</code></pre>
+</div>
+</div>
+<p>Both the coefficient estimates and the standard errors change compared to the Poisson analysis. Recall that the quasi-Poisson analysis affected only the standard errors of the coefficients.</p>
+</div>
+</div>
+<p>Other forms of parameter mixing are popular. The <strong>Binomial–Poisson</strong> mixing scheme assumes that the number of trials <span class="math inline">\(n\)</span> of a Binomial(<span class="math inline">\(n,\pi\)</span>) random variable follows a Poisson(<span class="math inline">\(\lambda\)</span>) distribution. If <span class="math inline">\(Y|n \sim \text{Binomial}(n,\pi)\)</span> and <span class="math inline">\(n \sim \text{Poisson}(\lambda)\)</span>, then <span class="math inline">\(Y\)</span> has a Poisson distribution with mean <span class="math inline">\(\lambda\pi\)</span>. This Poisson is overdispersed relative to the Binomial(<span class="math inline">\(n,\pi\)</span>) evaluated at the average sample size <span class="math inline">\(\lambda\)</span> because <span class="math display">\[
+\lambda\pi &gt; \lambda\pi(1-\pi)
+\]</span></p>
+<p>The <strong>Beta-Binomial</strong> mixing model assumes that <span class="math inline">\(Y|n \sim \text{Binomial}(n,\pi)\)</span>, <span class="math inline">\(n\)</span> is fixed, and <span class="math inline">\(\pi\)</span> is a random variable with a Beta(<span class="math inline">\(\alpha,\beta\)</span>) distribution. The resulting marginal distribution of <span class="math inline">\(Y\)</span> is known as the beta-binomial distribution and has mean and variance <span class="math display">\[
+\text{E}[Y] = \frac{n\alpha}{\alpha+\beta} \quad \text{Var}[Y] = \frac{n\alpha\beta(n+\alpha+\beta)}{(\alpha+\beta)^2(\alpha+\beta+1)}
+\]</span></p>
+<p>A <strong>double mixing</strong> scheme assumes that multiple parameters are random. For example, starting with a Binomial(<span class="math inline">\(n,\pi)\)</span> random variable, we can define a <strong>Binomial–Poisson–Gamma</strong> mixing model as follows</p>
+<p><span class="math display">\[\begin{align*}
+    Y | n &amp;\sim \text{Binomial}(n,\pi) \\
+    n | \lambda &amp;\sim \text{Poisson}(\lambda) \\
+    \lambda &amp;\sim \text{Gamma}(\alpha,\beta)
+\end{align*}\]</span></p>
+<p>The marginal distribution of <span class="math inline">\(Y\)</span> is again Negative Binomial with mean <span class="math inline">\(\text{E}[Y] = \alpha\beta\pi\)</span> and variance <span class="math inline">\(\text{Var}[Y] = \alpha\beta\pi(1+\beta\pi)\)</span>.</p>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;26.1: Generalized model mind map</span>
+<span class="glightbox-desc lightbox-desc-2">Approximation of Binomial and Poisson probabilities</span>
+<span class="glightbox-desc lightbox-desc-3">Figure&nbsp;26.13: The inverse link maps <span class="math inline">\(\eta\)</span> to valid values of the mean and the target data. If <span class="math inline">\(Y \in \{0,1\}\)</span>, then <span class="math inline">\(0 \le \text{E}[Y] \le 1\)</span>.</span>
+<span class="glightbox-desc lightbox-desc-4">Figure&nbsp;26.15: Randomized Complete Block Design</span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-FerrariCribariNeto" class="csl-entry" role="listitem">
+Ferrari, S. L. P., and F. Cribari-Neto. 2004. <span>“Beta Regression for Modeling Rates and Proportions.”</span> <em>Journal of Applied Statistics</em> 31 (7): 799–815.
+</div>
+<div id="ref-GrueHeiberg" class="csl-entry" role="listitem">
+Grue, Lars, and Arvid Heiberg. 2006. <span>“Notes on the History of Normality–Reflections on the Work of Quetelet and Galton.”</span> <em>Scandinavian Journal of Disability Research</em> 8 (4): 232–46.
+</div>
+<div id="ref-McCullaghNelder" class="csl-entry" role="listitem">
+McCullagh, P., and J. A. Nelder Frs. 1989. <em>Generalized Linear Models, 2nd Ed.</em> Chapman &amp; Hall, New York.
+</div>
+<div id="ref-Meadetal1993" class="csl-entry" role="listitem">
+Mead, R., R. N. Curnow, and A. M. Hasted. 1993. <em>Statistical Methods in Agriculture and Experimental Biology</em>. CRC Press, New York; Boca Raton, FL.
+</div>
+<div id="ref-Prater1956" class="csl-entry" role="listitem">
+Prater, N. H. 1956. <span>“Estimate Gasoline Yields from Crudes.”</span> <em>Petroleum Refiner</em> 35 (3).
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./arules.html" class="pagination-link" aria-label="Association Rules">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./gam.html" class="pagination-link" aria-label="Generalized Additive Models">
+        <span class="nav-page-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","loop":false,"closeEffect":"zoom","descPosition":"bottom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

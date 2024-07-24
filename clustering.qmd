@@ -1,0 +1,704 @@
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
+# Cluster Analysis {#sec-clustering}
+
+## Introduction
+
+The term **cluster** appears throughout data analytics in different contexts. In the analysis of correlated data a cluster is a group of observations that belong together and group membership is known a priori. For example, a subsample that is drawn from a larger sampling unit creates a hierarchy of sampling units. The longitudinal observations collected on a subject over time form a cluster of subject-specific data. The data from different subjects might be independent while the longitudinal observations within a cluster (a subject) are correlated.
+
+In unsupervised learning, a cluster is a group of observations that are somehow *similar*. Group membership is not known a priori and determining membership as well as the number of clusters is part of the analysis. Examples are
+
+- Students that are similar with respect to STEM achievement scores
+- Real estate properties that share similar property attributes
+- Online shoppers with similar browsing and purchase history
+
+Cluster analysis seeks to find groups of data such that members within a group are similar to each other and members from different groups are dissimilar. It is an unsupervised method, there is no target variable, we simply are trying to find structure in the data. The number of clusters can be set a priori, for example in $k$-means clustering, or be determined as part of analysis, as in hierarchical clustering. 
+
+:::{.callout-note}
+## Clustering Rows or Columns
+
+Note that we are looking for groups of "data", we did not specify whether clustering applies to finding similar observations or similar features. Usually it is the former, and clustering columns versus rows can be performed by simply transposing the data. From here on we assume that clustering is seeking similar groups of observations.
+:::
+
+:::{.callout-important}
+## Scaling and Centering
+
+Key to all clustering methods is some notion of similarity--or the opposite, dissimilarity--of data points. Measures of similarity (or dissimilarity) depend on a metric expressing **distance**. Squared Euclidean distance is a common choice, but other metrics such as the Manhattan (city-block) distance, correlation distance, or Gower's distance are also important. Many distance measures depend on the units of measurement; variables with large values tend to dominate the distance calculations. It is highly recommended to scale data prior to cluster analysis to put features on equal footing.
+
+Scaling is often not applied to binary variables, for example, variables that result from coding factors as a series of 0/1 variables.
+:::
+
+## $K$-Means Clustering
+
+### Introduction
+
+$K$-means clustering is an intuitive method to cluster $p$ numeric input variables. The value $K$ is the number of clusters and is set a priori. If you perform a $3$-means analysis, the algorithm will assign all observations to one of three clusters. If you perform a $100$-means analysis, the algorithm will assign all observations to one of 100 clusters. Choosing the appropriate number of clusters for a data set uses **scree plots** similar to choosing the number of components in principal component analysis.
+
+The $K$-means algorithm has the following properties:
+
+- The analysis leads to $K$ clusters
+- Every observation belongs to exactly one cluster
+- No observation belongs to more than one cluster
+
+Finding the optimal partitioning of $n$ observations into $K$ groups is a formidable computational problem, there are approximately $K^n$ ways of partitioning the data. However, efficient algorithms exist to find at least a local solution to the global partitioning problem. 
+
+To introduce some notation for $K$-means clustering, let $C_i$ denote the set of observations assigned to cluster $i=1,\cdots,K$. The $K$-means properties imply that 
+
+- $C_1 \cup C_2 \cup \cdots \cup C_K = \{1,\cdots, n\}$
+- $C_i \cap C_j = \emptyset$ if $i \neq j$ 
+
+The number of observations in cluster $i$ is called its **cardinality**, denoted $|C_i|$.
+
+If squared Euclidean distance is the dissimilarity measure of choice, the distance between two data points is 
+$$
+d(\bx_i,\bx_j) = ||\bx_i - \bx_j||_2^2 = \sum_{m=1}^p \left ( x_{im} - x_{jm} \right )^2
+$$
+The **within-cluster variation** in cluster $k$ is the average dissimilarity of the observations in $C_k$:
+$$
+W(C_k) = \frac{1}{|C_k|} \sum_{i,j \in C_k} ||\bx_i - \bx_j||_2^2
+$$
+Let $\overline{\bx}_k = [\overline{x}_{1k},\cdots,\overline{x}_{pk}]$ be the vector of means 
+of the inputs in the $k$^th^ cluster. Finding the $K$-means solution requires to find the cluster allocations such that
+$$
+\min_{C_1,\cdots, C_k} \left \{ \sum_{k=1}^K W(C_k) \right \} \Longleftrightarrow 
+\min_{C_1,\cdots, C_k} \left \{ \sum_{k=1}^K \sum_{i \in C_k} ||\bx_i - \overline{\bx}_k||_2 ^2 \right \}
+$$
+
+This states that the cluster assignment that minimizes the sum of the within-cluster dissimilarity is the same assignment that minimizes the distances of data points from the cluster centroid. This is how $K$-means clustering gets its name; the cluster centroids are computed as the mean of the observations assigned to the cluster.
+
+The **within-cluster sum of squares** is the sum of the squared distances between the data points in a cluster and the cluster centroid. For cluster $k$ this sum of squares is
+$$
+\text{SSW}_k = \frac{1}{2} W(C_k) = \sum_{i \in C_k} ||\bx_i - \overline{\bx}_k||_2 ^2
+$$
+This quantity is also called the **inertia** of the cluster. The average inertia, 
+$$
+\frac{1}{|C_k|} \text{SSW}_k
+$$
+is called the **distortion** of cluster $k$.
+
+A (local) solution is found by iterating from an initial cluster assignment: given cluster centroids $\overline{\bx}_k$ assign each observation to the cluster whose center is closest. Following the assignment recompute the centers. Continue until the cluster assignment no longer changes. At the local solution no movement of a data point from one cluster to another will reduce the within-cluster sum of squares [@Hartigan1979].
+
+The initial cluster assignment is done by either assigning observations randomly to the $k$ clusters or by using $k$ randomly chosen observations as the initial cluster centroids.
+
+Because of this random element, and because the algorithm is not guaranteed to find a global solution, $K$-means is typically run with multiple random starts, and the best solution is reported.
+
+:::{.example}
+::::{.example-header}
+Example: $K$-Means for Iris Data
+::::
+::::{.example-container}
+To show the basic calculations in $K$-means analysis, let's first look at the familiar `Iris` data set. We have the luxury of knowing that the data set comprises three species, a $3$-means analysis of the flower measurements should be interesting: does it recover the iris species?
+
+The `kmeans` function in `R` performs the $K$-means analysis. By default, it uses he algorithm of @Hartigan1979 with a single random start for the initial cluster assignment. Set `nstart=` to a larger number to increase the number of random starts. Because there are four inputs, `Sepal.Length`, `Sepal.Width`. `Petal.Length`, and `Petal.Width`, each observation and the centroids live in 4-dimensional space.
+
+```{r}
+set.seed(1234)
+iris_s <- scale(iris[,1:4])
+km <- kmeans(iris_s,centers=3,nstart=50)
+
+km$size
+km$centers
+```
+The algorithm finds three clusters of sizes `{r} km$size[1]`, `{r} km$size[2]`, and `{r} km$size[3]`. The centroid of the first cluster is at coordinate [`{r} round(km$centers[1,],4)`].
+
+The breakdown of the dissimilarities, the squared distances, in the data set is as follows.
+
+```{r, collapse=TRUE}
+km$totss
+km$betweenss
+km$tot.withinss
+km$withinss
+(km$tot.withinss/km$totss)*100
+
+```
+The total sum of squares does not depend on the number of clusters. For $K=3$, it is allocated to 
+`{r} round(km$tot.withinss,4)` sum of squares units within the clusters and 
+`{r} round(km$betweenss,4)` between the clusters. 
+
+The within-cluster sum of squares measures the average squared Euclidean distance between the points in a cluster and the cluster centroid. We can validate for any of the clusters as follows
+
+```{r}
+withinss <- function(x, center) {
+    tmp <- sapply(seq_len(nrow(x)),function(i) sum((x[i,]-center)^2))
+    return (sum(tmp))
+}
+for (i in 1:3) {
+    print(withinss(iris_s[km$cluster==i,],km$center[i,]))
+}
+```
+
+The distortions of the clusters are obtained by dividing the within-cluster sum of squares with the cluster sizes:
+
+```{r}
+km$withinss / km$size
+```
+
+@fig-iris-kmeans shows the cluster assignment in a bivariate plot of two of the flower measurements. The colored cluster symbols are overlaid with the species. The three clusters track the species fairly well, in particular *I. setosa*. The boundaries of the other two clusters align fairly well with species, but there is considerable overlap.
+
+```{r iris_plot, echo=FALSE, fig.asp=1.0, out.width="80%", fig.align="center"}
+#| fig.cap: Results of 3-means clustering for Iris data. Clusters are identified through colors, species are identified with plotting symbols.
+#| label: fig-iris-kmeans
+#| lightbox:
+#|
+
+psym <- ifelse(iris$Species=="setosa", 1, 
+               ifelse(iris$Species=="versicolor" ,2,3))
+
+plot(iris_s[,"Sepal.Width"],
+     iris_s[,"Sepal.Length"],
+     type="p",
+     pch=psym,
+     col=km$cluster,
+     cex=0.75,
+     las=1,
+     ylab="Sepal length",
+     xlab="Sepal width")
+    
+legend("topright",legend=c("I. setosa","I. versicolor","I. virginica"),pch=c(1,2,3))
+```
+
+The separation of these clusters is probably better than @fig-iris-kmeans suggests, because two dimensions (`Petal.Width` and `Petal.Length`) are not represented in the figure.
+
+```{r}
+psym <- ifelse(iris$Species=="setosa", 1, 
+               ifelse(iris$Species=="versicolor" ,2,3))
+cm <- caret::confusionMatrix(as.factor(km$cluster),as.factor(psym))
+round(cm$overall,4)
+```
+
+The confusion matrix between species and cluster assignment has an accuracy of `{r} round(100*cm$overall[1],4)`\%.
+::::
+:::
+
+:::{.callout-caution}
+$K$-means analysis is generally susceptible to outliers, as they contribute large distances. Also, $K$-means analysis is sensitive to perturbations of the data; when observations are added or deleted the results will change. Finally, $K$-means is affected by the **curse of dimensionality** (@#sec-curse-dimensionality). 
+:::
+
+### Clustering Metrics
+
+To choose the appropriate number of clusters in $K$-means clustering, we can apply various metrics that measure the tightness of the clusters and their separation. These metrics are plotted against the value of $k$ in a scree plot. We do not look for a minimum of the criteria, but the "knee" or "elbow" where the increase/decrease of the metric abruptly changes.
+
+The following criteria are commonly computed and plotted.
+
+- **Inertia**: this is the within-cluster sum of squares and measures the tightness of the clusters. It does not necessarily mean that clusters are well separated, it just means that the data points within the clusters are close to their centroid. The within-cluster sum of squares decreases as $K$ increases, more clusters will lead to less variability within the clusters. That is why we do not look for minima with these criteria.
+
+- **Distortion**: this is the average inertia within a cluster, obtained by dividing $\text{SSW}_k$ by the cluster cardinality.
+
+- **Silhouette** score: measures how similar a data point is to its own cluster compared to other clusters. While inertia is based only on distances of data points from *their* cluster center, the silhouette takes into account the distances between points in one cluster and the nearest cluster center. The score ranges from $-1$ to $+1$; a high silhouette score means that we can easily tell the clusters apart--they are far from each other.
+
+Inertia and silhouette measure different things: the former captures the tightness of the clusters, the latter how far apart (distinguishable) the clusters are. You can have a good (low) inertia but a bad (low) silhouette score if the clusters overlap or sit on top of each other.
+
+:::{.example}
+::::{.example-header}
+Example: Silhouette Scores
+::::
+::::{.example-container}
+You can calculate and/or visualize silhouette scores in `R` in several ways: using the `silhouette` function in the `cluster` library or the `fviz_nbclust` function in the `factoextra` package. `fviz_nbclust` supports additional metrics, for example `method="wss"` produced a scree plot of the within-cluster sum of squares (inertia).
+
+```{r, warning=FALSE, message=FALSE, fig.align="center", out.width="80%"}
+
+library(cluster)
+set.seed(6345)
+silhouette_score <- function(k){
+  kmns <- kmeans(iris_s, centers = k, nstart=50)
+  ss <- silhouette(kmns$cluster, dist(iris_s))
+  mean(ss[, 3])
+}
+k <- 2:10
+plot(k, 
+     sapply(k, silhouette_score),
+     type='b',
+     xlab='Number of clusters', 
+     ylab='Average Silhouette Scores',bty="l")
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align="center", out.width="80%"}
+library(factoextra)
+fviz_nbclust(iris_s, kmeans, method='silhouette')
+fviz_nbclust(iris_s, kmeans, method='wss')
+```
+
+The silhouette scores suggest $k=2$ and the inertia scree plot $k=$3--5.
+::::
+:::
+
+
+
+### Predicted Values
+
+Although $K$-means is an unsupervised learning method, we can use it to predict the cluster of a new observation. 
+Calculate The distance of the coordinate of the new point to the cluster centers and assign the observation to the cluster whose center is closest. The cluster centroids serve as the predicted values. You can write a function in `R` that accomplishes that.
+
+If the data were centered and/or scaled in the $K$-means analysis, make sure that the same treatment is applied before calculating distances to the cluster centroids.
+
+```{r}
+clusters <- function(x, centers) {
+  # compute squared euclidean distance from 
+  # each sample to each cluster center
+  tmp <- sapply(seq_len(nrow(x)),
+                function(i) apply(centers, 1,
+                                  function(v) sum((x[i, ]-v)^2)))
+  max.col(-t(tmp))  # find index of min distance
+}
+
+# two new observations
+newx = data.frame("Sepal.Length"=c(4  , 6  ),
+                  "Sepal.Width" =c(2  , 3  ),
+                  "Petal.Length"=c(1.5, 1.3),
+                  "Petal.Width" =c(0.3, 0.5))
+
+#center and scales from training data
+means <- attr(iris_s,"scaled:center")
+scales <- attr(iris_s,"scaled:scale")
+ 
+pred_clus <- clusters((newx-means)/scales,km$centers)
+pred_clus
+
+# Using the cluster centers as the predicted values
+km$centers[pred_clus,]
+```
+
+### Combining $K$-Means and PCA
+
+$K$-means analysis finds groups of observations that are similar to each other in the inputs as judged by a distance metric. Principal component analysis finds independent linear combinations of the inputs that explain substantial amounts of information. In the Iris example analyzed earlier, we used 4 input variables but plotted the cluster assignment for two of the variables, because visualization in more dimensions is difficult (@fig-iris-kmeans).
+
+There are two ways to combine PCA and $K$-means:
+
+1. **PCA after $K$-means**: Run a $K$-means analysis on $p$ inputs, then calculate the first two principal components with the cluster assignment. This is a visualization techniques for clusters in high-dimensional data. It does not rectify the curse of dimensionality issue from which $K$-means suffers as $p$ gets larger. When applied to visualize data in 2 dimensions, this technique reduces $p(p-1)/2$ scatterplots to a singple biplot based on the first 2 components.
+
+2. **$K$-means after PCA**: Use PCA to reduce $p$ inputs to $M < p$ principal components, then run a $K$-means analysis to find clusters in the components. This approach eliminates the curse of dimensionality. 
+
+<!---
+It should be not too surprising when the optimal number of clusters is similar to the number of principal components chosen. The components measure perpendicular relationships in the data.
+--->
+
+:::{.example}
+::::{.example-header}
+Example: Airbnb properties in Asheville, NC
+::::
+::::{.example-container}
+The following data is Airbnb data about Asheville, NC. The data for this and other
+cities is available from http://insideairbnb.com/get-the-data/. We are using six numeric variables for the properties. 
+
+``` {r, warning=FALSE, message=FALSE}
+library(duckdb)
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+airbnb <- dbGetQuery(con, "SELECT * FROM Asheville")
+
+dbDisconnect(con)
+    
+airbnb2 <- na.omit(airbnb[,c("price",
+    "number_of_reviews","minimum_nights",
+    "reviews_per_month","availability_365",
+    "calculated_host_listings_count")])
+
+```
+
+
+@fig-asheville-data shows the distribution of prices as a function of the number of reviews. Many properties have accumulated hundreds of reviews over time. and most are toward the lower end of the price scale. 
+
+```{r, echo=FALSE, fig.align="center", fig.asp=0.8, out.width="75%"}
+#| label: fig-asheville-data
+plot(airbnb[,"number_of_reviews"],
+     airbnb[,"price"],
+     type="p",
+     cex=0.8,
+     las=1,
+     bty="l",
+     ylab="Daily Rental Price",
+     xlab="Number of reviews")
+```
+
+The property with a rental price of more than \$10,000 per day is a 1-bedroom, 1-bath guest suite in the middle of Asheville. The rental has a 2-night minimum and over 200 reviews. We are excluding this observation as an outlier.
+
+We now perform a $K$-means analysis based on the first two principal components after limiting the data to properties with a daily rental price of less than \$2,000.
+
+```{r}
+airbnb2 <- airbnb2[airbnb2$price < 2000,]
+
+pca_asheville <- prcomp(airbnb2,retx=TRUE,scale.=TRUE)
+summary(pca_asheville)
+```
+
+We use the first three principal components for the subsequent $K$-means analysis; they explain 
+`{r} round(100*summary(pca_asheville)$importance[3,3],4)`\% of variability in the data.
+
+Based on the scree plot of the within-cluster sum of squares and the silhouette scores, $K$=5 or $K=6$ seems like a reasonable number of clusters. The silhouette plot suggests $K$=7 instead (@fig-asheville-silhouette). We compromise on $K=6$.
+
+```{r, fig.align="center", out.width="90%"}
+#| fig.cap: Silhouette score and inertia scree plot.
+#| label: fig-asheville-silhouette
+fviz_nbclust(pca_asheville$x[,1:3], kmeans, method='silhouette')
+```
+
+```{r, fig.align="center", out.width="90%"}
+#| fig.cap: Inertia scree plot.
+fviz_nbclust(pca_asheville$x[,1:3], kmeans, method='wss')
+```
+
+```{r, fig.align="center", out.width="90%"}
+#| lightbox: 
+km <- kmeans(pca_asheville$x[,1:3],centers=6,nstart=25)
+
+library(ggfortify)
+autoplot(pca_asheville, 
+         data=airbnb2, 
+         color=km$cluster, 
+         size=0.6,
+         loadings.label=TRUE, 
+         loadings.label.size = 3,
+         loadings=TRUE)
+```
+
+Not surprisingly, the `reviews_per_month` and the `number_of_reviews` are highly correlated. The six clusters separate pretty well. There is some overlap between black and green clusters, but the display is missing one of the principal components. The PCA rotation shows that PC1 is dominated by review-related attributes and PC2 by availability of the property and the number of listings that a host has in Asheville. PC3 has negative scores for pricey properties.
+
+```{r}
+pca_asheville$rotation[,1:3]
+```
+::::
+:::
+
+### $K$-Means on Random Data
+
+Before we leave $K$-means clustering, a word of caution. 
+K-Means clustering will always find $K$ clusters even if the data have no structure. The following data perform a $3$-means analysis on 100 observations on 5 inputs drawn randomly from a standard Gaussian distribution. The correlation analysis shows no (pairwise) relationship among the inputs.
+
+```{r}
+set.seed(7654)
+x <- matrix(rnorm(500,0,1),nrow=100,ncol=5)
+round(cor(x),4)
+```
+
+```{r}
+krand <- kmeans(x,centers=3,nstart=20)
+krand$center
+krand$withinss
+```
+
+To visualize, run a PCA and color the scores of the first two components with the 
+cluster id. It appears that the algorithm found three somewhat distinct groups of observations. The cluster centroids are certainly quite different (@fig-kmeans-random).
+
+```{r}
+pca <- prcomp(x,scale.=TRUE)
+proj_means <- predict(pca,newdata=krand$centers)
+```
+
+```{r, fig.asp=1.0, out.width="75%", fig.align="center", out.width="90%", echo=FALSE}
+#| fig.cap: The first two principal components for $3$-means analysis on random data, $p=5$. The diamonds are the cluster centroids.
+#| label: fig-kmeans-random
+plot(x=pca$x[,2],
+     y=pca$x[,1],
+     las=1,
+     ylab="PC(1)",
+     xlab="PC(2)",
+     pch=16,
+     col=krand$cluster)
+points(x=proj_means[,2],y=proj_means[,1],cex=2.5,col=c(1,2,3),pch=18)
+```
+
+There is a clue that something is amiss. 
+
+```{r}
+(krand$betweenss/krand$totss)*100
+```
+
+The variability between the clusters accounts for only `{r} round(100*krand$betweenss/krand$totss,3)`\% of the variation in the data. If grouping explains differences between the data points, this percentage should be much higher.  
+
+## Hierarchical Clustering
+
+### Introduction
+
+In $K$-means clustering you specify $K$, find the clusters, and examine the results. Metrics such as inertia, distortion, or the silhouette score are used to find an appropriate value for $K$. **Hierarchical clustering** (HC) is a clustering technique where you do not specify the number of clusters in advance. Instead, the entire data set is organized between two extremes: 
+
+- at the top, all observations belong to a single cluster
+- at the bottom, each observations is in a cluster by itself
+
+If $c$ denotes the number of clusters in hierarchical clustering, HC offers you to choose $1 \le c \le n$. Between the two extremes, $c=1$ and $c=n$ lie many configurations where observations are combined into groups based on similarity measures and rules for combining groups, called **linkage** methods. The choice is typically made based on heuristics such as a visual inspection of the **dendrogram**, an upside-down tree display of the cluster arrangements (@fig-hc-example). Algorithms exist that try to automate and optimize the determination of $c$ based on criteria such as inertia.
+
+![Example of a dendrogram in hierarchical clustering](images/Dendrogram_annotated.png){#fig-hc-example fig-align="center" width="85%" .lightbox}
+
+### The Dendrogram
+
+Hierarchical clustering is popular because of the dendrogram, an intuitive representation of structure in the data. A word of caution is in order, however: just like $K$-means clustering will find $K$ clusters--whether they exist or not--hierarchical clustering will organize the observations hierarchically in the dendrogram--whether a hierarchy makes sense or not.
+
+At the lowest level of the dendrogram are the **leaves**, corresponding to observations. As you move up the tree, those merge into **branches**. Observations fuse first into groups, later on observations or groups merge with other groups. A common mistake in interpreting dendrograms is to assume similarity is greatest when observations are close to each other on the horizontal axis when fused. Observations are more similar if they are fused [lower]{.underline} on the tree. The further up on the tree you go before merging branches, the more **dissimilar** are the members of the branches.
+
+In @fig-dendrogram-example, observations 11 and 4 near the right edge of the tree appear "close" along the horizontal axis. Since they merge much higher up on the tree, these observations are more dissimilar as, for example, observations 23 and 25, which merge early on. Based on where they merge, observation 11 is no more similar to \#4 than it is to observations 23, 25, 10, and 15.
+
+``` {r, echo=FALSE, warning=FALSE, message=FALSE, fig.align="center", out.width="85%"}
+#| fig.cap: Example of a dendrogram in hierarchical clustering.
+#| label: fig-dendrogram-example
+#| lightbox:
+#| 
+library(duckdb)
+library(dplyr)
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+glauc <- dbGetQuery(con, "SELECT * FROM glaucoma")
+dbDisconnect(con)
+glauc <- glauc %>% filter(Glaucoma==1) %>% 
+    dplyr::select(-c(Glaucoma)) %>% 
+    scale()
+
+hc <- hclust(get_dist(glauc[1:50,],method="euclidean"),method="complete")
+par(mar=c(1,4,1,2))
+plot(hc, cex=0.5, main="", sub="",xlab="")
+```
+
+The name hierarchical clustering stems from the fact that clusters lower on the tree (near the bottom) are necessarily contained in clusters higher up on the tree (near the top), since clusters are formed by merging or splitting. This hierarchical arrangement can be unrealistic. @James2013_ISLR2 [p. 523] give the following example
+
+- Suppose you have data on men and women from three countries. 
+- The best division into three groups might be by country.
+- The best division into two groups might be by gender.
+
+The best division into three groups does not result from taking the two gender groups and splitting one of those.
+
+There are two general approaches to construct a dendrogram. 
+
++ The **agglomerative** (bottom-up) approach starts with $c=n$ clusters at the bottom of the dendrogram, where each observation is a separate cluster, and merges observations and branches based on their similarity. The pair chosen for merging at any stage consists of the least dissimilar (most similar) groups.
+
++ The **divisive** (top-down) approach starts at the trunk (the top) of the tree with a single cluster that contains all observations. Moving down the tree, branches are split into clusters to produce groups with the largest between-group dissimilarity (least similar clusters).
+
+### Cutting the Dendrogram
+
+It is best to interpret the dendrogram as a data summary, not as a confirmatory tool. Based on the dendrogram you can choose any number of clusters. The typical approach is called **cutting the tree**, whereby you choose a particular height on the dendrogram and draw a line across. Depending on where you draw the line you end up with a different number of clusters (@fig-dendrogram-cut). The number of clusters corresponds to the number of vertical lines the cut intersects.
+
+![Dendrogram cut at different heights](images/Dendrogram_cut.png){#fig-dendrogram-cut fig-align="center" width="85%" .lightbox}
+ 
+### Dissimilarity and Linkage
+
+Before we can construct a dendrogram, we need to decide on two more things (besides whether the approach is top-down or bottom-up): a measure of dissimilarity and a rule on which groups are to be merged. These choices have profound effect on the resulting dendrogram, more so than the choice between top-down or bottom-up approach.
+
+#### Dissimilarity measures
+
+Let $x_{ij}$ denote the measurements for $i=1,\cdots, n$ observations on $j=1,\cdots, p$ inputs (variables). As before, the vector of inputs for the $i$^th^ observation is denoted $\bx_i = [x_{i1},\cdots, x_{ip}]$.
+
+The **dissimilarity (distance) matrix** $\bD$ for the data is an $(n \times n)$ matrix with typical element
+$$
+	D(\bx_i,\bx_{i^\prime}) = \sum_{j=1}^p w_j \, d_j(x_{ij},x_{i^\prime j})
+$$
+The $w_j$ are weights associated with the $j$^th^ attribute, $\sum_{j=1}^p w_j = 1$. $d_j(x_{ij},x_{i^\prime j})$ measures the dissimilarity between any two observations for the $j$^th^ attribute.
+
+A number of dissimilarity measures are used, depending on the type of variable and the application.
+For quantitative variables, the following are most popular:
+
++ **Squared Euclidean distance**
+		$$d_j(x_{ij},x_{i^\prime j}) = (x_{ij} - x_{i^\prime j})^2$$
+Probably the most frequent choice, but it is sensitive to large distances due to squaring.
+
++ **Absolute distance**, also called "Manhattan" or city-block distance
+		$$d_j(x_{ij},x_{i^\prime j}) = |x_{ij} - x_{i^\prime j}|$$
+Absolute distance is more robust to large differences compared to dissimilarity based on Euclidean distance.
+
++ **Correlation-based distance**
+$$
+		d_j(x_{ij},x_{i^\prime j}) = 1- \rho(\bx_i,\bx_{i^\prime})  = 1- \frac{\sum_j (x_{ij}-\overline{x}_i) (x_{i^\prime j} - \overline{x}_{i^\prime})}
+		{\sqrt{\sum_j (x_{ij}-\overline{x}_i)^2 \, (x_{i^\prime j} - \overline{x}_{i^\prime})^2 }}
+$$
+with $\overline{x}_i = 1/p \sum_j x_{ij}$. 
+
+
+:::{.callout-note}
+Note that $\rho(\bx_i, \bx_{i^\prime})$ does **not** measure the correlation between two variables across a set of $n$ observations--that would be the familiar way to calculate and interpret a correlation coefficient. $\rho(\bx_i, \bx_{i^\prime})$ is the correlation between two observations across $p$ attributes.
+:::
+
+:::{.example}
+::::{.example-header}
+Example: Effect of Distance Metrics
+::::
+::::{.example-container}
+We use a simple data set with observations on the shopping behavior of four imaginary shoppers. Frank, Betsy, Julian, and Lisa make purchases of 5 possible items. The values for the item attributes are the number of times the item was purchased.
+
+```{r, include=FALSE}
+library(factoextra)
+library(cluster)
+```
+
+```{r}
+df <- data.frame(shopper=c("Frank","Besty","Julian","Lisa"),
+                 item1=c(0,1,0,0),
+                 item2=c(0,0,4,1),
+                 item3=c(1,1,0,0),
+                 item4=c(1,3,0,1),
+                 item5=c(2,0,1,1)
+                 )
+df
+```
+
+First, let's calculate various distance metrics. These are represented as matrices of distances between the data points. The function `dist()` returns the lower triangular matrix of pairwise distances
+
+```{r, collapse=TRUE}
+dist(df[,2:6],method="manhattan")
+dist(df[,2:6],method="euclidean")
+```
+The `dist` function excludes the diagonal entries of the distance matrix by default, these are known to be zero. Because the input values are integers in this example, the city-block distances are also integers.
+
+The correlation-based distances can be calculated with `factoextra::get_dist()`. This function adds methods for correlations based on Pearson (`method="pearson"`), Spearman (`method="spearman"`) or Kendall (`method="kendall"`). The variables can be centered and scaled with `stand=TRUE` (`stand=FALSE` is the default).
+
+```{r}
+cor(t(df[,2:6]))
+get_dist(df[,2:6],method="pearson",stand=FALSE)
+```
+
+The correlation-based dissimilarity is not equal to the correlation among the item purchases, it is one minus the correlation of the item purchases for each shopper.
+
+The `cluster::daisy()` function can compute Euclidean, Manhattan, and Gower's distance matrices. More on Gower's distance after the example.
+
+```{r, collapse=TRUE}
+daisy(df[,2:6],metric="manhattan")
+daisy(df[,2:6],metric="euclidean")
+daisy(df[,2:6],metric="gower")
+```
+
+Now let's construct the dendrograms for the data based on Euclidean and Pearson correlation distance matrices using the `hclust` function. 
+The input to `hclust` is a distance (dissimilarity) matrix as  produced by `dist()`, `get_dist()`, `daisy()`. The actual values of the variables are no longer needed once the dissimilarities are calculated.
+
+```{r, fig.align="center", out.width="90%"}
+h1 <- hclust(dist(df[,2:6]))
+h2 <- hclust(get_dist(df[,2:6],method="pearson"))
+
+par(mfrow=c(1,2))
+par(cex=0.7) 
+par(mai=c(0.6,0.6,0.2,0.3))
+plot(h1,labels=df[,1],sub="",xlab="Shoppers",main="Euclidean Dist.")
+plot(h2,labels=df[,1],sub="",xlab="Shoppers",main="Correlation")
+```
+
+Choosing Euclidean distance groups together users who bought few items, because they appear as similar (close). Frank and Lisa bought 4 and 3 items, respectively. Betsy and Julian purchased 5 items. Choosing correlation-based distance groups users who bought items together. For example, Julian and Lisa bought items 2 and 5 together, Frank and Betsy purchased items 3 and 4 together. 
+::::
+:::
+
+The distance metrics discussed so far are not appropriate for categorical variables (nominal or ordinal) because differences between values are not defined. A four-star rating is not twice as much as a two-star rating and the "distance" between a one- and two-star rating is not the same as that between a four- and five-star rating.
+
+Still, for an ordinal variable with $M$ categories it is not uncommon to replace the label for category $j$ with
+$$
+\frac{j-1/2}{M}
+$$
+and treat this as a quantitative score. With nominal variables it is common to assign a simple loss value depending on whether the values of two variables are the same (loss = 0) or different (loss=1).
+
+What should we do when the inputs are of mixed type, for example, $x_1$ is continuous, $x_2$ is binary, and $x_3$ is nominal? @Gower1971 introduced a similarity metric to compute distances in this case, known as Gower's distance.
+Suppose there are no missing values. Gower's **similarity coefficient** is
+$$
+S(\bx_i,\bx_{i^\prime}) = \frac{1}{p}\sum_{j=1}^p s_{ii^\prime j}
+$$
+The $s_{ii^\prime j}$ is the **score** between observations $i$ and $i^\prime$ for variable $j$; The scores range $0 \leq s_{ii^\prime j} \leq 1$ and are calculated as follows:
+
+- qualitative attributes: 0/1 loss
+- quantitative attritbutes:
+$$
+s_{i i^\prime j} = 1 - \frac{x_{ij} - x_{i^\prime j}}{R_j}
+$$
+where $R_j$ is the range (max-min) for the $j$^th^ variable.
+The Gower similarity coefficient has the following properties:
+
+- $0 \leq S(\bx_i, \bx_{i^\prime}) \leq 1$
+- $S(\bx_i, \bx_{i^\prime}) = 0 \Rightarrow$ records differ maximally
+- $S(\bx_i, \bx_{i^\prime}) = 1 \Rightarrow$ records do not differ
+
+For purposes of clustering, the dissimilarity measure based on Gower's distance is $1 - S(\bx_i, \bx_{i^\prime})$. This is implemented in the `daisy` function of the `cluster` package in `R`.
+
+
+#### Linkage methods
+
+$D(\bx_i,\bx_{i^\prime})$ measures the dissimilarity between two data points. In order to move up (or down) the tree in hierarchical clustering we also need to determine how to measure the similarity/dissimilarity between groups of points. Suppose $G$ and $H$ present two clusters and $D(G,H)$ is the dissimilarity between the two, some function of the dissimilarity of the points in the clusters. The decision rule that determines how to merge (or split) clusters is called **linkage**. The three most common linkage methods are
+
+- **Single linkage**: $D(G,H) = \min D(\bx_i,\bx_{i^\prime}), i \in G, i^\prime \in H$
+
+- **Complete linkage**: $D(G,H) = \max D(\bx_i,\bx_{i^\prime}), i \in G, i^\prime \in H$
+
+- **Average linkage**: $D(G,H) = \text{ave} D(\bx_i,\bx_{i^\prime}), i \in G, i^\prime \in H$
+
+The agglomerative clustering algorithm merges the cluster with the smallest linkage value.
+
+When clusters separate well, the choice of linkage is not that important. Otherwise, linkage can have substantial impact on the outcome of hierarchical clustering. Single linkage is know to cause *chaining*, combining observations that are linked by a series of close observations. Complete linkage tends to produce compact clusters, but observations can end up being closer to members of other clusters than to members of their own cluster. Average linkage is a compromise, but is not invariant to transformations of the dissimilarities. Centroid linkage uses distances between centroids of the clusters (@fig-linkage-types).
+
+![Some linkage types in hierarchical clustering.](images/LinkageTypes.png){#fig-linkage-types .lightbox fig-align="center" width="90%"}
+
+
+:::{.example}
+::::{.example-header}
+Example: Hierarchical Cluster Analysis for Glaucoma Data.
+::::
+::::{.example-container}
+
+What can we learn about the 98 subjects in the `Glaucoma` data set who had glaucomatous eyes by way of hierarchical cluster analysis? The following statements create a data frame from the DuckDB table, filter the glaucotamous cases, remove `Glaucoma` column and scale the remaining 62 variables.
+
+``` {r, warning=FALSE, message=FALSE}
+library(duckdb)
+library(dplyr)
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+glauc <- dbGetQuery(con, "SELECT * FROM Glaucoma")
+
+dbDisconnect(con)
+
+glauc <- glauc %>% filter(Glaucoma==1) %>% 
+    dplyr::select(-c(Glaucoma)) %>% 
+    scale()
+```
+
+We first perform agglomerative clustering with correlation-based dissimilarity and complete linkage.
+
+```{r}
+hc <- hclust(get_dist(glauc,method="pearson"),method="complete")
+```
+
+The `merge` matrix on the `hclust` output object describes the $n-1$ steps 
+in which the observations/clusters were merged. Negative numbers refer to 
+observations, positive numbers refer to clusters formed at that stage.
+
+```{r}
+hc$merge[1:25,]
+```
+
+The first merge combines observations \#34 and \#41 into a group of two. The next merge combines \#4 and \#73 into another group of two. At the seventh merge, observation \#76 is combined with the group created at the first merge. This cluster now contains observations [34, 41, 76]. The first time two groups are being merged is at step 23: the groups consisting of observations [58, 93] and [72, 90] are combined into a cluster of 4.
+
+The `height` vector is a vector of $n-1$ values of the height criterion; the actual values depend on the linkage method. For this analysis, the first 25 heights at which merges occurred are as follows:
+
+```{r}
+hc$height[1:25]
+```
+
+
+The dendrogram for this analysis is plotted in @fig-glaucoma-dendro1 along with the bounding boxes for 4 and 8 clusters. The cut for the larger number of clusters occurs lower at the tree.
+
+```{r fig.align="center", out.with="90%"}
+#| fig.cap: Dendrogram for partial glaucoma data with correlation-based dissimilarity and complete linkage.
+#| label: fig-glaucoma-dendro1
+#| lightbox:
+plot(hc, cex=0.5, main="",)
+rect.hclust(hc,k=4)
+rect.hclust(hc,k=8)
+```
+The sizes of the four clusters are as follows:
+
+```{r}
+table(cutree(hc,k=4))
+```
+
+Changing the linkage method to single demonstrates the *chaining* effect on the dendrogram (@fig-glaucoma-dendro2). Identifying a reasonable number of clusters is more difficult.
+
+```{r, fig.align='center', out.width="90%"}
+#| fig.cap: Dendrogram for partial glaucoma data, single linkage.
+#| label: fig-glaucoma-dendro2
+#| lightbox:
+#| 
+hc_s <- hclust(get_dist(glauc,method="pearson"),method="single")
+plot(hc_s, cex=0.5,main="")
+rect.hclust(hc_s,k=4)
+```
+
+If you create a dendrogram object from the `hclust` results, a number of plotting functions are available to visualize the dendrogram in interesting ways. For example:
+
+```{r, fig.align='center', out.width="90%", warning=FALSE, message=FALSE}
+hc.dend <- as.dendrogram(hc) # create dendrogram object
+plot(dendextend::color_branches(hc.dend,k=4),leaflab="none",horiz=TRUE)
+factoextra::fviz_dend(hc.dend,k=4,horiz=TRUE,cex=0.4,palette="aaas",type="rectangle")
+factoextra::fviz_dend(hc.dend,k=4,cex=0.4,palette="aaas",type="circular")
+factoextra::fviz_dend(hc.dend,k=4,cex=0.4,palette="aaas",type="phylogenic")
+```
+::::
+:::
+

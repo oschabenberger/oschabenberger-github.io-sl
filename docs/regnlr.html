@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 10&nbsp; Nonlinear Regression</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./regdiscrete.html" rel="next">
+<link href="./regfeature.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./regintro.html">Supervised Learning I: Regression</a></li><li class="breadcrumb-item"><a href="./regnlr.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">10.1</span> Introduction</a></li>
+  <li><a href="#estimation" id="toc-estimation" class="nav-link" data-scroll-target="#estimation"><span class="header-section-number">10.2</span> Estimation</a></li>
+  <li><a href="#sec-nlr-starting-values" id="toc-sec-nlr-starting-values" class="nav-link" data-scroll-target="#sec-nlr-starting-values"><span class="header-section-number">10.3</span> Starting Values</a>
+  <ul>
+  <li><a href="#graphical-inspection" id="toc-graphical-inspection" class="nav-link" data-scroll-target="#graphical-inspection">Graphical Inspection</a></li>
+  <li><a href="#eliminating-linear-parameters" id="toc-eliminating-linear-parameters" class="nav-link" data-scroll-target="#eliminating-linear-parameters">Eliminating Linear Parameters</a></li>
+  <li><a href="#grid-search" id="toc-grid-search" class="nav-link" data-scroll-target="#grid-search">Grid Search</a></li>
+  </ul></li>
+  <li><a href="#reparameterization" id="toc-reparameterization" class="nav-link" data-scroll-target="#reparameterization"><span class="header-section-number">10.4</span> Reparameterization</a>
+  <ul>
+  <li><a href="#imposing-a-positivity-constraint" id="toc-imposing-a-positivity-constraint" class="nav-link" data-scroll-target="#imposing-a-positivity-constraint">Imposing a Positivity Constraint</a></li>
+  <li><a href="#expected-value-parameterization" id="toc-expected-value-parameterization" class="nav-link" data-scroll-target="#expected-value-parameterization">Expected Value Parameterization</a></li>
+  <li><a href="#defining-relationships" id="toc-defining-relationships" class="nav-link" data-scroll-target="#defining-relationships">Defining Relationships</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./regintro.html">Supervised Learning I: Regression</a></li><li class="breadcrumb-item"><a href="./regnlr.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-nonlin-reg" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">10.1</span> Introduction</h2>
+<p>A model is <strong>nonlinear</strong> if the derivative of the mean function with respect to any parameter is a function of one or more parameter. Curvilinear models such as the polynomial <span class="math display">\[
+\text{E}[Y] = \beta_0 + \beta_1x + \beta_2x^2
+\]</span> have a curved appearance when <span class="math inline">\(\text{E}[Y]\)</span> is plotted against <span class="math inline">\(x\)</span> but they are not nonlinear models by our definition. Many models we work with in data science and statistics are highly nonlinear. A logistic regression model is nonlinear in the parameters. Neural networks deliberately introduce nonlinearity through activation functions. Support vector machines use nonlinear kernel transformation to translate the classification problem into a space where linear decision boundaries can be applied. The list goes on and on.</p>
+<p>The models considered in this section are nonlinear regression models in the narrow sense, the target variable is continuous and the model errors are additive. The models depend on input variables but there is not a 1–1 correspondence between inputs and parameters. A nonlinear regression model might have one input variable and four parameters. The general form of the nonlinear regression model is</p>
+<p><span class="math display">\[\begin{align*}
+    \textbf{Y}&amp;= f(\textbf{x},\boldsymbol{\theta}) + \boldsymbol{\epsilon}\\
+    \boldsymbol{\epsilon}&amp;\sim (\textbf{0}, \sigma^2\textbf{I})
+\end{align*}\]</span></p>
+<p>Except for the nonlinearity of the mean function, the assumptions from the classical linear model carry over: uncorrelated errors are additive with zero mean and constant variance.</p>
+<p>Nonlinear regression models have advantages and disadvantages compared to their linear counterparts. Among the advantages are:</p>
+<ul>
+<li>the models are typically <strong>intrinsically interpretable</strong>, meaning that they can be interpreted based on the structure of the model alone. The parameters are meaningful quantities in terms of the subject matter domain.</li>
+<li>the models are based on physical, biological, economic, etc. theory.</li>
+<li>the models have fewer parameters compared to linear models.</li>
+</ul>
+<p>Among the disadvantages are:</p>
+<ul>
+<li>the need for iterative fitting algorithms, there are no closed-form solutions for the parameter estimates</li>
+<li>the need for starting values and potential sensitivity to the choice of starting values</li>
+<li>inference is often approximate</li>
+</ul>
+<p>Overall, the advantages outweigh the added complications of nonlinear model fitting. <span class="citation" data-cites="Schabenberger2001">Schabenberger and Pierce (<a href="references.html#ref-Schabenberger2001" role="doc-biblioref">2001</a>)</span> give numerous examples why nonlinear regression models are preferable over linear ones.</p>
+<div class="example">
+<div class="example-header">
+<p>Examples: 4:0 for Nonlinear Models</p>
+</div>
+<div class="example-container">
+<p><strong>Parsimony</strong>. To achieve curvature with inflection in a polynomial model requires at least a model of third degree (<span class="math inline">\(x^3\)</span>). Including the lower order terms, this model has 4 parameters. The nonlinear model <span class="math inline">\(\text{E}[Y] = 1-\exp\{-\beta x^\alpha\}\)</span> achieves inflection with only two parameters.</p>
+<p><strong>Limiting Behavior</strong>. Many biological or physical processes have bounds and asymptotes. It is difficult to incorporate that behavior into linear models and simple to build nonlinear models that are concave, convex, sigmoidal, sinusoidal, and so on.</p>
+<p><strong>First Principles</strong>. Elementary assumptions about processes naturally lead to nonlinear models. For example, if <span class="math inline">\(y\)</span> is the size of an organism at time <span class="math inline">\(t\)</span>, <span class="math inline">\(\alpha\)</span> is the maximum size, and the rate of growth <span class="math inline">\(\partial y/\partial t\)</span> is proportional to the remaining size <span class="math inline">\(\alpha-y\)</span>, then integrating the differential equation <span class="math inline">\(\partial y/\partial t = \beta(\alpha - y)\)</span> leads to the nonlinear growth model <span class="math display">\[
+y(t) = \alpha + (\gamma - \alpha)\exp\{-\beta t\}
+\]</span> where <span class="math inline">\(\gamma\)</span> represents the initial size (at time <span class="math inline">\(t=0\)</span>).</p>
+<p><strong>Interpretation</strong>. The parameters of nonlinear regression models are typically meaningful quantities that capture important aspects of the phenomenon under study. For the growth model in the previous equation <span class="math inline">\(\alpha\)</span> is the asymptotically achieved final size, <span class="math inline">\(\gamma\)</span> is the initial size at time <span class="math inline">\(t=0\)</span>, and <span class="math inline">\(\beta\)</span> relates to the rate of change that determines how quickly the organism grows from <span class="math inline">\(\gamma\)</span> to <span class="math inline">\(\alpha\)</span>.</p>
+<p>The mineralization potential of soil can be modeled as <span class="math inline">\(\text{E}[Y] = \theta_0 (1-\exp\{-\theta_1 t\})\)</span> where <span class="math inline">\(\theta_0\)</span> is the maximum amount and <span class="math inline">\(0 \le 1-\exp\{-\theta_1 t\} \le 1\)</span> is the proportional mineralization over time (for <span class="math inline">\(\theta_1 &gt; 0\)</span>) (<a href="#fig-nlr-redterm" class="quarto-xref">Figure&nbsp;<span>10.1</span></a>).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-nlr-redterm" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-nlr-redterm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="regnlr_files/figure-html/fig-nlr-redterm-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-nlr-redterm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.1: The term <span class="math inline">\(1-\exp\{-\theta t\}\)</span> for <span class="math inline">\(\theta = [0.5, 1, 2]\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="estimation" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="estimation"><span class="header-section-number">10.2</span> Estimation</h2>
+<p>Parameter estimation in nonlinear regression models is typically done by nonlinear least squares (<a href="estimation.html#sec-nonlinear-least-squares" class="quarto-xref"><span>Section 5.2.3</span></a>), finding a numeric solution that minimizes the residual sum of squares criterion <a href="estimation.html#eq-nonlin-sse" class="quarto-xref">Equation&nbsp;<span>5.1</span></a>. Many algorithms can be used for that purpose, Gauss-Newton, Newton-Raphson, Levenberg-Marquardt, or steepest descent algorithms are common.</p>
+<p>The Gauss-Newton or Newton-Raphson algorithms are usually implemented with modifications. Gauss-Newton, for example, does not guarantee that the residual sum of squares decreases from one iteration to the next. It is thus combined with a step size (or learning rate) that moves the parameter estimates only a partial step into the direction of the update, making sure that <span class="math inline">\(\text{SSE}^{(t+1)} &lt; \text{SSE}^{(t)}\)</span>. The step size can be determined by a line search algorithm or be fixed a priori.</p>
+<p>As discussed in <a href="estimation.html#sec-nonlinear-least-squares" class="quarto-xref"><span>Section 5.2.3</span></a>, finding the nonlinear LS solution can be expressed in terms of a series of linear models where the <span class="math inline">\(\textbf{X}\)</span> matrix is made up of the derivatives of the model, evaluated at the current iterate. Nonlinear least squares suffers from poorly conditioned cross-product matrices because the columns of the matrix of derivative tend to be highly correlated. The derivatives often involve similar terms, creating near-linear dependency and multicollinearity. To stabilize parameter estimation, regularization techniques can be used. The Levenberg-Marquardt algorithm, for example, applies ridge regression to reduce the collinearity in the cross-product matrix formed from the derivatives.</p>
+<p>The iterations stop when some convergence criteria is met. The hope is that the algorithm converges to a global minimum in the residual sum of square surface. Monitoring the change in the SSE between iterations is thus common, as is monitoring the change in the parameter estimates. These criteria measure different aspects: a small change in the parameter estimates implies that a small increment of the estimates an be tolerated; a small change in SSE implies that the objective function is flat in the neighborhood of the current solution. Convergence criteria should always be relative criteria, not measuring the absolute change in a criterion between iterations. Finally, convergence of the algorithm according to some measure of change between iterations does not necessarily mean that a global minimum has been reached. Iterations might stop because of lack of progress. For example, when the residual sum of square surface is flat in the neighborhood of the current parameter estimates, a SSE-based criterion might halt the iterations when the iterations should continue to crawl out of the flat spot.</p>
+</section>
+<section id="sec-nlr-starting-values" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="sec-nlr-starting-values"><span class="header-section-number">10.3</span> Starting Values</h2>
+<p>A central issue in fitting nonlinear regression models is the choice of starting values. The algorithm kicks off with initial estimates <span class="math inline">\(\boldsymbol{\theta}^{(0)}\)</span> and updates them (iterates) until the minimum of SSE is found. Starting values that are close to the solution greatly facilitate the estimation. Starting values far from the solution require more iterations and increase the odds to find a local minimum.</p>
+<p>A number of techniques can be used to find starting values for the parameters and these are often used in combination. We illustrate with an example from modeling plant yield with the Mitscherlich equation and simulated data.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Mitscherlich Equation for Plant Yield</p>
+</div>
+<div class="example-container">
+<p>The Mitscherlich equation is used in agricultural applications to model the yield of a crop as a function of some input <span class="math inline">\(x\)</span>, for example, a fertilizer. The systematic part of the equation is</p>
+<p><span class="math display">\[
+\lambda + (\xi-\lambda) \exp\left\{ -\kappa x\right\}
+\]</span></p>
+<p>The parameters have straightforward interpretations:</p>
+<ul>
+<li><span class="math inline">\(\xi\)</span>: the crop yield at <span class="math inline">\(x=0\)</span></li>
+<li><span class="math inline">\(\lambda\)</span>: the upper yield asymptote as <span class="math inline">\(x\)</span> increases</li>
+<li><span class="math inline">\(\kappa\)</span>: is related to the rate of change, how quickly the yield increases from <span class="math inline">\(\xi\)</span> to <span class="math inline">\(\lambda\)</span></li>
+</ul>
+<p>The following code simulates 21 observations from a Mitscherlich model with <span class="math inline">\(\lambda = 40\)</span>, <span class="math inline">\(\xi = 40\)</span>, and <span class="math inline">\(\kappa = 0.01\)</span>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">675</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="dv">0</span>, <span class="at">to=</span><span class="dv">400</span>, <span class="at">by=</span><span class="dv">20</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="dv">80</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>xi <span class="ot">&lt;-</span> <span class="dv">40</span>  </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>kappa <span class="ot">&lt;-</span> <span class="fl">0.01</span> </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> lambda <span class="sc">+</span> (xi<span class="sc">-</span>lambda) <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>kappa <span class="sc">*</span> x)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>Yield <span class="ot">&lt;-</span> M <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(M),<span class="at">mean=</span><span class="dv">0</span>,<span class="at">sd=</span><span class="dv">3</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>mitsch <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(Yield,M,x)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x,M, <span class="at">type=</span><span class="st">"l"</span>,<span class="at">las=</span><span class="dv">1</span>,<span class="at">bty=</span><span class="st">"l"</span>,<span class="at">ylab=</span><span class="st">"Yield"</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">40</span>,<span class="dv">80</span>))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(x,Yield)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-mitsch-data" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mitsch-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="regnlr_files/figure-html/fig-mitsch-data-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mitsch-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.2: Simulated yield data and Mitscherlich model
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section id="graphical-inspection" class="level3">
+<h3 class="anchored" data-anchor-id="graphical-inspection">Graphical Inspection</h3>
+<p>A simple method for finding starting values is to glean values from a scatterplot of the data. For example, a four-parameter logistic response model <span class="math display">\[
+\text{E}[Y] = \delta + \frac{\alpha}{1+\exp\{\beta-\gamma x\}}
+\]</span> has lower and upper asymptotes <span class="math inline">\(\delta\)</span> and <span class="math inline">\(\alpha + \delta\)</span>, respectively. The inflection point is located at <span class="math inline">\(x= \beta/\gamma\)</span> and the slope at the inflection point is <span class="math inline">\(\alpha\gamma/2\)</span>. Starting values for all four parameters can be found by guesstimating the asymptotes and slope on a scatterplot and solving.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Mitscherlich Equation (Cont’d)</p>
+</div>
+<div class="example-container">
+<p>The Mitscherlich equation has a lower and upper bound of yield. The lower bound <span class="math inline">\(\xi\)</span> occurs at <span class="math inline">\(x=0\)</span>. Based on the data points in <a href="#fig-mitsch-data" class="quarto-xref">Figure&nbsp;<span>10.2</span></a>, starting values of <span class="math inline">\(\xi^{(0)} = 40\)</span> and <span class="math inline">\(\lambda^{(0)} = 80\)</span> are reasonable.</p>
+</div>
+</div>
+</section>
+<section id="eliminating-linear-parameters" class="level3">
+<h3 class="anchored" data-anchor-id="eliminating-linear-parameters">Eliminating Linear Parameters</h3>
+<p>Some models contain linear and nonlinear components. A simple transformation or holding a parameter fixed can then lead to an interim linear model for which values can be obtained by linear regression. The model <span class="math display">\[
+\text{E}[Y] = \theta_0 + \theta_1 x + \theta_2z^{\theta_3}
+\]</span> is nonlinear in <span class="math inline">\(\theta_3\)</span> but once <span class="math inline">\(\theta_3\)</span> is fixed, this is a three-parameter linear model. Starting values for <span class="math inline">\([\theta_0, \theta_1, \theta_2]\)</span> can be found by linear least squares after setting <span class="math inline">\(\theta_3\)</span> to some reasonable value. <span class="math inline">\(z^{\theta_3}\)</span> is then just another input variable in the linear model.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Mitscherlich Equation (Cont’d)</p>
+</div>
+<div class="example-container">
+<p>Obtaining good starting values for <span class="math inline">\(\lambda\)</span> and <span class="math inline">\(\xi\)</span> can be done by visual inspection of the data. Finding a good starting value for <span class="math inline">\(\kappa\)</span> is trickier. We can lean on the math to find a value using linear regression.</p>
+<p>The formula for the Mitscherlich equation is <span class="math display">\[
+\text{E}[Y] = \lambda + (\xi-\lambda) \exp\left\{ -\kappa x\right\}
+\]</span></p>
+<p>Moving terms around and taking logarithms gives <span class="math display">\[
+\log(\lambda - \text{E}[Y]) = \log(\lambda-\xi) -\kappa x
+\]</span></p>
+<p>We can approximate <span class="math inline">\(\kappa\)</span> as the negative slope of a linear regression with target <span class="math inline">\(\log(\lambda^{(0)}-Y)\)</span> where <span class="math inline">\(\lambda^{(0)}\)</span> is the initial guess for <span class="math inline">\(\lambda\)</span>. We can then also get a starting value for <span class="math inline">\(\xi^{(0)}\)</span> by transforming the intercept of the regression.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>lm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(<span class="dv">80</span><span class="sc">-</span>Yield) <span class="sc">~</span> x, <span class="at">data=</span>mitsch)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>lm.fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = log(80 - Yield) ~ x, data = mitsch)
+
+Coefficients:
+(Intercept)            x  
+      3.754       -0.010  </code></pre>
+</div>
+</div>
+<p>From this linear regression we get starting values</p>
+<ul>
+<li><span class="math inline">\(\kappa^{(0)}\)</span> = 0.01</li>
+<li><span class="math inline">\(\xi^{(0)}\)</span> = 80 - exp(3.7544) = 37.2898</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="grid-search" class="level3">
+<h3 class="anchored" data-anchor-id="grid-search">Grid Search</h3>
+<p>A grid search evaluates the residual sum of squares at a set of starting values. Each parameter takes on a set of starting values and the grid is the cartesian product of the parameter sets. For example, if the set of starting values for <span class="math inline">\(\theta_1\)</span> is <span class="math inline">\(S_1 = \{1, 1.5, 2\}\)</span>, the set for <span class="math inline">\(\theta_2\)</span> is <span class="math inline">\(S_2 = \{0.1, 0.2\}\)</span> and the set for <span class="math inline">\(\theta_3\)</span> is <span class="math inline">\(S_3 = \{10, 100\}\)</span>, their cartesian product–the grid of the starting value sets–has cardinality <span class="math inline">\(|S_1| \times |S_2| \times |S_3| = 3 \times 2 \times 2 = 12\)</span>.</p>
+<p>The grid search evaluates the residual sum of squares at each point on the grid and starts the iterations from the set of starting values that produce the smallest SSE.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The grid search does <strong>not</strong> fit the model to each set of parameters on the grid and chooses the one that leads to the lowest converged SSE. The model is fit to only one vector of starting values, the one that produces the smallest SSE when the model is evaluated at the starting values.</p>
+</div>
+</div>
+<p>The number of parameter combinations for which the initial SSE needs to be computed can grow very quickly when the number of parameters in the grid is large or when the grid is very granular. This can take considerable conmputing resources, although the grid evaluation can be easily executed in parallel.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Mitscherlich Equation (Cont’d)</p>
+</div>
+<div class="example-container">
+<p>You can fit nonlinear regression models by least squares in <code>R</code> with the <code>nls</code> function in the built-in <code>stats</code> package. Unfortunately, <code>nls</code> accepts only one vector of starting values and does not perform a grid search. The <code>nls2</code> function in the package by the same name allows a grid of starting values. You combine the functions as follows:</p>
+<ol type="1">
+<li>Set up a grid of starting values and call <code>nls2</code> with <code>algorithm="grid-search"</code>. This will return as the coefficients of a nonlinear regression object the best set of starting values.</li>
+<li>Call <code>nls</code> with the best set returned from <code>nls2</code> as the starting values or call <code>nls2</code> again, passing the best set from the grid search as the starting values.</li>
+</ol>
+<p>The following code creates a <span class="math inline">\(5 \times 6 \times 4\)</span> grid of 120 sets of starting values for the three parameters of the Mitscherlich equation. The equation is defined through a model formula that is passed to <code>nls2</code> as the first argument.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nls2)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>gr <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">lambda=</span><span class="fu">seq</span>(<span class="dv">10</span>,<span class="dv">100</span>,<span class="dv">20</span>), </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">xi    =</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">50</span>,<span class="dv">10</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">kappa =</span><span class="fu">seq</span>(<span class="fl">0.001</span>,<span class="fl">0.01</span>,<span class="fl">0.0025</span>))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>mit_eq <span class="ot">&lt;-</span> Yield <span class="sc">~</span> lambda <span class="sc">+</span> (xi<span class="sc">-</span>lambda)<span class="sc">*</span><span class="fu">exp</span>(<span class="sc">-</span>kappa<span class="sc">*</span>x)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>best_start <span class="ot">&lt;-</span> <span class="fu">nls2</span>(<span class="at">formula  =</span>mit_eq, </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data     =</span>mitsch,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">start    =</span>gr,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">algorithm=</span><span class="st">"grid-search"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>best_start</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Nonlinear regression model
+  model: Yield ~ lambda + (xi - lambda) * exp(-kappa * x)
+   data: mitsch
+lambda     xi  kappa 
+ 9e+01  4e+01  6e-03 
+ residual sum-of-squares: 334.6
+
+Number of iterations to convergence: 120 
+Achieved convergence tolerance: NA</code></pre>
+</div>
+</div>
+<p>Among the sets of starting values examined, <span class="math inline">\(\lambda_0\)</span> =90, <span class="math inline">\(\xi_0\)</span> = 40, <span class="math inline">\(\kappa_0\)</span> =0.006 produce the smallest SSE= 334.645</p>
+<p>Note that the output from <code>nls2</code> suggests that an actual optimization with 120 iterations was performed and that the algorithm converged. 120 is the size of the grid of starting values passed to <code>nls2</code>. The reported error sum of squares is obtained by evaluating the Mitscherlich equation at the starting values, it is not the SSE at a converged solution. The following code verifies this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>lambda_0 <span class="ot">&lt;-</span> <span class="fu">coef</span>(best_start)[<span class="dv">1</span>]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>xi_0 <span class="ot">&lt;-</span> <span class="fu">coef</span>(best_start)[<span class="dv">2</span>]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>kappa_0 <span class="ot">&lt;-</span> <span class="fu">coef</span>(best_start)[<span class="dv">3</span>]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>fit_0 <span class="ot">&lt;-</span> lambda_0 <span class="sc">+</span> (xi_0<span class="sc">-</span>lambda_0)<span class="sc">*</span><span class="fu">exp</span>(<span class="sc">-</span>kappa_0<span class="sc">*</span>mitsch<span class="sc">$</span>x)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>((mitsch<span class="sc">$</span>Yield <span class="sc">-</span> fit_0)<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 334.6452</code></pre>
+</div>
+</div>
+<p>We now need to perform the actual nonlinear regression estimation using the best starting values determined by <code>nls2</code> as starting values for <code>nls()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mitsch_fit <span class="ot">&lt;-</span> <span class="fu">nls</span>(mit_eq, <span class="at">start=</span><span class="fu">coef</span>(best_start), <span class="at">data=</span>mitsch)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>mitsch_fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Nonlinear regression model
+  model: Yield ~ lambda + (xi - lambda) * exp(-kappa * x)
+   data: mitsch
+  lambda       xi    kappa 
+80.02190 39.93216  0.00906 
+ residual sum-of-squares: 102.5
+
+Number of iterations to convergence: 3 
+Achieved convergence tolerance: 5.945e-06</code></pre>
+</div>
+</div>
+<p>The algorithm coverges very quickly, after only three iterations. The converged parameter estimates are <span class="math inline">\(\widehat{\lambda} =\)</span> 80.0219, <span class="math inline">\(\widehat{\xi} =\)</span> 39.9322, <span class="math inline">\(\widehat{\kappa} =\)</span> 0.0091.</p>
+<p>Alternatively, you can call the nls2() function again and pass the previous return object, using the default fitting algorithm:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nls2</span>(mit_eq, best_start, <span class="at">data=</span>mitsch)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Nonlinear regression model
+  model: Yield ~ lambda + (xi - lambda) * exp(-kappa * x)
+   data: mitsch
+  lambda       xi    kappa 
+80.02190 39.93216  0.00906 
+ residual sum-of-squares: 102.5
+
+Number of iterations to convergence: 3 
+Achieved convergence tolerance: 5.945e-06</code></pre>
+</div>
+</div>
+<p>You can also let <code>nls2()</code> generate a grid for you by providing a two-row data frame that defines the bounding box for the starting values and control the density of the grid with the <code>maxiter</code> parameter of <code>nls.control()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>parm_box <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">lambda=</span><span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">100</span>),</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">xi    =</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">50</span>),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">kappa =</span><span class="fu">c</span>(<span class="fl">0.001</span>,<span class="fl">0.01</span>))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>mit_eq <span class="ot">&lt;-</span> Yield <span class="sc">~</span> lambda <span class="sc">+</span> (xi<span class="sc">-</span>lambda)<span class="sc">*</span><span class="fu">exp</span>(<span class="sc">-</span>kappa<span class="sc">*</span>x)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>best_start <span class="ot">&lt;-</span> <span class="fu">nls2</span>(<span class="at">formula  =</span>mit_eq, </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data     =</span>mitsch,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">control  =</span><span class="fu">nls.control</span>(<span class="at">maxiter=</span><span class="dv">100</span>),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">start    =</span>parm_box,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">algorithm=</span><span class="st">"grid-search"</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>best_start</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Nonlinear regression model
+  model: Yield ~ lambda + (xi - lambda) * exp(-kappa * x)
+   data: mitsch
+lambda     xi  kappa 
+ 77.50  37.50   0.01 
+ residual sum-of-squares: 160.4
+
+Number of iterations to convergence: 125 
+Achieved convergence tolerance: NA</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nls2</span>(mit_eq, best_start, <span class="at">data=</span>mitsch)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Nonlinear regression model
+  model: Yield ~ lambda + (xi - lambda) * exp(-kappa * x)
+   data: mitsch
+  lambda       xi    kappa 
+80.02192 39.93217  0.00906 
+ residual sum-of-squares: 102.5
+
+Number of iterations to convergence: 3 
+Achieved convergence tolerance: 3.783e-06</code></pre>
+</div>
+</div>
+<p>With the best starting values from this evaluation, the final fit converges to almost the same parameter estimates as with the best starting values from the earlier grid.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="reparameterization" class="level2" data-number="10.4">
+<h2 data-number="10.4" class="anchored" data-anchor-id="reparameterization"><span class="header-section-number">10.4</span> Reparameterization</h2>
+<p>Reparameterization of a model is the re-expression of a model in terms of a different set of parameters. The overall fit of the model remains the same, but the meaning of the parameters changes. Reparameterization is an important and underappreciated aspect of nonlinear modeling. Expressing the model in terms of different parameters has many uses:</p>
+<ul>
+<li>facilitating finding of starting values</li>
+<li>reducing the multicollinearity between the columns of the derivative matrix</li>
+<li>imposing constraints on the parameter estimates</li>
+</ul>
+<section id="imposing-a-positivity-constraint" class="level3">
+<h3 class="anchored" data-anchor-id="imposing-a-positivity-constraint">Imposing a Positivity Constraint</h3>
+<div class="example">
+<div class="example-header">
+<p>Example: Theophylline Concentration</p>
+</div>
+<div class="example-container">
+<p><span class="citation" data-cites="Boeckmanetal1992">Boeckmann, Sheiner, and Beal (<a href="references.html#ref-Boeckmanetal1992" role="doc-biblioref">1992</a>)</span> report serum concentration profiles for the anti-asthma drug theophylline, administered orally to 12 subjects. The serum concentrations were measured at ten time points over a 25-hour period. The subjects fall into two groups, depending on one of two doses of theophylline administered. The data have a longitudinal structure and have been analyzed using nonlinear mixed models by <span class="citation" data-cites="Davidian1995">Davidian and Giltinan (<a href="references.html#ref-Davidian1995" role="doc-biblioref">1995</a>)</span>, <span class="citation" data-cites="PinheiroBates1995">Pinheiro and Bates (<a href="references.html#ref-PinheiroBates1995" role="doc-biblioref">1995</a>)</span>, and others.</p>
+<p>We ignore the longitudinal aspect of the data here and fit a nonlinear regression model to data from all subjects–we will return to these data with a longitudinal analysis in <a href="mixed.html" class="quarto-xref"><span>Chapter 29</span></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>theoph <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM theoph_all"</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(theoph,<span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Subject   Wt Dose  Time  conc
+1        1 79.6 4.02  0.00  0.74
+2        1 79.6 4.02  0.25  2.84
+3        1 79.6 4.02  0.57  6.57
+4        1 79.6 4.02  1.12 10.50
+5        1 79.6 4.02  2.02  9.66
+6        1 79.6 4.02  3.82  8.58
+7        1 79.6 4.02  5.10  8.36
+8        1 79.6 4.02  7.03  7.47
+9        1 79.6 4.02  9.05  6.89
+10       1 79.6 4.02 12.12  5.94
+11       1 79.6 4.02 24.37  3.28
+12       2 72.4 4.40  0.00  0.00
+13       2 72.4 4.40  0.27  1.72
+14       2 72.4 4.40  0.52  7.91
+15       2 72.4 4.40  1.00  8.31
+16       2 72.4 4.40  1.92  8.33
+17       2 72.4 4.40  3.50  6.85
+18       2 72.4 4.40  5.02  6.08
+19       2 72.4 4.40  7.03  5.40
+20       2 72.4 4.40  9.00  4.55</code></pre>
+</div>
+</div>
+<p>Like <span class="citation" data-cites="Davidian1995">Davidian and Giltinan (<a href="references.html#ref-Davidian1995" role="doc-biblioref">1995</a>)</span>, we eliminate the data points at time <span class="math inline">\(t=0\)</span> from the analysis of a one-compartmental model with first-order absorption and elimination. This model expresses <span class="math inline">\(C(t)\)</span>, the serum concentration at time <span class="math inline">\(t\)</span> following administration of dose <span class="math inline">\(D\)</span>, as <span id="eq-compartmental1"><span class="math display">\[
+C(t) = \frac{D k_a}{V(k_a - Cl/V)}\left\{\exp\left(-\frac{Cl}{V}t\right) - \exp(-k_a t) \right\}
+\tag{10.1}\]</span></span></p>
+<p>The parameters to be estimated in <a href="#eq-compartmental1" class="quarto-xref">Equation&nbsp;<span>10.1</span></a> are <span class="math inline">\(\{k_a,V,Cl\}\)</span>, the rate of absorption <span class="math inline">\(k_a\)</span>, the volume of distribution <span class="math inline">\(V\)</span>, and the clearance <span class="math inline">\(Cl\)</span>.</p>
+<p>We first fit the model in this parameterization</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>comp_model <span class="ot">&lt;-</span> conc <span class="sc">~</span> (Dose <span class="sc">*</span> ka)<span class="sc">/</span>(V<span class="sc">*</span>(ka<span class="sc">-</span>Cl<span class="sc">/</span>V)) <span class="sc">*</span> (<span class="fu">exp</span>(<span class="sc">-</span>Cl<span class="sc">/</span>V<span class="sc">*</span>Time) <span class="sc">-</span> <span class="fu">exp</span>(<span class="sc">-</span>ka<span class="sc">*</span>Time))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">nls</span>(<span class="at">formula=</span>comp_model,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">start  =</span><span class="fu">list</span>(<span class="at">Cl=</span><span class="fl">0.01</span>, <span class="at">ka=</span><span class="dv">1</span>, <span class="at">V=</span><span class="fl">0.2</span>), </span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">data   =</span>theoph,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">subset =</span>(theoph<span class="sc">$</span>Time <span class="sc">&gt;</span> <span class="dv">0</span>))</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Formula: conc ~ (Dose * ka)/(V * (ka - Cl/V)) * (exp(-Cl/V * Time) - exp(-ka * 
+    Time))
+
+Parameters:
+   Estimate Std. Error t value Pr(&gt;|t|)    
+Cl 0.038842   0.003031  12.816  &lt; 2e-16 ***
+ka 1.490674   0.183765   8.112 5.56e-13 ***
+V  0.484798   0.024701  19.626  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.53 on 117 degrees of freedom
+
+Number of iterations to convergence: 6 
+Achieved convergence tolerance: 1.2e-06</code></pre>
+</div>
+</div>
+<p>The fit converges in 6 iterations to estimates <span class="math inline">\(\widehat{Cl}\)</span> = 0.0388, <span class="math inline">\(\widehat{k}_a\)</span> = 1.4907, and <span class="math inline">\(\widehat{V}\)</span> = 0.4848.</p>
+<p>Thankfully, the estimates for all parameters are positive; a negative absorption, negative clearance, or negative volume would be difficult to explain. The positivity constraint can be built into the model through reparameterization. Instead of estimating <span class="math inline">\(k_a\)</span>, <span class="math inline">\(Cl\)</span>, and <span class="math inline">\(V\)</span>, the model can be written in terms of <span class="math inline">\(\beta_1 = \log Cl\)</span>, <span class="math inline">\(\beta_2 = \log k_a\)</span>, and <span class="math inline">\(\beta_3 = \log V\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>comp_model2 <span class="ot">&lt;-</span> conc <span class="sc">~</span> (Dose <span class="sc">*</span> <span class="fu">exp</span>(beta2)) <span class="sc">/</span> (<span class="fu">exp</span>(beta3)<span class="sc">*</span>(<span class="fu">exp</span>(beta2)<span class="sc">-</span><span class="fu">exp</span>(beta1)<span class="sc">/</span><span class="fu">exp</span>(beta3))) <span class="sc">*</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                       (<span class="fu">exp</span>(<span class="sc">-</span><span class="fu">exp</span>(beta1)<span class="sc">/</span><span class="fu">exp</span>(beta3)<span class="sc">*</span>Time) <span class="sc">-</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="fu">exp</span>(beta2)<span class="sc">*</span>Time))</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">nls</span>(<span class="at">formula=</span>comp_model2, </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">start  =</span><span class="fu">list</span>(<span class="at">beta1=</span><span class="sc">-</span><span class="dv">3</span>, <span class="at">beta2=</span><span class="fl">0.2</span>, <span class="at">beta3=</span><span class="sc">-</span><span class="fl">0.8</span>), </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">data   =</span>theoph,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">subset =</span>(theoph<span class="sc">$</span>Time <span class="sc">&gt;</span> <span class="dv">0</span>))</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Formula: conc ~ (Dose * exp(beta2))/(exp(beta3) * (exp(beta2) - exp(beta1)/exp(beta3))) * 
+    (exp(-exp(beta1)/exp(beta3) * Time) - exp(-exp(beta2) * Time))
+
+Parameters:
+      Estimate Std. Error t value Pr(&gt;|t|)    
+beta1 -3.24826    0.07803 -41.630  &lt; 2e-16 ***
+beta2  0.39923    0.12328   3.238  0.00156 ** 
+beta3 -0.72402    0.05095 -14.210  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.53 on 117 degrees of freedom
+
+Number of iterations to convergence: 5 
+Achieved convergence tolerance: 2.822e-06</code></pre>
+</div>
+</div>
+<p>The <span class="math inline">\(\beta\)</span> estimates now can range on the real line, <span class="math inline">\(-\infty &lt; \beta_j &lt; \infty\)</span>, the exponentiated values will be positive. The reparameterized model converges to the same solution, expressed in terms of different parameters. The equivalence can be verified by exponentiating the estimates of <code>fit2</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">coef</span>(fit2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     beta1      beta2      beta3 
+0.03884159 1.49067652 0.48479808 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fit1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Cl         ka          V 
+0.03884161 1.49067360 0.48479779 </code></pre>
+</div>
+</div>
+</div>
+</div>
+<p>For parameters that represent proportions a logit transform is useful. If <span class="math inline">\(0 \le \alpha \le 1\)</span>, we can instead fit the unconstrained parameter <span class="math inline">\(\theta = \log (\alpha/(1-\alpha)\)</span>. This should look familiar, it is the transformation that maps the mean in logistic regression to the linear predictor.</p>
+</section>
+<section id="expected-value-parameterization" class="level3">
+<h3 class="anchored" data-anchor-id="expected-value-parameterization">Expected Value Parameterization</h3>
+<p>This technique is helpful to find starting values for parameters and has a positive side-effect in reducing a <strong>curvature</strong> component of the nonlinear model. A model has two curvatures, called the <strong>intrinsic</strong> and the <strong>parameter-effects</strong> curvatures. Intrinsic curvature measures how much the model bends if the parameters are changed when the inputs are held fixed. (This is not the same as measuring how much the mean function changes with a change in the inputs.)</p>
+<p>Parameterization does not affect the intrinsic curvature, but it affects the second component, the parameter-effects curvature. This component measures the quality of the linear approximation in a neighborhood of the parameter values.</p>
+<p>Models with large curvature have undesirable statistical properties, they converge more slowly, the parameter estimates are biased with unreliable standard errors and the asymptotic inference assuming that the estimates are Gaussian distributed is questionable.</p>
+<p>The <strong>expected value parameterization</strong> introduced by Ratkowsky <span class="citation" data-cites="Ratkowsky1983 Ratkowsky1990">(<a href="references.html#ref-Ratkowsky1983" role="doc-biblioref">1983</a>, <a href="references.html#ref-Ratkowsky1990" role="doc-biblioref">1990</a>)</span> reduces the parameter-effects curvature which he argues is the greater of the two curvature components.</p>
+<p>Suppose the model has a single input variable, <span class="math inline">\(x\)</span>. By visual inspection based on the scatterplot of <span class="math inline">\(Y\)</span> versus <span class="math inline">\(x\)</span> you can obtain a guesstimate of <span class="math inline">\(\text{E}[Y|x^*]\)</span> for a particular value <span class="math inline">\(x^*\)</span> of the input. Call this estimate <span class="math inline">\(\mu^*\)</span> and set it equal to <span class="math inline">\(f(x^*,\boldsymbol{\theta})\)</span>. You can now replace one of the parameters with <span class="math inline">\(\mu^*\)</span> for which you already have a starting value. An example from <span class="citation" data-cites="Schabenberger2001">Schabenberger and Pierce (<a href="references.html#ref-Schabenberger2001" role="doc-biblioref">2001, 209</a>)</span> will make this approach more tangible.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Michaelis-Menten Model</p>
+</div>
+<div class="example-container">
+<p>The Michaelis-Menten model is popular in biochemical applications to describe chemical reactions in enzyme systems: <span id="eq-michaelis-menten"><span class="math display">\[
+\text{E}[Y|x] = \frac{Vx}{x+K}
+\tag{10.2}\]</span></span> <span class="math inline">\(Y\)</span> is the velocity of the chemical reaction, <span class="math inline">\(x\)</span> is the substrate concentration. The parameters <span class="math inline">\(V\)</span> and <span class="math inline">\(K\)</span> measure the theoretical maximum velocity (<span class="math inline">\(V\)</span>) and the substrate concentration at with velocity <span class="math inline">\(V/2\)</span> is attained (<span class="math inline">\(K\)</span>).</p>
+<p>Choose any concentration <span class="math inline">\(x^*\)</span> and estimate the velocity <span class="math inline">\(\mu^*\)</span> from a scatterplot of the data. Under the Michaelis-Menten model we now have <span class="math display">\[
+\mu^* = \frac{Vx^*}{x^*+K}
+\]</span> Solve for <span class="math inline">\(V\)</span>, the parameter most difficult to specify: <span class="math display">\[
+V = \mu^* \, \frac{x^*+K}{x^*}
+\]</span> You can now substitute this expression for <span class="math inline">\(V\)</span> in <a href="#eq-michaelis-menten" class="quarto-xref">Equation&nbsp;<span>10.2</span></a>, leading to the reparameterized model <span class="math display">\[
+\text{E}[Y|x] = \mu^* \frac{x+xK/x^*}{x^*+xK/x^*}
+\]</span> Instead of the parameters <span class="math inline">\(\boldsymbol{\theta}= [V,K]\)</span> you are now estimating <span class="math inline">\(\boldsymbol{\theta}^* = [\mu^*,K]\)</span>. This model has the same intrinsic curvature as <a href="#eq-michaelis-menten" class="quarto-xref">Equation&nbsp;<span>10.2</span></a> but has lower parameter-effects curvature and the starting value for <span class="math inline">\(\mu^*\)</span> is easily found by graphical inspection.</p>
+<p>Choosing a second pair of values <span class="math inline">\((x^{**},\mu^{**})\)</span>, you can also replace <span class="math inline">\(K\)</span> with an expected-value parameter.</p>
+</div>
+</div>
+</section>
+<section id="defining-relationships" class="level3">
+<h3 class="anchored" data-anchor-id="defining-relationships">Defining Relationships</h3>
+<p>The expected-value reparameterization does not lead to a more readable form of the model, we choose a value <span class="math inline">\(x^*\)</span> and replace one of the parameters with <span class="math inline">\(\mu^*\)</span>. <span class="citation" data-cites="Schabenberger2001">Schabenberger and Pierce (<a href="references.html#ref-Schabenberger2001" role="doc-biblioref">2001</a>)</span> describe the reverse process, choosing a value <span class="math inline">\(\mu^*\)</span> and replacing a model parameter with the input value <span class="math inline">\(x^*\)</span> that corresponds to it. This is termed reparameterization through <strong>defining relationships</strong> and is useful when the goal is to estimate <span class="math inline">\(x^*\)</span>, an inverse prediction problem.</p>
+<p>This occurs frequently in dose-response studies where one is interested in the amount of input one has to provide to achieve a particular output. For example, the <span class="math inline">\(LD_{50}\)</span> represents the lethal dosage at which 50% of the subjects die, the <span class="math inline">\(GR_{25}\)</span> represents the input that increases or decreases growth by 25%. Turning these quantities into model parameters has the added benefit that we can obtain estimates and standard errors, compute confidence intervals and test hypotheses.</p>
+<p>As with expected-value parameters, the defining relationship is <span class="math display">\[
+\text{E}[Y|x^*] = f(x^*,\boldsymbol{\theta})
+\]</span> but now we are solving for <span class="math inline">\(x^*\)</span> in the quest to replace a parameter and not for <span class="math inline">\(\text{E}[Y|x^*]\)</span>.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Log-logistic Growth Model</p>
+</div>
+<div class="example-container">
+<p><span class="citation" data-cites="Schabenberger2001">Schabenberger and Pierce (<a href="references.html#ref-Schabenberger2001" role="doc-biblioref">2001, 234–36</a>)</span> apply these ideas to a log-logistic model for growth: <span class="math display">\[
+\text{E}[Y|x] = \delta + \frac{\alpha-\delta}{1+\psi\exp\{\beta\log(x)\}}
+\]</span> The asymptotes of the growth model are <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\delta\)</span> and growth transitions in sigmoidal shape between those. Define <span class="math inline">\(\lambda_K\)</span> as the the value at which <span class="math inline">\(K\%\)</span> of the difference between lower and upper asymptote is reached <span class="math display">\[
+\text{E}[Y|\lambda_K] = \delta + \frac{100-K}{100}(\alpha-\delta)
+\]</span> Now consider the <strong>defining relationship</strong> <span class="math display">\[
+\delta + \frac{100-K}{100}(\alpha-\delta) = \delta + \frac{\alpha-\delta}{1+\psi\exp\{\beta\log(\lambda_K)\}}
+\]</span> <span class="citation" data-cites="Schabenbergeretal1999">Schabenberger et al. (<a href="references.html#ref-Schabenbergeretal1999" role="doc-biblioref">1999</a>)</span> solve for <span class="math inline">\(\psi\)</span>, leading to the reparameterized log-logistic model <span class="math display">\[
+\text{E}[Y|x] = \delta + \frac{\alpha-\delta}{1+\frac{K}{100-K}\exp\{\beta\log(x/\lambda_K)\}}
+\]</span> <a href="#fig-sim-log-logistic" class="quarto-xref">Figure&nbsp;<span>10.3</span></a> shows simulated data from a log-logistic model.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-sim-log-logistic" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sim-log-logistic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="regnlr_files/figure-html/fig-sim-log-logistic-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sim-log-logistic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.3: Simulated data under a log-logistic model
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>We can fit the model in the <span class="math inline">\(\lambda_K\)</span> parameterization as follows, for example, with <span class="math inline">\(K=50\)</span>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>loglog <span class="ot">&lt;-</span> y <span class="sc">~</span> delta <span class="sc">+</span> (alpha<span class="sc">-</span>delta)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">+</span>(K<span class="sc">/</span>(<span class="dv">100</span><span class="sc">-</span>K)<span class="sc">*</span><span class="fu">exp</span>(beta<span class="sc">*</span><span class="fu">log</span>(x<span class="sc">/</span>lambda))))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">nls</span>(<span class="at">formula=</span>loglog, <span class="at">data=</span>df,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">start=</span><span class="fu">list</span>(<span class="at">alpha=</span><span class="dv">100</span>, <span class="at">delta=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="fl">0.2</span>, <span class="at">beta=</span><span class="dv">1</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Formula: y ~ delta + (alpha - delta)/(1 + (K/(100 - K) * exp(beta * log(x/lambda))))
+
+Parameters:
+        Estimate Std. Error t value Pr(&gt;|t|)    
+alpha  100.64422    6.48491  15.520  &lt; 2e-16 ***
+delta   13.52256    4.50904   2.999  0.00404 ** 
+lambda   0.19033    0.01441  13.205  &lt; 2e-16 ***
+beta     2.78986    0.61379   4.545 2.98e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 10.26 on 56 degrees of freedom
+
+Number of iterations to convergence: 12 
+Achieved convergence tolerance: 5.33e-06</code></pre>
+</div>
+</div>
+<p>For <span class="math inline">\(K=50\)</span>, <span class="math inline">\(\lambda\)</span> is the point on the <span class="math inline">\(x\)</span>-axis where the difference between upper and lower asymptote is reduced by half, <span class="math inline">\(\widehat{\lambda}=\)</span> 0.1903. We can validate that easily:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(fit,<span class="at">newdata=</span><span class="fu">data.frame</span>(<span class="at">x=</span><span class="fu">coef</span>(fit)[<span class="dv">3</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 57.08339</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>(<span class="fu">coef</span>(fit)[<span class="dv">1</span>] <span class="sc">-</span> <span class="fl">0.5</span><span class="sc">*</span>(<span class="fu">coef</span>(fit)[<span class="dv">1</span>] <span class="sc">-</span> <span class="fu">coef</span>(fit)[<span class="dv">2</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 57.08339</code></pre>
+</div>
+</div>
+<p><a href="#fig-sim-log-logistic_50" class="quarto-xref">Figure&nbsp;<span>10.4</span></a> displays observed and fitted values along with the <span class="math inline">\(\widehat{\lambda}_{50}\)</span> value.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-sim-log-logistic_50" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sim-log-logistic_50-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="regnlr_files/figure-html/fig-sim-log-logistic_50-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sim-log-logistic_50-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.4: Observed and fitted values with <span class="math inline">\(\lambda_{50}\)</span>
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The model is easily changed to estimate a different point of reduction, for example <span class="math inline">\(\lambda_{75}\)</span>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="dv">75</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>loglog <span class="ot">&lt;-</span> y <span class="sc">~</span> delta <span class="sc">+</span> (alpha<span class="sc">-</span>delta)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">+</span>(K<span class="sc">/</span>(<span class="dv">100</span><span class="sc">-</span>K)<span class="sc">*</span><span class="fu">exp</span>(beta<span class="sc">*</span><span class="fu">log</span>(x<span class="sc">/</span>lambda))))</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">nls</span>(<span class="at">formula=</span>loglog, <span class="at">data=</span>df,</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">start=</span><span class="fu">list</span>(<span class="at">alpha=</span><span class="dv">100</span>, <span class="at">delta=</span><span class="dv">3</span>, <span class="at">lambda=</span><span class="fl">0.2</span>, <span class="at">beta=</span><span class="dv">1</span>)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Formula: y ~ delta + (alpha - delta)/(1 + (K/(100 - K) * exp(beta * log(x/lambda))))
+
+Parameters:
+        Estimate Std. Error t value Pr(&gt;|t|)    
+alpha  100.64457    6.48500  15.520  &lt; 2e-16 ***
+delta   13.52231    4.50915   2.999  0.00404 ** 
+lambda   0.28218    0.03042   9.275 6.50e-13 ***
+beta     2.78981    0.61378   4.545 2.98e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 10.26 on 56 degrees of freedom
+
+Number of iterations to convergence: 11 
+Achieved convergence tolerance: 7.44e-06</code></pre>
+</div>
+</div>
+<p>Notice that the parameter estimates of <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\delta\)</span>, and <span class="math inline">\(\beta\)</span> do not change, and the overall fit is the same, as can be seen from the residual standard error. The estimate of the point where the difference between the asymptotes is reduced by 75% is <span class="math inline">\(\widehat{\lambda}_{75}=\)</span> 0.2822.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(fit2,<span class="at">newdata=</span><span class="fu">data.frame</span>(<span class="at">x=</span><span class="fu">coef</span>(fit2)[<span class="dv">3</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 35.30288</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>(<span class="fu">coef</span>(fit2)[<span class="dv">1</span>] <span class="sc">-</span> <span class="fl">0.75</span><span class="sc">*</span>(<span class="fu">coef</span>(fit2)[<span class="dv">1</span>] <span class="sc">-</span> <span class="fu">coef</span>(fit2)[<span class="dv">2</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 35.30288</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-Boeckmanetal1992" class="csl-entry" role="listitem">
+Boeckmann, A. J., L. B. Sheiner, and S. L. Beal. 1992. <em>NONMEM Users Guide: Part v, Introductory Guide</em>. NONMEM Project Group, University of California, San Francisco.
+</div>
+<div id="ref-Davidian1995" class="csl-entry" role="listitem">
+Davidian, M., and D. M. Giltinan. 1995. <em>Nonlinear Models for Repeated Measurement Data</em>. Chapman &amp; Hall, London.
+</div>
+<div id="ref-PinheiroBates1995" class="csl-entry" role="listitem">
+Pinheiro, J. C., and D. M. Bates. 1995. <span>“Approximations to the Log-Likelihood Function in the Nonlinear Mixed-Effects Model.”</span> <em>Journal of Computational and Graphical Statistics</em> 4: 12–35.
+</div>
+<div id="ref-Ratkowsky1983" class="csl-entry" role="listitem">
+Ratkowsky, D. A. 1983. <em>Nonlinear Regression Modeling</em>. Marcel Dekker, New York.
+</div>
+<div id="ref-Ratkowsky1990" class="csl-entry" role="listitem">
+———. 1990. <em>Handbook of Nonlinear Regression Models</em>. Marcel Dekker, New York.
+</div>
+<div id="ref-Schabenberger2001" class="csl-entry" role="listitem">
+Schabenberger, O., and Francis J. Pierce. 2001. <em>Contemporary Statistical Models for the Plant and Soil Sciences</em>. CRC Press, Boca Raton.
+</div>
+<div id="ref-Schabenbergeretal1999" class="csl-entry" role="listitem">
+Schabenberger, O., B. E. Tharp, Kells J. J., and D. Penner. 1999. <span>“Statistical Tests for Hormesis and Effective Dosages in Herbicide Dose Response.”</span> <em>Agronomy Journal</em> 91: 713–21.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./regfeature.html" class="pagination-link" aria-label="Feature Selection and Regularization">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./regdiscrete.html" class="pagination-link" aria-label="Discrete Target Variables">
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
