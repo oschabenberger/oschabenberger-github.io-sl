@@ -500,7 +500,7 @@ window.Quarto = {
 </header>
 
 
-<p>The primary distinction among techniques that learn from data in statistical learning and machine learning is between <strong>supervised</strong> and <strong>unsupervised</strong> methods (<a href="#fig-learning-types" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-learning-types</span></a>). There are other forms of learning:</p>
+<p>The primary distinction among techniques that learn from data in statistical learning and machine learning is between <strong>supervised</strong> and <strong>unsupervised</strong> methods (<a href="#fig-learning-types" class="quarto-xref">Figure&nbsp;<span>6.1</span></a>). There are other forms of learning:</p>
 <ul>
 <li>With the advent of transformer methods and foundation models, <strong>semi-supervised</strong> learning has risen in importance.</li>
 <li><strong>Reinforcement learning</strong> is used in sequential decision making, for example, when an agent is deciding on a next-best action</li>
@@ -525,7 +525,7 @@ Figure&nbsp;6.1: An overview of statistical learning approaches
 <p>Supervised learning trains statistical learning models through a target variable.</p>
 </div>
 </div>
-<p><strong>Supervised learning</strong> is characterized by the presence of a target variable, also called a dependent variable, response variable, or output variable. This is the attribute we wish to model. The training and test data sets contain values for the target variable, in machine learning these values are often called the <strong>labels</strong> and are described as the “ground truth”. All other variables in the data set are potentially input variables. In short, we know the values of the target variable, now we need to use it in analytical methods to learn how outputs and inputs connect (<a href="#fig-learning-types" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-learning-types</span></a>).</p>
+<p><strong>Supervised learning</strong> is characterized by the presence of a target variable, also called a dependent variable, response variable, or output variable. This is the attribute we wish to model. The training and test data sets contain values for the target variable, in machine learning these values are often called the <strong>labels</strong> and are described as the “ground truth”. All other variables in the data set are potentially input variables. In short, we know the values of the target variable, now we need to use it in analytical methods to learn how outputs and inputs connect (<a href="#fig-learning-types" class="quarto-xref">Figure&nbsp;<span>6.1</span></a>).</p>
 <p>The goals of supervised learning can be to</p>
 <ul>
 <li>Predict the target variable from input variables.</li>
@@ -618,7 +618,7 @@ Figure&nbsp;6.1: An overview of statistical learning approaches
 <li><p><strong>Cluster analysis</strong>: can data be grouped based on <span class="math inline">\(x_{1},\cdots,x_{p}\)</span> into sets such that the observations within a set are more similar to each other than they are to observations in other sets? Applications of clustering include grouping customers into segments. Segmentation analysis is behind loyalty programs, lower APRs for customers with good credit rating, and churn models.</p></li>
 <li><p><strong>Dimension reduction</strong>: can we transform the inputs <span class="math inline">\(x_{1},\cdots,x_{p}\)</span> into a set <span class="math inline">\(c_{1},\cdots,c_{k}\)</span>, where <span class="math inline">\(k \ll p\)</span> without losing relevant information? Applications of dimension reduction are in high-dimensional problems where the number of inputs is large relative to the number of observations. In problems with wide data, the number of inputs <span class="math inline">\(p\)</span> can be much larger than <span class="math inline">\(n\)</span>, which eliminates many traditional methods of analysis from consideration.</p></li>
 </ul>
-<p>Methods of unsupervised learning often precede supervised learning; the output of an unsupervised learning method can serve as the input to a supervised method. An example is dimension reduction through principal component analysis (PCA, <a href="#sec-pca" class="quarto-xref"><span class="quarto-unresolved-ref">sec-pca</span></a>) prior to supervised regression. This technique is known as principal component regression (PCR, <a href="#sec-pcr" class="quarto-xref"><span class="quarto-unresolved-ref">sec-pcr</span></a>).</p>
+<p>Methods of unsupervised learning often precede supervised learning; the output of an unsupervised learning method can serve as the input to a supervised method. An example is dimension reduction through principal component analysis (PCA, <a href="pca.html" class="quarto-xref"><span>Chapter 22</span></a>) prior to supervised regression. This technique is known as principal component regression (PCR, <a href="regfeature.html#sec-pcr" class="quarto-xref"><span>Section 9.3.2</span></a>).</p>
 <p>Suppose you have <span class="math inline">\(n\)</span> observations on a target variable <span class="math inline">\(Y\)</span> and a large number of potential inputs <span class="math inline">\(X_1,\cdots,X_p\)</span> where <span class="math inline">\(p\)</span> is large relative to <span class="math inline">\(n\)</span>. PCA computes linear combinations of the <span class="math inline">\(p\)</span> inputs that account for decreasing amounts of variability among the <span class="math inline">\(X\)</span>s. These linear combinations are called the principal components. For example, the first principal component explains 70% of the variability in the inputs, the second principal component explains 20% and the third principal component 5%. Rather than building a regression model with <span class="math inline">\(p\)</span> predictors, we might use only the first three principal components as inputs in the regression model. The PCA is an unsupervised model because it does not use information about <span class="math inline">\(Y\)</span> in forming the principal components. The PCR is a supervised method, we want to model the mean of <span class="math inline">\(Y\)</span> as a function of the <span class="math inline">\(X\)</span>s. If <span class="math inline">\(p = 250\)</span>, using the first three principal components replaces</p>
 <p><span class="math display">\[Y = \beta_{0} + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4 + \cdots + \beta_{250} x_{250} + \epsilon\]</span></p>
 <p>with</p>
@@ -1212,7 +1212,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","loop":false,"closeEffect":"zoom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

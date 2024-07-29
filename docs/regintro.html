@@ -576,12 +576,12 @@ Figure&nbsp;7.1: Finding the appropriate degree of smoothness in regression.
 </figcaption>
 </figure>
 </div>
-<p>Since <span class="math inline">\(Y_i\)</span> is a random variable, and <span class="math inline">\(f^*(\textbf{x}_i)\)</span> expresses how it <strong>mean</strong> varies as a function of the input variables, we are not interested in models that reproduce the noisy version of the data. We are interested in finding the smooth signal in the noise (<a href="#fig-reg-smoothing" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-reg-smoothing</span></a>). Finding the appropriate degree of smoothness in the mean function is an important part of regression analysis by balancing the bias-variance tradeoff (<a href="#sec-bias-variance" class="quarto-xref"><span class="quarto-unresolved-ref">sec-bias-variance</span></a>).</p>
+<p>Since <span class="math inline">\(Y_i\)</span> is a random variable, and <span class="math inline">\(f^*(\textbf{x}_i)\)</span> expresses how it <strong>mean</strong> varies as a function of the input variables, we are not interested in models that reproduce the noisy version of the data. We are interested in finding the smooth signal in the noise (<a href="#fig-reg-smoothing" class="quarto-xref">Figure&nbsp;<span>7.1</span></a>). Finding the appropriate degree of smoothness in the mean function is an important part of regression analysis by balancing the bias-variance tradeoff (<a href="biasvariance.html" class="quarto-xref"><span>Chapter 3</span></a>).</p>
 <section id="constraints-on-model-structure" class="level3">
 <h3 class="anchored" data-anchor-id="constraints-on-model-structure">Constraints on Model Structure</h3>
 <p>But we cannot just consider bias and variance among all possible functions <span class="math inline">\(f^*\)</span>, we need to add further structure to make solutions tractable. Adding structure means imposing constraints on <span class="math inline">\(f^*\)</span> so that we can find a (hopefully unique) solution within the class of constraints. For example, we can structure the problem by insisting that only global functions with a linear predictor are considered.</p>
 <p>Consider the case of predicting the mean of the target variable at some location <span class="math inline">\(\textbf{x}_0\)</span> in the input space. <span class="math inline">\(\textbf{x}_0\)</span> can be a one of the observed data points or a new value. A <strong>global</strong> model is one that applies regardless of the value of <span class="math inline">\(\textbf{x}_0\)</span>. A <strong>local</strong> model on the other hand applies a different model depending on the value of <span class="math inline">\(\textbf{x}_0\)</span>.</p>
-<p>In <a href="#sec-model-components" class="quarto-xref"><span class="quarto-unresolved-ref">sec-model-components</span></a> the concept of the linear predictor was introduced:</p>
+<p>In <a href="statmodels.html#sec-model-components" class="quarto-xref"><span>Section 2.2</span></a> the concept of the linear predictor was introduced:</p>
 <p><span class="math display">\[\eta = \beta_{0} + \beta_1 x_1 + \cdots + \beta_p x_p\]</span></p>
 <p>The constraints—global model with linear predictor—are adding a lot of structure to the regression problem. We are now looking for mean functions of the following form</p>
 <p><span class="math display">\[
@@ -604,11 +604,11 @@ Y_i = \beta_0 + \beta_1 x_{i} + \epsilon_i
 <p><span class="math display">\[
 Y_i = \beta_0 + \beta_1 x_{i} + \beta_2 x_{i}^2 + \beta_3 x_i^3 + \cdots + \epsilon_i
 \]</span></p>
-<p><a href="#fig-smoothing-mindmap" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-smoothing-mindmap</span></a> categorizes the approaches to structuring the regression problem. The classical regression models (SLR/MLR) are just one of many ways to tackle estimating a mean function.</p>
+<p><a href="#fig-smoothing-mindmap" class="quarto-xref">Figure&nbsp;<span>7.2</span></a> categorizes the approaches to structuring the regression problem. The classical regression models (SLR/MLR) are just one of many ways to tackle estimating a mean function.</p>
 <div id="fig-smoothing-mindmap" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-smoothing-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/SmoothingMindMap.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/SmoothingMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/SmoothingMindMap.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/SmoothingMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-smoothing-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;7.2: Different approaches to structuring the regression problem.
@@ -630,7 +630,7 @@ Figure&nbsp;7.2: Different approaches to structuring the regression problem.
 \sum_{i=1}^n \left(y_i - \textbf{x}_i^\prime \boldsymbol{\beta}\right)^2 + \lambda \left(\frac{1-\alpha}{2}\sum_{j=1}^p\beta_j^2 + \alpha\sum_{j=1}^p |\beta_j|\right)
 \]</span> In addition to the shrinkage penalty parameter <span class="math inline">\(\lambda\)</span>, the elastic net has a mixing parameter <span class="math inline">\(\alpha\)</span> that determines the weighting between the Ridge-style and the Lasso-style penalty. <span class="math inline">\(\alpha=0\)</span> leads to Ridge regression, <span class="math inline">\(\alpha=1\)</span> leads to Lasso regression. Any value in between represents a mixture of the two.</p>
 <p>Lasso is popular because the absolute-value regularization has an interesting side effect: coefficients are shrunk not just toward zero, they can be shrunk to exactly zero. This has the effect of eliminating the associated input variable from the model. In Ridge regression, on the other hand, the shrunk coefficients do not attain exactly zero. Lasso is thus used to regularize the model <strong>and</strong> to select input variables at the same time. This has also immediate practical advantages. If you start with 100 inputs and apply Lasso regression, you might end up with 10 non-zero coefficient, whereas in Ridge regression you will have 100 non-zero (albeit shrunk) coefficient. To use the fitted model for prediction you need information on only the 10 input variables with non-zero coefficients in the Lasso case. To use the Ridge regression model for prediction you need complete information on all 100 input variables.</p>
-<p>Constrained estimation can also be at work for local models on the right hand side of <a href="#fig-smoothing-mindmap" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-smoothing-mindmap</span></a>. <strong>Kernel</strong> estimators apply kernel functions that weigh observations depending on their proximity to a target point of prediction. Suppose we have a single input variable <span class="math inline">\(x\)</span>. A kernel estimator minimizes <span class="math display">\[
+<p>Constrained estimation can also be at work for local models on the right hand side of <a href="#fig-smoothing-mindmap" class="quarto-xref">Figure&nbsp;<span>7.2</span></a>. <strong>Kernel</strong> estimators apply kernel functions that weigh observations depending on their proximity to a target point of prediction. Suppose we have a single input variable <span class="math inline">\(x\)</span>. A kernel estimator minimizes <span class="math display">\[
 \sum_{i=1}^n \, K_\lambda(x_0,x_i) (y_i - f(x_i))^2
 \]</span> <span class="math inline">\(K_\lambda(x_0,x_i)\)</span> is the kernel function that depends on the target point of prediction (<span class="math inline">\(x_0\)</span>) and some hyperparameter <span class="math inline">\(\lambda\)</span>. Choosing the kernel function and the <strong>bandwidth</strong> parameter <span class="math inline">\(\lambda\)</span> affects the smoothness of the predictions.</p>
 </section>
@@ -671,7 +671,7 @@ Figure&nbsp;7.2: Different approaches to structuring the regression problem.
 <p>This is a nonlinear regression model with two inputs (dose and time) and three parameters (<span class="math inline">\(C, k_e, k_a\)</span>).</p>
 </div>
 </div>
-<p>Rather than structuring the model with parameters, the local approaches on the right side of <a href="#fig-smoothing-mindmap" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-smoothing-mindmap</span></a> are structuring the method of statistical learning, introducing local variations of the model in a neighborhood of a target location <span class="math inline">\(\textbf{x}_0\)</span> in some form. This is done either explicitly through weight functions that emphasize observations close to <span class="math inline">\(\textbf{x}_0\)</span> more than remote observations or implicitly through reliance of spline basis expansions. Local models with the exception of <span class="math inline">\(k\)</span>-nearest neighbor regression are referred to as <strong>scatterplot smoothers</strong>, they typically depend on a single input <span class="math inline">\(x\)</span>.</p>
+<p>Rather than structuring the model with parameters, the local approaches on the right side of <a href="#fig-smoothing-mindmap" class="quarto-xref">Figure&nbsp;<span>7.2</span></a> are structuring the method of statistical learning, introducing local variations of the model in a neighborhood of a target location <span class="math inline">\(\textbf{x}_0\)</span> in some form. This is done either explicitly through weight functions that emphasize observations close to <span class="math inline">\(\textbf{x}_0\)</span> more than remote observations or implicitly through reliance of spline basis expansions. Local models with the exception of <span class="math inline">\(k\)</span>-nearest neighbor regression are referred to as <strong>scatterplot smoothers</strong>, they typically depend on a single input <span class="math inline">\(x\)</span>.</p>
 <div id="fig-local-linear" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-local-linear-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -682,11 +682,11 @@ Figure&nbsp;7.3: Local linear trends approximate an overall trend
 </figcaption>
 </figure>
 </div>
-<p>The intuition behind local models that rely on weighing is simple. If you are not sure about the global behavior of the mean function across all possible values of <span class="math inline">\(x\)</span>, you might be more comfortable specifying the behavior in a neighborhood of <span class="math inline">\(x_0\)</span>. A model that is too simple to describe the overall, global, trend might be good enough to describe a trend locally (<a href="#fig-local-linear" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-local-linear</span></a>). Observations that are near each other in <span class="math inline">\(x\)</span>-space are probably more alike than observations that are far apart, making simple local models that vary its parameters as <span class="math inline">\(x\)</span> takes on different values a logical choice. <a href="#fig-making-models-local" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-making-models-local</span></a> summarizes the important ways in which models are localized.</p>
+<p>The intuition behind local models that rely on weighing is simple. If you are not sure about the global behavior of the mean function across all possible values of <span class="math inline">\(x\)</span>, you might be more comfortable specifying the behavior in a neighborhood of <span class="math inline">\(x_0\)</span>. A model that is too simple to describe the overall, global, trend might be good enough to describe a trend locally (<a href="#fig-local-linear" class="quarto-xref">Figure&nbsp;<span>7.3</span></a>). Observations that are near each other in <span class="math inline">\(x\)</span>-space are probably more alike than observations that are far apart, making simple local models that vary its parameters as <span class="math inline">\(x\)</span> takes on different values a logical choice. <a href="#fig-making-models-local" class="quarto-xref">Figure&nbsp;<span>7.4</span></a> summarizes the important ways in which models are localized.</p>
 <div id="fig-making-models-local" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-making-models-local-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/MakingModelsLocal.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/MakingModelsLocal.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+<a href="images/MakingModelsLocal.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/MakingModelsLocal.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-making-models-local-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;7.4: Techniques by which models can be localized
@@ -862,10 +862,10 @@ K(x_0,x_i) = I(||x_i-x_0|| \le ||x_{(k)} - x_0 ||)
 <li><p><span class="math inline">\(p=10\)</span> covers <span class="math inline">\(0.1^{1/10} = 0.79\)</span> of the range of <span class="math inline">\(X_1, \cdots, X_{10}\)</span></p></li>
 </ul>
 <p>As <span class="math inline">\(p\)</span> increases, you have to increase the “neighborhood” to capture a constant fraction of the observations. Eventually, there is nothing local about these neighborhoods and many points will be near the edge of the data space. If you place 50 observations in 20 dimensions no two observations are close to each other.</p>
-<div id="fig-curse-dimensionality" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center" width="80%">
+<div id="fig-curse-dimensionality" class="quarto-figure quarto-figure-center quarto-float anchored" width="80%" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-curse-dimensionality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/CurseOfDimensionality.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/CurseOfDimensionality.png" id="fig-curse-dimensionality" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:80.0%"></a>
+<a href="images/CurseOfDimensionality.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/CurseOfDimensionality.png" id="fig-curse-dimensionality" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-curse-dimensionality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;7.5
@@ -1464,7 +1464,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","openEffect":"zoom","loop":false,"closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

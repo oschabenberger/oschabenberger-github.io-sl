@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Statistical Learning - 21&nbsp; Introduction to Unsupervised Learning</title>
+<title>Statistical Learning - References</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,7 +20,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -30,8 +49,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./pca.html" rel="next">
-<link href="./bma.html" rel="prev">
+<link href="./explainability.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -43,9 +61,6 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
-<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
-<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -116,7 +131,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./unsuper_intro.html">Unsupervised Learning</a></li><li class="breadcrumb-item"><a href="./unsuper_intro.html"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./references.html">References</a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -334,7 +349,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link active">
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
   </div>
 </li>
@@ -459,7 +474,7 @@ window.Quarto = {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">
+  <a href="./references.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">References</span></a>
   </div>
 </li>
@@ -474,9 +489,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./unsuper_intro.html">Unsupervised Learning</a></li><li class="breadcrumb-item"><a href="./unsuper_intro.html"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-unsuper-intro" class="quarto-section-identifier"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></h1>
+<h1 class="title">References</h1>
 </div>
 
 
@@ -493,30 +508,209 @@ window.Quarto = {
 </header>
 
 
-<p>The methods discussed so far fall into the category of <strong>supervised</strong> learning, where a target variable <span class="math inline">\(Y\)</span> is present and the goal is to predict or classify <span class="math inline">\(Y\)</span> or to test hypothesis about <span class="math inline">\(Y\)</span>. The distinction between supervised and <strong>unsupervised</strong> methods of learning from data was introduced in <a href="learningtypes.html" class="quarto-xref"><span>Chapter 6</span></a>.</p>
-<p>Recall that the term unsupervised learning seeks to evoke learning without a teacher who can judge the quality of an answer because the teacher is aware of the correct answer, the ground truth. In unsupervised learning there are no loss functions and no clear metrics on how to evaluate the quality of the analysis. The proliferation of method of unsupervised learning and the reliance on heuristics are a result of this condition.</p>
-<p>However, unsupervised learning is not a lesser form of learning from data and the questions it addresses can be more complex than estimating the mean of a random variable. In general, the data for unsupervised learning consists of <span class="math inline">\(n\)</span> tuples <span class="math inline">\([X_1, \cdots, X_p]\)</span>; because there is no target variable, the data structure is also referred to as <strong>unlabeled</strong> data. We are interested in discovering aspects of the joint distribution <span class="math inline">\(p(X_1, \cdots, X_p) = p(\textbf{X})\)</span> (<a href="#fig-unsuper-map" class="quarto-xref">Figure&nbsp;<span>21.1</span></a>). For example,</p>
-<ul>
-<li>are there low-dimensional regions where <span class="math inline">\(p(\textbf{X})\)</span> is large <span class="math inline">\(\rightarrow\)</span> <strong>principal component</strong> analysis.</li>
-<li>are there multiple regions in the <span class="math inline">\(X\)</span>-space that contain modes of <span class="math inline">\(p(\textbf{X}) \rightarrow\)</span> <strong>cluster</strong> analysis.</li>
-<li>are there values of <span class="math inline">\(X_j\)</span> that are more likely to associate with values of <span class="math inline">\(X_k\)</span> than would be expected under a random allocation <span class="math inline">\(\rightarrow\)</span> <strong>association</strong> analysis.</li>
-</ul>
-<div id="fig-unsuper-map" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-unsuper-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/UnsupervisedMindMap.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/UnsupervisedMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-Agrawal_etal_1993" class="csl-entry" role="listitem">
+Agrawal, Rakesh, Tomasz Imieliński, and Arun Swami. 1993. <span>“Mining
+Association Rules Between Sets of Items in Large Databases.”</span> In
+<em>Proceedings of the 1993 ACM SIGMOD International Conference on
+Management of Data</em>, 207–16. SIGMOD ’93. New York, NY, USA:
+Association for Computing Machinery. <a href="https://doi.org/10.1145/170035.170072">https://doi.org/10.1145/170035.170072</a>.
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsuper-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;21.1: An overview of statistical learning approaches
-</figcaption>
-</figure>
+<div id="ref-Bahdanau2014NeuralMT" class="csl-entry" role="listitem">
+Bahdanau, Dzmitry, Kyunghyun Cho, and Yoshua Bengio. 2014. <span>“Neural
+Machine Translation by Jointly Learning to Align and Translate.”</span>
+<em>CoRR</em> abs/1409.0473. <a href="https://api.semanticscholar.org/CorpusID:11212020">https://api.semanticscholar.org/CorpusID:11212020</a>.
 </div>
-<p>Because there is no target variable, unsupervised methods of learning rely less on model structures and probabilistic assumptions–with some exceptions such as model-based clustering. The field has more of an exploratory nature than supervised learning; that makes it less confirmatory and maybe more fun. For example, there are no strict rules on how to perform a hierarchical cluster analysis and different analysts will create different cluster assignments. Finding the optimal number <span class="math inline">\(k\)</span> in <span class="math inline">\(k\)</span>-means clustering escapes cross-validation because there is no loss function according to which errors can be measured.</p>
+<div id="ref-Belenky_et_al" class="csl-entry" role="listitem">
+Belenky, Gregory, Nancy J. Wesensten, David R. Thorne, Maria L. Thomas,
+Helen C. Sing, Daniel P. Redmond, Michael B. Russo, and Thomas J.
+Balkin. 2003. <span>“Patterns of Performance Degradation and Restoration
+During Sleep Restriction and Subsequent Recovery: A Sleep Dose-Response
+Study.”</span> <em>Journal of Sleep Research</em> 12: 1--12.
+</div>
+<div id="ref-Bellman1957" class="csl-entry" role="listitem">
+Bellman, R. 1957. <span>“A Markovian Decision Process.”</span>
+<em>Journal of Mathematics and Mechanics</em> 6 (5). <a href="http://www.jstor.org/stable/24900506">http://www.jstor.org/stable/24900506</a>.
+</div>
+<div id="ref-Boeckmanetal1992" class="csl-entry" role="listitem">
+Boeckmann, A. J., L. B. Sheiner, and S. L. Beal. 1992. <em>NONMEM Users
+Guide: Part v, Introductory Guide</em>. NONMEM Project Group, University
+of California, San Francisco.
+</div>
+<div id="ref-Borne_2021" class="csl-entry" role="listitem">
+Borne, Kirk. 2021. <span>“Association Rule Mining — Not Your Typical ML
+Algorithm.”</span> <em>Medium</em>. <a href="https://medium.com/@kirk.borne/association-rule-mining-not-your-typical-ml-algorithm-97acda6b86c2">https://medium.com/@kirk.borne/association-rule-mining-not-your-typical-ml-algorithm-97acda6b86c2</a>.
+</div>
+<div id="ref-GEPBox1976" class="csl-entry" role="listitem">
+Box, George E. P. 1976. <span>“Science and Statistics.”</span>
+<em>Journal of the American Statistical Association</em> 71 (356):
+791–99.
+</div>
+<div id="ref-Breiman1996" class="csl-entry" role="listitem">
+Breiman, Leo. 1996. <span>“Bagging Predictors.”</span> <em>Machine
+Learning</em> 24: 123–40.
+</div>
+<div id="ref-Breiman2001" class="csl-entry" role="listitem">
+———. 2001a. <span>“Random Forests.”</span> <em>Machine Learning</em> 45:
+5–32.
+</div>
+<div id="ref-BreimanTwoCultures" class="csl-entry" role="listitem">
+———. 2001b. <span>“Statistical Modeling: The Two Cultures.”</span>
+<em>Statistical Science</em> 16 (3): 199–231.
+</div>
+<div id="ref-Cleveland1979" class="csl-entry" role="listitem">
+Cleveland, William S. 1979. <span>“Robust Locally Weighted Regression
+and Smoothing Scatterplots.”</span> <em>Journal of the American
+Statistical Association</em> 74 (368): 829–36. <a href="https://doi.org/10.1080/01621459.1979.10481038">https://doi.org/10.1080/01621459.1979.10481038</a>.
+</div>
+<div id="ref-Davidian1995" class="csl-entry" role="listitem">
+Davidian, M., and D. M. Giltinan. 1995. <em>Nonlinear Models for
+Repeated Measurement Data</em>. Chapman &amp; Hall, London.
+</div>
+<div id="ref-FerrariCribariNeto" class="csl-entry" role="listitem">
+Ferrari, S. L. P., and F. Cribari-Neto. 2004. <span>“Beta Regression for
+Modeling Rates and Proportions.”</span> <em>Journal of Applied
+Statistics</em> 31 (7): 799–815.
+</div>
+<div id="ref-FraleyRaftery_2002" class="csl-entry" role="listitem">
+Fraley, Chris, and Adrian E Raftery. 2002. <span>“Model-Based
+Clustering, Discriminant Analysis, and Density Estimation.”</span>
+<em>Journal of the American Statistical Association</em> 97 (458):
+611–31. <a href="https://doi.org/10.1198/016214502760047131">https://doi.org/10.1198/016214502760047131</a>.
+</div>
+<div id="ref-FurnivalWilson1974" class="csl-entry" role="listitem">
+Furnival, George M., and Robert W. Wilson. 1974. <span>“Regression by
+Leaps and Bounds.”</span> <em>Technometrics</em> 16 (4): 499–511.
+</div>
+<div id="ref-Garcia-Portugues2024" class="csl-entry" role="listitem">
+García-Portugués, E. 2024. <em>Notes for Predictive Modeling</em>. <a href="https://bookdown.org/egarpor/PM-UC3M/">https://bookdown.org/egarpor/PM-UC3M/</a>.
+</div>
+<div id="ref-GillilandSchab_2001" class="csl-entry" role="listitem">
+Gilliland, D., and O. Schabenberger. 2001. <span>“Limits on Pairwise
+Association for Equi-Correlated Binary Variables.”</span> <em>Journal of
+Applied Statistical Sciences</em> 10: 279--285.
+</div>
+<div id="ref-Goodfellow-et-al-2016" class="csl-entry" role="listitem">
+Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016. <em>Deep
+Learning</em>. MIT Press.
+</div>
+<div id="ref-Gower1971" class="csl-entry" role="listitem">
+Gower, J. C. n.d. <span>“A General Coefficient of Similarity and Some of
+Its Properties.”</span> <em>Biometrics</em> 27 (4): 857–71.
+</div>
+<div id="ref-GrueHeiberg" class="csl-entry" role="listitem">
+Grue, Lars, and Arvid Heiberg. 2006. <span>“Notes on the History of
+Normality–Reflections on the Work of Quetelet and Galton.”</span>
+<em>Scandinavian Journal of Disability Research</em> 8 (4): 232–46.
+</div>
+<div id="ref-Hartigan1979" class="csl-entry" role="listitem">
+Hartigan, J. A., and M. A. Wong. 1979. <span>“Algorithm AS 136: A
+k-Means Clustering Algorithm.”</span> <em>Journal of the Royal
+Statistical Society. Series C (Applied Statistics)</em> 28 (1): 100–108.
+</div>
+<div id="ref-Harville1976" class="csl-entry" role="listitem">
+Harville, D. A. 1976. <span>“Extension of the Gauss-Markov Theorem to
+Include the Estimation of Random Effects.”</span> <em>The Annals of
+Statistics</em> 4: 384–95.
+</div>
+<div id="ref-HastieTibshirani" class="csl-entry" role="listitem">
+Hastie, T. J., and R. Tibshirani. 1990. <em>Generalized Additive
+Models</em>. Chapman &amp; Hall, London.
+</div>
+<div id="ref-hastie_ESL" class="csl-entry" role="listitem">
+Hastie, Trevor, Robert Tibshirani, and Jerome Friedman. 2001. <em>The
+Elements of Statistical Learning</em>. Springer Series in Statistics.
+New York, NY, USA: Springer New York Inc.
+</div>
+<div id="ref-Henderson1950" class="csl-entry" role="listitem">
+Henderson, C. R. 1950. <span>“The Estimation of Genetic
+Parameters.”</span> <em>The Annals of Mathematical Statistics</em> 21
+(2): 309–10.
+</div>
+<div id="ref-Hinneetal2020" class="csl-entry" role="listitem">
+Hinne, Max, Quentin F. Gronau, Don van den Bergh, and Eric-Jan
+Wagenmakers. 2020. <span>“A Conceptual Introduction to Bayesian Model
+Averaging.”</span> <em>Advances in Methods and Practices in
+Psychological Science</em> 3 (2): 200–215. <a href="https://doi.org/10.1177/2515245919898657">https://doi.org/10.1177/2515245919898657</a>.
+</div>
+<div id="ref-James2013_ISLR2" class="csl-entry" role="listitem">
+James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani.
+2021. <em>An Introduction to Statistical Learning: With Applications in
+r, 2nd Ed.</em> Springer. <a href="https://www.statlearning.com/">https://www.statlearning.com/</a>.
+</div>
+<div id="ref-Kleinbaum2013" class="csl-entry" role="listitem">
+Kleinbaum, David G., Lawrence L. Kupper, A. Nizam, and Eli S. Rosenberg.
+2013. <em>Applied Regression Analysis and Other Multivariable Methods, 5
+Ed.</em> Cengage Learning.
+</div>
+<div id="ref-Mallows1973" class="csl-entry" role="listitem">
+Mallows, C. L. 1973. <span>“Some Comments on <span class="math inline"><em>C</em><sub><em>p</em></sub></span>.”</span>
+<em>Technometrics</em> 15 (4): 661–75.
+</div>
+<div id="ref-McCullaghNelder" class="csl-entry" role="listitem">
+McCullagh, P., and J. A. Nelder Frs. 1989. <em>Generalized Linear
+Models, 2nd Ed.</em> Chapman &amp; Hall, New York.
+</div>
+<div id="ref-McCullochPitts" class="csl-entry" role="listitem">
+McCulloch, Warren S., and Walter Pitts. 1943. <span>“A Logical Calculus
+of the Ideas Immanent in Nervous Activity.”</span> <em>Bulletin of
+Mathematical Biophysics</em> 5: 115–33.
+</div>
+<div id="ref-Meadetal1993" class="csl-entry" role="listitem">
+Mead, R., R. N. Curnow, and A. M. Hasted. 1993. <em>Statistical Methods
+in Agriculture and Experimental Biology</em>. CRC Press, New York; Boca
+Raton, FL.
+</div>
+<div id="ref-Miller1984" class="csl-entry" role="listitem">
+Miller, Alan J. 1984. <span>“Selection of Subsets of Regression
+Variables.”</span> <em>Journal of the Royal Statistical Society, Series
+A.</em> 147 (3): 389–425.
+</div>
+<div id="ref-PinheiroBates1995" class="csl-entry" role="listitem">
+Pinheiro, J. C., and D. M. Bates. 1995. <span>“Approximations to the
+Log-Likelihood Function in the Nonlinear Mixed-Effects Model.”</span>
+<em>Journal of Computational and Graphical Statistics</em> 4: 12–35.
+</div>
+<div id="ref-Prater1956" class="csl-entry" role="listitem">
+Prater, N. H. 1956. <span>“Estimate Gasoline Yields from Crudes.”</span>
+<em>Petroleum Refiner</em> 35 (3).
+</div>
+<div id="ref-Henderson1984" class="csl-entry" role="listitem">
+R., Henderson. C. 1984. <em>Applications of Linear Models in Animal
+Breeding</em>. University of Guelph.
+</div>
+<div id="ref-Raftery1995" class="csl-entry" role="listitem">
+Raftery, Adrian E. 1995. <span>“Bayesian Model Selection in Social
+Research.”</span> <em>Sociological Methodology</em> 25: 111–63.
+</div>
+<div id="ref-Ratkowsky1983" class="csl-entry" role="listitem">
+Ratkowsky, D. A. 1983. <em>Nonlinear Regression Modeling</em>. Marcel
+Dekker, New York.
+</div>
+<div id="ref-Ratkowsky1990" class="csl-entry" role="listitem">
+———. 1990. <em>Handbook of Nonlinear Regression Models</em>. Marcel
+Dekker, New York.
+</div>
+<div id="ref-Schabenberger2001" class="csl-entry" role="listitem">
+Schabenberger, O., and Francis J. Pierce. 2001. <em>Contemporary
+Statistical Models for the Plant and Soil Sciences</em>. CRC Press, Boca
+Raton.
+</div>
+<div id="ref-Schabenbergeretal1999" class="csl-entry" role="listitem">
+Schabenberger, O., B. E. Tharp, Kells J. J., and D. Penner. 1999.
+<span>“Statistical Tests for Hormesis and Effective Dosages in Herbicide
+Dose Response.”</span> <em>Agronomy Journal</em> 91: 713–21.
+</div>
+<div id="ref-Vaswani_etal_2017" class="csl-entry" role="listitem">
+Vaswani, Ashish, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion
+Jones, Aidan N. Gomez, Łukasz Kaiser, and Illia Polosukhin. 2017.
+<span>“Attention Is All You Need.”</span> In <em>Proceedings of the 31st
+International Conference on Neural Information Processing Systems</em>,
+6000–6010. NIPS’17. Red Hook, NY, USA: Curran Associates Inc.
+</div>
+</div>
 
 
-<div class="hidden" aria-hidden="true">
-<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;21.1: An overview of statistical learning approaches</span>
-</div>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1074,14 +1268,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./bma.html" class="pagination-link" aria-label="Bayesian Model Averaging">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span>
+      <a href="./explainability.html" class="pagination-link" aria-label="Interpretability and Explainability">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./pca.html" class="pagination-link" aria-label="Principal Component Analysis (PCA)">
-        <span class="nav-page-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->
@@ -1098,31 +1289,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","descPosition":"bottom","selector":".lightbox","closeEffect":"zoom","loop":false});
-window.onload = () => {
-  lightboxQuarto.on('slide_before_load', (data) => {
-    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-    const href = trigger.getAttribute('href');
-    if (href !== null) {
-      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
-      if (imgEl !== null) {
-        const srcAttr = imgEl.getAttribute("src");
-        if (srcAttr && srcAttr.startsWith("data:")) {
-          slideConfig.href = srcAttr;
-        }
-      }
-    } 
-  });
-
-  lightboxQuarto.on('slide_after_load', (data) => {
-    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-    if (window.Quarto?.typesetMath) {
-      window.Quarto.typesetMath(slideNode);
-    }
-  });
-
-};
-          </script>
 
 
 

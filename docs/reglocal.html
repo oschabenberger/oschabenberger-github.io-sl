@@ -569,15 +569,15 @@ window.Quarto = {
 </header>
 
 
-<p>In <a href="#sec-reg-intro" class="quarto-xref"><span class="quarto-unresolved-ref">sec-reg-intro</span></a> we introduced different approaches to structure the problem of finding <span class="math display">\[
+<p>In <a href="regintro.html" class="quarto-xref"><span>Chapter 7</span></a> we introduced different approaches to structure the problem of finding <span class="math display">\[
 \text{E}[Y_i | \textbf{x}_i] = f^*(\textbf{x}_i)
-\]</span> by constraining the model family or the approach to estimation. <a href="#sec-local-global-models" class="quarto-xref"><span class="quarto-unresolved-ref">sec-local-global-models</span></a> then introduced the concept of <strong>global</strong> and <strong>local</strong> models.</p>
+\]</span> by constraining the model family or the approach to estimation. <a href="regintro.html#sec-local-global-models" class="quarto-xref"><span>Section 7.2</span></a> then introduced the concept of <strong>global</strong> and <strong>local</strong> models.</p>
 <p>The methods discussed in this part of the book so far are <strong>global models</strong> in the sense that they depend on parameters <span class="math inline">\(\boldsymbol{\beta}\)</span> that apply regardless of the position <span class="math inline">\(\textbf{x}_0\)</span> in the regression hull. Global models do not have a different set of parameters at <span class="math inline">\(\textbf{x}_i\)</span> and <span class="math inline">\(\textbf{x}_j\)</span>.</p>
 <p>In this chapter we discuss in greater detail models that capture local variations of the mean function. The two major approaches to give models greater flexibility is through the introduction of weight functions or through basis expansions. Kernel regression and local polynomials are examples of the weighting approach. Regressions and smoothing splines are examples of the basis expansion approach.</p>
-<p>Because these methods suffer from the curse of dimensionality (<a href="#sec-curse-dimensionality" class="quarto-xref"><span class="quarto-unresolved-ref">sec-curse-dimensionality</span></a>), they are not applied in higher dimensions. For the remainder of this chapter we assume a single input variable, <span class="math inline">\(\textbf{x}= x\)</span>.</p>
+<p>Because these methods suffer from the curse of dimensionality (<a href="regintro.html#sec-curse-dimensionality" class="quarto-xref"><span>Section 7.4.1</span></a>), they are not applied in higher dimensions. For the remainder of this chapter we assume a single input variable, <span class="math inline">\(\textbf{x}= x\)</span>.</p>
 <section id="kernel-regression" class="level2" data-number="12.1">
 <h2 data-number="12.1" class="anchored" data-anchor-id="kernel-regression"><span class="header-section-number">12.1</span> Kernel Regression</h2>
-<p>A special case of a kernel regression estimator was introduced in <a href="#sec-knn-regression" class="quarto-xref"><span class="quarto-unresolved-ref">sec-knn-regression</span></a>, the <span class="math inline">\(k\)</span>-nearest neighbor regression estimator. The idea is simple: to predict the mean of <span class="math inline">\(Y\)</span> at <span class="math inline">\(x_0\)</span>, find the <span class="math inline">\(k\)</span> observations closest to <span class="math inline">\(x_0\)</span> and take their average. The procedure can be formalized as follows:</p>
+<p>A special case of a kernel regression estimator was introduced in <a href="regintro.html#sec-knn-regression" class="quarto-xref"><span>Section 7.4</span></a>, the <span class="math inline">\(k\)</span>-nearest neighbor regression estimator. The idea is simple: to predict the mean of <span class="math inline">\(Y\)</span> at <span class="math inline">\(x_0\)</span>, find the <span class="math inline">\(k\)</span> observations closest to <span class="math inline">\(x_0\)</span> and take their average. The procedure can be formalized as follows:</p>
 <ol type="1">
 <li><p>The general model is <span class="math inline">\(Y(x) = f(x) + \epsilon\)</span> with <span class="math inline">\(\text{E}[\epsilon] = 0\)</span></p></li>
 <li><p>To predict <span class="math inline">\(f(x_0)\)</span> use the local estimator <span class="math inline">\(\widehat{f}(x_0) = \frac{1}{k}\sum_{i=1}^k y(x_{(i)})\)</span> where <span class="math inline">\(x_{(i)}\)</span> is the <span class="math inline">\(i\)</span><sup>th</sup> closest observation to <span class="math inline">\(x_0\)</span> and <span class="math inline">\(y(x_{(i)})\)</span> is the observed value of the target variable at <span class="math inline">\(x_{(i)}\)</span>.</p></li>
@@ -597,9 +597,9 @@ K(x_0,x_i) = I(||x_i-x_0|| \le ||x_{(k)} - x_0 ||)
 K(x^*_0,x_i) = I(||x_i-x^*_0|| \le ||x_{(k)} - x^*_0 ||)
 \]</span></p>
 <p>Rather than one global estimate <span class="math inline">\(\widehat{\boldsymbol{\beta}}\)</span> we get as many estimates as there are points we wish to predict at: <span class="math inline">\(\widehat{\beta}(x_0), \widehat{\beta}(x^*_0), \widehat{\beta}(x^{**}_0), \cdots\)</span>.</p>
-<p>The following simulated data is taken from the course on Predictive Modeling by <span class="citation" data-cites="Garcia-Portugues2024">García-Portugués (<a href="#ref-Garcia-Portugues2024" role="doc-biblioref">2024</a>)</span>. The true mean function is <span class="math display">\[
+<p>The following simulated data is taken from the course on Predictive Modeling by <span class="citation" data-cites="Garcia-Portugues2024">García-Portugués (<a href="references.html#ref-Garcia-Portugues2024" role="doc-biblioref">2024</a>)</span>. The true mean function is <span class="math display">\[
 f(x) = x^2 \, \cos(x)
-\]</span> and the observed data (<a href="#fig-sim-data-garcia" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-sim-data-garcia</span></a>) follow the model <span class="math display">\[
+\]</span> and the observed data (<a href="#fig-sim-data-garcia" class="quarto-xref">Figure&nbsp;<span>12.1</span></a>) follow the model <span class="math display">\[
 Y(x) = f(x) + \epsilon\quad \epsilon \sim \textit{iid } G(0,4)
 \]</span></p>
 <div class="cell">
@@ -615,10 +615,10 @@ Y(x) = f(x) + \epsilon\quad \epsilon \sim \textit{iid } G(0,4)
 <div id="fig-sim-data-garcia" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sim-data-garcia-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="reglocal_files/figure-html/fig-sim-data-garcia-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="reglocal_files/figure-html/fig-sim-data-garcia-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+<a href="reglocal_files/figure-html/fig-sim-data-garcia-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="reglocal_files/figure-html/fig-sim-data-garcia-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sim-data-garcia-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;12.1: Simulated data according to <span class="citation" data-cites="Garcia-Portugues2024">García-Portugués (<a href="#ref-Garcia-Portugues2024" role="doc-biblioref">2024</a>)</span>.
+Figure&nbsp;12.1: Simulated data according to <span class="citation" data-cites="Garcia-Portugues2024">García-Portugués (<a href="references.html#ref-Garcia-Portugues2024" role="doc-biblioref">2024</a>)</span>.
 </figcaption>
 </figure>
 </div>
@@ -696,13 +696,13 @@ K_\lambda(x_0,x) = \phi(t)
 \]</span></p></li>
 </ol>
 <p>In these expressions <span class="math inline">\(t = |x - x_0|/\lambda\)</span> and <span class="math inline">\(\phi(t)\)</span> is the standard Gaussian density function.</p>
-<p><a href="#fig-kernel-funcs" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-kernel-funcs</span></a> shows the kernel functions for <span class="math inline">\(\lambda=0.5\)</span> and <span class="math inline">\(\lambda=1\)</span>, respectively. The functions reach their maximum at <span class="math inline">\(|x-x_0| = 0\)</span> and decrease symmetrically in both directions. The Epanechnikov has a kink at <span class="math inline">\(|t| = \lambda\)</span> while the tricube kernel transitions smoothly through that point. Tricube kernels are sometimes preferred over the Epanechnikov kernel because the latter is not differentiable at <span class="math inline">\(|t|=1\)</span>. The Gaussian kernel is very smooth and for a given value of <span class="math inline">\(\lambda\)</span> assigns greater weights for points remote from <span class="math inline">\(x_0\)</span>.</p>
+<p><a href="#fig-kernel-funcs" class="quarto-xref">Figure&nbsp;<span>12.2</span></a> shows the kernel functions for <span class="math inline">\(\lambda=0.5\)</span> and <span class="math inline">\(\lambda=1\)</span>, respectively. The functions reach their maximum at <span class="math inline">\(|x-x_0| = 0\)</span> and decrease symmetrically in both directions. The Epanechnikov has a kink at <span class="math inline">\(|t| = \lambda\)</span> while the tricube kernel transitions smoothly through that point. Tricube kernels are sometimes preferred over the Epanechnikov kernel because the latter is not differentiable at <span class="math inline">\(|t|=1\)</span>. The Gaussian kernel is very smooth and for a given value of <span class="math inline">\(\lambda\)</span> assigns greater weights for points remote from <span class="math inline">\(x_0\)</span>.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-kernel-funcs" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-kernel-funcs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="reglocal_files/figure-html/fig-kernel-funcs-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="reglocal_files/figure-html/fig-kernel-funcs-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
+<a href="reglocal_files/figure-html/fig-kernel-funcs-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="reglocal_files/figure-html/fig-kernel-funcs-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-kernel-funcs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.2: Epanechnikov, tricube and Gaussian kernel functions popular in kernel regression and density estimation. Bandwidth set to 0.5 and 1 for each kernel.
@@ -738,7 +738,7 @@ Figure&nbsp;12.3: Kernel regression estimates for Gaussian kernel with <span cla
 </div>
 </div>
 </div>
-<p>Several noteworthy items in <a href="#fig-simdata-kernel-regression" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-simdata-kernel-regression</span></a>:</p>
+<p>Several noteworthy items in <a href="#fig-simdata-kernel-regression" class="quarto-xref">Figure&nbsp;<span>12.3</span></a>:</p>
 <ul>
 <li><p>The kernel regression estimate for <span class="math inline">\(\lambda=0.9\)</span> is more smooth than the estimate for <span class="math inline">\(\lambda=0.5\)</span>. A larger bandwidth widens the kernel (weight) function. As <span class="math inline">\(\lambda\)</span> increases the fit approaches a flat line at <span class="math inline">\(\widehat{\beta} = \overline{y}\)</span>, a global model.</p></li>
 <li><p>In contrast to the <span class="math inline">\(k\)</span>-NN estimator, the kernel regression estimator is smooth. <span class="math inline">\(k\)</span>-NN estimates change abruptly when a point leaves the <span class="math inline">\(k\)</span>-neighborhood and another point enters. The <span class="math inline">\(k\)</span>-NN weight function <span class="math display">\[
@@ -791,7 +791,7 @@ K(x_0,x_i) = I(||x_i-x_0|| \le ||x_{(k)} - x_0 ||)
 <pre><code>Smallest LOOCV MSE  7.09627  at bandwidth  1.1</code></pre>
 </div>
 </div>
-<p><a href="#fig-simdata-loocv-kr" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-simdata-loocv-kr</span></a> displays the LOOCV mean-squared error for bandwidth values from 0.5 to 1.5 in steps of 0.05. The smallest error is achieved at <span class="math inline">\(\lambda = 1.1\)</span>. <a href="#fig-simdata-kr-best" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-simdata-kr-best</span></a> displays the kernel regression estimate for that bandwidth. The local model fits the data well but continues to show bias at the boundary of the <span class="math inline">\(x\)</span>-range.</p>
+<p><a href="#fig-simdata-loocv-kr" class="quarto-xref">Figure&nbsp;<span>12.4</span></a> displays the LOOCV mean-squared error for bandwidth values from 0.5 to 1.5 in steps of 0.05. The smallest error is achieved at <span class="math inline">\(\lambda = 1.1\)</span>. <a href="#fig-simdata-kr-best" class="quarto-xref">Figure&nbsp;<span>12.5</span></a> displays the kernel regression estimate for that bandwidth. The local model fits the data well but continues to show bias at the boundary of the <span class="math inline">\(x\)</span>-range.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-simdata-loocv-kr" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -832,7 +832,7 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>When you graph the results of cross-validation and the minimum criteria is achieved for the smallest (or largest) value of the hyperparameter being validated, you need to extend the grid of values below (or above) the values considered. Otherwise you might erroneously conclude that the “best” value is the value on the boundary of your candidate values. This is not a problem in <a href="#fig-simdata-loocv-kr" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-simdata-loocv-kr</span></a> where the minimum MSE does not fall on the boundary.</p>
+<p>When you graph the results of cross-validation and the minimum criteria is achieved for the smallest (or largest) value of the hyperparameter being validated, you need to extend the grid of values below (or above) the values considered. Otherwise you might erroneously conclude that the “best” value is the value on the boundary of your candidate values. This is not a problem in <a href="#fig-simdata-loocv-kr" class="quarto-xref">Figure&nbsp;<span>12.4</span></a> where the minimum MSE does not fall on the boundary.</p>
 </div>
 </div>
 </section>
@@ -891,7 +891,7 @@ Copyright M. P. Wand 1997-2009</code></pre>
 <span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>                   <span class="at">gridsize =</span><span class="dv">250</span>,</span>
 <span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>                   <span class="at">range.x  =</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">6</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The local quadratic model is the most flexible at the same bandwidth (<a href="#fig-simdata-locpoly" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-simdata-locpoly</span></a>). All three estimates are similar in the interior of the <span class="math inline">\(x\)</span> range. The boundary bias of the linear and quadratic model is much reduced compared to the kernel regression (degree 0) estimate.</p>
+<p>The local quadratic model is the most flexible at the same bandwidth (<a href="#fig-simdata-locpoly" class="quarto-xref">Figure&nbsp;<span>12.6</span></a>). All three estimates are similar in the interior of the <span class="math inline">\(x\)</span> range. The boundary bias of the linear and quadratic model is much reduced compared to the kernel regression (degree 0) estimate.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-simdata-locpoly" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -911,7 +911,7 @@ Figure&nbsp;12.6: Local polynomials of degree 0, 1, and 2 with Gaussian kernels 
 </section>
 <section id="loess-regression" class="level3">
 <h3 class="anchored" data-anchor-id="loess-regression">Loess Regression</h3>
-<p>Loess (or LOESS) is a special case of local polynomial regression described by <span class="citation" data-cites="Cleveland1979">Cleveland (<a href="#ref-Cleveland1979" role="doc-biblioref">1979</a>)</span>. The abbreviation stands for Local Estimated Scatterplot Smoothing. In terms of concepts introduced so far, Cleveland recommended a local linear model (degree 1) with a tricube kernel weight function and leave-one-out cross-validation to determine the bandwidth.</p>
+<p>Loess (or LOESS) is a special case of local polynomial regression described by <span class="citation" data-cites="Cleveland1979">Cleveland (<a href="references.html#ref-Cleveland1979" role="doc-biblioref">1979</a>)</span>. The abbreviation stands for Local Estimated Scatterplot Smoothing. In terms of concepts introduced so far, Cleveland recommended a local linear model (degree 1) with a tricube kernel weight function and leave-one-out cross-validation to determine the bandwidth.</p>
 <p>The tricube kernel was preferred because it reduces to exactly 0 and thus excludes observations outside of the tricube window from the calculations. The resulting computational savings were important at the time LOESS was proposed.</p>
 <p>The <code>loess</code> function in <code>R</code> implements LOESS and specifies the bandwidth through a <code>span</code> parameter that determines the neighborhood of <span class="math inline">\(x_0\)</span> as a proportion of the data points. The tricube weight function is then applied to the points in the spanned neighborhood. By default <code>loess</code> fits quadratic models with <code>span=0.75</code>. This value is fairly large for applications where you want to model <span class="math inline">\(Y\)</span> as a function of <span class="math inline">\(X\)</span>, but works well in situations where you want to detect the presence of larger trends, as in the analysis of residuals.</p>
 <p>Fitting of LOESS models and cross-validating the span parameter can be done conveniently in <code>R</code> with the <code>train</code> function in the <code>caret</code> package.</p>
@@ -1052,13 +1052,13 @@ The final values used for the model were span = 0.1807692 and degree = 1.</code>
 <section id="segments-knots-and-constraints" class="level3">
 <h3 class="anchored" data-anchor-id="segments-knots-and-constraints">Segments, Knots, and Constraints</h3>
 <p>Local models using weight functions provide a lot of flexibility to model smooth functions based on a simple idea: if a constant, linear, or quadratic model approximates the local behavior at <span class="math inline">\(x_0\)</span> well then we can estimate the parameters of that local model through a weighted analysis that downweighs observations based on their distance from <span class="math inline">\(x_0\)</span>. Data points that are far from <span class="math inline">\(x_0\)</span> will not have much impact on determining the local behavior if we choose the bandwidth of the kernel weight function properly.</p>
-<p>Greater flexibility in the fitted model could also be achieved by adding higher-order polynomial terms and fitting a global model. Unfortunately, this does not work well. Adding a higher-order term such as a cubic (<span class="math inline">\(x^3\)</span>), quartic (<span class="math inline">\(x^4\)</span>), or quintic (<span class="math inline">\(x^5\)</span>) term to pick up curvature in one region can introduce strange behavior in another region. <a href="#fig-quintic-model" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-quintic-model</span></a> shows the fit of global polynomial models with up to third, fourth, and fifth degree terms for the simulated data. The quartic model <span class="math display">\[
+<p>Greater flexibility in the fitted model could also be achieved by adding higher-order polynomial terms and fitting a global model. Unfortunately, this does not work well. Adding a higher-order term such as a cubic (<span class="math inline">\(x^3\)</span>), quartic (<span class="math inline">\(x^4\)</span>), or quintic (<span class="math inline">\(x^5\)</span>) term to pick up curvature in one region can introduce strange behavior in another region. <a href="#fig-quintic-model" class="quarto-xref">Figure&nbsp;<span>12.8</span></a> shows the fit of global polynomial models with up to third, fourth, and fifth degree terms for the simulated data. The quartic model <span class="math display">\[
 Y = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4 x^4 + \epsilon
 \]</span> does a pretty good job in capturing the curvature in the center of the <span class="math inline">\(x\)</span> range. It could benefit from more flexibility in the upper region of <span class="math inline">\(x\)</span>, though. Adding a quintic term <span class="math inline">\(\beta_5 x^5\)</span> to the model improves the fit for larger values of <span class="math inline">\(x\)</span> but leads to poor behavior for small values of <span class="math inline">\(x\)</span>.</p>
 <div id="fig-quintic-model" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-quintic-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/QuinticPolynomials.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/QuinticPolynomials.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/QuinticPolynomials.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/QuinticPolynomials.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-quintic-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.8: Polynomial models up to the 5<sup>th</sup> degree.
@@ -1066,7 +1066,7 @@ Figure&nbsp;12.8: Polynomial models up to the 5<sup>th</sup> degree.
 </figure>
 </div>
 <p>Can we introduce flexibility into the model by creating local behavior and avoid the uncontrolled behavior of higher-degree polynomials? The answer is “yes”, and <strong>splines</strong> is the way we achieve that.</p>
-<p>A spline model is a <strong>piecewise</strong> polynomial model. Rather than fitting a local model at every prediction point, a spline model connects polynomial models at specific points along the <span class="math inline">\(x\)</span>-axis, called <strong>knots</strong>. As with global models, fitting a spline model and making predictions are separate steps. The model is local in the sense that we have different polynomials in different sections of the <span class="math inline">\(x\)</span> range. <a href="#fig-piecewise-linear" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-piecewise-linear</span></a> displays the concept for piecewise polynomials of degree 1–that is, piecewise linear models. The extreme points of the <span class="math inline">\(x\)</span> range serve as the boundary knots, four interior knots are evenly spaced along the <span class="math inline">\(x\)</span> axis. This results in five linear segments. If we denote the interior knots as <span class="math inline">\(c_1, \cdots, c_4\)</span>, this piecewise linear model can be written as follows</p>
+<p>A spline model is a <strong>piecewise</strong> polynomial model. Rather than fitting a local model at every prediction point, a spline model connects polynomial models at specific points along the <span class="math inline">\(x\)</span>-axis, called <strong>knots</strong>. As with global models, fitting a spline model and making predictions are separate steps. The model is local in the sense that we have different polynomials in different sections of the <span class="math inline">\(x\)</span> range. <a href="#fig-piecewise-linear" class="quarto-xref">Figure&nbsp;<span>12.9</span></a> displays the concept for piecewise polynomials of degree 1–that is, piecewise linear models. The extreme points of the <span class="math inline">\(x\)</span> range serve as the boundary knots, four interior knots are evenly spaced along the <span class="math inline">\(x\)</span> axis. This results in five linear segments. If we denote the interior knots as <span class="math inline">\(c_1, \cdots, c_4\)</span>, this piecewise linear model can be written as follows</p>
 <p><span class="math display">\[
 Y = \left \{ \begin{array}{ll} \beta_{01} + \beta_{11} x &amp; x \le c_1 \\
 \beta_{02} + \beta_{12}x &amp; c_1 &lt; x \le c_2 \\
@@ -1080,14 +1080,14 @@ Y = \left \{ \begin{array}{ll} \beta_{01} + \beta_{11} x &amp; x \le c_1 \\
 <div id="fig-piecewise-linear" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-piecewise-linear-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/PiecewiseLinear.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4"><img src="images/PiecewiseLinear.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/PiecewiseLinear.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4"><img src="images/PiecewiseLinear.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-piecewise-linear-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.9: Piecewise linear model with four interior knots.
 </figcaption>
 </figure>
 </div>
-<p>The name spline originates in construction where thin strips of wood were used to create curved shapes, for example, in shipbuilding. The strips of wood, called splines, are fixed at two points with devices called “dogs” or “ducks” and can be flexed between them (<a href="#fig-spline-construction" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-spline-construction</span></a>).</p>
+<p>The name spline originates in construction where thin strips of wood were used to create curved shapes, for example, in shipbuilding. The strips of wood, called splines, are fixed at two points with devices called “dogs” or “ducks” and can be flexed between them (<a href="#fig-spline-construction" class="quarto-xref">Figure&nbsp;<span>12.10</span></a>).</p>
 <div id="fig-spline-construction" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-spline-construction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1098,30 +1098,30 @@ Figure&nbsp;12.10: A spline in construction. <a href="https://www.lancaster.ac.u
 </figcaption>
 </figure>
 </div>
-<p>The segments in <a href="#fig-piecewise-linear" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-piecewise-linear</span></a> are not curved, that can be fixed by increasing the degree of the polynomial in each segment. But we recognize another problem with the piecewise linear model, the fitted lines do not connect at the segments. In order for the model to be continuous across the interior knots, the parameter estimates cannot be chosen freely–they have to obey certain constraints. For example, in order for the first two segments in <a href="#fig-piecewise-linear" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-piecewise-linear</span></a> to connect, we need to have <span class="math display">\[
+<p>The segments in <a href="#fig-piecewise-linear" class="quarto-xref">Figure&nbsp;<span>12.9</span></a> are not curved, that can be fixed by increasing the degree of the polynomial in each segment. But we recognize another problem with the piecewise linear model, the fitted lines do not connect at the segments. In order for the model to be continuous across the interior knots, the parameter estimates cannot be chosen freely–they have to obey certain constraints. For example, in order for the first two segments in <a href="#fig-piecewise-linear" class="quarto-xref">Figure&nbsp;<span>12.9</span></a> to connect, we need to have <span class="math display">\[
 \beta_{01} + \beta_{11} c_1 = \beta_{02} + \beta_{12} c_1
 \]</span></p>
 <p>We would not be satisfied with the segments just touching at the knots, we also would want the spline to transition smoothly through the knots. So we can impose additional constraints on the polynomials. To ensure that the segments have the same slope at the knot we constrain their first derivative <span class="math display">\[
 \beta_{11} = \beta_{12}
 \]</span></p>
-<p>With each constraint the number of free parameters in the model is reduced. We started with ten parameters in the model with four (interior) knots and disconnected lines (<a href="#fig-piecewise-linear" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-piecewise-linear</span></a>). Imposing continuity at each knot imposes one constraint at each knot, leaving us with 6 free parameters (we are using 6 degrees of freedom for the model). Imposing continuity in the first derivative at each knot removes another 4 parameters, leaving us with 2 degrees of freedom. Without increasing the degree of the polynomial we will not be able to add further constraints. In fact, the continuous piecewise linear model with continuity in the first derivatives is just a global simple linear regression model.</p>
-<p>To leave degrees of freedom to pick up local trends in the mean function we use cubic splines that are continuous at the knots and have the same first and second derivatives to be equal at the knots. A spline that satisfies those conditions is known as a cubic spline (<a href="#fig-cubic-spline" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-cubic-spline</span></a>) or a degree-3 spline.</p>
-<p>A spline of degree <span class="math inline">\(d\)</span> in general is a piecewise polynomial of degree <span class="math inline">\(d\)</span> with continuity constraints in the derivatives up to degree <span class="math inline">\(d-1\)</span> at each knot. There is typically no need to engage splines of higher orders than cubic splines. They still have a discontinuity at the knots since they are continuous only up to second derivatives but it is said that the discontinuity is not visible to the human eye <span class="citation" data-cites="hastie_ESL">(<a href="#ref-hastie_ESL" role="doc-biblioref">Hastie, Tibshirani, and Friedman 2001, 134</a>)</span>.</p>
+<p>With each constraint the number of free parameters in the model is reduced. We started with ten parameters in the model with four (interior) knots and disconnected lines (<a href="#fig-piecewise-linear" class="quarto-xref">Figure&nbsp;<span>12.9</span></a>). Imposing continuity at each knot imposes one constraint at each knot, leaving us with 6 free parameters (we are using 6 degrees of freedom for the model). Imposing continuity in the first derivative at each knot removes another 4 parameters, leaving us with 2 degrees of freedom. Without increasing the degree of the polynomial we will not be able to add further constraints. In fact, the continuous piecewise linear model with continuity in the first derivatives is just a global simple linear regression model.</p>
+<p>To leave degrees of freedom to pick up local trends in the mean function we use cubic splines that are continuous at the knots and have the same first and second derivatives to be equal at the knots. A spline that satisfies those conditions is known as a cubic spline (<a href="#fig-cubic-spline" class="quarto-xref">Figure&nbsp;<span>12.11</span></a>) or a degree-3 spline.</p>
+<p>A spline of degree <span class="math inline">\(d\)</span> in general is a piecewise polynomial of degree <span class="math inline">\(d\)</span> with continuity constraints in the derivatives up to degree <span class="math inline">\(d-1\)</span> at each knot. There is typically no need to engage splines of higher orders than cubic splines. They still have a discontinuity at the knots since they are continuous only up to second derivatives but it is said that the discontinuity is not visible to the human eye <span class="citation" data-cites="hastie_ESL">(<a href="references.html#ref-hastie_ESL" role="doc-biblioref">Hastie, Tibshirani, and Friedman 2001, 134</a>)</span>.</p>
 <div id="fig-cubic-spline" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cubic-spline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/CubicSpline.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" data-glightbox="description: .lightbox-desc-5"><img src="images/CubicSpline.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/CubicSpline.png" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="quarto-lightbox-gallery-5"><img src="images/CubicSpline.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cubic-spline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.11: Cubic spline with four interior knots.
 </figcaption>
 </figure>
 </div>
-<p>We also want to handle the boundary properly and are imposing another constraint: the model should have degree 1 beyond the range of <span class="math inline">\(x\)</span> in the training data. This is known as a <strong>natural cubic spline</strong> (<a href="#fig-natural-cubic-spline" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-natural-cubic-spline</span></a>). The natural cubic spline achieves linearity at the boundary by imposing additional constraints, two at each boundary knot. The four degrees of freedom made available–compared to the cubic spline–can be used to place an additional interior knot.</p>
+<p>We also want to handle the boundary properly and are imposing another constraint: the model should have degree 1 beyond the range of <span class="math inline">\(x\)</span> in the training data. This is known as a <strong>natural cubic spline</strong> (<a href="#fig-natural-cubic-spline" class="quarto-xref">Figure&nbsp;<span>12.12</span></a>). The natural cubic spline achieves linearity at the boundary by imposing additional constraints, two at each boundary knot. The four degrees of freedom made available–compared to the cubic spline–can be used to place an additional interior knot.</p>
 <div id="fig-natural-cubic-spline" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-natural-cubic-spline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/NaturalCubicSpline.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" data-glightbox="description: .lightbox-desc-6"><img src="images/NaturalCubicSpline.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/NaturalCubicSpline.png" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="quarto-lightbox-gallery-6"><img src="images/NaturalCubicSpline.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-natural-cubic-spline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.12: Natural cubic spline with four interior knots.
@@ -1149,7 +1149,7 @@ Y = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \beta_{3+1}(x-c_1)^3_+ + \
 <p>Example: Cubic Spline with 3 Knots</p>
 </div>
 <div class="example-container">
-<p>For the simulated data we can fit a cubic spline with 3 knots by constructing a model matrix for <a href="#eq-cubic-spline-tpf" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-cubic-spline-tpf</span></a> and passing it to the <code>lm.fit</code> function. First we need to decide on the placement of the three knots. One option is to place knots evenly throughout the range of <span class="math inline">\(x\)</span>. Or, we can place knots at certain percentiles of the distribution of the <span class="math inline">\(x\)</span> data. We choose the 1st, 2nd (median), and 3rd quartile here.</p>
+<p>For the simulated data we can fit a cubic spline with 3 knots by constructing a model matrix for <a href="#eq-cubic-spline-tpf" class="quarto-xref">Equation&nbsp;<span>12.1</span></a> and passing it to the <code>lm.fit</code> function. First we need to decide on the placement of the three knots. One option is to place knots evenly throughout the range of <span class="math inline">\(x\)</span>. Or, we can place knots at certain percentiles of the distribution of the <span class="math inline">\(x\)</span> data. We choose the 1st, 2nd (median), and 3rd quartile here.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">summary</span>(X)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>c_1 <span class="ot">&lt;-</span> s[<span class="dv">2</span>] <span class="co"># 1st. quartile</span></span>
@@ -1216,7 +1216,7 @@ Figure&nbsp;12.13: Cubic spline fit by linear least squares based on truncated p
 </div>
 </div>
 </div>
-<p>For a model with only seven parameters the cubic spline with knots at the 1st, 2nd, and 3rd quartile provides an excellent fit (<a href="#fig-simdata-cubspline" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-simdata-cubspline</span></a>)</p>
+<p>For a model with only seven parameters the cubic spline with knots at the 1st, 2nd, and 3rd quartile provides an excellent fit (<a href="#fig-simdata-cubspline" class="quarto-xref">Figure&nbsp;<span>12.13</span></a>)</p>
 </div>
 </div>
 </section>
@@ -1296,13 +1296,13 @@ tpf_c3 0.50541 0.73487 0.84555 0.92475 0.97202 1.00000</code></pre>
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>ns_spline <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> <span class="fu">ns</span>(X,<span class="at">df=</span><span class="dv">6</span>))</span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>bs_spline <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> <span class="fu">bs</span>(X,<span class="at">df=</span><span class="dv">6</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><a href="#fig-simdata-bs-ns" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-simdata-bs-ns</span></a> displays the fitted values for the 6-df cubic and natural cubic splines.</p>
+<p><a href="#fig-simdata-bs-ns" class="quarto-xref">Figure&nbsp;<span>12.14</span></a> displays the fitted values for the 6-df cubic and natural cubic splines.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-simdata-bs-ns" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-simdata-bs-ns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="reglocal_files/figure-html/fig-simdata-bs-ns-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" data-glightbox="description: .lightbox-desc-7"><img src="reglocal_files/figure-html/fig-simdata-bs-ns-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
+<a href="reglocal_files/figure-html/fig-simdata-bs-ns-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="quarto-lightbox-gallery-7"><img src="reglocal_files/figure-html/fig-simdata-bs-ns-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-simdata-bs-ns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.14: Cubic and natural cubic splines with 6 degrees of freedom.
@@ -1418,7 +1418,7 @@ df_\lambda = tr(\textbf{S}_\lambda) = \sum_{i=1}^n S[ii]_\lambda
 <p>Example: Apple Share Prices</p>
 </div>
 <div class="example-container">
-<p>The data for this example are the weekly closing share prices of Apple (ticker symbol AAPL) between January 1996 and January 2024. <a href="#fig-aapl-share-price" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-aapl-share-price</span></a> shows a time series of these prices along with the dates major Apple products were introduced.</p>
+<p>The data for this example are the weekly closing share prices of Apple (ticker symbol AAPL) between January 1996 and January 2024. <a href="#fig-aapl-share-price" class="quarto-xref">Figure&nbsp;<span>12.15</span></a> shows a time series of these prices along with the dates major Apple products were introduced.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(splines)</span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1446,7 +1446,7 @@ Attaching package: 'lubridate'</code></pre>
 <div id="fig-aapl-share-price" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-aapl-share-price-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="reglocal_files/figure-html/fig-aapl-share-price-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" data-glightbox="description: .lightbox-desc-8"><img src="reglocal_files/figure-html/fig-aapl-share-price-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="reglocal_files/figure-html/fig-aapl-share-price-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="quarto-lightbox-gallery-8"><img src="reglocal_files/figure-html/fig-aapl-share-price-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aapl-share-price-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.15: Weekly AAPL close share prices from January 1996 until January 2024 and dates major products were introduced.
@@ -1505,13 +1505,13 @@ PRESS(l.o.o. CV): 6.96885</code></pre>
 </div>
 </div>
 <p>The smoothing parameter is much smaller, <code>spar</code>=0.00772 and the equivalent degrees of freedom are not much different from the number of knots used (154). This suggests that this smoothing spline has not been penalized sufficiently, the appropriate number of equivalent degrees of freedom is higher–this was confirmed in the first call to <code>smooth.spline</code> with <code>all.knots=TRUE</code>. Also note that the PRESS statistic for this run is almost 3 times higher than in the first analysis.</p>
-<p><a href="#fig-aapl-smooth-splines" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-aapl-smooth-splines</span></a> compares the fitted values for the smoothing splines. The smoothing spline from the second analysis does not capture the changes in share price in recent years but does a good job in the earlier years. The degree of smoothness in the weekly share prices changes over time which presents a challenge for any method that attempts to distill the degree of smoothness in a single parameter.</p>
+<p><a href="#fig-aapl-smooth-splines" class="quarto-xref">Figure&nbsp;<span>12.16</span></a> compares the fitted values for the smoothing splines. The smoothing spline from the second analysis does not capture the changes in share price in recent years but does a good job in the earlier years. The degree of smoothness in the weekly share prices changes over time which presents a challenge for any method that attempts to distill the degree of smoothness in a single parameter.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-aapl-smooth-splines" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-aapl-smooth-splines-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="reglocal_files/figure-html/fig-aapl-smooth-splines-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" data-glightbox="description: .lightbox-desc-9"><img src="reglocal_files/figure-html/fig-aapl-smooth-splines-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="reglocal_files/figure-html/fig-aapl-smooth-splines-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-9" data-gallery="quarto-lightbox-gallery-9"><img src="reglocal_files/figure-html/fig-aapl-smooth-splines-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aapl-smooth-splines-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.16: Smoothing splines for AAPL close share prices.
@@ -1525,7 +1525,7 @@ Figure&nbsp;12.16: Smoothing splines for AAPL close share prices.
 
 
 <div class="hidden" aria-hidden="true">
-<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;12.1: Simulated data according to <span class="citation" data-cites="Garcia-Portugues2024">García-Portugués (<a href="#ref-Garcia-Portugues2024" role="doc-biblioref">2024</a>)</span>.</span>
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;12.1: Simulated data according to <span class="citation" data-cites="Garcia-Portugues2024">García-Portugués (<a href="references.html#ref-Garcia-Portugues2024" role="doc-biblioref">2024</a>)</span>.</span>
 <span class="glightbox-desc lightbox-desc-2">Figure&nbsp;12.2: Epanechnikov, tricube and Gaussian kernel functions popular in kernel regression and density estimation. Bandwidth set to 0.5 and 1 for each kernel.</span>
 <span class="glightbox-desc lightbox-desc-3">Figure&nbsp;12.8: Polynomial models up to the 5<sup>th</sup> degree.</span>
 <span class="glightbox-desc lightbox-desc-4">Figure&nbsp;12.9: Piecewise linear model with four interior knots.</span>
@@ -1535,7 +1535,7 @@ Figure&nbsp;12.16: Smoothing splines for AAPL close share prices.
 <span class="glightbox-desc lightbox-desc-8">Figure&nbsp;12.15: Weekly AAPL close share prices from January 1996 until January 2024 and dates major products were introduced.</span>
 <span class="glightbox-desc lightbox-desc-9">Figure&nbsp;12.16: Smoothing splines for AAPL close share prices.</span>
 </div>
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-Cleveland1979" class="csl-entry" role="listitem">
 Cleveland, William S. 1979. <span>“Robust Locally Weighted Regression and Smoothing Scatterplots.”</span> <em>Journal of the American Statistical Association</em> 74 (368): 829–36. <a href="https://doi.org/10.1080/01621459.1979.10481038">https://doi.org/10.1080/01621459.1979.10481038</a>.
 </div>
@@ -2129,7 +2129,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","openEffect":"zoom","loop":false,"descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","loop":false,"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

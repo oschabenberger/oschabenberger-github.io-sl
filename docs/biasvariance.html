@@ -1033,7 +1033,7 @@ Figure&nbsp;3.9: Simple linear and quadratic polynomial fit for miles per gallon
 </div>
 <p>A simple linear regression—the red line in the figure—does not seem appropriate. The model does not pick up the curvature in the underlying trend. A quadratic model seems more appropriate. Can this be quantified? What about a cubic model</p>
 <p><span class="math display">\[\text{mpg}_{i} = \beta_{0} + \beta_{1}\text{hp}_{i} + {\beta_{2}\text{hp}_{i}^{2} + \beta_{3}\text{hp}_{i}^{3} + \epsilon}_{i}\]</span></p>
-<p><a href="#fig-auto-valid1" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-auto-valid1</span></a> shows the hold-out test errors for all polynomial models up to degree 10. The simple linear regression (SLR) model has degree 1 and is shown on the left. The test error is large for the SLR model and for the 10-degree polynomial. The former is biased as can be seen from the previous graph. The latter is too wiggly and leads to a poor test error because of high variability. The test error is minimized for the quadratic model but we note that the test error is also low for degrees 7—9.</p>
+<p><a href="#fig-auto-valid1" class="quarto-xref">Figure&nbsp;<span>3.10</span></a> shows the hold-out test errors for all polynomial models up to degree 10. The simple linear regression (SLR) model has degree 1 and is shown on the left. The test error is large for the SLR model and for the 10-degree polynomial. The former is biased as can be seen from the previous graph. The latter is too wiggly and leads to a poor test error because of high variability. The test error is minimized for the quadratic model but we note that the test error is also low for degrees 7—9.</p>
 <div id="fig-auto-valid1" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-auto-valid1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1150,7 +1150,7 @@ Figure&nbsp;3.11: Test errors in ten hold-out samples, 50:50 splits. The errors 
 <p><span class="math display">\[{CV}_{j}\left( \mathcal{l} \right) = \frac{1}{n_{j}}\sum_{i = 1}^{n_{j}}\mathcal{l}_{i}\]</span></p>
 <p>the overall loss is calculated as the average</p>
 <p><span class="math display">\[CV\left( \mathcal{l} \right) = \frac{1}{k}\sum_{j = 1}^{k}{{CV}_{j}\left( \mathcal{l} \right)}\]</span></p>
-<p><a href="#fig-cv-folds5" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-cv-folds5</span></a> shows 5-fold cross-validation for <span class="math inline">\(n = 100\)</span> observations. The observations are randomly divided into 5 groups of 20 observations each. The model is trained five times. The first time around, observations in fold 1 serve as the test data set, folds 2—5 serve as the training data set. The second time around, fold 2 serves as the test data set and folds 1, 3, 4, and 5 are the training data set; and so forth. Each time, the average loss is calculated for the 20 observations not included in training. At the end, five average cross-validation losses are averaged to calculate the overall loss.</p>
+<p><a href="#fig-cv-folds5" class="quarto-xref">Figure&nbsp;<span>3.12</span></a> shows 5-fold cross-validation for <span class="math inline">\(n = 100\)</span> observations. The observations are randomly divided into 5 groups of 20 observations each. The model is trained five times. The first time around, observations in fold 1 serve as the test data set, folds 2—5 serve as the training data set. The second time around, fold 2 serves as the test data set and folds 1, 3, 4, and 5 are the training data set; and so forth. Each time, the average loss is calculated for the 20 observations not included in training. At the end, five average cross-validation losses are averaged to calculate the overall loss.</p>
 <div id="fig-cv-folds5" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cv-folds5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1209,7 +1209,7 @@ Figure&nbsp;3.12: Example of 5-fold cross-validation for 100 observations. Numbe
 </tbody>
 </table>
 <p>The most common values for <span class="math inline">\(k\)</span> found in practice are 5, 10, and <span class="math inline">\(n\)</span>. <span class="math inline">\(k = n\)</span> is a special case, called leave-one-out cross-validation; see below. Values of 5 and 10 have shown to lead to good estimates of loss while limiting the variability of the results. The averaging of the losses from the folds has a powerful effect of stabilizing the results.</p>
-<p>For the Auto data set, the following figures show the results of repeating 5-fold and 10-fold cross-validation ten times. The results vary considerably less than the ten repetitions of the 50:50 hold-out sample in <a href="#fig-auto-valid10" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-auto-valid10</span></a>.</p>
+<p>For the Auto data set, the following figures show the results of repeating 5-fold and 10-fold cross-validation ten times. The results vary considerably less than the ten repetitions of the 50:50 hold-out sample in <a href="#fig-auto-valid10" class="quarto-xref">Figure&nbsp;<span>3.11</span></a>.</p>
 <div id="fig-auto-cv5sim" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-auto-cv5sim-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1276,7 +1276,7 @@ Figure&nbsp;3.14: Ten repetitions of 10-fold cross-validation for polynomials of
 </tr>
 </tbody>
 </table>
-<p>The results of LOOCV for the Auto data set are shown in <a href="#fig-auto-loocv" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-auto-loocv</span></a>. LOOCV selects the seventh-degree polynomial.</p>
+<p>The results of LOOCV for the Auto data set are shown in <a href="#fig-auto-loocv" class="quarto-xref">Figure&nbsp;<span>3.15</span></a>. LOOCV selects the seventh-degree polynomial.</p>
 <div id="fig-auto-loocv" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-auto-loocv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1885,7 +1885,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","loop":false});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"selector":".lightbox","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

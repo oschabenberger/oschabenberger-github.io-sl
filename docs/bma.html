@@ -560,9 +560,9 @@ window.Quarto = {
 
 
 <p>When we develop a model based on <span class="math inline">\(p\)</span> potential inputs <span class="math inline">\(x_1, \cdots, x_p\)</span>, we do not know a priori what the final model will look like. Within the same model family, for example, linear models or generalized linear models, there are many candidate models, some of which will perform similarly. Even if there is an overall “winner” among the <span class="math inline">\(2^p\)</span> potential candidates, other models might outperform the “best” model based on other metrics than the one chosen for model selection. Some models might be close to the “best” model in terms of the chosen performance metric.</p>
-<p>In other words, there is <strong>uncertainty</strong> associated with the models themselves. If we choose a single winner then we are ignoring other models that are also defensible. If we try to incorporate all competitive models in our interpretation, the conclusions of data analysis become unwieldy. No one wants to hear about the best 25 models, especially if they lead to conflicting conclusions. Imagine a treatment effect is not significant in the best-fitting model and significant in a slightly inferior model. Different feature selection methods (<a href="#sec-feature-select" class="quarto-xref"><span class="quarto-unresolved-ref">sec-feature-select</span></a>) will likely lead to different models, all of which are defensible. Backward and forward selection, for example, find different “winners” among different subsets of all possible models.</p>
+<p>In other words, there is <strong>uncertainty</strong> associated with the models themselves. If we choose a single winner then we are ignoring other models that are also defensible. If we try to incorporate all competitive models in our interpretation, the conclusions of data analysis become unwieldy. No one wants to hear about the best 25 models, especially if they lead to conflicting conclusions. Imagine a treatment effect is not significant in the best-fitting model and significant in a slightly inferior model. Different feature selection methods (<a href="regfeature.html#sec-feature-select" class="quarto-xref"><span>Section 9.1</span></a>) will likely lead to different models, all of which are defensible. Backward and forward selection, for example, find different “winners” among different subsets of all possible models.</p>
 <p>What should we do?</p>
-<p><span class="citation" data-cites="Raftery1995">Raftery (<a href="#ref-Raftery1995" role="doc-biblioref">1995</a>)</span> introduced in the context of social science research the idea of <strong>Bayesian Model Averaging</strong> (BMA), taking into account the inherent uncertainty in models. The implementation of BMA is fairly straightforward, made easy by use of BIC, the Bayesian Information Criterion, and quantities based on that. To understand BMA, we need to take a quick detour into the Bayesian approach to statistical inference.</p>
+<p><span class="citation" data-cites="Raftery1995">Raftery (<a href="references.html#ref-Raftery1995" role="doc-biblioref">1995</a>)</span> introduced in the context of social science research the idea of <strong>Bayesian Model Averaging</strong> (BMA), taking into account the inherent uncertainty in models. The implementation of BMA is fairly straightforward, made easy by use of BIC, the Bayesian Information Criterion, and quantities based on that. To understand BMA, we need to take a quick detour into the Bayesian approach to statistical inference.</p>
 <section id="bayesian-inference" class="level2" data-number="20.1">
 <h2 data-number="20.1" class="anchored" data-anchor-id="bayesian-inference"><span class="header-section-number">20.1</span> Bayesian Inference</h2>
 <p>The Bayesian paradigm is arguably the more natural paradigm to draw conclusions about the world, compared to the frequentist approach that has permeated this material so far. A frequentist interprets probabilities as a long-run average of sample proportions: if a coin lands on “Head” 45 times out of 100 tosses, the frequentist estimate of the probability of “Head” is 45/100 = 0.45. In Bayesian statistics, probabilities reflect the degree of belief that something will occur. Furthermore, in Bayesian statistic, there are no parameters in the sense of the frequentist view. Parameters are random variables as well.</p>
@@ -609,7 +609,7 @@ p(\boldsymbol{\theta}| \textbf{Y}) = \sum_{k=1}^K p(\boldsymbol{\theta}, f_k | \
 <p>Example: Are trains on time?</p>
 </div>
 <div class="example-container">
-<p>This example draws on <span class="citation" data-cites="Hinneetal2020">Hinne et al. (<a href="#ref-Hinneetal2020" role="doc-biblioref">2020</a>)</span>. Suppose you are at the train station and the train is running late. Should you continue to wait or consider an alternative mode of transportation?</p>
+<p>This example draws on <span class="citation" data-cites="Hinneetal2020">Hinne et al. (<a href="references.html#ref-Hinneetal2020" role="doc-biblioref">2020</a>)</span>. Suppose you are at the train station and the train is running late. Should you continue to wait or consider an alternative mode of transportation?</p>
 <p>There are different models about the world, with different consequences for the length of delay <span class="math inline">\(t\)</span>:</p>
 <ul>
 <li><span class="math inline">\(f_1\)</span>: the railroad company went bankrupt overnight and abruptly stopped operations; <span class="math inline">\(t\)</span> is very large, months to years.</li>
@@ -665,7 +665,7 @@ Note
 <p>BIC is easy to calculate and helpful to approximate Bayes factors and posterior odds <span class="math display">\[
 2 \log B_{jk} = \log p(\textbf{Y}| f_j) - \log p(\textbf{Y}| f_k) \approx \text{BIC}_k - \text{BIC}_j
 \]</span></p>
-<p><span class="citation" data-cites="Raftery1995">(<a href="#ref-Raftery1995" role="doc-biblioref">Raftery 1995, 139</a>)</span> gives ranges for strength of evidence for one model over another based on the BIC difference:</p>
+<p><span class="citation" data-cites="Raftery1995">(<a href="references.html#ref-Raftery1995" role="doc-biblioref">Raftery 1995, 139</a>)</span> gives ranges for strength of evidence for one model over another based on the BIC difference:</p>
 <ul>
 <li><span class="math inline">\(0 \le \Delta\text{BIC} \le 2\)</span>: weak evidence for <span class="math inline">\(f_j\)</span> over <span class="math inline">\(f_k\)</span>.</li>
 <li><span class="math inline">\(2 \le \Delta\text{BIC} \le 6\)</span>: positive evidence for <span class="math inline">\(f_j\)</span> over <span class="math inline">\(f_k\)</span>.</li>
@@ -808,7 +808,7 @@ $quantiles
 [1,] 6.618132 6.592609</code></pre>
 </div>
 </div>
-<p>The <code>plot</code> function produces a series of plots of the posterior distributions for the coefficients (<a href="#fig-bma-post" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-bma-post</span></a>). The height of the vertical line at zero indicates the probability that the coefficient is zero. The non-zero probability is scaled so that the maximum of the distribution equals the complement of the height of the line. Coefficients that appear in almost all models have a very short vertical line at zero.</p>
+<p>The <code>plot</code> function produces a series of plots of the posterior distributions for the coefficients (<a href="#fig-bma-post" class="quarto-xref">Figure&nbsp;<span>20.1</span></a>). The height of the vertical line at zero indicates the probability that the coefficient is zero. The non-zero probability is scaled so that the maximum of the distribution equals the complement of the height of the line. Coefficients that appear in almost all models have a very short vertical line at zero.</p>
 <div id="fig-bma-post" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-bma-post-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -842,7 +842,7 @@ Figure&nbsp;20.1
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-bma-imageplot" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-bma-imageplot</span></a> shows an image plot of the selected models. The <code>order=probne0</code> option requests that the variables are shown in the order of their probability of inclusion in the model. Variables near the top of the image have the highest inclusion probability (appear in most or all models).</p>
+<p><a href="#fig-bma-imageplot" class="quarto-xref">Figure&nbsp;<span>20.2</span></a> shows an image plot of the selected models. The <code>order=probne0</code> option requests that the variables are shown in the order of their probability of inclusion in the model. Variables near the top of the image have the highest inclusion probability (appear in most or all models).</p>
 <p>There are three colors in the image, one color for a positive coefficient (red), one color for a negative coefficient (blue), and one color indicating absence from the model. The width of the bars is proportional to the posterior probability of the models.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">imageplot.bma</span>(crimeBMA,<span class="at">order=</span><span class="st">"probne0"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -863,7 +863,7 @@ Figure&nbsp;20.2
 </div>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-Hinneetal2020" class="csl-entry" role="listitem">
 Hinne, Max, Quentin F. Gronau, Don van den Bergh, and Eric-Jan Wagenmakers. 2020. <span>“A Conceptual Introduction to Bayesian Model Averaging.”</span> <em>Advances in Methods and Practices in Psychological Science</em> 3 (2): 200–215. <a href="https://doi.org/10.1177/2515245919898657">https://doi.org/10.1177/2515245919898657</a>.
 </div>
