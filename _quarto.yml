@@ -1,6 +1,7 @@
 project:
   type: book
-
+  output-dir: docs
+  
 book:
   title: "Statistical Learning"
   subtitle: "with R and Python"
@@ -75,6 +76,7 @@ book:
         - training_ann.qmd
         - ann_R.qmd
         - deeplearning.qmd
+        - reinforcement.qmd
     
     - part: "Explainability"
       chapters:

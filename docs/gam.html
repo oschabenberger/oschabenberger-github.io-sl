@@ -483,6 +483,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -497,7 +503,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -551,7 +557,7 @@ window.Quarto = {
 
 <section id="sec-gam-intro" class="level2" data-number="27.1">
 <h2 data-number="27.1" class="anchored" data-anchor-id="sec-gam-intro"><span class="header-section-number">27.1</span> Introduction</h2>
-<p>Generalized linear models (GLMs) generalize the classical linear regression model in a number of ways, detailed in <a href="glm.html#sec-glm-intro" class="quarto-xref"><span>Section 26.1</span></a>. The most important generalization is to allow the target variable to be distributed according to any of the members of the exponential family of distributions. An important property of the linear model retained in GLMs is the linear predictor <span class="math inline">\(\eta = \textbf{x}^\prime\boldsymbol{\beta}\)</span>: the predictor is a linear function of the inputs.</p>
+<p>Generalized linear models (GLMs) generalize the classical linear regression model in a number of ways, detailed in <a href="#sec-glm-intro" class="quarto-xref"><span class="quarto-unresolved-ref">sec-glm-intro</span></a>. The most important generalization is to allow the target variable to be distributed according to any of the members of the exponential family of distributions. An important property of the linear model retained in GLMs is the linear predictor <span class="math inline">\(\eta = \textbf{x}^\prime\boldsymbol{\beta}\)</span>: the predictor is a linear function of the inputs.</p>
 <p>Generalized <strong>additive</strong> models (GAMs) relax the linear predictor assumption of GLMs. There is still a predictor and it is additive, but it is not additive in the <span class="math inline">\(\beta_j x_j\)</span> components. Instead, the predictor is additive in <strong>functions</strong> of the inputs. Mathematically, the change from GLMs to GAMs is a change from <span class="math display">\[
 \eta = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_p x_p
 \]</span> to <span class="math display">\[
@@ -559,7 +565,7 @@ window.Quarto = {
 \]</span></p>
 <p>Each input is modeled with its own function. Where did the <span class="math inline">\(\beta\)</span>s go? There still is an overall intercept that adjusts for the level of <span class="math inline">\(Y\)</span>, any remaining parameters that need to be determined depend on the particulars of the functions <span class="math inline">\(f_j(x_j)\)</span>. For example, if <span class="math inline">\(f_1()\)</span> is a natural spline in <span class="math inline">\(x_1\)</span>, then the spline basis expands into a certain number of columns depending on the degrees of freedom of the spline.</p>
 <p>Once the predictor of the GAM has been determined, predicting the mean proceeds as in the GLM, invoking the inverse link function, <span class="math inline">\(\mu = g^{-1}(\eta)\)</span>.</p>
-<p>How do we choose the functions <span class="math inline">\(f_1(),\cdots,f_p()\)</span>? If <span class="math inline">\(x_j\)</span> is discrete (a factor), then it is common to estimate <span class="math inline">\(f_j(x_j)\)</span> with a separate constant value for each of the factor levels. If <span class="math inline">\(x_j\)</span> is continuous, local methods from <a href="reglocal.html" class="quarto-xref"><span>Chapter 12</span></a> are candidates. In principle, you could use any technique for expressing <span class="math inline">\(Y\)</span> as a function of <span class="math inline">\(x\)</span> as one of the <span class="math inline">\(f_j\)</span>.</p>
+<p>How do we choose the functions <span class="math inline">\(f_1(),\cdots,f_p()\)</span>? If <span class="math inline">\(x_j\)</span> is discrete (a factor), then it is common to estimate <span class="math inline">\(f_j(x_j)\)</span> with a separate constant value for each of the factor levels. If <span class="math inline">\(x_j\)</span> is continuous, local methods from <a href="#sec-local-models" class="quarto-xref"><span class="quarto-unresolved-ref">sec-local-models</span></a> are candidates. In principle, you could use any technique for expressing <span class="math inline">\(Y\)</span> as a function of <span class="math inline">\(x\)</span> as one of the <span class="math inline">\(f_j\)</span>.</p>
 </section>
 <section id="pros-and-cons-of-gams" class="level2" data-number="27.2">
 <h2 data-number="27.2" class="anchored" data-anchor-id="pros-and-cons-of-gams"><span class="header-section-number">27.2</span> Pros and Cons of GAMs</h2>
@@ -571,8 +577,8 @@ window.Quarto = {
 <p>Another approach would be to add a two-dimensional smooth function of <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>: <span class="math display">\[
 \eta = \beta_0 + f_1(x_1) + f_2(x_2) + f^*_3(x_1, x_2)
 \]</span> Notice the subtle difference between <span class="math inline">\(f_3(x_1x_2)\)</span> and <span class="math inline">\(f^*_3(x_1,x_2)\)</span>: the former is a one-dimensional smoother in the product of the two variables, the latter is a two-dimensional smoother.</p>
-<p>Another downside of the GAM formulation is a more complicated fitting procedure. If <span class="math inline">\(Y\)</span> is Gaussian and all <span class="math inline">\(f_j\)</span> are simple natural cubic splines, then we can set up one big <span class="math inline">\(\textbf{X}\)</span> matrix with the columns of the splines and compute the solution directly, as in a linear regression. If the <span class="math inline">\(f_j\)</span> are smoothing splines, or loess models, or other functions that require a local fitting routine, then a different algorithm is needed. The solution is known as the <strong>backfitting</strong> algorithm <span class="citation" data-cites="HastieTibshirani">(<a href="references.html#ref-HastieTibshirani" role="doc-biblioref">Hastie and Tibshirani 1990</a>)</span>.</p>
-<p>The backfitting algorithm, more fully described below, is an iterative algorithm. Fitting a GLM is typically also an iterative procedure (unless <span class="math inline">\(Y\)</span> is Gaussian and the link is the identity function). A GAM for non-Gaussian data is thus a <strong>doubly iterative</strong> procedure. The IRLS algorithm described in <a href="glm.html#sec-glm-irls" class="quarto-xref"><span>Section 26.4.2</span></a> derives the maximum likelihood estimates by repeatedly fitting a weighted linear model, updating the pseudo-response and the weights of the model after each iteration. With a GAM component, fitting the weighted model at each of the IRLS iteration uses a weighted iterative backfitting algorithm. The IRLS algorithm defines the <strong>outer</strong> loop of the doubly-iterative algorithm, the backfitting algorithm comprises the inner loop.</p>
+<p>Another downside of the GAM formulation is a more complicated fitting procedure. If <span class="math inline">\(Y\)</span> is Gaussian and all <span class="math inline">\(f_j\)</span> are simple natural cubic splines, then we can set up one big <span class="math inline">\(\textbf{X}\)</span> matrix with the columns of the splines and compute the solution directly, as in a linear regression. If the <span class="math inline">\(f_j\)</span> are smoothing splines, or loess models, or other functions that require a local fitting routine, then a different algorithm is needed. The solution is known as the <strong>backfitting</strong> algorithm <span class="citation" data-cites="HastieTibshirani">(<a href="#ref-HastieTibshirani" role="doc-biblioref">Hastie and Tibshirani 1990</a>)</span>.</p>
+<p>The backfitting algorithm, more fully described below, is an iterative algorithm. Fitting a GLM is typically also an iterative procedure (unless <span class="math inline">\(Y\)</span> is Gaussian and the link is the identity function). A GAM for non-Gaussian data is thus a <strong>doubly iterative</strong> procedure. The IRLS algorithm described in <a href="#sec-glm-irls" class="quarto-xref"><span class="quarto-unresolved-ref">sec-glm-irls</span></a> derives the maximum likelihood estimates by repeatedly fitting a weighted linear model, updating the pseudo-response and the weights of the model after each iteration. With a GAM component, fitting the weighted model at each of the IRLS iteration uses a weighted iterative backfitting algorithm. The IRLS algorithm defines the <strong>outer</strong> loop of the doubly-iterative algorithm, the backfitting algorithm comprises the inner loop.</p>
 <p>While doubly-iterative algorithms are not unusual in statistical modeling, they do present additional challenges:</p>
 <ul>
 <li><p>The outer and the inner iteration might not converge.</p></li>
@@ -604,7 +610,7 @@ y - \widehat{\beta}_0 - \sum_{j=1, \ne k}^p \widehat{f}_j(x_j)
 </section>
 <section id="example-real-estate-values-in-albemarle-county-virginia" class="level2" data-number="27.3">
 <h2 data-number="27.3" class="anchored" data-anchor-id="example-real-estate-values-in-albemarle-county-virginia"><span class="header-section-number">27.3</span> Example: Real Estate Values in Albemarle County, Virginia</h2>
-<p>In <a href="glm.html#sec-glm-gamma-example" class="quarto-xref"><span>Section 26.5</span></a> we fit a Gamma regression model to the home values in Albemarle County, VA. For comparison with a GAM, we repeat here the model from that section, it expresses total home value as a function of the finished square footage of the home:</p>
+<p>In <a href="#sec-glm-gamma-example" class="quarto-xref"><span class="quarto-unresolved-ref">sec-glm-gamma-example</span></a> we fit a Gamma regression model to the home values in Albemarle County, VA. For comparison with a GAM, we repeat here the model from that section, it expresses total home value as a function of the finished square footage of the home:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
@@ -785,7 +791,7 @@ Note
 </div>
 </div>
 <hr>
-<p><a href="#fig-gamma-gam" class="quarto-xref">Figure&nbsp;<span>27.1</span></a> displays the observed and predicted home values for the GLM and GAM models. The GAM predictions are generally lower than those of the GLM model. Interestingly, although we added a spline component in the finished square feet variable, the predictions are still very smooth.</p>
+<p><a href="#fig-gamma-gam" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-gamma-gam</span></a> displays the observed and predicted home values for the GLM and GAM models. The GAM predictions are generally lower than those of the GLM model. Interestingly, although we added a spline component in the finished square feet variable, the predictions are still very smooth.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>xvals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1000</span>,<span class="dv">8000</span>,<span class="at">by=</span><span class="dv">100</span>)</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>pred_glm <span class="ot">&lt;-</span> <span class="fu">predict</span>(gamma_glm,<span class="at">type=</span><span class="st">"response"</span>,<span class="at">newdata=</span><span class="fu">data.frame</span>(<span class="st">"finsqft"</span><span class="ot">=</span>xvals))</span>
@@ -805,7 +811,7 @@ Figure&nbsp;27.1: Fitted home values for GAM and GLM models.
 </div>
 </div>
 </div>
-<p>This changes when you increase the degrees of freedom of the smoothing spline. <a href="#fig-gamma-2gams" class="quarto-xref">Figure&nbsp;<span>27.2</span></a> shows the fitted values for smoothing splines with 4 and 100 df, respectively.</p>
+<p>This changes when you increase the degrees of freedom of the smoothing spline. <a href="#fig-gamma-2gams" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-gamma-2gams</span></a> shows the fitted values for smoothing splines with 4 and 100 df, respectively.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-gamma-2gams" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -842,7 +848,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p>The GAM model provides a significantly better fit to the data compared to the generalized linear model.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-HastieTibshirani" class="csl-entry" role="listitem">
 Hastie, T. J., and R. Tibshirani. 1990. <em>Generalized Additive Models</em>. Chapman &amp; Hall, London.
 </div>

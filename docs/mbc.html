@@ -486,6 +486,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -500,7 +506,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -556,14 +562,14 @@ window.Quarto = {
 </header>
 
 
-<p><span class="math inline">\(K\)</span>-means and hierarchical clustering discussed in <a href="clustering.html" class="quarto-xref"><span>Chapter 23</span></a> have in common that an observation is assigned to exactly one cluster; this is referred to as <strong>hard clustering</strong>. Also, the methods are nonparametric in the sense that no distributional assumptions were made. The clusters are based solely on the distance (dissimilarity) between data points. The goal of clustering is finding regions that contain modes in the distribution of <span class="math inline">\(p(\textbf{X})\)</span>. The implicit assumption of <span class="math inline">\(K\)</span>-means and hierarchical clustering is that regions where many data points are close according to the chosen distance metric are regions where the density <span class="math inline">\(p(\textbf{X})\)</span> is high.</p>
+<p><span class="math inline">\(K\)</span>-means and hierarchical clustering discussed in <a href="#sec-clustering" class="quarto-xref"><span class="quarto-unresolved-ref">sec-clustering</span></a> have in common that an observation is assigned to exactly one cluster; this is referred to as <strong>hard clustering</strong>. Also, the methods are nonparametric in the sense that no distributional assumptions were made. The clusters are based solely on the distance (dissimilarity) between data points. The goal of clustering is finding regions that contain modes in the distribution of <span class="math inline">\(p(\textbf{X})\)</span>. The implicit assumption of <span class="math inline">\(K\)</span>-means and hierarchical clustering is that regions where many data points are close according to the chosen distance metric are regions where the density <span class="math inline">\(p(\textbf{X})\)</span> is high.</p>
 <p>In <strong>model-based</strong> clustering, this is made explicit through assumptions about the form of <span class="math inline">\(p(\textbf{X})\)</span>, the joint distribution of the variables. An important side effect of its probabilistic formulation is that observations no longer belong to just one cluster. They have a non-zero probability to belong to any cluster, a property referred to as <strong>soft clustering</strong>. An advantage of this approach lies in the possibility to assign a measure of uncertainty to cluster assignments.</p>
 <p>A common assumption is that the distribution of <span class="math inline">\(\textbf{X}\)</span> follows a <strong>finite mixture model</strong> (FMM), that is, it comprises a finite number <span class="math inline">\(k\)</span> of component distributions.</p>
 <section id="finite-mixture-models" class="level2" data-number="24.1">
 <h2 data-number="24.1" class="anchored" data-anchor-id="finite-mixture-models"><span class="header-section-number">24.1</span> Finite Mixture Models</h2>
 <p>In general, a finite mixture distribution is a weighted sum of <span class="math inline">\(k\)</span> probability distributions where the weights sum to one: <span class="math display">\[
 p(Y) = \sum_{j=1}^k \pi_j \, p_j(Y) \quad \quad \sum_{j=1}^k \pi_j = 1
-\]</span> <span class="math inline">\(p_j(Y)\)</span> is called the <span class="math inline">\(j\)</span><sup>th</sup> component of the mixture and <span class="math inline">\(\pi_j\)</span> is the <span class="math inline">\(j\)</span><sup>th</sup> mixing probability, also referred to as the <span class="math inline">\(j\)</span><sup>th</sup> mixture weight. The finite mixture is called <strong>homogeneous</strong> when the <span class="math inline">\(p_j(Y)\)</span> are of the same family, and <strong>heterogeneous</strong> when they are from different distributional families. An important example of a heterogeneous mixture, discussed in <a href="regdiscrete.html#sec-zero-inflation" class="quarto-xref"><span>Section 11.6</span></a>, is a zero-inflated model for counts, a two-component mixture of a constant distribution and a classical distribution for counts such as the Poisson or Negative Binomial.</p>
+\]</span> <span class="math inline">\(p_j(Y)\)</span> is called the <span class="math inline">\(j\)</span><sup>th</sup> component of the mixture and <span class="math inline">\(\pi_j\)</span> is the <span class="math inline">\(j\)</span><sup>th</sup> mixing probability, also referred to as the <span class="math inline">\(j\)</span><sup>th</sup> mixture weight. The finite mixture is called <strong>homogeneous</strong> when the <span class="math inline">\(p_j(Y)\)</span> are of the same family, and <strong>heterogeneous</strong> when they are from different distributional families. An important example of a heterogeneous mixture, discussed in <a href="#sec-zero-inflation" class="quarto-xref"><span class="quarto-unresolved-ref">sec-zero-inflation</span></a>, is a zero-inflated model for counts, a two-component mixture of a constant distribution and a classical distribution for counts such as the Poisson or Negative Binomial.</p>
 <p>The class of finite mixture models (FMM) is very broad and the models can get quite complicated. For example, each <span class="math inline">\(p_j(Y)\)</span> could be a generalized linear model and its mean can depend on inputs and parameters. The mixing probabilities can also be modeled as functions of inputs and parameters using logistic (2-component models) or multinomial model types.</p>
 <p>How do mixtures of distributions come about? An intuitive motivation is through a <strong>latent variable</strong> process. A discrete random variable <span class="math inline">\(S\)</span> takes on states <span class="math inline">\(j=1,\cdots,k\)</span> with probabilities <span class="math inline">\(\pi_j\)</span>. It is called a latent variable because we cannot observe it directly. We only observe its influence on the distribution of <span class="math inline">\(Y\)</span>, the variable we are interested in, and that depends on <span class="math inline">\(S\)</span>. This dependence results in a different conditional distribution of <span class="math inline">\(Y\)</span> for each of the possible states of <span class="math inline">\(S\)</span>, <span class="math inline">\(p(Y| S=j)\)</span>. We can then derive the <strong>marginal</strong> distribution of <span class="math inline">\(Y\)</span>, the distribution we are interested in, by integrating out (summing over) <span class="math inline">\(S\)</span> in the joint distribution</p>
 <p><span class="math display">\[\begin{align*}
@@ -574,11 +580,11 @@ p(Y) &amp;= \sum_{j=1}^k \Pr(Y, S=j) \\
 </section>
 <section id="gaussian-mixture-models" class="level2" data-number="24.2">
 <h2 data-number="24.2" class="anchored" data-anchor-id="gaussian-mixture-models"><span class="header-section-number">24.2</span> Gaussian Mixture Models</h2>
-<p>A special case of FMMs are Gaussian mixtures where the component distributions are multivariate Gaussian. (See <a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 4.7</span></a> for a review of the multivariate Gaussian distribution.) The mixture distribution in model-based clustering is <span class="math display">\[
+<p>A special case of FMMs are Gaussian mixtures where the component distributions are multivariate Gaussian. (See <a href="#sec-multi-gaussian" class="quarto-xref"><span class="quarto-unresolved-ref">sec-multi-gaussian</span></a> for a review of the multivariate Gaussian distribution.) The mixture distribution in model-based clustering is <span class="math display">\[
 p(\textbf{X}) = \sum_{j=1}^k \pi_j \, G(\boldsymbol{\mu}_j,\boldsymbol{\Sigma}_j)
 \]</span></p>
 <p>Each <span class="math inline">\(G(bmu_j,\boldsymbol{\Sigma}_j)\)</span> is a <span class="math inline">\(p\)</span>-variate Gaussian, <span class="math inline">\(\boldsymbol{\mu}_j\)</span> and <span class="math inline">\(\boldsymbol{\Sigma}_j\)</span> are the <span class="math inline">\((p \times 1)\)</span> mean vector and the <span class="math inline">\((p \times p)\)</span> covariance matrix of the <span class="math inline">\(j\)</span>th component. These need to be estimated. In terms of clusters, <span class="math inline">\(\boldsymbol{\mu}_j\)</span> is the center of the <span class="math inline">\(j\)</span><sup>th</sup> cluster and <span class="math inline">\(\boldsymbol{\Sigma}_j\)</span> determines the volume, shape, and orientation of the <span class="math inline">\(j\)</span><sup>th</sup> cluster.</p>
-<p><a href="#fig-biv-gaussian" class="quarto-xref">Figure&nbsp;<span>24.1</span></a> shows contours of the density for two bivariate (<span class="math inline">\(p=2\)</span>) Gaussian distributions. The distribution on the right has <span class="math display">\[\boldsymbol{\mu}_1 = \left [ \begin{array}{c}1 \\ 0\end{array} \right ]
+<p><a href="#fig-biv-gaussian" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-biv-gaussian</span></a> shows contours of the density for two bivariate (<span class="math inline">\(p=2\)</span>) Gaussian distributions. The distribution on the right has <span class="math display">\[\boldsymbol{\mu}_1 = \left [ \begin{array}{c}1 \\ 0\end{array} \right ]
 \qquad
 \boldsymbol{\Sigma}_1 = \left [ \begin{array}{cc} 1 &amp; 0.5 \\ 0.5 &amp; 2\\
 \end{array} \right]
@@ -591,7 +597,7 @@ p(\textbf{X}) = \sum_{j=1}^k \pi_j \, G(\boldsymbol{\mu}_j,\boldsymbol{\Sigma}_j
 <div id="fig-biv-gaussian" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-biv-gaussian-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/BivariateGaussians.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/BivariateGaussians.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/BivariateGaussians.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/BivariateGaussians.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-biv-gaussian-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;24.1: Contours of bivariate (<span class="math inline">\(p=2\)</span>) Gaussian distributions. The mean vector centers the distribution in the coordinate system. The variances stretch in the direction of <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>. The distribution on the right is rotated in the coordinate system because of the correlation between the variables.
@@ -608,7 +614,7 @@ Figure&nbsp;24.2: A two component mixture of bivariate Gaussian distributions.
 </figcaption>
 </figure>
 </div>
-<p>The Gaussian mixture model (GMM) can be viewed as a soft version of <span class="math inline">\(K\)</span>-means clustering. The latter assigns an observation to exactly one of <span class="math inline">\(K\)</span> clusters—a hard assignment. The GMM assigns <strong>probabilities</strong> of cluster membership to each observation based on <span class="math inline">\(G(\boldsymbol{\mu}_1,\boldsymbol{\Sigma}_1), \cdots, G(\boldsymbol{\mu}_k,\boldsymbol{\Sigma}_k)\)</span>. GMM allows for a “gray area”; an observation has a non-zero probability to belong to any of the <span class="math inline">\(k\)</span> clusters (<a href="#fig-gauss-mix" class="quarto-xref">Figure&nbsp;<span>24.2</span></a>).</p>
+<p>The Gaussian mixture model (GMM) can be viewed as a soft version of <span class="math inline">\(K\)</span>-means clustering. The latter assigns an observation to exactly one of <span class="math inline">\(K\)</span> clusters—a hard assignment. The GMM assigns <strong>probabilities</strong> of cluster membership to each observation based on <span class="math inline">\(G(\boldsymbol{\mu}_1,\boldsymbol{\Sigma}_1), \cdots, G(\boldsymbol{\mu}_k,\boldsymbol{\Sigma}_k)\)</span>. GMM allows for a “gray area”; an observation has a non-zero probability to belong to any of the <span class="math inline">\(k\)</span> clusters (<a href="#fig-gauss-mix" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-gauss-mix</span></a>).</p>
 </section>
 <section id="modeling-variance-covariance-matrices" class="level2" data-number="24.3">
 <h2 data-number="24.3" class="anchored" data-anchor-id="modeling-variance-covariance-matrices"><span class="header-section-number">24.3</span> Modeling Variance-covariance Matrices</h2>
@@ -621,7 +627,7 @@ k \times (p + p(p+1)/2) = k\frac{3p + p^2}{2}
 \]</span></p>
 <p>The next most constrained model allows for a different variance in each cluster but maintains uncorrelated inputs: <span class="math display">\[
 \boldsymbol{\Sigma}_j = \sigma^2\textbf{I}
-\]</span> To capture the relevant covariance structures in model-based clustering, <span class="citation" data-cites="FraleyRaftery_2002">Fraley and Raftery (<a href="references.html#ref-FraleyRaftery_2002" role="doc-biblioref">2002</a>)</span> start from the eigendecomposition of <span class="math inline">\(\boldsymbol{\Sigma}\)</span> and use the general parameterization <span class="math display">\[
+\]</span> To capture the relevant covariance structures in model-based clustering, <span class="citation" data-cites="FraleyRaftery_2002">Fraley and Raftery (<a href="#ref-FraleyRaftery_2002" role="doc-biblioref">2002</a>)</span> start from the eigendecomposition of <span class="math inline">\(\boldsymbol{\Sigma}\)</span> and use the general parameterization <span class="math display">\[
 \boldsymbol{\Sigma}_j = \lambda_j \textbf{D}_j \textbf{A}_j \textbf{D}_j^\prime
 \]</span></p>
 <p><span class="math inline">\(\textbf{D}_j\)</span> is an orthogonal matrix of eigenvectors, <span class="math inline">\(\textbf{A}_j\)</span> is a diagonal matrix whose elements are proportional to the eigenvalues, and <span class="math inline">\(\lambda_j\)</span> is a proportionality constant. The highly constrained equal variance model corresponds to the special case <span class="math inline">\(\boldsymbol{\Sigma}_j = \lambda \textbf{I}\)</span> and the heterogeneous variance model corresponds to <span class="math inline">\(\boldsymbol{\Sigma}_j = \lambda_j \textbf{I}\)</span>.</p>
@@ -635,7 +641,7 @@ k \times (p + p(p+1)/2) = k\frac{3p + p^2}{2}
 \boldsymbol{\Sigma}_j = \lambda \textbf{D}_j \textbf{A}\textbf{D}_j^\prime
 \]</span> imposes equal volume and equal shape across the clusters, but allows for cluster-specific orientation of the distributions.</p>
 <p>One could use other parameterizations of covariance matrices, for example, expressing covariances as functions of distance between values—the parameterization shown here is implemented in the <code>Mclust</code> function of the popular <code>mclust</code> package in <code>R</code>.</p>
-<p>‘mclust’ uses a three-letter code to identify a specific covariance model (<a href="#tbl-mclust-models" class="quarto-xref">Table&nbsp;<span>24.1</span></a>)</p>
+<p>‘mclust’ uses a three-letter code to identify a specific covariance model (<a href="#tbl-mclust-models" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-mclust-models</span></a>)</p>
 <div id="tbl-mclust-models" class="striped quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mclust-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -763,8 +769,8 @@ Table&nbsp;24.1: Covariance models for <span class="math inline">\(p &gt; 1\)</s
 </div>
 </figure>
 </div>
-<p>The first six models in <a href="#tbl-mclust-models" class="quarto-xref">Table&nbsp;<span>24.1</span></a> have diagonal covariance matrices, the inputs are independent (lack of correlation does equal independence for Gaussian random variables). Models EEE, EEV, VEV, and VVV capture correlations among the <span class="math inline">\(X\)</span>s and vary different aspects of <span class="math inline">\(\boldsymbol{\Sigma}_j\)</span> across the clusters. The EEE model applies the same covariance matrix in all clusters, EEV varies orientation, VEV varies orientation and volume, and VVV varies all aspects across clusters.</p>
-<p>The choice of covariance model should not be taken lightly, it has considerable impact on the clustering analysis. Assuming independent inputs is typically not reasonable. However, if model-based clustering is applied to the components of a PCA, this assumption is met. Some of the models in <a href="#tbl-mclust-models" class="quarto-xref">Table&nbsp;<span>24.1</span></a> are nested and can be compared through a hypothesis test. But in addition to choosing the covariance model, we also need to choose <span class="math inline">\(k\)</span>, the number of clusters. One approach is to compare the model-<span class="math inline">\(k\)</span> combinations by way of BIC, the Bayesian information criterion, introduced in <a href="bma.html#sec-bayes-factors-bic" class="quarto-xref"><span>Section 20.2.1</span></a>.</p>
+<p>The first six models in <a href="#tbl-mclust-models" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-mclust-models</span></a> have diagonal covariance matrices, the inputs are independent (lack of correlation does equal independence for Gaussian random variables). Models EEE, EEV, VEV, and VVV capture correlations among the <span class="math inline">\(X\)</span>s and vary different aspects of <span class="math inline">\(\boldsymbol{\Sigma}_j\)</span> across the clusters. The EEE model applies the same covariance matrix in all clusters, EEV varies orientation, VEV varies orientation and volume, and VVV varies all aspects across clusters.</p>
+<p>The choice of covariance model should not be taken lightly, it has considerable impact on the clustering analysis. Assuming independent inputs is typically not reasonable. However, if model-based clustering is applied to the components of a PCA, this assumption is met. Some of the models in <a href="#tbl-mclust-models" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-mclust-models</span></a> are nested and can be compared through a hypothesis test. But in addition to choosing the covariance model, we also need to choose <span class="math inline">\(k\)</span>, the number of clusters. One approach is to compare the model-<span class="math inline">\(k\)</span> combinations by way of BIC, the Bayesian information criterion, introduced in <a href="#sec-bayes-factors-bic" class="quarto-xref"><span class="quarto-unresolved-ref">sec-bayes-factors-bic</span></a>.</p>
 <p>BIC is based on the log-likelihood, which is accessible because we have a full distributional specification, and a penalty term that protects against overfitting. Before applying model-based clustering in a full analysis to select <span class="math inline">\(k\)</span> and the covariance models, let’s examine how to interpret the results of model-based clustering and some of the covariance structures for the Iris data.</p>
 </section>
 <section id="model-based-clustering-with-mclust-in-r" class="level2" data-number="24.4">
@@ -778,7 +784,7 @@ Table&nbsp;24.1: Covariance models for <span class="math inline">\(p &gt; 1\)</s
 </div>
 <div class="example-container">
 <p>The <code>G=</code> and <code>modelNames=</code> option im <code>Mclust</code> are used to specify the number of components in the mixture (the number of clusters) and the covariance model. The defaults are <code>G=1:9</code> and all available covariance models based on whether <span class="math inline">\(p=1\)</span> or <span class="math inline">\(p&gt;1\)</span> and whether <span class="math inline">\(n &gt; p\)</span> or <span class="math inline">\(n \le p\)</span>.</p>
-<p>The following statements fit a 3-component mixture with <code>EII</code> covariance model to the numerical variables in the Iris data. The <code>EII</code> model is the most restrictive multivariate model, assuming diagonal covariance matrices and equal variances across variables and clusters (see <a href="#tbl-mclust-models" class="quarto-xref">Table&nbsp;<span>24.1</span></a>). This model is probably not appropriate for the Iris data but simple enough to interpret the results from the analysis.</p>
+<p>The following statements fit a 3-component mixture with <code>EII</code> covariance model to the numerical variables in the Iris data. The <code>EII</code> model is the most restrictive multivariate model, assuming diagonal covariance matrices and equal variances across variables and clusters (see <a href="#tbl-mclust-models" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-mclust-models</span></a>). This model is probably not appropriate for the Iris data but simple enough to interpret the results from the analysis.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mclust)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>mb_eii <span class="ot">&lt;-</span> <span class="fu">Mclust</span>(iris[,<span class="sc">-</span><span class="dv">5</span>],<span class="at">G=</span><span class="dv">3</span>,<span class="at">verbose=</span><span class="cn">FALSE</span>, <span class="at">modelNames=</span><span class="st">"EII"</span>)</span>
@@ -966,7 +972,7 @@ Petal.Width     0.0000000   0.0000000    0.0000000   0.1635866</code></pre>
 </div>
 </div>
 <p>For the VII model, the covariance matrices are uncorrelated and the variances of the inputs are the same. Compared to the EII model of the previous run, the variances now differ across the clusters.</p>
-<p>Note that <code>mclust</code> computes the BIC statistic in a “larger-is-better” form—see the note in <a href="bma.html#sec-bayes-factors-bic" class="quarto-xref"><span>Section 20.2.1</span></a> on the two versions of the BIC criterion.</p>
+<p>Note that <code>mclust</code> computes the BIC statistic in a “larger-is-better” form—see the note in <a href="#sec-bayes-factors-bic" class="quarto-xref"><span class="quarto-unresolved-ref">sec-bayes-factors-bic</span></a> on the two versions of the BIC criterion.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mb_vei<span class="sc">$</span>parameters<span class="sc">$</span>variance<span class="sc">$</span>sigma</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1139,14 +1145,14 @@ Top 3 models based on the BIC criterion:
 2 </code></pre>
 </div>
 </div>
-<p>The plot of the BIC values shows two distinct groups of models (<a href="#fig-iris-mbc-bic" class="quarto-xref">Figure&nbsp;<span>24.3</span></a>). The models with diagonal covariance structure generally have lower (worse) BIC values if <span class="math inline">\(k &lt; 6\)</span>. The difference between <span class="math inline">\(k=2\)</span> and <span class="math inline">\(k=3\)</span> is generally small for the models with correlations. [VEV, <span class="math inline">\(k=3\)</span>] is a close competitor to the overall “best” model, [VEV, <span class="math inline">\(k=2\)</span>]. Since we know that there are three species in the data set one might be tempted to go with <span class="math inline">\(k=3\)</span>. In fact, it seems that the <span class="math inline">\(k=2\)</span> model separates <em>I. setosa</em> in one cluster from the other two species (<a href="#fig-iris-mbc-class" class="quarto-xref">Figure&nbsp;<span>24.4</span></a>).</p>
+<p>The plot of the BIC values shows two distinct groups of models (<a href="#fig-iris-mbc-bic" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-iris-mbc-bic</span></a>). The models with diagonal covariance structure generally have lower (worse) BIC values if <span class="math inline">\(k &lt; 6\)</span>. The difference between <span class="math inline">\(k=2\)</span> and <span class="math inline">\(k=3\)</span> is generally small for the models with correlations. [VEV, <span class="math inline">\(k=3\)</span>] is a close competitor to the overall “best” model, [VEV, <span class="math inline">\(k=2\)</span>]. Since we know that there are three species in the data set one might be tempted to go with <span class="math inline">\(k=3\)</span>. In fact, it seems that the <span class="math inline">\(k=2\)</span> model separates <em>I. setosa</em> in one cluster from the other two species (<a href="#fig-iris-mbc-class" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-iris-mbc-class</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mbc, <span class="at">what=</span><span class="st">"BIC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-iris-mbc-bic" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-iris-mbc-bic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="mbc_files/figure-html/fig-iris-mbc-bic-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="mbc_files/figure-html/fig-iris-mbc-bic-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="mbc_files/figure-html/fig-iris-mbc-bic-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="mbc_files/figure-html/fig-iris-mbc-bic-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-iris-mbc-bic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;24.3: BIC versus number of mixture components for all ten covariance models.
@@ -1178,7 +1184,7 @@ Figure&nbsp;24.4: Classification based on model-based clustering with VEV model,
 <span class="glightbox-desc lightbox-desc-1">Figure&nbsp;24.1: Contours of bivariate (<span class="math inline">\(p=2\)</span>) Gaussian distributions. The mean vector centers the distribution in the coordinate system. The variances stretch in the direction of <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>. The distribution on the right is rotated in the coordinate system because of the correlation between the variables.</span>
 <span class="glightbox-desc lightbox-desc-2">Figure&nbsp;24.3: BIC versus number of mixture components for all ten covariance models.</span>
 </div>
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-FraleyRaftery_2002" class="csl-entry" role="listitem">
 Fraley, Chris, and Adrian E Raftery. 2002. <span>“Model-Based Clustering, Discriminant Analysis, and Density Estimation.”</span> <em>Journal of the American Statistical Association</em> 97 (458): 611–31. <a href="https://doi.org/10.1198/016214502760047131">https://doi.org/10.1198/016214502760047131</a>.
 </div>
@@ -1766,7 +1772,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","loop":false,"openEffect":"zoom","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

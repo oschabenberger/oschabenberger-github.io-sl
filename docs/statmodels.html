@@ -452,6 +452,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -466,7 +472,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -539,14 +545,14 @@ Figure&nbsp;2.1: A simple representation of a model that processes inputs with a
 </figcaption>
 </figure>
 </div>
-<p>From the 30,000 foot view a model is simply a mechanism to process some input and produce a corresponding output (<a href="#fig-simple-model" class="quarto-xref">Figure&nbsp;<span>2.1</span></a>).</p>
+<p>From the 30,000 foot view a model is simply a mechanism to process some input and produce a corresponding output (<a href="#fig-simple-model" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-simple-model</span></a>).</p>
 <p>The input to drive the model algorithm is almost always some form of data. The algorithm that processes the inputs can be based on data, but that is not necessarily so. Suppose the problem we are trying to solve is to ascertain an individuals annual federal income tax. The problem is solved with a model that takes as <strong>input</strong> the individuals financial situation. This information is typically known without error as information about income, property taxes, expenses, etc. is well documented. The <strong>algorithm</strong> processing this input is a translation of the relevant information in the federal income tax laws into machine instructions. The <strong>output</strong> is the amount of money owed to the government or expected as a refund.</p>
 <p>Now suppose that for some reason the input data in the tax problem is not known without error. For example, income from tips, medical expenses or charitable contributions might be best guesses rather than exact amounts. Income data could be noisy because foreign income is converted at fluctuating exchange rates. If the input data is the realization of stochastic (random) influences, should we modify the algorithm?</p>
 <p>When the input data to an algorithm is the result of observing random variation, we are looking to the algorithms of the model to find the signal in the data, to de-noise it. The signal located in the data is then transformed into the model output. Most models we build in data science are of this kind because the data we work with is inherently noisy. The reasons for the random variations are many: selecting observation from a larger population at random, applying treatments to randomly chosen experimental units, variations in measurement instruments and procedures, variations in the environment in which a phenomenon is observed, and so on.</p>
 <p>The algorithms we use depend on the goals of the analysis, properties of the data, assumptions we are willing to make, attributes we look for in competitive models, and personal preferences.</p>
 <section id="two-cultures" class="level3">
 <h3 class="anchored" data-anchor-id="two-cultures">Two Cultures</h3>
-<p>While everyone agrees that models in data science incorporate uncertainty, and that uncertainty is expressed in terms of randomly varying model elements, there is not agreement how to incorporate randomness into the model formulation and analysis. In an influential 2001 paper, “<a href="https://projecteuclid.org/journals/statistical-science/volume-16/issue-3/Statistical-Modeling--The-Two-Cultures-with-comments-and-a/10.1214/ss/1009213726.full">Statistical Modeling: The Two Cultures</a>”, Leo Breiman contrasted two schools of thoughts: statistical (data) modeling and algorithmic modeling <span class="citation" data-cites="BreimanTwoCultures">(<a href="references.html#ref-BreimanTwoCultures" role="doc-biblioref">Breiman 2001</a>)</span>.</p>
+<p>While everyone agrees that models in data science incorporate uncertainty, and that uncertainty is expressed in terms of randomly varying model elements, there is not agreement how to incorporate randomness into the model formulation and analysis. In an influential 2001 paper, “<a href="https://projecteuclid.org/journals/statistical-science/volume-16/issue-3/Statistical-Modeling--The-Two-Cultures-with-comments-and-a/10.1214/ss/1009213726.full">Statistical Modeling: The Two Cultures</a>”, Leo Breiman contrasted two schools of thoughts: statistical (data) modeling and algorithmic modeling <span class="citation" data-cites="BreimanTwoCultures">(<a href="#ref-BreimanTwoCultures" role="doc-biblioref">Breiman 2001</a>)</span>.</p>
 <p><strong>Statistical (data) modeling</strong> assumes that the data are generated by a stochastic data model. The model captures the essence of the random processes that gave the rise to the observed data. The data set at hand is one particular realization of those random processes. If the study were repeated, another data set would be realized, containing different numbers, but with the same stochastic properties. According to Breiman, 98% of statisticians subscribe to this approach.</p>
 <p><strong>Algorithmic modeling</strong>, on the other hand, makes no assumption about the underlying data model, treats the data mechanism as unknown, and is more common in fields outside of statistics. In Breiman’s words:</p>
 <blockquote class="blockquote">
@@ -565,13 +571,13 @@ Figure&nbsp;2.1: A simple representation of a model that processes inputs with a
 able to make causal statements about the treatment effects because other effects not accounted for are balanced out by the randomization. We will take full advantage of that probability mechanism in analyzing the experimental data.</p></li>
 </ul>
 <p>Overall, our approach is a statistical modeling approach, models contain explicit random elements that allow us to study the statistical properties of quantities derived from the trained model and make uncertainty statements—under the assumption that the probabilistic assumptions made are justifiable.</p>
-<p>George E.P. Box is credited with coining the much-used phrase “all models are wrong, but some are useful” <span class="citation" data-cites="GEPBox1976">(<a href="references.html#ref-GEPBox1976" role="doc-biblioref">Box 1976</a>)</span>. The phrase appears partially (“all models are wrong”) twice in his 1976 paper on <a href="http://www-sop.inria.fr/members/Ian.Jermyn/philosophy/writings/Boxonmaths.pdf">Science and Statistics</a>:</p>
+<p>George E.P. Box is credited with coining the much-used phrase “all models are wrong, but some are useful” <span class="citation" data-cites="GEPBox1976">(<a href="#ref-GEPBox1976" role="doc-biblioref">Box 1976</a>)</span>. The phrase appears partially (“all models are wrong”) twice in his 1976 paper on <a href="http://www-sop.inria.fr/members/Ian.Jermyn/philosophy/writings/Boxonmaths.pdf">Science and Statistics</a>:</p>
 <blockquote class="blockquote">
 <p><em>Since all models are wrong the scientist cannot obtain a “correct” one by excessive elaboration.</em></p>
 <p><em>Since all models are wrong the scientist must be alert to what is importantly wrong.</em></p>
 </blockquote>
 <p>The takeaway is that any model is an abstraction of a phenomenon and we strive to find a useful abstraction. The model does not attempt to reproduce the phenomenon. The tax algorithm converts the essence of the tax code into machine instructions, it is not an electronic copy of the entire law. The purpose is to accurately calculate an entity’s tax, anything else can be stripped away. An algorithm processing noisy data that reproduces the data is uninteresting. The goal is to abstract the data in such a way to allow separating the signal from the noise and to convert the signal into the desired output.</p>
-<p>The first G.E.P. Box quote instructs us not to overdo it in building models; this translates to the problem of <strong>overfitting</strong> in data science, crafting a model that follows the training data too closely and as a result does not generalize well to new data points. If the goal is to predict, classify, or cluster the unseen then generalizability of the model is key. A model to forecast stock prices or trading volumes is judged by how well it can predict the future, not by how well it can predict the past. The adequate level of generalization for that model must be wrung from current and past stock prices. Finding the appropriate level of abstraction is resolved by striking the right balance in the <strong>bias-and-variance tradeoff</strong> (see <a href="biasvariance.html" class="quarto-xref"><span>Chapter 3</span></a>).</p>
+<p>The first G.E.P. Box quote instructs us not to overdo it in building models; this translates to the problem of <strong>overfitting</strong> in data science, crafting a model that follows the training data too closely and as a result does not generalize well to new data points. If the goal is to predict, classify, or cluster the unseen then generalizability of the model is key. A model to forecast stock prices or trading volumes is judged by how well it can predict the future, not by how well it can predict the past. The adequate level of generalization for that model must be wrung from current and past stock prices. Finding the appropriate level of abstraction is resolved by striking the right balance in the <strong>bias-and-variance tradeoff</strong> (see <a href="#sec-bias-variance" class="quarto-xref"><span class="quarto-unresolved-ref">sec-bias-variance</span></a>).</p>
 <p>The second G.E.P. Box quote instructs us that models are abstracting away features of the phenomenon. If these are important features, the model is not useful. In the best case this model does not meet its goal and is revised or abandoned. In the worst case the model can lead to bad decisions and harmful outcomes.</p>
 <p>No matter how complex the model, we need to strive to understand how it works (interpret the model), not just what it does. If a model is not intrinsically interpretable then we need to strive to explain the forces that drive the model, keeping in mind that we are then making statements about the model and not about the underlying phenomenon we have abstracted.</p>
 </section>
@@ -690,9 +696,9 @@ g(\pi) = \beta_0 + \beta_1 x_1+\cdots + \beta_p x_p
 </section>
 <section id="model-types" class="level3">
 <h3 class="anchored" data-anchor-id="model-types">Model Types</h3>
-<p>Much of data science methodology is to select the right approach (algorithm) based on input data, learning methodology (supervised, unsupervised, semi-supervised, self-supervised) and analysis goal (prediction, recommendation, classification, clustering, dimension reduction, sequential decisioning), to train the model, and to deploy the model. <a href="#fig-proj-dsmodels" class="quarto-xref">Figure&nbsp;<span>2.2</span></a> is an attempt at structuring the input, algorithm, and output components of a model in the data science context. The diagram is complex and yet woefully incomplete and is intended to give you an idea of the diversity of methods and the many ways we can look at things. For example, in discussing input data we could highlight how data are stored, how fast it is moving, the degree to which the data is structured, the data types, and so forth. There are many other categorizations of data one could have listed.</p>
+<p>Much of data science methodology is to select the right approach (algorithm) based on input data, learning methodology (supervised, unsupervised, semi-supervised, self-supervised) and analysis goal (prediction, recommendation, classification, clustering, dimension reduction, sequential decisioning), to train the model, and to deploy the model. <a href="#fig-proj-dsmodels" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-proj-dsmodels</span></a> is an attempt at structuring the input, algorithm, and output components of a model in the data science context. The diagram is complex and yet woefully incomplete and is intended to give you an idea of the diversity of methods and the many ways we can look at things. For example, in discussing input data we could highlight how data are stored, how fast it is moving, the degree to which the data is structured, the data types, and so forth. There are many other categorizations of data one could have listed.</p>
 <p>The categorization of algorithms-—what many consider the models in the narrow sense—-leaves out semi-supervised learning, self-supervised learning, transfer learning, and other learning methods. Volumes of books and papers have been written about every item in the list of algorithms and many algorithms are represented by a simple description. Multilayer networks, for example, include artificial neural networks, deep networks such as convolutional and recurrent networks, and transformer architectures such as GPT.</p>
-<div id="fig-proj-dsmodels" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center" alt="Structuring and categorizing input, algorithm, and output in data science models.">
+<div id="fig-proj-dsmodels" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" alt="Structuring and categorizing input, algorithm, and output in data science models." data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-proj-dsmodels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <a href="images/DataScienceModels.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/DataScienceModels.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Structuring and categorizing input, algorithm, and output in data science models."></a>
@@ -760,7 +766,7 @@ Figure&nbsp;2.2: Structuring and categorizing input, algorithm, and output in da
 <li><p><span class="math inline">\(\lambda\)</span> is the upper yield asymptote as <span class="math inline">\(x\)</span> increases.</p></li>
 <li><p><span class="math inline">\(\kappa\)</span> relates to a rate of change, how quickly the yield increases from <span class="math inline">\(\xi\)</span> and reaches <span class="math inline">\(\kappa\)</span>.</p></li>
 </ul>
-<p><a href="#fig-mitscherlich" class="quarto-xref">Figure&nbsp;<span>2.3</span></a> shows the Mitscherlich model fitted to a set of plant yield data, the input variable is the nitrogen rate applied (in kg/ha). Visual estimates for the baseline yield and the asymptotic yield are <span class="math inline">\(\widehat{\xi} = 40\)</span> and <span class="math inline">\(\widehat{\lambda} = 80\)</span>.</p>
+<p><a href="#fig-mitscherlich" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-mitscherlich</span></a> shows the Mitscherlich model fitted to a set of plant yield data, the input variable is the nitrogen rate applied (in kg/ha). Visual estimates for the baseline yield and the asymptotic yield are <span class="math inline">\(\widehat{\xi} = 40\)</span> and <span class="math inline">\(\widehat{\lambda} = 80\)</span>.</p>
 <div id="fig-mitscherlich" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-mitscherlich-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -862,7 +868,7 @@ Important
 <span class="glightbox-desc lightbox-desc-1">Figure&nbsp;2.2: Structuring and categorizing input, algorithm, and output in data science models.</span>
 <span class="glightbox-desc lightbox-desc-2">Figure&nbsp;2.3: Mitscherlich yield equation for plant yield as a function of nitrogen rate fitted to a set of data.</span>
 </div>
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-GEPBox1976" class="csl-entry" role="listitem">
 Box, George E. P. 1976. <span>“Science and Statistics.”</span> <em>Journal of the American Statistical Association</em> 71 (356): 791–99.
 </div>
@@ -1453,7 +1459,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","openEffect":"zoom","loop":false,"closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","selector":".lightbox","loop":false,"openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

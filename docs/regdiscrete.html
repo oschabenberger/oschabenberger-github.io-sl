@@ -486,6 +486,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -500,7 +506,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -566,16 +572,16 @@ window.Quarto = {
 
 <section id="introduction" class="level2" data-number="11.1">
 <h2 data-number="11.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">11.1</span> Introduction</h2>
-<p>The classical linear model (<a href="regglobal.html" class="quarto-xref"><span>Chapter 8</span></a>) is appropriate when the mean function is linear in the parameters and the errors are uncorrelated with constant variance. The error conditions are met in a random sample from a Gaussian distribution. It does not take much to shake the foundation of the classical model. For example, when the target variable is the time until a manufactured item fails, the exponential or Weibull distribution is more appropriate than the Gaussian and the assumption of constant variance no longer holds. A characteristic of these distributions is a dependence of the variance on the mean. A random variable <span class="math inline">\(Y\)</span> has an exponential distribution if its density function is given by <span class="math display">\[
+<p>The classical linear model (<a href="#sec-reg-linear" class="quarto-xref"><span class="quarto-unresolved-ref">sec-reg-linear</span></a>) is appropriate when the mean function is linear in the parameters and the errors are uncorrelated with constant variance. The error conditions are met in a random sample from a Gaussian distribution. It does not take much to shake the foundation of the classical model. For example, when the target variable is the time until a manufactured item fails, the exponential or Weibull distribution is more appropriate than the Gaussian and the assumption of constant variance no longer holds. A characteristic of these distributions is a dependence of the variance on the mean. A random variable <span class="math inline">\(Y\)</span> has an exponential distribution if its density function is given by <span class="math display">\[
 f(y) = \left \{ \begin{array}{ll}\lambda e^{-\lambda y} &amp; y \ge 0 \\ 0 &amp; y &lt; 0 \end{array} \right .
 \]</span> The mean and variance are <span class="math inline">\(\text{E}[Y] = 1/\lambda\)</span> and <span class="math inline">\(\text{Var}[Y] = 1/\lambda^2 = 1/\text{E}[Y]^2\)</span>. If the mean changes, for example as a function of inputs, the variance will change as well.</p>
 <p>Also, the support of the exponential random variable is different from the Gaussian. The former takes on non-negative values (the time lapsed between telephone calls cannot be negative) whereas the Gaussian takes on values from <span class="math inline">\(-\infty\)</span> to <span class="math inline">\(+\infty\)</span>. A linear model for the mean function is probably a bad idea because there is no guarantee that predicted values <span class="math inline">\(\widehat{y} = \textbf{x}^\prime \widehat{\boldsymbol{\beta}}\)</span> are non-negative. To ensure that predicted values comply with the support of the random variable, a transformation such as <span class="math display">\[
 \widehat{y} = \exp\{ \textbf{x}^\prime \widehat{\boldsymbol{\beta}} \}
 \]</span> might be useful. The linear predictor <span class="math inline">\(\widehat{\eta} = \textbf{x}^\prime\widehat{\boldsymbol{\beta}}\)</span> can now take on values between <span class="math inline">\(-\infty\)</span> and <span class="math inline">\(+\infty\)</span> and the predicted values obey <span class="math inline">\(\widehat{y} \ge 0\)</span>. But the exponential transformation made the model for the mean <strong>nonlinear</strong> in the parameters. By considering a different distribution for the target variable, the classical linear model framework breaks down quickly–even for a continuous random variable like the time between some events.</p>
 <p>When the target variable is discrete–rather than continuous–the linear model breaks down in the same way, the consequences for sticking with the classical linear model framework are more severe, however.</p>
-<p>Recall from <a href="statmodels.html#sec-target-variables" class="quarto-xref"><span>Section 2.2.0.4</span></a> that target variables are categorized as <strong>continuous</strong> or <strong>discrete</strong> depending on whether the number of possible values is countable. Discrete variables, with countable support, are further categorized into <strong>count</strong> variables and <strong>categorical</strong> variables. The value of a count variable is an integer that indicates how many times something occurred. The value of a categorical variable is a label that describes a state. For example, the number of vehicle accidents per hour is a count variable, the make of the vehicle involved in the accidents is a categorical variable.</p>
-<p>In this chapter we consider regression models for discrete random variables: binary variables that take on two values, ordinal and nominal variables that take on more than two values and true count variables. The discussion will be somewhat <em>informal</em>. The models will be re-introduced and discussed more formally in a later chapter under the umbrella of <strong>generalized linear models</strong> (GLMs, <a href="glm.html" class="quarto-xref"><span>Chapter 26</span></a>).</p>
-<p>How does the failure time example in this introduction relate to modeling discrete targets? If the time between events has an exponential distribution, the number of events that occur within a unit of time–a count variable–has a Poisson distribution. Both distributions are members of a special family of probability distributions, known as the <strong>exponential family</strong>. GLMs are statistical models for target variables that have a distribution in the exponential family—more details in <a href="glm.html#sec-glm-Pexpo" class="quarto-xref"><span>Section 26.2</span></a>.</p>
+<p>Recall from <a href="#sec-target-variables" class="quarto-xref"><span class="quarto-unresolved-ref">sec-target-variables</span></a> that target variables are categorized as <strong>continuous</strong> or <strong>discrete</strong> depending on whether the number of possible values is countable. Discrete variables, with countable support, are further categorized into <strong>count</strong> variables and <strong>categorical</strong> variables. The value of a count variable is an integer that indicates how many times something occurred. The value of a categorical variable is a label that describes a state. For example, the number of vehicle accidents per hour is a count variable, the make of the vehicle involved in the accidents is a categorical variable.</p>
+<p>In this chapter we consider regression models for discrete random variables: binary variables that take on two values, ordinal and nominal variables that take on more than two values and true count variables. The discussion will be somewhat <em>informal</em>. The models will be re-introduced and discussed more formally in a later chapter under the umbrella of <strong>generalized linear models</strong> (GLMs, <a href="#sec-glm" class="quarto-xref"><span class="quarto-unresolved-ref">sec-glm</span></a>).</p>
+<p>How does the failure time example in this introduction relate to modeling discrete targets? If the time between events has an exponential distribution, the number of events that occur within a unit of time–a count variable–has a Poisson distribution. Both distributions are members of a special family of probability distributions, known as the <strong>exponential family</strong>. GLMs are statistical models for target variables that have a distribution in the exponential family—more details in <a href="#sec-glm-Pexpo" class="quarto-xref"><span class="quarto-unresolved-ref">sec-glm-Pexpo</span></a>.</p>
 <div class="callout callout-style-default callout-caution callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -587,7 +593,7 @@ Caution
 </div>
 <div class="callout-body-container callout-body">
 <p>Do not confuse the exponential distribution with the exponential family of distributions.</p>
-<p>The term <em>exponential</em> in the family of distributions comes from a particular way of writing the mass or density function, using exponentiation, see <a href="glm.html#sec-glm-Pexpo" class="quarto-xref"><span>Section 26.2</span></a>. Many distributions can be written that way, including the exponential density shown earlier. The exponential distribution is one member of the exponential family, other members include the Binary, Binomial, Negative Binomial, Poisson, Gaussian, Beta, and Gamma distributions.</p>
+<p>The term <em>exponential</em> in the family of distributions comes from a particular way of writing the mass or density function, using exponentiation, see <a href="#sec-glm-Pexpo" class="quarto-xref"><span class="quarto-unresolved-ref">sec-glm-Pexpo</span></a>. Many distributions can be written that way, including the exponential density shown earlier. The exponential distribution is one member of the exponential family, other members include the Binary, Binomial, Negative Binomial, Poisson, Gaussian, Beta, and Gamma distributions.</p>
 </div>
 </div>
 </section>
@@ -623,7 +629,7 @@ Q(p) = \log \left(\frac{p}{1-p} \right)
 \]</span></p>
 </div>
 </div>
-<p>The logit link function is a convenient choice for modeling binary data, it is symmetric about zero, has a simple expression and its inverse can be computed easily. With a logit link the coefficients have a simple and appealing interpretation in terms of log odds ratios (see below). Many other functions could serve as link functions. For example, if <span class="math inline">\(\phi(x)\)</span> is the c.d.f. of a standard Gaussian random variable, the quantile function <span class="math inline">\(\phi^{-1}(p)\)</span> can be used as a link function. This configuration is called **probit* regression. Logistic and Gaussian c.d.f. and quantile function have similar shapes (<a href="#fig-logistic-standnormal" class="quarto-xref">Figure&nbsp;<span>11.1</span></a>), computations of the Gaussian probabilities and quantiles is numerically much more involved, requiring approximations.</p>
+<p>The logit link function is a convenient choice for modeling binary data, it is symmetric about zero, has a simple expression and its inverse can be computed easily. With a logit link the coefficients have a simple and appealing interpretation in terms of log odds ratios (see below). Many other functions could serve as link functions. For example, if <span class="math inline">\(\phi(x)\)</span> is the c.d.f. of a standard Gaussian random variable, the quantile function <span class="math inline">\(\phi^{-1}(p)\)</span> can be used as a link function. This configuration is called **probit* regression. Logistic and Gaussian c.d.f. and quantile function have similar shapes (<a href="#fig-logistic-standnormal" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-logistic-standnormal</span></a>), computations of the Gaussian probabilities and quantiles is numerically much more involved, requiring approximations.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-logistic-standnormal" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -656,7 +662,7 @@ Note
 <p>Example: Credit Default–ISLR</p>
 </div>
 <div class="example-container">
-<p>The <code>Default</code> data is part of the <code>ISLR2</code> library <span class="citation" data-cites="James2013_ISLR2">(<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">James et al. 2021</a>)</span>, a simulated data set with ten thousand observations. The target variable is <code>default</code>, whether a customer defaulted on their credit card debt. Input variables include a factor that indicates student status, account balance and income information.</p>
+<p>The <code>Default</code> data is part of the <code>ISLR2</code> library <span class="citation" data-cites="James2013_ISLR2">(<a href="#ref-James2013_ISLR2" role="doc-biblioref">James et al. 2021</a>)</span>, a simulated data set with ten thousand observations. The target variable is <code>default</code>, whether a customer defaulted on their credit card debt. Input variables include a factor that indicates student status, account balance and income information.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1029,7 +1035,7 @@ Prediction  No Yes
 </ul>
 <p>Counts out of a total have a direct connection to binary data. If <span class="math inline">\(Y_1, Y_2, \cdots, Y_n\)</span> are independent Bernoulli(<span class="math inline">\(\pi\)</span>) random variables, then their sum is a Binomial(<span class="math inline">\(n,\pi\)</span>) random variable. The approach to model such counts is also called <strong>Binomial regression</strong>.</p>
 <p>The typical assumption for counts per unit is that they follow a Poisson distribution.</p>
-<p>An introduction to binomial and <strong>Poisson regression</strong> follows here. Other distributions such as the Negative Binomial and concepts such as overdispersion and zero-inflated count processes are covered in more detail in the chapter on Generalized Linear Models (<a href="glm.html" class="quarto-xref"><span>Chapter 26</span></a>).</p>
+<p>An introduction to binomial and <strong>Poisson regression</strong> follows here. Other distributions such as the Negative Binomial and concepts such as overdispersion and zero-inflated count processes are covered in more detail in the chapter on Generalized Linear Models (<a href="#sec-glm" class="quarto-xref"><span class="quarto-unresolved-ref">sec-glm</span></a>).</p>
 <section id="binomial-regression" class="level3">
 <h3 class="anchored" data-anchor-id="binomial-regression">Binomial Regression</h3>
 <p>A Binomial(<span class="math inline">\(n,\pi\)</span>) random variable is the sum of <span class="math inline">\(n\)</span> independent Bernoulli(<span class="math inline">\(\pi\)</span>) random variables. The mean and variance of a <span class="math inline">\(Y\sim \text{Binomial}(n,\pi\)</span>) random variable follow from this definition <span class="math display">\[
@@ -1041,7 +1047,7 @@ Prediction  No Yes
 <p>Example: Insecticide Dose Response</p>
 </div>
 <div class="example-container">
-<p>The data for this problem are from $6.7.1 of <span class="citation" data-cites="Schabenberger2001">(<a href="references.html#ref-Schabenberger2001" role="doc-biblioref">Schabenberger and Pierce 2001</a>)</span>. For each of seven concentrations of an insecticide, 20 larvae were exposed and the number of larvae killed was recorded.</p>
+<p>The data for this problem are from $6.7.1 of <span class="citation" data-cites="Schabenberger2001">(<a href="#ref-Schabenberger2001" role="doc-biblioref">Schabenberger and Pierce 2001</a>)</span>. For each of seven concentrations of an insecticide, 20 larvae were exposed and the number of larvae killed was recorded.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>conc <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.375</span>,<span class="fl">0.75</span>,<span class="fl">1.5</span>,<span class="fl">3.0</span>,<span class="fl">6.0</span>,<span class="fl">12.0</span>,<span class="fl">24.0</span>)</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>killed <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">8</span>,<span class="dv">11</span>,<span class="dv">16</span>,<span class="dv">18</span>,<span class="dv">20</span>)</span>
@@ -1171,13 +1177,13 @@ AIC: 23.019
 Number of Fisher Scoring iterations: 4</code></pre>
 </div>
 </div>
-<p>The regression coefficient for <code>logconc</code> is highly significant. <a href="#fig-insect-mortality" class="quarto-xref">Figure&nbsp;<span>11.2</span></a> shows the predicted logistic probability function of the model and the <span class="math inline">\(LD_{50}\)</span> value.</p>
+<p>The regression coefficient for <code>logconc</code> is highly significant. <a href="#fig-insect-mortality" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-insect-mortality</span></a> shows the predicted logistic probability function of the model and the <span class="math inline">\(LD_{50}\)</span> value.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-insect-mortality" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-insect-mortality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="regdiscrete_files/figure-html/fig-insect-mortality-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="regdiscrete_files/figure-html/fig-insect-mortality-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="regdiscrete_files/figure-html/fig-insect-mortality-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="regdiscrete_files/figure-html/fig-insect-mortality-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-insect-mortality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11.2: Predicted mortality function for insecticide and <span class="math inline">\(LD_{50}\)</span> value.
@@ -1253,7 +1259,7 @@ x_{0.5} = 10^{(\text{logit}(0.5) + 1.7305)/4.1651} = 10^{0.4155} = 2.603
  $ bikers    : num  16 40 32 13 1 1 2 3 8 14 ...</code></pre>
 </div>
 </div>
-<p>The following statements fit the same Poisson regression model as in <span class="citation" data-cites="James2013_ISLR2">(<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">James et al. 2021, 187</a>)</span></p>
+<p>The following statements fit the same Poisson regression model as in <span class="citation" data-cites="James2013_ISLR2">(<a href="#ref-James2013_ISLR2" role="doc-biblioref">James et al. 2021, 187</a>)</span></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>mod.pois <span class="ot">&lt;-</span> <span class="fu">glm</span>(bikers <span class="sc">~</span> mnth <span class="sc">+</span> hr <span class="sc">+</span> workingday <span class="sc">+</span> temp <span class="sc">+</span> weathersit,</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">data =</span> Bikeshare, </span>
@@ -1392,7 +1398,7 @@ Multiple R-squared:  0.6745,    Adjusted R-squared:  0.6731
 F-statistic: 457.3 on 39 and 8605 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
-<p>The linear model explains 67.45% of the variability in the number of bike shares and has many highly significant predictors. Are the predictions comparable to those from the Poisson model? A look at <a href="#fig-bike-lm-vs-poisson" class="quarto-xref">Figure&nbsp;<span>11.3</span></a> shows that they are not at all the same. Predictions are higher under the Poisson model for small and large values. The predictions of the linear model extend into the negative values.</p>
+<p>The linear model explains 67.45% of the variability in the number of bike shares and has many highly significant predictors. Are the predictions comparable to those from the Poisson model? A look at <a href="#fig-bike-lm-vs-poisson" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-bike-lm-vs-poisson</span></a> shows that they are not at all the same. Predictions are higher under the Poisson model for small and large values. The predictions of the linear model extend into the negative values.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-bike-lm-vs-poisson" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -1459,7 +1465,7 @@ Number of Fisher Scoring iterations: 5</code></pre>
 </div>
 </div>
 </div>
-<p>Under certain conditions, this likelihood-ratio test statistic has a <span class="math inline">\(\chi^2\)</span> distribution with degrees of freedom equal to the rank of <span class="math inline">\(\textbf{X}\)</span>. The LRT is the equivalent test in likelihood-based estimation to the sum-of-squares reduction test in least-squares based estimation (<a href="regglobal.html#sec-ss-reduction-test" class="quarto-xref"><span>Section 8.2</span></a>)</p>
+<p>Under certain conditions, this likelihood-ratio test statistic has a <span class="math inline">\(\chi^2\)</span> distribution with degrees of freedom equal to the rank of <span class="math inline">\(\textbf{X}\)</span>. The LRT is the equivalent test in likelihood-based estimation to the sum-of-squares reduction test in least-squares based estimation (<a href="#sec-ss-reduction-test" class="quarto-xref"><span class="quarto-unresolved-ref">sec-ss-reduction-test</span></a>)</p>
 <div class="definition">
 <div class="definition-header">
 <p>Definition: Likelihood Ratio Test</p>
@@ -1507,7 +1513,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <li>the data do not follow a Poisson distribution but a model with greater dispersion, e.g., the Negative Binomial distribution</li>
 <li>the data were generated by more than one process and we observe a mixture.</li>
 </ul>
-<p>Overdispersion is addressed by turning the appropriate knob. If overdispersion is not addressed, the precision of the fitted model is overstated: standard error estimates are too small, confidence and prediction intervals are too narrow, <span class="math inline">\(p\)</span>-values are too small. More on this topic in <a href="glm.html#sec-glm-overdispersion" class="quarto-xref"><span>Section 26.7</span></a>.</p>
+<p>Overdispersion is addressed by turning the appropriate knob. If overdispersion is not addressed, the precision of the fitted model is overstated: standard error estimates are too small, confidence and prediction intervals are too narrow, <span class="math inline">\(p\)</span>-values are too small. More on this topic in <a href="#sec-glm-overdispersion" class="quarto-xref"><span class="quarto-unresolved-ref">sec-glm-overdispersion</span></a>.</p>
 </section>
 <section id="working-with-offsets" class="level2" data-number="11.5">
 <h2 data-number="11.5" class="anchored" data-anchor-id="working-with-offsets"><span class="header-section-number">11.5</span> Working with Offsets</h2>
@@ -1526,7 +1532,7 @@ Y_i \sim \text{Poisson}( x_i^0 \lambda)
 <p>Example: Non-melanoma Skin Cancer</p>
 </div>
 <div class="example-container">
-<p>The following data appear in <span class="citation" data-cites="Kleinbaum2013">(<a href="references.html#ref-Kleinbaum2013" role="doc-biblioref">Kleinbaum et al. 2013</a>)</span> and describe the incidence of non-melanoma skin cancer among women by age group in two cities.</p>
+<p>The following data appear in <span class="citation" data-cites="Kleinbaum2013">(<a href="#ref-Kleinbaum2013" role="doc-biblioref">Kleinbaum et al. 2013</a>)</span> and describe the incidence of non-melanoma skin cancer among women by age group in two cities.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>nonmel <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="at">header =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">text =</span> <span class="st">"</span></span>
@@ -1800,7 +1806,7 @@ among 1,000 residents of Minneapolis 85 years is  4.155093 </code></pre>
 <div id="fig-zero-inflation" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-zero-inflation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="regdiscrete_files/figure-html/fig-zero-inflation-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="regdiscrete_files/figure-html/fig-zero-inflation-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="regdiscrete_files/figure-html/fig-zero-inflation-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="regdiscrete_files/figure-html/fig-zero-inflation-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zero-inflation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11.4: Zero-inflated Poisson(5) process (left) and Poisson(5) process (right).
@@ -2051,7 +2057,7 @@ Log-likelihood: -71.1 on 5 Df</code></pre>
 <span class="glightbox-desc lightbox-desc-1">Figure&nbsp;11.2: Predicted mortality function for insecticide and <span class="math inline">\(LD_{50}\)</span> value.</span>
 <span class="glightbox-desc lightbox-desc-2">Figure&nbsp;11.4: Zero-inflated Poisson(5) process (left) and Poisson(5) process (right).</span>
 </div>
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-James2013_ISLR2" class="csl-entry" role="listitem">
 James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2021. <em>An Introduction to Statistical Learning: With Applications in r, 2nd Ed.</em> Springer. <a href="https://www.statlearning.com/">https://www.statlearning.com/</a>.
 </div>
@@ -2644,7 +2650,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","openEffect":"zoom","loop":false,"descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","openEffect":"zoom","loop":false,"closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

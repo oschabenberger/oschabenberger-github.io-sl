@@ -251,7 +251,7 @@ If it is any consolation, running Keras in Python might still generate non-repro
 
 One recommendation to deal with non-deterministic results is training the model several times and averaging the results, essentially ensembling them. When a single training run takes several hours, doing it thirty times is not practical.
 
-### MNIST Image Classification
+### MNIST Image Classification {#sec-mnist-analysis-ann}
 
 We now return to the MNIST image classification data introduced in @sec-mnist-first-look. Recall that the data comprise 60,000 training images and 10,000 test images of handwritten digits (0--9). Each image has 28 x 28 pixels recording a grayscale value. 
 
@@ -429,6 +429,7 @@ plotIt <- function(id=1) {
 }
 
 plotIt(1)
+plotIt(9)
 plotIt(34)
 ```
 

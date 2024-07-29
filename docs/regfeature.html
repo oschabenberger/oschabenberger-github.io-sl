@@ -486,6 +486,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -500,7 +506,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -619,7 +625,7 @@ window.Quarto = {
 </tr>
 </tbody>
 </table>
-<p>We will see in <a href="ann.html" class="quarto-xref"><span>Chapter 30</span></a> how to model the XOR gate with an artificial neural network with a single hidden layer with 2 units. The neural network requires 9 parameters to perfectly model the gate. We could also create a linear model that perfectly models the gate, requiring only three parameters.</p>
+<p>We will see in <a href="#sec-ann" class="quarto-xref"><span class="quarto-unresolved-ref">sec-ann</span></a> how to model the XOR gate with an artificial neural network with a single hidden layer with 2 units. The neural network requires 9 parameters to perfectly model the gate. We could also create a linear model that perfectly models the gate, requiring only three parameters.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">x2=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>reg_ia <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2 <span class="sc">+</span> x1<span class="sc">*</span>x2 <span class="sc">-</span><span class="dv">1</span>, <span class="at">data=</span>dat)</span>
@@ -681,9 +687,9 @@ Figure&nbsp;9.1: A gene expression microarray
 </div>
 </div>
 <p>How can we address the shortcomings of the classical linear model as problems become higher dimensional?</p>
-<p><strong>Algorithmic feature selection</strong> uses search techniques and cross-validation to find well-fitting models among the <span class="math inline">\(2^p\)</span> possible linear models you can build with <span class="math inline">\(p\)</span> inputs (<a href="#sec-feature-select" class="quarto-xref"><span>Section 9.1</span></a>). The goal is to find a relatively small set of inputs that explains sufficient variability in the data and to eliminate inputs that do not contribute (much) to explaining the variability.</p>
-<p><strong>Regularization</strong> techniques consider all <span class="math inline">\(p\)</span> inputs, even if <span class="math inline">\(p\)</span> is large, and allay the shortcomings of the ordinary least squares estimator by penalizing its tendency toward instability (<a href="#sec-regularization" class="quarto-xref"><span>Section 9.2</span></a>). Regularization penalties shrink the estimators toward zero, thereby limiting the variability they can inflict on the model. The resulting estimators are biased, but at the same time their variability is suppressed enough to lead to an overall smaller mean-square prediction error compared to ordinary least squares.</p>
-<p><strong>Dimension reduction</strong> methods derive <span class="math inline">\(m\)</span> linear combinations of the <span class="math inline">\(p\)</span> inputs where <span class="math inline">\(m \ll p\)</span>. The <span class="math inline">\(m\)</span> combinations are treated as inputs to the model, thereby reducing the dimension of the regression while still consuming information from all <span class="math inline">\(p\)</span> inputs (<a href="#sec-feature-dimred" class="quarto-xref"><span>Section 9.3</span></a>).</p>
+<p><strong>Algorithmic feature selection</strong> uses search techniques and cross-validation to find well-fitting models among the <span class="math inline">\(2^p\)</span> possible linear models you can build with <span class="math inline">\(p\)</span> inputs (<a href="#sec-feature-select" class="quarto-xref"><span class="quarto-unresolved-ref">sec-feature-select</span></a>). The goal is to find a relatively small set of inputs that explains sufficient variability in the data and to eliminate inputs that do not contribute (much) to explaining the variability.</p>
+<p><strong>Regularization</strong> techniques consider all <span class="math inline">\(p\)</span> inputs, even if <span class="math inline">\(p\)</span> is large, and allay the shortcomings of the ordinary least squares estimator by penalizing its tendency toward instability (<a href="#sec-regularization" class="quarto-xref"><span class="quarto-unresolved-ref">sec-regularization</span></a>). Regularization penalties shrink the estimators toward zero, thereby limiting the variability they can inflict on the model. The resulting estimators are biased, but at the same time their variability is suppressed enough to lead to an overall smaller mean-square prediction error compared to ordinary least squares.</p>
+<p><strong>Dimension reduction</strong> methods derive <span class="math inline">\(m\)</span> linear combinations of the <span class="math inline">\(p\)</span> inputs where <span class="math inline">\(m \ll p\)</span>. The <span class="math inline">\(m\)</span> combinations are treated as inputs to the model, thereby reducing the dimension of the regression while still consuming information from all <span class="math inline">\(p\)</span> inputs (<a href="#sec-feature-dimred" class="quarto-xref"><span class="quarto-unresolved-ref">sec-feature-dimred</span></a>).</p>
 <p>In summary, feature selection chooses a subset of the <span class="math inline">\(p\)</span> inputs, regularization keeps all <span class="math inline">\(p\)</span> inputs and introduces bias to limit variability, dimension reduction uses <span class="math inline">\(m &lt; p\)</span> linear combinations of the variables.</p>
 <section id="sec-feature-select" class="level2" data-number="9.1">
 <h2 data-number="9.1" class="anchored" data-anchor-id="sec-feature-select"><span class="header-section-number">9.1</span> Algorithmic Feature Selection</h2>
@@ -718,7 +724,7 @@ Tip
 <p>Cross-validation approaches such as train:test split, leave-one-out cross-validation, or <span class="math inline">\(k\)</span>-fold cross-validation produce a <strong>direct</strong> estimate of the mean-squared prediction error. <strong>Indirect</strong> estimates of the test error make adjustments to quantities derived from the training data and are easy to compute. These estimates are used to quickly quantify model performance without random elements and to compare non-nested models. The best <span class="math inline">\(M_k^*\)</span> and best <span class="math inline">\(M_j^*\)</span> models in feature selection are not necessarily nested in the sense that one model can be reduced from the other–they might have completely different inputs. Those models cannot be compared based on <span class="math inline">\(p\)</span>-values or just SSE. Some adjustments is necessary to incorporate the model complexity and to avoid overfitting.</p>
 <section id="mallows-c_p" class="level4">
 <h4 class="anchored" data-anchor-id="mallows-c_p">Mallows’ <span class="math inline">\(C_p\)</span></h4>
-<p>The <span class="math inline">\(C_p\)</span> statistic of <span class="citation" data-cites="Mallows1973">Mallows (<a href="references.html#ref-Mallows1973" role="doc-biblioref">1973</a>)</span> estimates the average sum of prediction errors <span class="math display">\[
+<p>The <span class="math inline">\(C_p\)</span> statistic of <span class="citation" data-cites="Mallows1973">Mallows (<a href="#ref-Mallows1973" role="doc-biblioref">1973</a>)</span> estimates the average sum of prediction errors <span class="math display">\[
 \Gamma_p = \frac{1}{\sigma^2}\text{E}\left [\sum_{i=1}^n \left(\widehat{Y}_i - \text{E}[Y_i|\textbf{x}_i]\right)^2 \right]
 \]</span> It is a prediction-oriented criteria that seeks to strike a balance between the bias of an underfit model and the variability of an overfit model. <span class="math inline">\(\Gamma_p\)</span> expands into <span id="eq-cp-pop"><span class="math display">\[
 \Gamma_p = \frac{1}{\sigma^2} \left(\sum_{i=1}^n\text{Var}[\widehat{Y}_i] + \sum_{i=1}^n\left[\text{Bias}(\widehat{Y}_i)\right]^2 \right)
@@ -726,7 +732,7 @@ Tip
 <p>The contribution of an overfit model is the first term in parentheses, <span class="math inline">\(\text{Var}[\widehat{Y}_i]\)</span>, the contribution of an underfit model is the squared bias term. It is insightful to take a look at the first piece, the sum of the variances of the predicted values. Suppose we have a model with <span class="math inline">\(d\)</span> inputs. From <span class="math inline">\(\widehat{\textbf{Y}} = \textbf{X}\widehat{\boldsymbol{\beta}}\)</span> it follows that <span class="math display">\[
 \text{Var}[\widehat{\textbf{Y}}] = \sigma^2 \textbf{X}(\textbf{X}^\prime\textbf{X})^{-1}\textbf{X}^\prime = \sigma^2 \textbf{H}
 \]</span> The Hat matrix is a projection matrix of rank <span class="math inline">\(d+1\)</span> and thus <span class="math inline">\(\sum_{i=1}^n \text{Var}[\widehat{Y}_i] = \sigma^2(d+1)\)</span>. The sum of the variances of the predicted values will go up when inputs are added to the model, whether the inputs are useful in explaining variability in <span class="math inline">\(Y\)</span> or not. Adding junk variables to a model results in greater variability of the predicted values–there is “no free lunch”.</p>
-<p>The bias term in <a href="#eq-cp-pop" class="quarto-xref">Equation&nbsp;<span>9.1</span></a> can be estimated as <span class="math display">\[
+<p>The bias term in <a href="#eq-cp-pop" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-cp-pop</span></a> can be estimated as <span class="math display">\[
 (\widehat{\sigma}^2_d - \sigma^2)(n-d-1)
 \]</span> where <span class="math inline">\(\widehat{\sigma}^2_d\)</span> is the estimate of <span class="math inline">\(\sigma^2\)</span> in a model with <span class="math inline">\(d\)</span> inputs. Putting everything together we arrive at an estimator of <span class="math inline">\(\Gamma_p\)</span>, known as Mallow’s <span class="math inline">\(C_p\)</span> statistic <span class="math display">\[
 C_p = \frac{1}{\widehat{\sigma}^2}\left(\widehat{\sigma}^2(d+1) + (\widehat{\sigma}^2_d - \widehat{\sigma}^2)(n-d-1) \right) = \frac{\text{SSE}}{\widehat{\sigma}^2} - n + 2(d+1)
@@ -780,13 +786,13 @@ adjr2
 </section>
 <section id="best-subset-selection" class="level3">
 <h3 class="anchored" data-anchor-id="best-subset-selection">Best Subset Selection</h3>
-<p>Best subsets regression uses an efficient branch-and-bound algorithm to explore the space of all possible models. A branch and bound algorithm does not visit all possible models. For example, the LEAPS algorithm of <span class="citation" data-cites="FurnivalWilson1974">Furnival and Wilson (<a href="references.html#ref-FurnivalWilson1974" role="doc-biblioref">1974</a>)</span> uses a separate tree as the bounding function that eliminates models that need not be considered given the branches of models that have already been seen. This algorithm is implemented as <code>method="exhaustive"</code> in the <code>regsubsets</code> function of the <code>leaps</code> package in <code>R</code>.</p>
+<p>Best subsets regression uses an efficient branch-and-bound algorithm to explore the space of all possible models. A branch and bound algorithm does not visit all possible models. For example, the LEAPS algorithm of <span class="citation" data-cites="FurnivalWilson1974">Furnival and Wilson (<a href="#ref-FurnivalWilson1974" role="doc-biblioref">1974</a>)</span> uses a separate tree as the bounding function that eliminates models that need not be considered given the branches of models that have already been seen. This algorithm is implemented as <code>method="exhaustive"</code> in the <code>regsubsets</code> function of the <code>leaps</code> package in <code>R</code>.</p>
 <div class="example">
 <div class="example-header">
 <p>Example: Credit Data from ISLR2</p>
 </div>
 <div class="example-container">
-<p>We are using here the <code>Credit</code> data from <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">2021</a>, Sec 3.3, p.85)</span>. The data are simulated observations (400) on</p>
+<p>We are using here the <code>Credit</code> data from <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="#ref-James2013_ISLR2" role="doc-biblioref">2021</a>, Sec 3.3, p.85)</span>. The data are simulated observations (400) on</p>
 <ul>
 <li>Income: income in $1,000</li>
 <li>Limit: credit limit</li>
@@ -946,7 +952,7 @@ M_2^*: \text{Balance} = \beta_0 + \beta_1\text{Income} + \beta_2\text{Rating} + 
  [8] 0.9539649 0.9539243 0.9538912 0.9538287</code></pre>
 </div>
 </div>
-<p>Selecting models according to <span class="math inline">\(C_p\)</span> the best 6-input model is chosen. Base on BIC and Adjusted <span class="math inline">\(R^2\)</span> we would choose the best 4-input and best 7-input model, respectively (<a href="#fig-best-subset-results" class="quarto-xref">Figure&nbsp;<span>9.2</span></a>).</p>
+<p>Selecting models according to <span class="math inline">\(C_p\)</span> the best 6-input model is chosen. Base on BIC and Adjusted <span class="math inline">\(R^2\)</span> we would choose the best 4-input and best 7-input model, respectively (<a href="#fig-best-subset-results" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-best-subset-results</span></a>).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which.min</span>(s_all<span class="sc">$</span>cp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1250,7 +1256,7 @@ Selection Algorithm: backward
 <section id="stepwise-selection" class="level3">
 <h3 class="anchored" data-anchor-id="stepwise-selection">Stepwise Selection</h3>
 <p>This selection method combines elements of forward and backward selection. A problem of those algorithms is that once a variable has been added it cannot be removed (forward) or once a variable has been removed it cannot be added (backward) at a later step. A stepwise procedure that starts from the null model examines after the addition of a variable if any of the variables now in the model should be removed. Stepwise procedures, also called hybrid procedures, examine more models than forward or backward methods but do not exhaust the entire space of models.</p>
-<p>A variation is the sequential replacement algorithm of <span class="citation" data-cites="Miller1984">Miller (<a href="references.html#ref-Miller1984" role="doc-biblioref">1984</a>)</span> implemented in the <code>leaps</code> package. Instead of removing a variable from a model, replacement attempts to replace any variable in the model with a variable not in the model. Variables are considered for replacement at every step, allowing variables that are being replaced at one stage to re-enter the model at a later stage.</p>
+<p>A variation is the sequential replacement algorithm of <span class="citation" data-cites="Miller1984">Miller (<a href="#ref-Miller1984" role="doc-biblioref">1984</a>)</span> implemented in the <code>leaps</code> package. Instead of removing a variable from a model, replacement attempts to replace any variable in the model with a variable not in the model. Variables are considered for replacement at every step, allowing variables that are being replaced at one stage to re-enter the model at a later stage.</p>
 <div class="example">
 <div class="example-header">
 <p>Example: Credit Data from ISLR2 (Cont’d)</p>
@@ -1465,13 +1471,13 @@ Note
 <p>The intercept <span class="math inline">\(\beta_0\)</span> is not included in the penalty term. It models the mean of <span class="math inline">\(Y\)</span> when all inputs are zero and does not need to be penalized.</p>
 </div>
 </div>
-<p>The penalty function in <a href="#eq-ridge-penalty" class="quarto-xref">Equation&nbsp;<span>9.2</span></a> is known as a <span class="math inline">\(L_2\)</span> penalty (or <span class="math inline">\(L_2\)</span> regularization), since it is based on the (squared) <span class="math inline">\(L_2\)</span>-norm of the <span class="math inline">\([\beta_1, \cdots, \beta_p]\)</span>. The <span class="math inline">\(L_2\)</span>-norm of vector <span class="math inline">\(\textbf{z}\)</span> is <span class="math display">\[
+<p>The penalty function in <a href="#eq-ridge-penalty" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-ridge-penalty</span></a> is known as a <span class="math inline">\(L_2\)</span> penalty (or <span class="math inline">\(L_2\)</span> regularization), since it is based on the (squared) <span class="math inline">\(L_2\)</span>-norm of the <span class="math inline">\([\beta_1, \cdots, \beta_p]\)</span>. The <span class="math inline">\(L_2\)</span>-norm of vector <span class="math inline">\(\textbf{z}\)</span> is <span class="math display">\[
 ||\textbf{z}||_2 = \sqrt{\sum_{j=1}^p z_j^2}
 \]</span> The <span class="math inline">\(L_1\)</span>-norm of a vector, on the other hand, is <span class="math display">\[
 ||\textbf{z}||_1 = \sum_{j=1}^p |z_j|
 \]</span></p>
-<p>and this is the basis of the penalty function <a href="#eq-lasso-penalty" class="quarto-xref">Equation&nbsp;<span>9.3</span></a>. The function <a href="#eq-elastinet-penalty" class="quarto-xref">Equation&nbsp;<span>9.4</span></a> is a combination of <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_2\)</span> regularization: <span class="math inline">\(\alpha=0\)</span> results in the <span class="math inline">\(L_2\)</span> penalty, <span class="math inline">\(\alpha=1\)</span> results in the <span class="math inline">\(L_1\)</span> penalty and values <span class="math inline">\(0 &lt; \alpha &lt; 1\)</span> mix the two.</p>
-<p>Regularization using <a href="#eq-ridge-penalty" class="quarto-xref">Equation&nbsp;<span>9.2</span></a> is known as <strong>ridge</strong> regression. The <span class="math inline">\(L_1\)</span>-norm regularization in <a href="#eq-lasso-penalty" class="quarto-xref">Equation&nbsp;<span>9.3</span></a> leads to <strong>lasso</strong> regression (also Lasso or LASSO) and the mixture is known as an <strong>elastic net</strong> regression.</p>
+<p>and this is the basis of the penalty function <a href="#eq-lasso-penalty" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-lasso-penalty</span></a>. The function <a href="#eq-elastinet-penalty" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-elastinet-penalty</span></a> is a combination of <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_2\)</span> regularization: <span class="math inline">\(\alpha=0\)</span> results in the <span class="math inline">\(L_2\)</span> penalty, <span class="math inline">\(\alpha=1\)</span> results in the <span class="math inline">\(L_1\)</span> penalty and values <span class="math inline">\(0 &lt; \alpha &lt; 1\)</span> mix the two.</p>
+<p>Regularization using <a href="#eq-ridge-penalty" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-ridge-penalty</span></a> is known as <strong>ridge</strong> regression. The <span class="math inline">\(L_1\)</span>-norm regularization in <a href="#eq-lasso-penalty" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-lasso-penalty</span></a> leads to <strong>lasso</strong> regression (also Lasso or LASSO) and the mixture is known as an <strong>elastic net</strong> regression.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1499,7 +1505,7 @@ Tip
 <p>Example: Hitter Data (ISLR2)</p>
 </div>
 <div class="example-container">
-<p>To demonstrate regularization we use another data set from <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">2021</a>)</span>. The <code>Hitters</code> data contains salaries and 19 other attributes about major league baseball players from the 1986 and 1987 seasons.</p>
+<p>To demonstrate regularization we use another data set from <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="#ref-James2013_ISLR2" role="doc-biblioref">2021</a>)</span>. The <code>Hitters</code> data contains salaries and 19 other attributes about major league baseball players from the 1986 and 1987 seasons.</p>
 <p>Regression models with regularization can be fit with the <code>glmnet</code> function in the <code>glmnet</code> package. This function implements the elastic net regularization–by choosing the <code>alpha=</code> parameter you can choose between ridge, lasso, or elastic net regularization. <code>glmnet</code> does not support the formula syntax, instead you supply the <span class="math inline">\(\textbf{y}\)</span> vector and the <span class="math inline">\(\textbf{X}\)</span> matrix. The <code>model.matrix()</code> function in <code>R</code> extracts the model matrix based on the formula syntax.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
@@ -1547,7 +1553,7 @@ NewLeagueN    0.01310  -12.69060  -12.91619  -12.94903</code></pre>
 </div>
 </div>
 <p>There are 19 predictors in addition to the intercept. The coefficient columns labeled <code>s0</code>, <code>s1</code>, <code>s2</code>, and <code>s3</code> correspond to the four values of <span class="math inline">\(\lambda = [100, 10, 0.1, 0]\)</span>. Note that the intercept is the same because the variables have been standardized and <span class="math inline">\(\beta_0\)</span> is not shrunk. For each of the predictors, the values are smaller (in absolute value) for the larger values of <span class="math inline">\(\lambda\)</span>. For example, the coefficient estimate of <code>AtBat</code> increases from -16.8308 at <span class="math inline">\(\lambda=100\)</span> to -177.4445 at <span class="math inline">\(\lambda=10\)</span> and to -286.6393 at <span class="math inline">\(\lambda=0.1\)</span>.</p>
-<p><a href="#fig-ridge-standardized" class="quarto-xref">Figure&nbsp;<span>9.3</span></a> shows the standardized ridge regression coefficients for the four values of <span class="math inline">\(\lambda\)</span>. The larger variation of the coefficients for smaller values of <span class="math inline">\(\lambda\)</span> is evident.</p>
+<p><a href="#fig-ridge-standardized" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-ridge-standardized</span></a> shows the standardized ridge regression coefficients for the four values of <span class="math inline">\(\lambda\)</span>. The larger variation of the coefficients for smaller values of <span class="math inline">\(\lambda\)</span> is evident.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-ridge-standardized" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -1611,13 +1617,13 @@ Figure&nbsp;9.3: Standardized Ridge Regression Coefficients
 </section>
 <section id="ridge-trace" class="level4">
 <h4 class="anchored" data-anchor-id="ridge-trace">Ridge trace</h4>
-<p>Another method of selecting <span class="math inline">\(\lambda\)</span> is based on the <strong>ridge trace</strong>, a plot of the standardized ridge regression coefficient estimates as a function of <span class="math inline">\(\lambda\)</span>. The point where the coefficients stop changing drastically as <span class="math inline">\(\lambda\)</span> increases is chosen. For the Credit data, the ridge trace stabilizes around <span class="math inline">\(\lambda\)</span>=20–25 (<a href="#fig-ridge-trace" class="quarto-xref">Figure&nbsp;<span>9.4</span></a>).</p>
+<p>Another method of selecting <span class="math inline">\(\lambda\)</span> is based on the <strong>ridge trace</strong>, a plot of the standardized ridge regression coefficient estimates as a function of <span class="math inline">\(\lambda\)</span>. The point where the coefficients stop changing drastically as <span class="math inline">\(\lambda\)</span> increases is chosen. For the Credit data, the ridge trace stabilizes around <span class="math inline">\(\lambda\)</span>=20–25 (<a href="#fig-ridge-trace" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-ridge-trace</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-ridge-trace" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ridge-trace-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="regfeature_files/figure-html/fig-ridge-trace-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="regfeature_files/figure-html/fig-ridge-trace-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="regfeature_files/figure-html/fig-ridge-trace-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="regfeature_files/figure-html/fig-ridge-trace-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ridge-trace-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;9.4: Rige trace for credit data
@@ -1817,7 +1823,7 @@ Figure&nbsp;9.5
 </div>
 </div>
 </div>
-<p>The optimal value for <span class="math inline">\(\lambda\)</span> per 10-fold cross-validation is 2.674. <a href="#fig-lasso-cv" class="quarto-xref">Figure&nbsp;<span>9.5</span></a> displays the results of cross-validation graphically. At the optimal value of <span class="math inline">\(\lambda\)</span>, the lasso model has 13 non-zero coefficients, six of the variables have been deselected from the model. The following output shows the final model.</p>
+<p>The optimal value for <span class="math inline">\(\lambda\)</span> per 10-fold cross-validation is 2.674. <a href="#fig-lasso-cv" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-lasso-cv</span></a> displays the results of cross-validation graphically. At the optimal value of <span class="math inline">\(\lambda\)</span>, the lasso model has 13 non-zero coefficients, six of the variables have been deselected from the model. The following output shows the final model.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>bestIndex <span class="ot">&lt;-</span> cv.out<span class="sc">$</span>index[<span class="dv">1</span>]</span>
 <span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(cv.out<span class="sc">$</span>glmnet.fit<span class="sc">$</span>beta[,bestIndex],<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1896,7 +1902,7 @@ Figure&nbsp;9.5
 <p>It is important that the <span class="math inline">\(Z_M\)</span> are linear combinations of <strong>all</strong> predictors <span id="eq-pca-scores"><span class="math display">\[
         Z_{im} = \sum_{j=1}^p \phi_{jm}X_{ij}
 \tag{9.5}\]</span></span></p>
-<p>The coefficients <span class="math inline">\(\phi_{jm}\)</span> are called the <strong>loadings</strong> or <strong>rotations</strong> and the <strong>scores</strong> <span class="math inline">\(Z_{im}\)</span> are constructed as the <strong>principal components</strong> of the <span class="math inline">\(\textbf{X}\)</span> matrix. We will discuss principal component analysis (PCA) and the construction of the <span class="math inline">\(Z_{im}\)</span> in detail in <a href="pca.html" class="quarto-xref"><span>Chapter 22</span></a>.</p>
+<p>The coefficients <span class="math inline">\(\phi_{jm}\)</span> are called the <strong>loadings</strong> or <strong>rotations</strong> and the <strong>scores</strong> <span class="math inline">\(Z_{im}\)</span> are constructed as the <strong>principal components</strong> of the <span class="math inline">\(\textbf{X}\)</span> matrix. We will discuss principal component analysis (PCA) and the construction of the <span class="math inline">\(Z_{im}\)</span> in detail in <a href="#sec-pca" class="quarto-xref"><span class="quarto-unresolved-ref">sec-pca</span></a>.</p>
 <p>(PCA) finds linear combinations of <span class="math inline">\(p\)</span> inputs that explain decreasing amounts of variability among the <span class="math inline">\(x\)</span>’s. Not any linear combination will do, the principal components are orthogonal to each other and project in the directions in which the inputs are most variable. That means they decompose the variability in the inputs into non-overlapping chunks. The first principal component explains the most variability, the second principal component explains the second-most variability, and so forth.</p>
 <p>Consider the following data set with <span class="math inline">\(n=10\)</span> and <span class="math inline">\(p=4\)</span>.</p>
 <div id="tbl-pca-data" class="striped hover quarto-float anchored">
@@ -2013,12 +2019,12 @@ Table&nbsp;9.1: Example data for principal component analysis. Sample mean and s
 0.286 &amp;0.948  &amp;0.047  &amp; 0.132\\
      \end{array} \right]
 \]</span></p>
-<p>This matrix can now be used, along with the data in <a href="#tbl-pca-data" class="quarto-xref">Table&nbsp;<span>9.1</span></a> to compute the scores <span class="math inline">\(Z_{im}\)</span>. For example,</p>
+<p>This matrix can now be used, along with the data in <a href="#tbl-pca-data" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-pca-data</span></a> to compute the scores <span class="math inline">\(Z_{im}\)</span>. For example,</p>
 <p><span class="math display">\[\begin{align*}
     Z_{11} &amp;= -0.555 \frac{0.344-0.218}{0.076} -0.574\frac{0.364-0.222}{0.081} - 0.530\frac{0.806-0.544}{0.122} + 0.286\frac{0.16-0.211}{0.075} = -3.248 \\
     Z_{32} &amp;= 0.235 \frac{0.196-0.218}{0.076} +0.052\frac{0.189-0.222}{0.081} + 0.208\frac{0.437-0.544}{0.122} +0.948\frac{0.248-0.211}{0.075} = 0.194\\
 \end{align*}\]</span></p>
-<p><a href="#tbl-pca-scores" class="quarto-xref">Table&nbsp;<span>9.2</span></a> displays the four inputs and the four scores <span class="math inline">\(Z_1, \cdots Z_4\)</span> from the PCA.</p>
+<p><a href="#tbl-pca-scores" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-pca-scores</span></a> displays the four inputs and the four scores <span class="math inline">\(Z_1, \cdots Z_4\)</span> from the PCA.</p>
 <div id="tbl-pca-scores" class="striped hover quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pca-scores-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -2259,14 +2265,14 @@ Table&nbsp;9.3: Statistics computed for <span class="math inline">\(X_j\)</span>
 </div>
 </figure>
 </div>
-<p>The sum of the sample variances of the <span class="math inline">\(Z_j\)</span> in <a href="#tbl-pca-stats" class="quarto-xref">Table&nbsp;<span>9.3</span></a> is (within rounding error) <span class="math display">\[
+<p>The sum of the sample variances of the <span class="math inline">\(Z_j\)</span> in <a href="#tbl-pca-stats" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-pca-stats</span></a> is (within rounding error) <span class="math display">\[
 2.957 + 0.844 + 0.199 + 0.0006 = 4
 \]</span> The first principal component, <span class="math inline">\(Z_1\)</span>, explains <span class="math inline">\(2.957/4 \times 100\% = 73.9\%\)</span> of the variability in the input variables.</p>
-<p>As you can see from <a href="#eq-pca-scores" class="quarto-xref">Equation&nbsp;<span>9.5</span></a>, PCA is an unsupervised learning method, it does not involve a target variable. The result of PCA, however, can be used in a supervised learning method, such as a regression model. A regression model that uses principal components as the input is called a <strong>principal component regression</strong> (PCR).</p>
+<p>As you can see from <a href="#eq-pca-scores" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-pca-scores</span></a>, PCA is an unsupervised learning method, it does not involve a target variable. The result of PCA, however, can be used in a supervised learning method, such as a regression model. A regression model that uses principal components as the input is called a <strong>principal component regression</strong> (PCR).</p>
 </section>
 <section id="sec-pcr" class="level3">
 <h3 class="anchored" data-anchor-id="sec-pcr">Principal Component Regression (PCR)</h3>
-<p>Based on the variance decomposition of the principal components (see the last row of <a href="#tbl-pca-stats" class="quarto-xref">Table&nbsp;<span>9.3</span></a>), we can select a subset <span class="math inline">\(Z_1, \cdots, Z_M\)</span> from the scores <span class="math inline">\(Z_1, \cdots, Z_p\)</span>. The number of principal components included into the model depends on how much variability in the <span class="math inline">\(X\)</span>s we want to account for. If all <span class="math inline">\(p\)</span> principal components are included in the model we have not really reduced the dimensionality. In the example above, the first two principal components account for 73.9% + 21 % = 94.9% of the variability; there is not much gained in choosing <span class="math inline">\(M &gt; 2\)</span>.</p>
+<p>Based on the variance decomposition of the principal components (see the last row of <a href="#tbl-pca-stats" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-pca-stats</span></a>), we can select a subset <span class="math inline">\(Z_1, \cdots, Z_M\)</span> from the scores <span class="math inline">\(Z_1, \cdots, Z_p\)</span>. The number of principal components included into the model depends on how much variability in the <span class="math inline">\(X\)</span>s we want to account for. If all <span class="math inline">\(p\)</span> principal components are included in the model we have not really reduced the dimensionality. In the example above, the first two principal components account for 73.9% + 21 % = 94.9% of the variability; there is not much gained in choosing <span class="math inline">\(M &gt; 2\)</span>.</p>
 <p>Once the <span class="math inline">\(M\)</span> principal components have been selected, the linear model becomes</p>
 <p><span class="math display">\[
 \textbf{Y}_{n \times 1} = \theta_0 + \textbf{Z}_{n \times M}\boldsymbol{\theta}+ \boldsymbol{\epsilon}
@@ -2318,7 +2324,7 @@ Salary     53.01     53.85     54.61     54.61</code></pre>
 </div>
 </div>
 <p>There are 19 input variables and hence there are 19 principal components. The output displays two tables with 19 columns each. The first reports the cross-validated root mean square error of prediction and a bias-adjusted version. The smallest error is achieved with six components in the model. The second table displays the cumulative proportion of variability explained. Using just the first principal component explains 38.31 % of the variability in the <span class="math inline">\(X\)</span>s. That model has an <span class="math inline">\(R^2\)</span> of 0.4063. Adding the second principal component adds 21.84 % of variability in the <span class="math inline">\(X\)</span>s.</p>
-<p>The model with 6 components, chosen by cross-validation, explains 88.63% of the variability in <span class="math inline">\(X\)</span> and 46.48% of the variability in the <code>Salary</code> target. The sharp drop-off in mean-square error after the first component enters the model is seen in <a href="#fig-pcr-hit" class="quarto-xref">Figure&nbsp;<span>9.6</span></a>. This is a pretty typical picture, because the components are ordered in terms of the proportion of variability explained. Selecting the hyper-parameter based on the “kink” or “elbow” in cross-validation plots is sometimes referred to as the “elbow method”.</p>
+<p>The model with 6 components, chosen by cross-validation, explains 88.63% of the variability in <span class="math inline">\(X\)</span> and 46.48% of the variability in the <code>Salary</code> target. The sharp drop-off in mean-square error after the first component enters the model is seen in <a href="#fig-pcr-hit" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-pcr-hit</span></a>. This is a pretty typical picture, because the components are ordered in terms of the proportion of variability explained. Selecting the hyper-parameter based on the “kink” or “elbow” in cross-validation plots is sometimes referred to as the “elbow method”.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">validationplot</span>(pcr.fit,<span class="at">val.type=</span><span class="st">"MSEP"</span>,<span class="at">legendpos=</span><span class="st">"topright"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -2432,7 +2438,7 @@ NewLeagueN -0.0419 -0.0776 -0.5446 -0.4177 -0.0145 -0.1570</code></pre>
 <div class="hidden" aria-hidden="true">
 <span class="glightbox-desc lightbox-desc-1">Figure&nbsp;9.4: Rige trace for credit data</span>
 </div>
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-FurnivalWilson1974" class="csl-entry" role="listitem">
 Furnival, George M., and Robert W. Wilson. 1974. <span>“Regression by Leaps and Bounds.”</span> <em>Technometrics</em> 16 (4): 499–511.
 </div>
@@ -3029,7 +3035,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","loop":false,"closeEffect":"zoom","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

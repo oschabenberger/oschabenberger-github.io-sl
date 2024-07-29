@@ -19,6 +19,15 @@ location = {Washington, D.C., USA},
 series = {SIGMOD '93}
 }
 
+@article{Bahdanau2014NeuralMT,
+  title={Neural Machine Translation by Jointly Learning to Align and Translate},
+  author={Dzmitry Bahdanau and Kyunghyun Cho and Yoshua Bengio},
+  journal={CoRR},
+  year={2014},
+  volume={abs/1409.0473},
+  url={https://api.semanticscholar.org/CorpusID:11212020}
+}
+
 @article{Belenky_et_al,
 title={Patterns of performance degradation and restoration during sleep restriction and subsequent recovery: a sleep dose-response study},
 author={Gregory Belenky and Nancy J. Wesensten and David R. Thorne and
@@ -27,6 +36,17 @@ year={2003},
 journal={Journal of Sleep Research},
 volume={12},
 pages={1–-12}
+}
+
+@article{Bellman1957,
+author={Bellman, R.},
+year={1957},
+title={A Markovian decision process},
+journal={Journal of Mathematics and Mechanics}, 
+volume={6},
+number={5},
+page={679--684},
+url={http://www.jstor.org/stable/24900506}
 }
 
 @book{Boeckmanetal1992,

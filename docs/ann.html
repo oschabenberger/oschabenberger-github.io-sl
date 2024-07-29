@@ -486,6 +486,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -500,7 +506,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -565,7 +571,7 @@ window.Quarto = {
 <h2 data-number="30.1" class="anchored" data-anchor-id="sec-ann-intro"><span class="header-section-number">30.1</span> Introduction</h2>
 <section id="a-look-back" class="level3">
 <h3 class="anchored" data-anchor-id="a-look-back">A Look Back</h3>
-<p>Few analytic methods have occupied conversations in recent years as neural networks. They seem at times inscrutable and complex, and mysteriously powerful. Yet neural networks, or better <strong>artificial neural networks</strong> (ANN), had their ups and downs since the <strong>perceptron</strong> was described by <span class="citation" data-cites="McCullochPitts">McCulloch and Pitts (<a href="references.html#ref-McCullochPitts" role="doc-biblioref">1943</a>)</span>.</p>
+<p>Few analytic methods have occupied conversations in recent years as neural networks. They seem at times inscrutable and complex, and mysteriously powerful. Yet neural networks, or better <strong>artificial neural networks</strong> (ANN), had their ups and downs since the <strong>perceptron</strong> was described by <span class="citation" data-cites="McCullochPitts">McCulloch and Pitts (<a href="#ref-McCullochPitts" role="doc-biblioref">1943</a>)</span>.</p>
 <p>Once, ANNs were thought to hold the key to artificial intelligence (AI) and that within a short period of time machines based on neural networks would be capable to perform any task. These exuberant expectations could not be met. From the peak of inflated expectations the field of AI slumped into the trough of disillusionment and the first AI winter had set in. It was not fashionable in the 1980s or 1990s to say you were working on artificial intelligence. Neural networks were just another supervised learning approach to predict or classify a target variable. Compare the situation to today, when it is not fashionable to say you are working on anything but AI.</p>
 <p>Then, around 2010, everything changed—again. Classification models built on specialized neural networks improved greatly in performance. In 2012, AlexNet, a <strong>convolutional neural network</strong> (CNN, a special type of artificial neural network for image data), had the best top-5 error rate in the annual <a href="https://www.image-net.org/index.php">ImageNet</a> competition, beating out human interpreters for the first time. The task in the ImageNet competition is to recognize the objects on images and correctly associate them with 1,000 categories.</p>
 <p>This was a watershed moment in the history of artificial intelligence. Algorithms outperforming their human masters is not too surprising to us. After all, we build algorithms of all kinds for exactly that purpose: to perform a task repeatedly and reliably at a scale beyond human capacity. Who would want to trade a calculator for doing arithmetic themselves? The watershed moment occurred because an ANN bested human interpreters in a task that many previously thought was squarely in the human domain: <em>sensing</em> the world.</p>
@@ -603,19 +609,19 @@ window.Quarto = {
 </section>
 <section id="the-basics" class="level3">
 <h3 class="anchored" data-anchor-id="the-basics">The Basics</h3>
-<p>Artificial neural networks are supervised learning tools. Like other techniques in this family of algorithms they convert an input material (data) through an algorithm into the prediction or classification of a target variable (<a href="#fig-sup-learning" class="quarto-xref">Figure&nbsp;<span>30.1</span></a>).</p>
+<p>Artificial neural networks are supervised learning tools. Like other techniques in this family of algorithms they convert an input material (data) through an algorithm into the prediction or classification of a target variable (<a href="#fig-sup-learning" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-sup-learning</span></a>).</p>
 <div id="fig-sup-learning" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sup-learning-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/SupervisedLearning.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/SupervisedLearning.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/SupervisedLearning.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/SupervisedLearning.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sup-learning-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30.1: Supervised learning in a nutshell.
 </figcaption>
 </figure>
 </div>
-<p>Neural networks can take as input any type of data and produce any type of output. <a href="#fig-sup-learning" class="quarto-xref">Figure&nbsp;<span>30.1</span></a> displays this as predicting or classifying a target variable <span class="math inline">\(Y\)</span>, but keep in mind that such a prediction could also be the most likely word in the translation of an input sequence of words into an output sequence of words in a different language. The stuff that happens in between input and output is organized in layers of transformations. The output of one layer is the input to the next layer. Each layer is associated with parameters, linear predictors, and nonlinear transformations.</p>
-<p>A network with a single hidden layer is shown in <a href="#fig-sup-learning-ann" class="quarto-xref">Figure&nbsp;<span>30.2</span></a>. This brings the total number of layers in the network to three:</p>
+<p>Neural networks can take as input any type of data and produce any type of output. <a href="#fig-sup-learning" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-sup-learning</span></a> displays this as predicting or classifying a target variable <span class="math inline">\(Y\)</span>, but keep in mind that such a prediction could also be the most likely word in the translation of an input sequence of words into an output sequence of words in a different language. The stuff that happens in between input and output is organized in layers of transformations. The output of one layer is the input to the next layer. Each layer is associated with parameters, linear predictors, and nonlinear transformations.</p>
+<p>A network with a single hidden layer is shown in <a href="#fig-sup-learning-ann" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-sup-learning-ann</span></a>. This brings the total number of layers in the network to three:</p>
 <ul>
 <li>an input layer with data</li>
 <li>a hidden layer that transforms the input data somehow and passes it on to an output layer</li>
@@ -624,18 +630,18 @@ Figure&nbsp;30.1: Supervised learning in a nutshell.
 <div id="fig-sup-learning-ann" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sup-learning-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/SupervisedLearningANN.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/SupervisedLearningANN.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/SupervisedLearningANN.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/SupervisedLearningANN.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sup-learning-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30.2: Supervised learning with single layer ANN.
 </figcaption>
 </figure>
 </div>
-<p>The earliest networks were called <strong>perceptrons</strong>, they did not have a hidden layer. A single layer perceptron thus processes the input data and transforms it directly into the output (<a href="#fig-perceptron" class="quarto-xref">Figure&nbsp;<span>30.3</span></a>).</p>
+<p>The earliest networks were called <strong>perceptrons</strong>, they did not have a hidden layer. A single layer perceptron thus processes the input data and transforms it directly into the output (<a href="#fig-perceptron" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-perceptron</span></a>).</p>
 <div id="fig-perceptron" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-perceptron-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Perceptron_Network.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/Perceptron_Network.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/Perceptron_Network.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/Perceptron_Network.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-perceptron-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30.3: Perceptron and single layer network.
@@ -663,11 +669,11 @@ g_j(\eta) = \frac{\exp\{\eta_j\}}{\sum_{l=1}^k\exp\{\eta_l\}}
 </section>
 <section id="single-layer-networks" class="level2" data-number="30.2">
 <h2 data-number="30.2" class="anchored" data-anchor-id="single-layer-networks"><span class="header-section-number">30.2</span> Single Layer Networks</h2>
-<p>Perceptrons proved to be limited in the number of categories (classes) they can learn. As a binary classifier, they required linear separability of the classes. Handling more complex problems was solved by the introduction of additional layers, known as <strong>hidden</strong> layers. The basic form of an artificial neural network today is the single layer network that consists of an input layer, a single hidden layer, and an output layer (<a href="#fig-single-layer-ann" class="quarto-xref">Figure&nbsp;<span>30.4</span></a>).</p>
+<p>Perceptrons proved to be limited in the number of categories (classes) they can learn. As a binary classifier, they required linear separability of the classes. Handling more complex problems was solved by the introduction of additional layers, known as <strong>hidden</strong> layers. The basic form of an artificial neural network today is the single layer network that consists of an input layer, a single hidden layer, and an output layer (<a href="#fig-single-layer-ann" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-single-layer-ann</span></a>).</p>
 <div id="fig-single-layer-ann" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-single-layer-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/SingleLayerANN.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4"><img src="images/SingleLayerANN.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/SingleLayerANN.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4"><img src="images/SingleLayerANN.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-single-layer-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30.4: Single layer ANN.
@@ -688,7 +694,7 @@ Note
 </div>
 </div>
 <p>The single layer ANN is also called a feedforward network, information flows from the input to the output layer. It is a <strong>fully connected</strong> network when all of the inputs are connected to all nodes of the hidden layer and all nodes of the hidden layer feed into the output layer.</p>
-<p>The terms <span class="math inline">\(A_1, \cdots, A_M\)</span> in <a href="#fig-single-layer-ann" class="quarto-xref">Figure&nbsp;<span>30.4</span></a> are called the <strong>activations</strong> of the hidden layer, <span class="math inline">\(M\)</span> is the number of nodes (=number of neurons) in that layer.</p>
+<p>The terms <span class="math inline">\(A_1, \cdots, A_M\)</span> in <a href="#fig-single-layer-ann" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-single-layer-ann</span></a> are called the <strong>activations</strong> of the hidden layer, <span class="math inline">\(M\)</span> is the number of nodes (=number of neurons) in that layer.</p>
 <p>Expressing neural networks mathematically is straightforward but gets messy quickly because of the many nodes and possibly layers. Here it goes.</p>
 <ul>
 <li><p>The input variables are <span class="math inline">\(x_1, \cdots, x_p\)</span>. Unstructured data have been converted to a numerical representation through encoding. <span class="math inline">\(\textbf{x}\)</span> denotes the vector of inputs for a record, <span class="math inline">\(\textbf{x}= [x_1,\cdots,x_p]^\prime\)</span>.</p></li>
@@ -711,8 +717,8 @@ g(T(\textbf{a})) &amp;= b^o + \textbf{a}^\prime\textbf{w}^o \\
 <p>Why are the neurons <span class="math inline">\(A_1, \cdots, A_M\)</span> called a <strong>hidden</strong> layer? The layer is not directly specified by the training data. It is also not directly observed. We observe the <span class="math inline">\(x\)</span>s but connect the inputs only indirectly to the output of the model. The connection to the output is made through the neurons that hide between the two. The learning algorithm can decide how to best use the hidden layer—that is, assign biases and weights.</p>
 <section id="activation-functions" class="level3">
 <h3 class="anchored" data-anchor-id="activation-functions">Activation Functions</h3>
-<p>The activation function <span class="math inline">\(\sigma()\)</span> introduces nonlinearity into a linear structure, not unlike the kernel trick encountered with support vector machines (<a href="supportvectors.html" class="quarto-xref"><span>Chapter 16</span></a>).</p>
-<p>Prior to the advent of deep learning and the discovery of ReLU, the rectified linear unit, the sigmoid (logistic) activation function was the most important in training neural networks. ReLU has since dominated. Some of the more important activation functions are shown in <a href="#tbl-activation-funcs" class="quarto-xref">Table&nbsp;<span>30.1</span></a>.</p>
+<p>The activation function <span class="math inline">\(\sigma()\)</span> introduces nonlinearity into a linear structure, not unlike the kernel trick encountered with support vector machines (<a href="#sec-support-vectors" class="quarto-xref"><span class="quarto-unresolved-ref">sec-support-vectors</span></a>).</p>
+<p>Prior to the advent of deep learning and the discovery of ReLU, the rectified linear unit, the sigmoid (logistic) activation function was the most important in training neural networks. ReLU has since dominated. Some of the more important activation functions are shown in <a href="#tbl-activation-funcs" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-activation-funcs</span></a>.</p>
 <div id="tbl-activation-funcs" class="striped quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-activation-funcs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -753,7 +759,7 @@ Table&nbsp;30.1: Activation functions <span class="math inline">\(\sigma(\nu)\)<
 </figure>
 </div>
 <p>You will recognize the sigmoid activation function as the inverse logit link from generalized linear models. The sigmoid (and hyperbolic tangent) function map from <span class="math inline">\((-\infty, \infty)\)</span> to <span class="math inline">\((0,1)\)</span>. The sigmoid function has a limited band of activation, its behavior is nearly linear around <span class="math inline">\(\nu = 0\)</span>.</p>
-<p>The ReLU function is deceptively simple. It takes on the value 0 whenever <span class="math inline">\(\nu &lt; 0\)</span> and returns the value if <span class="math inline">\(\nu &gt; 0\)</span> (<a href="#fig-relu-sigmoid" class="quarto-xref">Figure&nbsp;<span>30.5</span></a>). It is somewhat surprising that the ReLU function, which is <em>almost</em> linear, allows the approximation of arbitrary nonlinear functions. The ReLU in <a href="#fig-relu-sigmoid" class="quarto-xref">Figure&nbsp;<span>30.5</span></a> was scaled by factor <span class="math inline">\(1/4\)</span> to make it comparable to the sigmoid function. ReLU is not bounded for positive values and is not useful as an output function for probabilities if the goal is to predict on the <span class="math inline">\((0,1)\)</span> interval.</p>
+<p>The ReLU function is deceptively simple. It takes on the value 0 whenever <span class="math inline">\(\nu &lt; 0\)</span> and returns the value if <span class="math inline">\(\nu &gt; 0\)</span> (<a href="#fig-relu-sigmoid" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-relu-sigmoid</span></a>). It is somewhat surprising that the ReLU function, which is <em>almost</em> linear, allows the approximation of arbitrary nonlinear functions. The ReLU in <a href="#fig-relu-sigmoid" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-relu-sigmoid</span></a> was scaled by factor <span class="math inline">\(1/4\)</span> to make it comparable to the sigmoid function. ReLU is not bounded for positive values and is not useful as an output function for probabilities if the goal is to predict on the <span class="math inline">\((0,1)\)</span> interval.</p>
 <div class="cell" data-layout-align="center" width="90%">
 <div class="cell-output-display">
 <div id="fig-relu-sigmoid" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -768,7 +774,7 @@ Figure&nbsp;30.5: ReLU (scaled) and sigmoid activation function.
 </div>
 </div>
 </div>
-<p>The popularity of ReLU stems from its close-to-linear behavior. The function is easy to optimize with gradient-based algorithms (although it is not differentiable at zero), generalizes well, and is just sufficiently complex to be useful. The <strong>minimal component principle</strong> in computer science says that complicated system can be built from simpler components. As <span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="references.html#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016, 175</a>)</span> put it</p>
+<p>The popularity of ReLU stems from its close-to-linear behavior. The function is easy to optimize with gradient-based algorithms (although it is not differentiable at zero), generalizes well, and is just sufficiently complex to be useful. The <strong>minimal component principle</strong> in computer science says that complicated system can be built from simpler components. As <span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016, 175</a>)</span> put it</p>
 <blockquote class="blockquote">
 <p><em>Much as a Turing machine’s memory needs only to be able to store 0 or 1 states, we can build a universal function approximator from rectified linear functions.</em></p>
 </blockquote>
@@ -803,7 +809,7 @@ g(T_j(\textbf{a})) = \frac{\exp\{T_j(\textbf{a})\}}{\sum_{l=1}^k \exp\{T_l(\text
 <p>The softmax output function should look familiar, we encountered a similar function in multinomial logistic regression models. The probability to observe category <span class="math inline">\(j\)</span> of <span class="math inline">\(k\)</span> is modeled in a multinomial logistic model as <span id="eq-multinomial-probs"><span class="math display">\[
 \Pr(Y=j | \textbf{x}) = \frac{\exp\{\textbf{x}^\prime\boldsymbol{\beta}_j\}}{\sum_{l=1}^k \exp\{\textbf{x}^\prime\boldsymbol{\beta}_l\}}
 \tag{30.1}\]</span></span></p>
-<p>Because the probabilities sum to 1 across all categories, it is sufficient to model <span class="math inline">\(k-1\)</span> category probabilities. In multinomial regression models it is common to set the linear predictor for one of the categories to 0. Suppose we choose the last category, so that <span class="math inline">\(\boldsymbol{\beta}_k = \textbf{0}\)</span>. <a href="#eq-multinomial-probs" class="quarto-xref">Equation&nbsp;<span>30.1</span></a> then becomes <span class="math display">\[
+<p>Because the probabilities sum to 1 across all categories, it is sufficient to model <span class="math inline">\(k-1\)</span> category probabilities. In multinomial regression models it is common to set the linear predictor for one of the categories to 0. Suppose we choose the last category, so that <span class="math inline">\(\boldsymbol{\beta}_k = \textbf{0}\)</span>. <a href="#eq-multinomial-probs" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-multinomial-probs</span></a> then becomes <span class="math display">\[
 \begin{align*}
 \Pr(Y=j | \textbf{x}) &amp;= \frac{\exp\{\textbf{x}^\prime\boldsymbol{\beta}_j\}} {1 +\sum_{l=1}^{k-1} \exp\{\textbf{x}^\prime\boldsymbol{\beta}_l\}} \qquad j &lt; k\\
 \Pr(Y=k | \textbf{x}) &amp;= \frac{1}{1 +\sum_{l=1}^{k-1} \exp\{\textbf{x}^\prime\boldsymbol{\beta}_l\}} \\
@@ -813,19 +819,19 @@ g(T_j(\textbf{a})) = \frac{\exp\{T_j(\textbf{a})\}}{\sum_{l=1}^k \exp\{T_l(\text
 </section>
 <section id="ann-by-hand" class="level3">
 <h3 class="anchored" data-anchor-id="ann-by-hand">ANN by Hand</h3>
-<p>It is instructive to work through a simple neural network by hand to see how inputs, weights, biases, hidden neurons, activation and output functions work together to map inputs into output. <a href="#fig-ann-by-hand1" class="quarto-xref">Figure&nbsp;<span>30.7</span></a> shows a simple single layer network with 3 inputs, 4 neurons in the hidden layer, and a single output for prediction. ReLU is used for the activation and the output function.</p>
+<p>It is instructive to work through a simple neural network by hand to see how inputs, weights, biases, hidden neurons, activation and output functions work together to map inputs into output. <a href="#fig-ann-by-hand1" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-ann-by-hand1</span></a> shows a simple single layer network with 3 inputs, 4 neurons in the hidden layer, and a single output for prediction. ReLU is used for the activation and the output function.</p>
 <p>This is essentially a regression context where we build a shallow neural network to predict <span class="math inline">\(Y\)</span> from <span class="math inline">\(X_1, X_2, X_3\)</span>.</p>
 <div id="fig-ann-by-hand1" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ann-by-hand1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/SingleLayerByHand1.png" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="quarto-lightbox-gallery-5"><img src="images/SingleLayerByHand1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+<a href="images/SingleLayerByHand1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" data-glightbox="description: .lightbox-desc-5"><img src="images/SingleLayerByHand1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ann-by-hand1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30.7: Single layer ANN with 3 inputs and 4 hidden neurons.
 </figcaption>
 </figure>
 </div>
-<p>Suppose we have a single input vector (<span class="math inline">\(n=1\)</span>) <span class="math inline">\(\textbf{x}= [2, 1, 3]^\prime\)</span> and the parameters for the neural network are given as (<a href="#fig-ann-by-hand2" class="quarto-xref">Figure&nbsp;<span>30.8</span></a>) <span class="math display">\[
+<p>Suppose we have a single input vector (<span class="math inline">\(n=1\)</span>) <span class="math inline">\(\textbf{x}= [2, 1, 3]^\prime\)</span> and the parameters for the neural network are given as (<a href="#fig-ann-by-hand2" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-ann-by-hand2</span></a>) <span class="math display">\[
 \begin{align*}
   A_1: b_1 &amp;= -5 \quad \textbf{w}_1 = [1, -1, 1]^\prime \\
   A_2: b_2 &amp;=  0 \quad \textbf{w}_2 = [1,  1, 0]^\prime \\
@@ -837,18 +843,18 @@ Figure&nbsp;30.7: Single layer ANN with 3 inputs and 4 hidden neurons.
 <div id="fig-ann-by-hand2" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ann-by-hand2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/SingleLayerByHand2.png" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="quarto-lightbox-gallery-6"><img src="images/SingleLayerByHand2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/SingleLayerByHand2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" data-glightbox="description: .lightbox-desc-6"><img src="images/SingleLayerByHand2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ann-by-hand2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30.8: Parameters of the single layer ANN.
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-ann-by-hand3" class="quarto-xref">Figure&nbsp;<span>30.9</span></a> applies the parameter values to compute the activations <span class="math inline">\(A_1, \cdots, A_4\)</span>, applies the ReLU function and passes the results to the output layer.</p>
+<p><a href="#fig-ann-by-hand3" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-ann-by-hand3</span></a> applies the parameter values to compute the activations <span class="math inline">\(A_1, \cdots, A_4\)</span>, applies the ReLU function and passes the results to the output layer.</p>
 <div id="fig-ann-by-hand3" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ann-by-hand3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/SingleLayerByHand3.png" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="quarto-lightbox-gallery-7"><img src="images/SingleLayerByHand3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/SingleLayerByHand3.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" data-glightbox="description: .lightbox-desc-7"><img src="images/SingleLayerByHand3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ann-by-hand3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30.9: Computing the solution for activations and output.
@@ -914,11 +920,11 @@ Table&nbsp;30.2: XOR gate data.
 </div>
 </figure>
 </div>
-<p>The goal is to construct a neural network with one hidden layer with <span class="math inline">\(M=2\)</span> units, ReLU activation and identity (“linear”) output function (<a href="#fig-xor-ann" class="quarto-xref">Figure&nbsp;<span>30.10</span></a>). The network should model the XOR gate correctly—that is, provide a perfect fit to the data in <a href="#tbl-xor-gate" class="quarto-xref">Table&nbsp;<span>30.2</span></a>.</p>
+<p>The goal is to construct a neural network with one hidden layer with <span class="math inline">\(M=2\)</span> units, ReLU activation and identity (“linear”) output function (<a href="#fig-xor-ann" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-xor-ann</span></a>). The network should model the XOR gate correctly—that is, provide a perfect fit to the data in <a href="#tbl-xor-gate" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-xor-gate</span></a>.</p>
 <div id="fig-xor-ann" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-xor-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/XORNetwork.png" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="quarto-lightbox-gallery-8"><img src="images/XORNetwork.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></a>
+<a href="images/XORNetwork.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" data-glightbox="description: .lightbox-desc-8"><img src="images/XORNetwork.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-xor-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30.10: Single layer ANN for XOR problem.
@@ -933,7 +939,7 @@ Figure&nbsp;30.10: Single layer ANN for XOR problem.
         g(T) &amp;= T
 \end{align*}
 \]</span></p>
-<p>You can easily verify that the following values are a solution (<a href="#tbl-xor-gate-solved" class="quarto-xref">Table&nbsp;<span>30.3</span></a>) <span class="math display">\[
+<p>You can easily verify that the following values are a solution (<a href="#tbl-xor-gate-solved" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-xor-gate-solved</span></a>) <span class="math display">\[
 \begin{align*}
     b_1 &amp;=  0, \textbf{w}_1 = [1,1] \\
     b_2 &amp;= -1, \textbf{w}_2 = [1,1] \\
@@ -996,7 +1002,7 @@ Table&nbsp;30.3: XOR gate data and solution.
 </figure>
 </div>
 <p>This is great. A neural network with 9 parameters was able to predict the exclusive OR gate. Is there a more parsimonious option?</p>
-<p><span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="references.html#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016, 173</a>)</span> state that a linear model is not capable of fitting the XOR gate. This is correct if one considers a main-effects only model as in the following code</p>
+<p><span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016, 173</a>)</span> state that a linear model is not capable of fitting the XOR gate. This is correct if one considers a main-effects only model as in the following code</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">x2=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>dat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1128,7 +1134,7 @@ Table&nbsp;30.4: XOR gate data and regression solution.
 </div>
 </figure>
 </div>
-<p>I leave it up to you to decide which model is preferable (<a href="#fig-xor-two-solutions" class="quarto-xref">Figure&nbsp;<span>30.11</span></a>):</p>
+<p>I leave it up to you to decide which model is preferable (<a href="#fig-xor-two-solutions" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-xor-two-solutions</span></a>):</p>
 <p><span class="math display">\[
 Y = \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1x_2
 \]</span></p>
@@ -1145,7 +1151,7 @@ Y = \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1x_2
 <div id="fig-xor-two-solutions" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-xor-two-solutions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/XOR_Solution2.png" class="lightbox" data-glightbox="description: .lightbox-desc-9" data-gallery="quarto-lightbox-gallery-9"><img src="images/XOR_Solution2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/XOR_Solution2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" data-glightbox="description: .lightbox-desc-9"><img src="images/XOR_Solution2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-xor-two-solutions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30.11: Two solutions for the XOR gate problem.
@@ -1158,7 +1164,7 @@ Figure&nbsp;30.11: Two solutions for the XOR gate problem.
     b_2 &amp;= -1, \textbf{w}_2 = [-1,2] \\
     b^o &amp;= 0, \textbf{w}^o = [1, 1]
 \end{align*}
-\]</span> is also a solution (<a href="#tbl-xor-gate-another" class="quarto-xref">Table&nbsp;<span>30.5</span></a>).</p>
+\]</span> is also a solution (<a href="#tbl-xor-gate-another" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-xor-gate-another</span></a>).</p>
 <div id="tbl-xor-gate-another" class="striped quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-xor-gate-another-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1222,7 +1228,7 @@ Table&nbsp;30.5: XOR gate data and another solution.
 <p>A single layer network can in theory approximate most functions, provided the hidden layer has enough neurons (=units). But networks with more than a single layer are often able to use fewer units per layer and can generalize well with fewer parameters overall. Increasing the <strong>depth</strong> of the network tends to be more effective than increasing the <strong>width</strong> of the network, although counter examples are easy to find.</p>
 <p>Modern neural networks have more than one hidden layer, we call them multi layer networks. In general, when the number of layers is greater than two, the networks are referred to as <strong>deep</strong> neural networks (DNN). This is not an established definition of DNNs, in part because it is sometime not clear what is being described as a layer. For example, in convolutional neural networks three processing stages alternate—convolution, activation, and pooling. The number of layers varies greatly depending on whether the stages are seen as separate layers or not.</p>
 <p>Besides pooling and convolving, the assumption in convolutional neural networks is that deeper layers learn increasingly higher-level abstractions of the data. The layers represent a nested hierarchy of concepts—edges, shapes, etc—with more abstract representations computed in terms of simpler ones. This idea of abstraction into hierarchy of concepts favors deeper multi layer networks over wider networks with fewer layers.</p>
-<p>In the chapter on deep learning we will encounter layers with many different purposes (<a href="deeplearning.html" class="quarto-xref"><span>Chapter 33</span></a>). Examples are</p>
+<p>In the chapter on deep learning we will encounter layers with many different purposes (<a href="#sec-deep-learning" class="quarto-xref"><span class="quarto-unresolved-ref">sec-deep-learning</span></a>). Examples are</p>
 <ul>
 <li>convolutional layers</li>
 <li>pooling layers</li>
@@ -1236,11 +1242,11 @@ Table&nbsp;30.5: XOR gate data and another solution.
 <li>long short-term memory layers</li>
 <li>embedding layers</li>
 </ul>
-<p>In this section, multiple layers are simple fully-connected hidden layers. The first hidden layer with <span class="math inline">\(M_1\)</span> neurons passes its output to a second hidden layer with <span class="math inline">\(M_2\)</span> neurons and so forth. <a href="#fig-multi-ann" class="quarto-xref">Figure&nbsp;<span>30.12</span></a> shows a fully connected ANN with two hidden layers with <span class="math inline">\(M_1=4\)</span> and <span class="math inline">\(M_2=3\)</span> neurons, respectively.</p>
-<div id="fig-multi-ann" class="quarto-figure quarto-figure-center quarto-float anchored" width="90%" data-fig-align="center">
+<p>In this section, multiple layers are simple fully-connected hidden layers. The first hidden layer with <span class="math inline">\(M_1\)</span> neurons passes its output to a second hidden layer with <span class="math inline">\(M_2\)</span> neurons and so forth. <a href="#fig-multi-ann" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-multi-ann</span></a> shows a fully connected ANN with two hidden layers with <span class="math inline">\(M_1=4\)</span> and <span class="math inline">\(M_2=3\)</span> neurons, respectively.</p>
+<div id="fig-multi-ann" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center" width="90%">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-multi-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/MultipleLayer.png" class="lightbox" data-glightbox="description: .lightbox-desc-10" data-gallery="quarto-lightbox-gallery-10"><img src="images/MultipleLayer.png" id="fig-multi-ann" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:90.0%"></a>
+<a href="images/MultipleLayer.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" data-glightbox="description: .lightbox-desc-10"><img src="images/MultipleLayer.png" id="fig-multi-ann" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-multi-ann-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30.12
@@ -1276,26 +1282,26 @@ g(T(\textbf{a}^{h})) &amp;= g(b^o+\textbf{w}^o\textbf{a}^{(h)})
 <div id="fig-mnist-data" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-mnist-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/MNIST_data.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-11" data-gallery="quarto-lightbox-gallery-11"><img src="images/MNIST_data.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/MNIST_data.jpeg" class="lightbox" data-gallery="quarto-lightbox-gallery-11" data-glightbox="description: .lightbox-desc-11"><img src="images/MNIST_data.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mnist-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30.13: Example of hand-written digits in MNIST data.
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-mnist-data" class="quarto-xref">Figure&nbsp;<span>30.13</span></a> displays a sampling of the images in the data set for each of the ten digits. Many classification methods have been applied to the MNIST data, including various artificial neural networks—check the <a href="http://yann.lecun.com/exdb/mnist/">table</a> on Yann LeCun’s web site for approaches and their error rates. Many approaches ignore the spatial arrangement of the 28 x 28 pixels on each image and treats each record as 28 x 28 = 784 grayscale values. They still have admirable error rates.</p>
-<p>A neural network with two hidden layers, comparing 128 and 64 hidden units, respectively, is shown in <a href="#fig-mnist-2-layer" class="quarto-xref">Figure&nbsp;<span>30.14</span></a>.</p>
+<p><a href="#fig-mnist-data" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-mnist-data</span></a> displays a sampling of the images in the data set for each of the ten digits. Many classification methods have been applied to the MNIST data, including various artificial neural networks—check the <a href="http://yann.lecun.com/exdb/mnist/">table</a> on Yann LeCun’s web site for approaches and their error rates. Many approaches ignore the spatial arrangement of the 28 x 28 pixels on each image and treats each record as 28 x 28 = 784 grayscale values. They still have admirable error rates.</p>
+<p>A neural network with two hidden layers, comparing 128 and 64 hidden units, respectively, is shown in <a href="#fig-mnist-2-layer" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-mnist-2-layer</span></a>.</p>
 <div id="fig-mnist-2-layer" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-mnist-2-layer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/MNIST_Twolayer.png" class="lightbox" data-glightbox="description: .lightbox-desc-12" data-gallery="quarto-lightbox-gallery-12"><img src="images/MNIST_Twolayer.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/MNIST_Twolayer.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" data-glightbox="description: .lightbox-desc-12"><img src="images/MNIST_Twolayer.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mnist-2-layer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30.14: A two layer network for MNIST data. <a href="https://aws.amazon.com/compare/the-difference-between-deep-learning-and-neural-networks/">Source</a>.
 </figcaption>
 </figure>
 </div>
-<p>There are 784 input variables, <span class="math inline">\(x_1, \cdots, x_{784}\)</span>, corresponding to the 784 pixel locations on each image. The first hidden layer has 128 neurons and ReLU activation. Consequently, there are 128 x 785 = 100,480 parameters in that layer (784 weights plus a bias for each neuron). The second hidden layer has 64 neurons and ReLU activation, adding 64 * 129 = 8,256 parameters. The output layer has a softmax output function because each image needs to be classified into one of 10 categories, adding 10 * 65 = 650 parameters. The total number of parameters in this two layer ANN is 100,480 + 8,256 + 650 = 109,386. The final layer in <a href="#fig-mnist-2-layer" class="quarto-xref">Figure&nbsp;<span>30.14</span></a> is shown as a cross-entropy layer. This simply means that the values (probabilities) associated with the softmax criterion in the output layer is used to choose as the classified value the digit for which the probability is largest.</p>
+<p>There are 784 input variables, <span class="math inline">\(x_1, \cdots, x_{784}\)</span>, corresponding to the 784 pixel locations on each image. The first hidden layer has 128 neurons and ReLU activation. Consequently, there are 128 x 785 = 100,480 parameters in that layer (784 weights plus a bias for each neuron). The second hidden layer has 64 neurons and ReLU activation, adding 64 * 129 = 8,256 parameters. The output layer has a softmax output function because each image needs to be classified into one of 10 categories, adding 10 * 65 = 650 parameters. The total number of parameters in this two layer ANN is 100,480 + 8,256 + 650 = 109,386. The final layer in <a href="#fig-mnist-2-layer" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-mnist-2-layer</span></a> is shown as a cross-entropy layer. This simply means that the values (probabilities) associated with the softmax criterion in the output layer is used to choose as the classified value the digit for which the probability is largest.</p>
 <p>In the next chapter we demonstrate that this model has a test accuracy of more than 96%, which is quite remarkable, considering that no spatial information about the pixels is explicitly taken into account. The 28 x 28 grayscale values are simply stretched into a vector of size 784 and processed without considering a value’s neighborhood of grayscale values.</p>
 <p>Before we crunch the numbers for the MNIST data set, a few words about the process of training neural networks.</p>
 
@@ -1314,7 +1320,7 @@ Figure&nbsp;30.14: A two layer network for MNIST data. <a href="https://aws.amaz
 <span class="glightbox-desc lightbox-desc-11">Figure&nbsp;30.13: Example of hand-written digits in MNIST data.</span>
 <span class="glightbox-desc lightbox-desc-12">Figure&nbsp;30.14: A two layer network for MNIST data. <a href="https://aws.amazon.com/compare/the-difference-between-deep-learning-and-neural-networks/">Source</a>.</span>
 </div>
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-Goodfellow-et-al-2016" class="csl-entry" role="listitem">
 Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016. <em>Deep Learning</em>. MIT Press.
 </div>
@@ -1904,7 +1910,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","loop":false,"descPosition":"bottom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

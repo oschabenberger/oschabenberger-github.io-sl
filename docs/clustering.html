@@ -486,6 +486,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -500,7 +506,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -636,7 +642,7 @@ W(C_k) = \frac{1}{|C_k|} \sum_{i,j \in C_k} ||\textbf{x}_i - \textbf{x}_j||_2^2
 \]</span> This quantity is also called the <strong>inertia</strong> of the cluster. The average inertia, <span class="math display">\[
 \frac{1}{|C_k|} \text{SSW}_k
 \]</span> is called the <strong>distortion</strong> of cluster <span class="math inline">\(k\)</span>.</p>
-<p>A (local) solution is found by iterating from an initial cluster assignment: given cluster centroids <span class="math inline">\(\overline{\textbf{x}}_k\)</span> assign each observation to the cluster whose center is closest. Following the assignment recompute the centers. Continue until the cluster assignment no longer changes. At the local solution no movement of a data point from one cluster to another will reduce the within-cluster sum of squares <span class="citation" data-cites="Hartigan1979">(<a href="references.html#ref-Hartigan1979" role="doc-biblioref">Hartigan and Wong 1979</a>)</span>.</p>
+<p>A (local) solution is found by iterating from an initial cluster assignment: given cluster centroids <span class="math inline">\(\overline{\textbf{x}}_k\)</span> assign each observation to the cluster whose center is closest. Following the assignment recompute the centers. Continue until the cluster assignment no longer changes. At the local solution no movement of a data point from one cluster to another will reduce the within-cluster sum of squares <span class="citation" data-cites="Hartigan1979">(<a href="#ref-Hartigan1979" role="doc-biblioref">Hartigan and Wong 1979</a>)</span>.</p>
 <p>The initial cluster assignment is done by either assigning observations randomly to the <span class="math inline">\(k\)</span> clusters or by using <span class="math inline">\(k\)</span> randomly chosen observations as the initial cluster centroids.</p>
 <p>Because of this random element, and because the algorithm is not guaranteed to find a global solution, <span class="math inline">\(K\)</span>-means is typically run with multiple random starts, and the best solution is reported.</p>
 <div class="example">
@@ -645,7 +651,7 @@ W(C_k) = \frac{1}{|C_k|} \sum_{i,j \in C_k} ||\textbf{x}_i - \textbf{x}_j||_2^2
 </div>
 <div class="example-container">
 <p>To show the basic calculations in <span class="math inline">\(K\)</span>-means analysis, let’s first look at the familiar <code>Iris</code> data set. We have the luxury of knowing that the data set comprises three species, a <span class="math inline">\(3\)</span>-means analysis of the flower measurements should be interesting: does it recover the iris species?</p>
-<p>The <code>kmeans</code> function in <code>R</code> performs the <span class="math inline">\(K\)</span>-means analysis. By default, it uses he algorithm of <span class="citation" data-cites="Hartigan1979">Hartigan and Wong (<a href="references.html#ref-Hartigan1979" role="doc-biblioref">1979</a>)</span> with a single random start for the initial cluster assignment. Set <code>nstart=</code> to a larger number to increase the number of random starts. Because there are four inputs, <code>Sepal.Length</code>, <code>Sepal.Width</code>. <code>Petal.Length</code>, and <code>Petal.Width</code>, each observation and the centroids live in 4-dimensional space.</p>
+<p>The <code>kmeans</code> function in <code>R</code> performs the <span class="math inline">\(K\)</span>-means analysis. By default, it uses he algorithm of <span class="citation" data-cites="Hartigan1979">Hartigan and Wong (<a href="#ref-Hartigan1979" role="doc-biblioref">1979</a>)</span> with a single random start for the initial cluster assignment. Set <code>nstart=</code> to a larger number to increase the number of random starts. Because there are four inputs, <code>Sepal.Length</code>, <code>Sepal.Width</code>. <code>Petal.Length</code>, and <code>Petal.Width</code>, each observation and the centroids live in 4-dimensional space.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>iris_s <span class="ot">&lt;-</span> <span class="fu">scale</span>(iris[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span>
@@ -700,13 +706,13 @@ W(C_k) = \frac{1}{|C_k|} \sum_{i,j \in C_k} ||\textbf{x}_i - \textbf{x}_j||_2^2
 <pre><code>[1] 0.9470124 0.8318405 1.0095786</code></pre>
 </div>
 </div>
-<p><a href="#fig-iris-kmeans" class="quarto-xref">Figure&nbsp;<span>23.1</span></a> shows the cluster assignment in a bivariate plot of two of the flower measurements. The colored cluster symbols are overlaid with the species. The three clusters track the species fairly well, in particular <em>I. setosa</em>. The boundaries of the other two clusters align fairly well with species, but there is considerable overlap.</p>
+<p><a href="#fig-iris-kmeans" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-iris-kmeans</span></a> shows the cluster assignment in a bivariate plot of two of the flower measurements. The colored cluster symbols are overlaid with the species. The three clusters track the species fairly well, in particular <em>I. setosa</em>. The boundaries of the other two clusters align fairly well with species, but there is considerable overlap.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-iris-kmeans" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-iris-kmeans-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="clustering_files/figure-html/fig-iris-kmeans-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="clustering_files/figure-html/fig-iris-kmeans-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="clustering_files/figure-html/fig-iris-kmeans-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="clustering_files/figure-html/fig-iris-kmeans-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-iris-kmeans-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;23.1: Results of 3-means clustering for Iris data. Clusters are identified through colors, species are identified with plotting symbols.
@@ -715,7 +721,7 @@ Figure&nbsp;23.1: Results of 3-means clustering for Iris data. Clusters are iden
 </div>
 </div>
 </div>
-<p>The separation of these clusters is probably better than <a href="#fig-iris-kmeans" class="quarto-xref">Figure&nbsp;<span>23.1</span></a> suggests, because two dimensions (<code>Petal.Width</code> and <code>Petal.Length</code>) are not represented in the figure.</p>
+<p>The separation of these clusters is probably better than <a href="#fig-iris-kmeans" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-iris-kmeans</span></a> suggests, because two dimensions (<code>Petal.Width</code> and <code>Petal.Length</code>) are not represented in the figure.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>psym <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(iris<span class="sc">$</span>Species<span class="sc">==</span><span class="st">"setosa"</span>, <span class="dv">1</span>, </span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">ifelse</span>(iris<span class="sc">$</span>Species<span class="sc">==</span><span class="st">"versicolor"</span> ,<span class="dv">2</span>,<span class="dv">3</span>))</span>
@@ -846,7 +852,7 @@ Caution
 </section>
 <section id="combining-k-means-and-pca" class="level3">
 <h3 class="anchored" data-anchor-id="combining-k-means-and-pca">Combining <span class="math inline">\(K\)</span>-Means and PCA</h3>
-<p><span class="math inline">\(K\)</span>-means analysis finds groups of observations that are similar to each other in the inputs as judged by a distance metric. Principal component analysis finds independent linear combinations of the inputs that explain substantial amounts of information. In the Iris example analyzed earlier, we used 4 input variables but plotted the cluster assignment for two of the variables, because visualization in more dimensions is difficult (<a href="#fig-iris-kmeans" class="quarto-xref">Figure&nbsp;<span>23.1</span></a>).</p>
+<p><span class="math inline">\(K\)</span>-means analysis finds groups of observations that are similar to each other in the inputs as judged by a distance metric. Principal component analysis finds independent linear combinations of the inputs that explain substantial amounts of information. In the Iris example analyzed earlier, we used 4 input variables but plotted the cluster assignment for two of the variables, because visualization in more dimensions is difficult (<a href="#fig-iris-kmeans" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-iris-kmeans</span></a>).</p>
 <p>There are two ways to combine PCA and <span class="math inline">\(K\)</span>-means:</p>
 <ol type="1">
 <li><p><strong>PCA after <span class="math inline">\(K\)</span>-means</strong>: Run a <span class="math inline">\(K\)</span>-means analysis on <span class="math inline">\(p\)</span> inputs, then calculate the first two principal components with the cluster assignment. This is a visualization techniques for clusters in high-dimensional data. It does not rectify the curse of dimensionality issue from which <span class="math inline">\(K\)</span>-means suffers as <span class="math inline">\(p\)</span> gets larger. When applied to visualize data in 2 dimensions, this technique reduces <span class="math inline">\(p(p-1)/2\)</span> scatterplots to a singple biplot based on the first 2 components.</p></li>
@@ -873,10 +879,10 @@ It should be not too surprising when the optimal number of clusters is similar t
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"reviews_per_month"</span>,<span class="st">"availability_365"</span>,</span>
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"calculated_host_listings_count"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><a href="#fig-asheville-data" class="quarto-xref">Figure&nbsp;<span>23.2</span></a> shows the distribution of prices as a function of the number of reviews. Many properties have accumulated hundreds of reviews over time. and most are toward the lower end of the price scale.</p>
+<p><a href="#fig-asheville-data" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-asheville-data</span></a> shows the distribution of prices as a function of the number of reviews. Many properties have accumulated hundreds of reviews over time. and most are toward the lower end of the price scale.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-asheville-data" class="quarto-figure quarto-figure-center quarto-float anchored" width="75%" data-fig-align="center">
+<div id="fig-asheville-data" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center" width="75%">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-asheville-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="clustering_files/figure-html/fig-asheville-data-1.png" id="fig-asheville-data" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:75.0%">
@@ -904,7 +910,7 @@ Cumulative Proportion  0.3164 0.5474 0.7038 0.8360 0.9498 1.0000</code></pre>
 </div>
 </div>
 <p>We use the first three principal components for the subsequent <span class="math inline">\(K\)</span>-means analysis; they explain 70.383% of variability in the data.</p>
-<p>Based on the scree plot of the within-cluster sum of squares and the silhouette scores, <span class="math inline">\(K\)</span>=5 or <span class="math inline">\(K=6\)</span> seems like a reasonable number of clusters. The silhouette plot suggests <span class="math inline">\(K\)</span>=7 instead (<a href="#fig-asheville-silhouette" class="quarto-xref">Figure&nbsp;<span>23.3</span></a>). We compromise on <span class="math inline">\(K=6\)</span>.</p>
+<p>Based on the scree plot of the within-cluster sum of squares and the silhouette scores, <span class="math inline">\(K\)</span>=5 or <span class="math inline">\(K=6\)</span> seems like a reasonable number of clusters. The silhouette plot suggests <span class="math inline">\(K\)</span>=7 instead (<a href="#fig-asheville-silhouette" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-asheville-silhouette</span></a>). We compromise on <span class="math inline">\(K=6\)</span>.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_nbclust</span>(pca_asheville<span class="sc">$</span>x[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], kmeans, <span class="at">method=</span><span class="st">'silhouette'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -996,7 +1002,7 @@ calculated_host_listings_count  0.2584232  0.5252157  0.35886561</code></pre>
 <pre><code>[1]  99.74124  92.39653 149.99366</code></pre>
 </div>
 </div>
-<p>To visualize, run a PCA and color the scores of the first two components with the cluster id. It appears that the algorithm found three somewhat distinct groups of observations. The cluster centroids are certainly quite different (<a href="#fig-kmeans-random" class="quarto-xref">Figure&nbsp;<span>23.4</span></a>).</p>
+<p>To visualize, run a PCA and color the scores of the first two components with the cluster id. It appears that the algorithm found three somewhat distinct groups of observations. The cluster centroids are certainly quite different (<a href="#fig-kmeans-random" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-kmeans-random</span></a>).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>pca <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(x,<span class="at">scale.=</span><span class="cn">TRUE</span>)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>proj_means <span class="ot">&lt;-</span> <span class="fu">predict</span>(pca,<span class="at">newdata=</span>krand<span class="sc">$</span>centers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1034,11 +1040,11 @@ Figure&nbsp;23.4: The first two principal components for <span class="math inlin
 <li>at the top, all observations belong to a single cluster</li>
 <li>at the bottom, each observations is in a cluster by itself</li>
 </ul>
-<p>If <span class="math inline">\(c\)</span> denotes the number of clusters in hierarchical clustering, HC offers you to choose <span class="math inline">\(1 \le c \le n\)</span>. Between the two extremes, <span class="math inline">\(c=1\)</span> and <span class="math inline">\(c=n\)</span> lie many configurations where observations are combined into groups based on similarity measures and rules for combining groups, called <strong>linkage</strong> methods. The choice is typically made based on heuristics such as a visual inspection of the <strong>dendrogram</strong>, an upside-down tree display of the cluster arrangements (<a href="#fig-hc-example" class="quarto-xref">Figure&nbsp;<span>23.5</span></a>). Algorithms exist that try to automate and optimize the determination of <span class="math inline">\(c\)</span> based on criteria such as inertia.</p>
+<p>If <span class="math inline">\(c\)</span> denotes the number of clusters in hierarchical clustering, HC offers you to choose <span class="math inline">\(1 \le c \le n\)</span>. Between the two extremes, <span class="math inline">\(c=1\)</span> and <span class="math inline">\(c=n\)</span> lie many configurations where observations are combined into groups based on similarity measures and rules for combining groups, called <strong>linkage</strong> methods. The choice is typically made based on heuristics such as a visual inspection of the <strong>dendrogram</strong>, an upside-down tree display of the cluster arrangements (<a href="#fig-hc-example" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-hc-example</span></a>). Algorithms exist that try to automate and optimize the determination of <span class="math inline">\(c\)</span> based on criteria such as inertia.</p>
 <div id="fig-hc-example" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-hc-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Dendrogram_annotated.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/Dendrogram_annotated.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
+<a href="images/Dendrogram_annotated.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/Dendrogram_annotated.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hc-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;23.5: Example of a dendrogram in hierarchical clustering
@@ -1050,13 +1056,13 @@ Figure&nbsp;23.5: Example of a dendrogram in hierarchical clustering
 <h3 class="anchored" data-anchor-id="the-dendrogram">The Dendrogram</h3>
 <p>Hierarchical clustering is popular because of the dendrogram, an intuitive representation of structure in the data. A word of caution is in order, however: just like <span class="math inline">\(K\)</span>-means clustering will find <span class="math inline">\(K\)</span> clusters–whether they exist or not–hierarchical clustering will organize the observations hierarchically in the dendrogram–whether a hierarchy makes sense or not.</p>
 <p>At the lowest level of the dendrogram are the <strong>leaves</strong>, corresponding to observations. As you move up the tree, those merge into <strong>branches</strong>. Observations fuse first into groups, later on observations or groups merge with other groups. A common mistake in interpreting dendrograms is to assume similarity is greatest when observations are close to each other on the horizontal axis when fused. Observations are more similar if they are fused <u>lower</u> on the tree. The further up on the tree you go before merging branches, the more <strong>dissimilar</strong> are the members of the branches.</p>
-<p>In <a href="#fig-dendrogram-example" class="quarto-xref">Figure&nbsp;<span>23.6</span></a>, observations 11 and 4 near the right edge of the tree appear “close” along the horizontal axis. Since they merge much higher up on the tree, these observations are more dissimilar as, for example, observations 23 and 25, which merge early on. Based on where they merge, observation 11 is no more similar to #4 than it is to observations 23, 25, 10, and 15.</p>
+<p>In <a href="#fig-dendrogram-example" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-dendrogram-example</span></a>, observations 11 and 4 near the right edge of the tree appear “close” along the horizontal axis. Since they merge much higher up on the tree, these observations are more dissimilar as, for example, observations 23 and 25, which merge early on. Based on where they merge, observation 11 is no more similar to #4 than it is to observations 23, 25, 10, and 15.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-dendrogram-example" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-dendrogram-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="clustering_files/figure-html/fig-dendrogram-example-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4"><img src="clustering_files/figure-html/fig-dendrogram-example-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
+<a href="clustering_files/figure-html/fig-dendrogram-example-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4"><img src="clustering_files/figure-html/fig-dendrogram-example-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dendrogram-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;23.6: Example of a dendrogram in hierarchical clustering.
@@ -1065,7 +1071,7 @@ Figure&nbsp;23.6: Example of a dendrogram in hierarchical clustering.
 </div>
 </div>
 </div>
-<p>The name hierarchical clustering stems from the fact that clusters lower on the tree (near the bottom) are necessarily contained in clusters higher up on the tree (near the top), since clusters are formed by merging or splitting. This hierarchical arrangement can be unrealistic. <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">2021, 523</a>)</span> give the following example</p>
+<p>The name hierarchical clustering stems from the fact that clusters lower on the tree (near the bottom) are necessarily contained in clusters higher up on the tree (near the top), since clusters are formed by merging or splitting. This hierarchical arrangement can be unrealistic. <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="#ref-James2013_ISLR2" role="doc-biblioref">2021, 523</a>)</span> give the following example</p>
 <ul>
 <li>Suppose you have data on men and women from three countries.</li>
 <li>The best division into three groups might be by country.</li>
@@ -1080,11 +1086,11 @@ Figure&nbsp;23.6: Example of a dendrogram in hierarchical clustering.
 </section>
 <section id="cutting-the-dendrogram" class="level3">
 <h3 class="anchored" data-anchor-id="cutting-the-dendrogram">Cutting the Dendrogram</h3>
-<p>It is best to interpret the dendrogram as a data summary, not as a confirmatory tool. Based on the dendrogram you can choose any number of clusters. The typical approach is called <strong>cutting the tree</strong>, whereby you choose a particular height on the dendrogram and draw a line across. Depending on where you draw the line you end up with a different number of clusters (<a href="#fig-dendrogram-cut" class="quarto-xref">Figure&nbsp;<span>23.7</span></a>). The number of clusters corresponds to the number of vertical lines the cut intersects.</p>
+<p>It is best to interpret the dendrogram as a data summary, not as a confirmatory tool. Based on the dendrogram you can choose any number of clusters. The typical approach is called <strong>cutting the tree</strong>, whereby you choose a particular height on the dendrogram and draw a line across. Depending on where you draw the line you end up with a different number of clusters (<a href="#fig-dendrogram-cut" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-dendrogram-cut</span></a>). The number of clusters corresponds to the number of vertical lines the cut intersects.</p>
 <div id="fig-dendrogram-cut" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-dendrogram-cut-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Dendrogram_cut.png" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="quarto-lightbox-gallery-5"><img src="images/Dendrogram_cut.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
+<a href="images/Dendrogram_cut.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" data-glightbox="description: .lightbox-desc-5"><img src="images/Dendrogram_cut.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dendrogram-cut-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;23.7: Dendrogram cut at different heights
@@ -1234,7 +1240,7 @@ Note
 <p>Still, for an ordinal variable with <span class="math inline">\(M\)</span> categories it is not uncommon to replace the label for category <span class="math inline">\(j\)</span> with <span class="math display">\[
 \frac{j-1/2}{M}
 \]</span> and treat this as a quantitative score. With nominal variables it is common to assign a simple loss value depending on whether the values of two variables are the same (loss = 0) or different (loss=1).</p>
-<p>What should we do when the inputs are of mixed type, for example, <span class="math inline">\(x_1\)</span> is continuous, <span class="math inline">\(x_2\)</span> is binary, and <span class="math inline">\(x_3\)</span> is nominal? <span class="citation" data-cites="Gower1971">Gower (<a href="references.html#ref-Gower1971" role="doc-biblioref">n.d.</a>)</span> introduced a similarity metric to compute distances in this case, known as Gower’s distance. Suppose there are no missing values. Gower’s <strong>similarity coefficient</strong> is <span class="math display">\[
+<p>What should we do when the inputs are of mixed type, for example, <span class="math inline">\(x_1\)</span> is continuous, <span class="math inline">\(x_2\)</span> is binary, and <span class="math inline">\(x_3\)</span> is nominal? <span class="citation" data-cites="Gower1971">Gower (<a href="#ref-Gower1971" role="doc-biblioref">n.d.</a>)</span> introduced a similarity metric to compute distances in this case, known as Gower’s distance. Suppose there are no missing values. Gower’s <strong>similarity coefficient</strong> is <span class="math display">\[
 S(\textbf{x}_i,\textbf{x}_{i^\prime}) = \frac{1}{p}\sum_{j=1}^p s_{ii^\prime j}
 \]</span> The <span class="math inline">\(s_{ii^\prime j}\)</span> is the <strong>score</strong> between observations <span class="math inline">\(i\)</span> and <span class="math inline">\(i^\prime\)</span> for variable <span class="math inline">\(j\)</span>; The scores range <span class="math inline">\(0 \leq s_{ii^\prime j} \leq 1\)</span> and are calculated as follows:</p>
 <ul>
@@ -1257,11 +1263,11 @@ s_{i i^\prime j} = 1 - \frac{x_{ij} - x_{i^\prime j}}{R_j}
 <li><p><strong>Average linkage</strong>: <span class="math inline">\(D(G,H) = \text{ave} D(\textbf{x}_i,\textbf{x}_{i^\prime}), i \in G, i^\prime \in H\)</span></p></li>
 </ul>
 <p>The agglomerative clustering algorithm merges the cluster with the smallest linkage value.</p>
-<p>When clusters separate well, the choice of linkage is not that important. Otherwise, linkage can have substantial impact on the outcome of hierarchical clustering. Single linkage is know to cause <em>chaining</em>, combining observations that are linked by a series of close observations. Complete linkage tends to produce compact clusters, but observations can end up being closer to members of other clusters than to members of their own cluster. Average linkage is a compromise, but is not invariant to transformations of the dissimilarities. Centroid linkage uses distances between centroids of the clusters (<a href="#fig-linkage-types" class="quarto-xref">Figure&nbsp;<span>23.8</span></a>).</p>
+<p>When clusters separate well, the choice of linkage is not that important. Otherwise, linkage can have substantial impact on the outcome of hierarchical clustering. Single linkage is know to cause <em>chaining</em>, combining observations that are linked by a series of close observations. Complete linkage tends to produce compact clusters, but observations can end up being closer to members of other clusters than to members of their own cluster. Average linkage is a compromise, but is not invariant to transformations of the dissimilarities. Centroid linkage uses distances between centroids of the clusters (<a href="#fig-linkage-types" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-linkage-types</span></a>).</p>
 <div id="fig-linkage-types" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-linkage-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/LinkageTypes.png" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="quarto-lightbox-gallery-6"><img src="images/LinkageTypes.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/LinkageTypes.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" data-glightbox="description: .lightbox-desc-6"><img src="images/LinkageTypes.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-linkage-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;23.8: Some linkage types in hierarchical clustering.
@@ -1333,7 +1339,7 @@ Figure&nbsp;23.8: Some linkage types in hierarchical clustering.
 [22] 0.2682308 0.2684616 0.2737816 0.2779692</code></pre>
 </div>
 </div>
-<p>The dendrogram for this analysis is plotted in <a href="#fig-glaucoma-dendro1" class="quarto-xref">Figure&nbsp;<span>23.9</span></a> along with the bounding boxes for 4 and 8 clusters. The cut for the larger number of clusters occurs lower at the tree.</p>
+<p>The dendrogram for this analysis is plotted in <a href="#fig-glaucoma-dendro1" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-glaucoma-dendro1</span></a> along with the bounding boxes for 4 and 8 clusters. The cut for the larger number of clusters occurs lower at the tree.</p>
 <div class="cell" data-layout-align="center" data-out.with="90%">
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hc, <span class="at">cex=</span><span class="fl">0.5</span>, <span class="at">main=</span><span class="st">""</span>,)</span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rect.hclust</span>(hc,<span class="at">k=</span><span class="dv">4</span>)</span>
@@ -1342,7 +1348,7 @@ Figure&nbsp;23.8: Some linkage types in hierarchical clustering.
 <div id="fig-glaucoma-dendro1" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-glaucoma-dendro1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="clustering_files/figure-html/fig-glaucoma-dendro1-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="quarto-lightbox-gallery-7"><img src="clustering_files/figure-html/fig-glaucoma-dendro1-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></a>
+<a href="clustering_files/figure-html/fig-glaucoma-dendro1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" data-glightbox="description: .lightbox-desc-7"><img src="clustering_files/figure-html/fig-glaucoma-dendro1-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-glaucoma-dendro1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;23.9: Dendrogram for partial glaucoma data with correlation-based dissimilarity and complete linkage.
@@ -1360,7 +1366,7 @@ Figure&nbsp;23.9: Dendrogram for partial glaucoma data with correlation-based di
 37 26 20 15 </code></pre>
 </div>
 </div>
-<p>Changing the linkage method to single demonstrates the <em>chaining</em> effect on the dendrogram (<a href="#fig-glaucoma-dendro2" class="quarto-xref">Figure&nbsp;<span>23.10</span></a>). Identifying a reasonable number of clusters is more difficult.</p>
+<p>Changing the linkage method to single demonstrates the <em>chaining</em> effect on the dendrogram (<a href="#fig-glaucoma-dendro2" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-glaucoma-dendro2</span></a>). Identifying a reasonable number of clusters is more difficult.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>hc_s <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">get_dist</span>(glauc,<span class="at">method=</span><span class="st">"pearson"</span>),<span class="at">method=</span><span class="st">"single"</span>)</span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hc_s, <span class="at">cex=</span><span class="fl">0.5</span>,<span class="at">main=</span><span class="st">""</span>)</span>
@@ -1369,7 +1375,7 @@ Figure&nbsp;23.9: Dendrogram for partial glaucoma data with correlation-based di
 <div id="fig-glaucoma-dendro2" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-glaucoma-dendro2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="clustering_files/figure-html/fig-glaucoma-dendro2-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="quarto-lightbox-gallery-8"><img src="clustering_files/figure-html/fig-glaucoma-dendro2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="clustering_files/figure-html/fig-glaucoma-dendro2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" data-glightbox="description: .lightbox-desc-8"><img src="clustering_files/figure-html/fig-glaucoma-dendro2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-glaucoma-dendro2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;23.10: Dendrogram for partial glaucoma data, single linkage.
@@ -1427,7 +1433,7 @@ Figure&nbsp;23.10: Dendrogram for partial glaucoma data, single linkage.
 <span class="glightbox-desc lightbox-desc-7">Figure&nbsp;23.9: Dendrogram for partial glaucoma data with correlation-based dissimilarity and complete linkage.</span>
 <span class="glightbox-desc lightbox-desc-8">Figure&nbsp;23.10: Dendrogram for partial glaucoma data, single linkage.</span>
 </div>
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-Gower1971" class="csl-entry" role="listitem">
 Gower, J. C. n.d. <span>“A General Coefficient of Similarity and Some of Its Properties.”</span> <em>Biometrics</em> 27 (4): 857–71.
 </div>
@@ -2022,7 +2028,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"descPosition":"bottom","closeEffect":"zoom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

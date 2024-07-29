@@ -486,6 +486,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -500,7 +506,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -590,15 +596,15 @@ Y = \textbf{x}^\prime\boldsymbol{\beta}+ \epsilon, \quad \epsilon \sim \textit{ 
 <p>However, the relaxation of the model conditions is not without limits. Rather than allowing <span class="math inline">\(Y\)</span> to have <em>any</em> distribution, its distribution has to be a member of a special family of probability distributions. Rather than allowing any arbitrary nonlinear relationship between inputs and target, only certain (invertible) transformations are permitted; the effect of the inputs remains linear on <em>some</em> scale, although it is usually not the scale of the mean. Rather than allowing any arbitrary variance, the variance of the targets can be unequal but it is determined through the distribution itself.</p>
 <p>This sounds like we are placing many restrictions on the relaxations but it turns out that the class of generalized linear models is very broad and general. A generalized linear model has the following components:</p>
 <ol type="1">
-<li>The distribution of <span class="math inline">\(Y\)</span> is a member of the exponential family of distributions (<a href="#sec-glm-Pexpo" class="quarto-xref"><span>Section 26.2</span></a>).</li>
+<li>The distribution of <span class="math inline">\(Y\)</span> is a member of the exponential family of distributions (<a href="#sec-glm-Pexpo" class="quarto-xref"><span class="quarto-unresolved-ref">sec-glm-Pexpo</span></a>).</li>
 <li>The effects are a linear combination of the inputs, called the <strong>linear predictor</strong> <span class="math inline">\(\eta = \textbf{x}^\prime\boldsymbol{\beta}\)</span>.</li>
-<li>The linear predictor <span class="math inline">\(\eta = \textbf{x}^\prime\boldsymbol{\beta}\)</span> is related to the mean through a link function <span class="math inline">\(g(\mu) = \eta\)</span> (<a href="#sec-glm-link" class="quarto-xref"><span>Section 26.3</span></a>).</li>
+<li>The linear predictor <span class="math inline">\(\eta = \textbf{x}^\prime\boldsymbol{\beta}\)</span> is related to the mean through a link function <span class="math inline">\(g(\mu) = \eta\)</span> (<a href="#sec-glm-link" class="quarto-xref"><span class="quarto-unresolved-ref">sec-glm-link</span></a>).</li>
 </ol>
-<p>A further generalization of the generalization is achieved by modeling the effects of the inputs through smooth local elements (see <a href="reglocal.html" class="quarto-xref"><span>Chapter 12</span></a>), and not just through global effects. The linear predictor now is a combination of smooth functions of the inputs, <span class="math display">\[
+<p>A further generalization of the generalization is achieved by modeling the effects of the inputs through smooth local elements (see <a href="#sec-local-models" class="quarto-xref"><span class="quarto-unresolved-ref">sec-local-models</span></a>), and not just through global effects. The linear predictor now is a combination of smooth functions of the inputs, <span class="math display">\[
 \eta = \beta_0 + f_1(x_1) + f_2(x_2) + \cdots
 \]</span> This is the structure of <strong>generalized additive</strong> models (GAMs). A semi-parametric version combines global effects with smooth local effects, for e example <span class="math display">\[
 \eta = \beta_0 + \beta_1 x_1 + f_2(x_2)
-\]</span> These linear predictor types make up the family of <strong>generalized models</strong> in <a href="#fig-glm-mindmap" class="quarto-xref">Figure&nbsp;<span>26.1</span></a>.</p>
+\]</span> These linear predictor types make up the family of <strong>generalized models</strong> in <a href="#fig-glm-mindmap" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-glm-mindmap</span></a>.</p>
 <div id="fig-glm-mindmap" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-glm-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -614,7 +620,7 @@ Figure&nbsp;26.1: Generalized model mind map
 <h2 data-number="26.2" class="anchored" data-anchor-id="sec-glm-Pexpo"><span class="header-section-number">26.2</span> Exponential Family of Distributions</h2>
 <section id="definition" class="level3">
 <h3 class="anchored" data-anchor-id="definition">Definition</h3>
-<p>The exponential family of distributions, <span class="math inline">\(P_{expo}\)</span> comprises important discrete and continuous distributions (<a href="#fig-glm-mindmap" class="quarto-xref">Figure&nbsp;<span>26.1</span></a>), <strong>the</strong> exponential distribution is one particular member of the family. How do we know whether a distribution belongs to the family? If you can write its mass or density function in a particular form, then the distribution is a member. We follow here (for the most part) the notation in the seminal work on GLMs by <span class="citation" data-cites="McCullaghNelder">McCullagh and Nelder Frs (<a href="references.html#ref-McCullaghNelder" role="doc-biblioref">1989</a>)</span>.</p>
+<p>The exponential family of distributions, <span class="math inline">\(P_{expo}\)</span> comprises important discrete and continuous distributions (<a href="#fig-glm-mindmap" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-glm-mindmap</span></a>), <strong>the</strong> exponential distribution is one particular member of the family. How do we know whether a distribution belongs to the family? If you can write its mass or density function in a particular form, then the distribution is a member. We follow here (for the most part) the notation in the seminal work on GLMs by <span class="citation" data-cites="McCullaghNelder">McCullagh and Nelder Frs (<a href="#ref-McCullaghNelder" role="doc-biblioref">1989</a>)</span>.</p>
 <div class="definition">
 <div class="definition-header">
 <p>Definition: Exponential Family of Distributions</p>
@@ -636,13 +642,13 @@ p(y) = \exp\left\{(y\theta - b(\theta))/\psi + c(y,\psi)\right\}
 <h3 class="anchored" data-anchor-id="the-bernoulli-in-exponential-form">The Bernoulli in Exponential Form</h3>
 <p>The expressions for mass functions or densities we have worked with so far are not written in the form of <span class="math inline">\(P_{expo}\)</span>. The mass function of the Bernoulli() distribution, for example, is usually written as <span class="math display">\[
 p(y) = \pi^y (1-\pi)^{1-y}, \quad y \in \{0,1\}
-\]</span> If we rewrite this to fit <a href="#eq-pexpo-form" class="quarto-xref">Equation&nbsp;<span>26.1</span></a>, we should be able to peel off <span class="math inline">\(\theta\)</span>, <span class="math inline">\(b(\theta)\)</span>, then we can identify link function and variance function of the generalized linear model. Let’s start by replacing <span class="math inline">\(\pi\)</span>, the event probability of the Bernoulli with the symbol <span class="math inline">\(\mu\)</span>, <span class="math inline">\(\pi\)</span> is the mean of <span class="math inline">\(Y\)</span> after all. Then, put the mass function into an exponent while applying logarithms and collect terms: <span class="math display">\[
+\]</span> If we rewrite this to fit <a href="#eq-pexpo-form" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-pexpo-form</span></a>, we should be able to peel off <span class="math inline">\(\theta\)</span>, <span class="math inline">\(b(\theta)\)</span>, then we can identify link function and variance function of the generalized linear model. Let’s start by replacing <span class="math inline">\(\pi\)</span>, the event probability of the Bernoulli with the symbol <span class="math inline">\(\mu\)</span>, <span class="math inline">\(\pi\)</span> is the mean of <span class="math inline">\(Y\)</span> after all. Then, put the mass function into an exponent while applying logarithms and collect terms: <span class="math display">\[
 \begin{align*}
 p(y) &amp;= \mu^y (1-\mu)^{1-y} \\
      &amp;= \exp\{y \log \mu + (1-y) \log (1-\mu) \} \\
      &amp;= \exp\left\{y \log\left(\frac{\mu}{1-\mu} \right) + \log(1-\mu)\right\}
 \end{align*}
-\]</span> Compare this expression to <a href="#eq-pexpo-form" class="quarto-xref">Equation&nbsp;<span>26.1</span></a> and identify:</p>
+\]</span> Compare this expression to <a href="#eq-pexpo-form" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-pexpo-form</span></a> and identify:</p>
 <ol type="1">
 <li><span class="math inline">\(\theta(\mu) = \log(\mu/(1-\mu))\)</span></li>
 <li><span class="math inline">\(b(\theta) = -\log(1-\mu)\)</span></li>
@@ -665,7 +671,7 @@ g(\mu)       &amp;= \log \left(\frac{\mu}{1-\mu} \right) = \eta \\
 g^{-1}(\eta) &amp;= \frac{1}{1+e^{-\eta}} = \mu
 \end{align*}
 \]</span></p>
-<p>We generally use the notation <span class="math inline">\(g(\mu)\)</span> for the link function and <span class="math inline">\(g^{-1}(\mu)\)</span> for the inverse link function, rather than <span class="math inline">\(\theta(\mu)\)</span> and <span class="math inline">\(b^\prime(\theta)\)</span> as suggested by the <span class="math inline">\(P_{expo}\)</span> notation. The reason for the general notation is that the canonical link is just one of the possible link functions, we are free to choose others (<a href="#sec-glm-link" class="quarto-xref"><span>Section 26.3</span></a>). Using the canonical link in the specification of a GLM typically has certain computational advantages, but for some distributions the canonical link is not a good mapping between mean and linear predictor.</p>
+<p>We generally use the notation <span class="math inline">\(g(\mu)\)</span> for the link function and <span class="math inline">\(g^{-1}(\mu)\)</span> for the inverse link function, rather than <span class="math inline">\(\theta(\mu)\)</span> and <span class="math inline">\(b^\prime(\theta)\)</span> as suggested by the <span class="math inline">\(P_{expo}\)</span> notation. The reason for the general notation is that the canonical link is just one of the possible link functions, we are free to choose others (<a href="#sec-glm-link" class="quarto-xref"><span class="quarto-unresolved-ref">sec-glm-link</span></a>). Using the canonical link in the specification of a GLM typically has certain computational advantages, but for some distributions the canonical link is not a good mapping between mean and linear predictor.</p>
 </section>
 <section id="distributions" class="level3">
 <h3 class="anchored" data-anchor-id="distributions">Distributions</h3>
@@ -674,7 +680,7 @@ g^{-1}(\eta) &amp;= \frac{1}{1+e^{-\eta}} = \mu
 <h4 class="anchored" data-anchor-id="discrete-distributions">Discrete distributions</h4>
 <section id="bernoulli" class="level5">
 <h5 class="anchored" data-anchor-id="bernoulli">Bernoulli</h5>
-<p>The most elementary random experiment is the Bernoulli experiment, two possible outcomes <span class="math inline">\(Y=1\)</span> and <span class="math inline">\(Y=0\)</span> occur with probability <span class="math inline">\(\pi\)</span> and <span class="math inline">\(1-\pi\)</span>, respectively. The outcome coded <span class="math inline">\(Y=1\)</span> is called the <strong>event</strong> of the experiment. The outcome coded <span class="math inline">\(Y=0\)</span> is called the <strong>non-event</strong>. As we established earlier, the Bernoulli(<span class="math inline">\(\pi\)</span>) distribution is a member of the exponential family with mean <span class="math inline">\(\pi\)</span>, canonical link <span class="math inline">\(\log(\pi/(1-\pi))\)</span> and variance function <span class="math inline">\(\pi(1-\pi)\)</span> (<a href="#fig-bernoulli-mass" class="quarto-xref">Figure&nbsp;<span>26.2</span></a>).</p>
+<p>The most elementary random experiment is the Bernoulli experiment, two possible outcomes <span class="math inline">\(Y=1\)</span> and <span class="math inline">\(Y=0\)</span> occur with probability <span class="math inline">\(\pi\)</span> and <span class="math inline">\(1-\pi\)</span>, respectively. The outcome coded <span class="math inline">\(Y=1\)</span> is called the <strong>event</strong> of the experiment. The outcome coded <span class="math inline">\(Y=0\)</span> is called the <strong>non-event</strong>. As we established earlier, the Bernoulli(<span class="math inline">\(\pi\)</span>) distribution is a member of the exponential family with mean <span class="math inline">\(\pi\)</span>, canonical link <span class="math inline">\(\log(\pi/(1-\pi))\)</span> and variance function <span class="math inline">\(\pi(1-\pi)\)</span> (<a href="#fig-bernoulli-mass" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-bernoulli-mass</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-bernoulli-mass" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -708,7 +714,7 @@ Figure&nbsp;26.2: Bernoulli(0.7) probability mass function.
 \end{align*}
 \]</span></p>
 <p><span class="math inline">\({n \choose x}\)</span> is the binomial coefficient: <span class="math inline">\({n \choose x} = \frac{n!}{x!(n-x)!}\)</span>, the number of ways in which an unordered subset of size <span class="math inline">\(k\)</span> can be chosen from <span class="math inline">\(n\)</span> items.</p>
-<p>The support of the Binomial(<span class="math inline">\(n,\pi\)</span>) is <span class="math inline">\(0,\cdots,n\)</span>. You cannot observe fewer than 0 events and you cannot observe more than <span class="math inline">\(n\)</span> events (<a href="#fig-binomial-mass" class="quarto-xref">Figure&nbsp;<span>26.3</span></a>). The Binomial is thus a suitable probability model for count data that represents the number of events out of a total number. For example, the number of livestock herds out of all herds in a state that show incidences of pneumonia or the number of defective items out of a lot of 100 items. Such count variables are sometimes referred to as counts with a natural denominator.</p>
+<p>The support of the Binomial(<span class="math inline">\(n,\pi\)</span>) is <span class="math inline">\(0,\cdots,n\)</span>. You cannot observe fewer than 0 events and you cannot observe more than <span class="math inline">\(n\)</span> events (<a href="#fig-binomial-mass" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-binomial-mass</span></a>). The Binomial is thus a suitable probability model for count data that represents the number of events out of a total number. For example, the number of livestock herds out of all herds in a state that show incidences of pneumonia or the number of defective items out of a lot of 100 items. Such count variables are sometimes referred to as counts with a natural denominator.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-binomial-mass" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -785,7 +791,7 @@ Figure&nbsp;26.6: Poisson(2.4) (left) and Poisson(0.2) (right) probability mass 
 </div>
 </div>
 </div>
-<p>If events occur independently and at a constant rate, the number of events per unit is a Poisson random variable. The Poisson is not directly related to Bernoulli experiment but there is a connection through the Poisson approximation to the Binomial. In a Binomial<span class="math inline">\((n,\pi)\)</span> process, if <span class="math inline">\(n \rightarrow \infty\)</span> and <span class="math inline">\(n\pi \rightarrow \lambda\)</span>, then the probabilities can be approximated by those of a Poisson<span class="math inline">\((\lambda)\)</span> process (<a href="#fig-poisson-bin-approx" class="quarto-xref">Figure&nbsp;<span>26.7</span></a>).</p>
+<p>If events occur independently and at a constant rate, the number of events per unit is a Poisson random variable. The Poisson is not directly related to Bernoulli experiment but there is a connection through the Poisson approximation to the Binomial. In a Binomial<span class="math inline">\((n,\pi)\)</span> process, if <span class="math inline">\(n \rightarrow \infty\)</span> and <span class="math inline">\(n\pi \rightarrow \lambda\)</span>, then the probabilities can be approximated by those of a Poisson<span class="math inline">\((\lambda)\)</span> process (<a href="#fig-poisson-bin-approx" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-poisson-bin-approx</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-poisson-bin-approx" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -827,7 +833,7 @@ Figure&nbsp;26.8: istogram &amp; Density of 10,000 Poisson(20) and Normal(20,20)
 </div>
 </div>
 </div>
-<p>The Poisson can in turn be approximated by a Gaussian distribution. As <span class="math inline">\(\lambda \rightarrow \infty\)</span>, the Poisson<span class="math inline">\((\lambda)\)</span> p.m.f. approaches the density of a G<span class="math inline">\((\lambda,\lambda)\)</span> random variable. The approximation holds for <span class="math inline">\(\lambda &gt; 100\)</span> but is not bad even for <span class="math inline">\(\lambda &gt; 20\)</span> (<a href="#fig-normal-poisson-approx" class="quarto-xref">Figure&nbsp;<span>26.8</span></a>).</p>
+<p>The Poisson can in turn be approximated by a Gaussian distribution. As <span class="math inline">\(\lambda \rightarrow \infty\)</span>, the Poisson<span class="math inline">\((\lambda)\)</span> p.m.f. approaches the density of a G<span class="math inline">\((\lambda,\lambda)\)</span> random variable. The approximation holds for <span class="math inline">\(\lambda &gt; 100\)</span> but is not bad even for <span class="math inline">\(\lambda &gt; 20\)</span> (<a href="#fig-normal-poisson-approx" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-normal-poisson-approx</span></a>).</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <div class="quarto-figure quarto-figure-center">
@@ -864,7 +870,7 @@ Tip
 <p>The Gaussian distribution is sometimes parameterized in terms of the mean and <strong>standard deviation</strong> of <span class="math inline">\(Y\)</span>. When using software make sure you know what the quantities represent. For example, you specify the mean and standard deviation with the <code>dnorm</code>, <code>pnorm</code>, <code>qnorm</code>, and <code>rnorm</code> functions in <code>R</code>.</p>
 </div>
 </div>
-<p>The Gaussian distribution is often referred to as the Normal distribution. We prefer the term Gaussian because there is nothing normal about the Normal distribution. Most attributes are not normally distributed, despite frequent assumptions to the contrary. The density has a classical, symmetric bell shape, centered at <span class="math inline">\(\mu\)</span> (<a href="#fig-normal-densities" class="quarto-xref">Figure&nbsp;<span>26.9</span></a>).</p>
+<p>The Gaussian distribution is often referred to as the Normal distribution. We prefer the term Gaussian because there is nothing normal about the Normal distribution. Most attributes are not normally distributed, despite frequent assumptions to the contrary. The density has a classical, symmetric bell shape, centered at <span class="math inline">\(\mu\)</span> (<a href="#fig-normal-densities" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-normal-densities</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-normal-densities" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -893,7 +899,7 @@ What is normal?
 <div class="callout-body-container callout-body">
 <p>We eschew the use of the term normal to describe the Gaussian distribution for another reason: the connection of the concept of normality and this distribution to eugenics. The Belgian astronomer, statistician and mathematician Adolphe Quetelet (1796–1847) introduced the generalized notion of the normal. He studied the distribution of physical attributes and determined that the normal, the most representative, value of an attribute is its average. Discrepancies above and below the average were considered “errors”. Early applications of the Gaussian distribution were in the study of measurement errors. C.F. Gauss used the distribution to represent errors in the measurement of celestial bodies.</p>
 <p>Prior to Quetelet, the view of “norm” and “normality” was associated with carpentry. The carpenter square is also called the norm, and in normal construction everything is at right angles. With Quetelet, the middle of the distribution, the center, became the “new normal.” There is nothing objectionable so far.</p>
-<p>However, this view did not sit well with Fancis Galton, who introduced the term eugenics. Galton replaced the term “error” with standard deviation and considered variability within a human population as potential for racial progress <span class="citation" data-cites="GrueHeiberg">(<a href="references.html#ref-GrueHeiberg" role="doc-biblioref">Grue and Heiberg 2006</a>)</span>. The bell shape of the normal distribution was not used to focus our attention on the average, as Quetelet did. Galton introduced quartiles to categorize the area under the normal into sections of greater and lesser genetic worth. That is not normal!</p>
+<p>However, this view did not sit well with Fancis Galton, who introduced the term eugenics. Galton replaced the term “error” with standard deviation and considered variability within a human population as potential for racial progress <span class="citation" data-cites="GrueHeiberg">(<a href="#ref-GrueHeiberg" role="doc-biblioref">Grue and Heiberg 2006</a>)</span>. The bell shape of the normal distribution was not used to focus our attention on the average, as Quetelet did. Galton introduced quartiles to categorize the area under the normal into sections of greater and lesser genetic worth. That is not normal!</p>
 </div>
 </div>
 </div>
@@ -901,7 +907,7 @@ What is normal?
 <ul>
 <li><p><strong>Linearity</strong>. A linear combination of Gaussian random variables is also Gaussian distributed. If <span class="math inline">\(Y \sim G(\mu,\sigma^2)\)</span>, then <span class="math inline">\(X = aY + b \sim G(a\mu + b, a^2\sigma^2)\)</span>. An immediate corollary is that the sample mean from a Gaussian distribution is also Gaussian distributed: if <span class="math inline">\(Y_i \sim \textit{ iid } G(\mu,\sigma^2)\)</span>, then <span class="math inline">\(\overline{Y} \sim G(\mu,\sigma^2/n)\)</span></p></li>
 <li><p><strong>Mean-variance decoupling</strong>. The mean and the variance of a Gaussian distribution are not linked. The variance is not a function of the mean, as is the case for other members of the exponential family of distributions.</p></li>
-<li><p><strong>Correlation and Independence</strong>. When two variables are jointly (bi-variate) Gaussian distributed, the absence of a correlation implies the independence of the random variables. This follows from the fact that with a zero covariance the joint distribution factors into the product of the marginal distributions (see <a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 4.7</span></a>)</p></li>
+<li><p><strong>Correlation and Independence</strong>. When two variables are jointly (bi-variate) Gaussian distributed, the absence of a correlation implies the independence of the random variables. This follows from the fact that with a zero covariance the joint distribution factors into the product of the marginal distributions (see <a href="#sec-multi-gaussian" class="quarto-xref"><span class="quarto-unresolved-ref">sec-multi-gaussian</span></a>)</p></li>
 <li><p><strong>Sampling Distributions</strong>. When drawing random samples from a G(<span class="math inline">\(\mu,\sigma^2\)</span>), the probability distribution of simple transformations of sufficient statistics are well understood. For example, <span class="math display">\[
 \frac{\overline{Y}-\mu}{s/\sqrt{n}}
 \]</span> follows a <span class="math inline">\(t_{n-1}\)</span> distribution with <span class="math inline">\(n-1\)</span> degrees of freedom. This forms the basis of hypothesis tests about the mean <span class="math inline">\(\mu\)</span>.</p></li>
@@ -922,7 +928,7 @@ What is normal?
 </section>
 <section id="exponential" class="level5">
 <h5 class="anchored" data-anchor-id="exponential">Exponential</h5>
-<p>The exponential distribution is a useful probability model for modeling continuous lifetimes (<a href="#fig-expo-densities" class="quarto-xref">Figure&nbsp;<span>26.10</span></a>). It is related to Poisson processes. If events occur continuously and independently at a constant rate <span class="math inline">\(\lambda\)</span>, the number of events is a Poisson random variable. The time between the events is an exponential random variable, denoted <span class="math inline">\(Y \sim\)</span> Expo(<span class="math inline">\(\lambda\)</span>).</p>
+<p>The exponential distribution is a useful probability model for modeling continuous lifetimes (<a href="#fig-expo-densities" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-expo-densities</span></a>). It is related to Poisson processes. If events occur continuously and independently at a constant rate <span class="math inline">\(\lambda\)</span>, the number of events is a Poisson random variable. The time between the events is an exponential random variable, denoted <span class="math inline">\(Y \sim\)</span> Expo(<span class="math inline">\(\lambda\)</span>).</p>
 <p><span class="math display">\[p(y) = \lambda e^{- \lambda y},\ \ \ \ y \geq 0\]</span></p>
 <p><span class="math display">\[F(y) = 1 - e^{- \lambda y},\ \ \ y \geq 0\]</span></p>
 <p><span class="math display">\[\text{E}\lbrack Y\rbrack = \frac{1}{\lambda}\ \ \ \ \ \ \text{Var}\lbrack Y\rbrack = \frac{1}{\lambda^{2}}\]</span></p>
@@ -953,7 +959,7 @@ Figure&nbsp;26.10: Probability density functions of Exponential random variables
 <p><span class="math display">\[f(y) = \frac{1}{\beta^{\alpha}\Gamma(\alpha)}y^{\alpha - 1}e^{- y/\beta},\ \ \ \ \ y \geq 0,\ \alpha,\beta &gt; 0\]</span></p>
 <p>The mean and variance of a Gamma(<span class="math inline">\(\alpha,\beta\)</span>) random variable are given by</p>
 <p><span class="math display">\[\text{E}\lbrack Y\rbrack = \alpha\beta\ \ \ \ \ \text{Var}\lbrack Y\rbrack = \alpha\beta^{2}\]</span></p>
-<p><span class="math inline">\(\alpha\)</span> is called the shape parameter of the distribution and <span class="math inline">\(\beta\)</span> is called the scale parameter. Varying <span class="math inline">\(\alpha\)</span> affects the shape and varying <span class="math inline">\(\beta\)</span> affects the units of measurement (<a href="#fig-gamma-densities" class="quarto-xref">Figure&nbsp;<span>26.11</span></a>). A property of Gamma functions is a constant <strong>coefficient of variation</strong> (CV). CV is defined as the ratio of the standard deviation to the mean of a distribution. For the Gamma(<span class="math inline">\(\alpha,\beta\)</span>) family this coefficient is <span class="math display">\[
+<p><span class="math inline">\(\alpha\)</span> is called the shape parameter of the distribution and <span class="math inline">\(\beta\)</span> is called the scale parameter. Varying <span class="math inline">\(\alpha\)</span> affects the shape and varying <span class="math inline">\(\beta\)</span> affects the units of measurement (<a href="#fig-gamma-densities" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-gamma-densities</span></a>). A property of Gamma functions is a constant <strong>coefficient of variation</strong> (CV). CV is defined as the ratio of the standard deviation to the mean of a distribution. For the Gamma(<span class="math inline">\(\alpha,\beta\)</span>) family this coefficient is <span class="math display">\[
 \text{CV} = \frac{\sqrt{\alpha\beta^2}}{\alpha\beta} = \frac{1}{\sqrt{\alpha}}
 \]</span></p>
 <p>The term <span class="math inline">\(\Gamma(\alpha)\)</span> in the denominator of the density function is called the Gamma function,</p>
@@ -992,7 +998,7 @@ Tip
 <h5 class="anchored" data-anchor-id="sec-dist-beta">Beta</h5>
 <p>A random variable has a Beta distribution with parameters <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>, denoted <span class="math inline">\(Y \sim \text{Beta}(\alpha,\beta)\)</span>, if its density function is given by <span class="math display">\[
 f(y) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}\, y^{\alpha-1}\,(1-y)^{\beta-1}\quad 0 &lt; y &lt; 1
-\]</span> The family of beta distributions takes on varied shapes as seen in <a href="#fig-beta-densities" class="quarto-xref">Figure&nbsp;<span>26.12</span></a>.</p>
+\]</span> The family of beta distributions takes on varied shapes as seen in <a href="#fig-beta-densities" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-beta-densities</span></a>.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-beta-densities" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -1023,7 +1029,7 @@ Figure&nbsp;26.12: Probability density functions of Beta random variables.
 <section id="sec-glm-link" class="level2" data-number="26.3">
 <h2 data-number="26.3" class="anchored" data-anchor-id="sec-glm-link"><span class="header-section-number">26.3</span> Link Functions</h2>
 <p>The link function in a GLM plays two important roles. It is the transformation of the mean to a scale where the input effects are linear. Because of this transformation, we can still work with linear structures <span class="math inline">\(\textbf{x}^\prime\boldsymbol{\beta}\)</span> and do not have to resort to general nonlinear transformations. The linearity of the predictor simplifies parameter estimation, prediction, and hypothesis testing.</p>
-<p>The second responsibility of the link function is to ensure that the model predictions are valid. The coefficients in the linear predictor can take on any value on the real line, <span class="math inline">\(-\infty &lt; \beta_j &lt; \infty\)</span>. The predicted means have to comply with the support restrictions of the target variable. For example, the mean of a Bernoulli(<span class="math inline">\(\pi\)</span>) random variable is the probability <span class="math inline">\(0 \le \pi \le 1\)</span>, for the Poisson the mean is <span class="math inline">\(\lambda &gt; 0\)</span>. The inverse link function needs to ensure that <span class="math inline">\(g^{-1}(\eta)\)</span> is a valid quantity for all possible values of <span class="math inline">\(\eta\)</span> (<a href="#fig-inverse-link" class="quarto-xref">Figure&nbsp;<span>26.13</span></a>).</p>
+<p>The second responsibility of the link function is to ensure that the model predictions are valid. The coefficients in the linear predictor can take on any value on the real line, <span class="math inline">\(-\infty &lt; \beta_j &lt; \infty\)</span>. The predicted means have to comply with the support restrictions of the target variable. For example, the mean of a Bernoulli(<span class="math inline">\(\pi\)</span>) random variable is the probability <span class="math inline">\(0 \le \pi \le 1\)</span>, for the Poisson the mean is <span class="math inline">\(\lambda &gt; 0\)</span>. The inverse link function needs to ensure that <span class="math inline">\(g^{-1}(\eta)\)</span> is a valid quantity for all possible values of <span class="math inline">\(\eta\)</span> (<a href="#fig-inverse-link" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-inverse-link</span></a>).</p>
 <div id="fig-inverse-link" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-inverse-link-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1047,7 +1053,7 @@ Important
 <p>The link function is a transformation of the <strong>mean</strong>, it is not a transformation of the data. Modeling <span class="math inline">\(\log(\mu) = \textbf{x}^\prime\boldsymbol{\beta}\)</span> is very different from log-transforming the data and assuming a linear model holds on the transformed scale: <span class="math inline">\(\log(Y) = \textbf{x}^\prime\boldsymbol{\beta}+ \epsilon\)</span>. The link function is a transformation of a constant, <span class="math inline">\(\log(Y)\)</span> is the transformation of a random variable. Choosing a different link function does not alter the essential distributional properties of the target variable—a Poisson remains a Poisson, for example. Choosing a different transformation of the target variable changes the distributional properties. If <span class="math inline">\(Y \sim \text{Poisson}(\lambda)\)</span>, neither <span class="math inline">\(log(Y)\)</span> nor <span class="math inline">\(\sqrt{Y}\)</span> is Poisson distributed.</p>
 </div>
 </div>
-<p><a href="#tbl-link-functions" class="quarto-xref">Table&nbsp;<span>26.1</span></a> lists common link functions for important members of the exponential family. In most cases the canonical link is a good place to start. However, for the Gamma distribution, the reciprocal link is not adequate, although it is the natural link. Since the mean of a Gamma random variable is positive, choosing the reciprocal link does not guarantee that <span class="math display">\[
+<p><a href="#tbl-link-functions" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-link-functions</span></a> lists common link functions for important members of the exponential family. In most cases the canonical link is a good place to start. However, for the Gamma distribution, the reciprocal link is not adequate, although it is the natural link. Since the mean of a Gamma random variable is positive, choosing the reciprocal link does not guarantee that <span class="math display">\[
 g^{-1}(\eta) = \frac{1}{\eta} &gt; 0
 \]</span> It is common to choose the log link instead in Gamma regression models. Similar for the Inverse Gaussian distribution, where the inverse canonical link is the square root function and does not permit negative values for <span class="math inline">\(\eta\)</span>. The Gaussian distribution shows how special it is one more time: it is the only distribution for which the canoncial link is the identity function: there is no transformation of the mean, the input effects are linear on the scale of the data.</p>
 <div id="tbl-link-functions" class="striped hover quarto-float anchored">
@@ -1198,10 +1204,10 @@ g(y) &amp;= g(\widehat{\mu}) + (y-\widehat{\mu})\left[ \frac{\partial g(y)}{\par
 &amp;= z
 \end{align*}
 \tag{26.2}\]</span></span></p>
-<p><span class="math inline">\(z\)</span> is called an adjusted dependent variable or a working response variable or a pseudo-response. The final expression in <a href="#eq-irls-linearization" class="quarto-xref">Equation&nbsp;<span>26.2</span></a> can be viewed as a linear model with response variable <span class="math inline">\(z\)</span>, systematic part <span class="math inline">\(\widehat{\eta} = \textbf{x}^\prime\widehat{\boldsymbol{\beta}}\)</span> and error term <span class="math inline">\((y-\mu)[\partial \eta/\partial \mu]\)</span>. The variance of this error term is <span class="math display">\[
+<p><span class="math inline">\(z\)</span> is called an adjusted dependent variable or a working response variable or a pseudo-response. The final expression in <a href="#eq-irls-linearization" class="quarto-xref">Equation&nbsp;<span class="quarto-unresolved-ref">eq-irls-linearization</span></a> can be viewed as a linear model with response variable <span class="math inline">\(z\)</span>, systematic part <span class="math inline">\(\widehat{\eta} = \textbf{x}^\prime\widehat{\boldsymbol{\beta}}\)</span> and error term <span class="math inline">\((y-\mu)[\partial \eta/\partial \mu]\)</span>. The variance of this error term is <span class="math display">\[
 \text{Var}[z] = \left[\frac{\partial \eta}{\partial \mu}\right]^2 \text{Var}[Y]
 \]</span></p>
-<p>The iterative procedure is as follows: given an initial value of <span class="math inline">\(z\)</span>, which requires an initial estimate of <span class="math inline">\(\mu\)</span>, fit a weighted linear model with inputs <span class="math inline">\(\textbf{x}= [x_1,\cdots,x_p]^\prime\)</span> and weights given by the inverse of <span class="math inline">\(\text{Var}[z]\)</span>. The solution to the weighted linear model is an updated parameter vector <span class="math inline">\(\boldsymbol{\beta}\)</span>. Re-calculate <span class="math inline">\(z\)</span> and the weights and repeat the weighted linear regression fit. Continue until the relative change in the parameter estimates, the log likelihood function, the deviance, or some other criterion is negligible. <span class="citation" data-cites="McCullaghNelder">McCullagh and Nelder Frs (<a href="references.html#ref-McCullaghNelder" role="doc-biblioref">1989</a>)</span> show that this procedure converges to the maximum likelihood estimates.</p>
+<p>The iterative procedure is as follows: given an initial value of <span class="math inline">\(z\)</span>, which requires an initial estimate of <span class="math inline">\(\mu\)</span>, fit a weighted linear model with inputs <span class="math inline">\(\textbf{x}= [x_1,\cdots,x_p]^\prime\)</span> and weights given by the inverse of <span class="math inline">\(\text{Var}[z]\)</span>. The solution to the weighted linear model is an updated parameter vector <span class="math inline">\(\boldsymbol{\beta}\)</span>. Re-calculate <span class="math inline">\(z\)</span> and the weights and repeat the weighted linear regression fit. Continue until the relative change in the parameter estimates, the log likelihood function, the deviance, or some other criterion is negligible. <span class="citation" data-cites="McCullaghNelder">McCullagh and Nelder Frs (<a href="#ref-McCullaghNelder" role="doc-biblioref">1989</a>)</span> show that this procedure converges to the maximum likelihood estimates.</p>
 <p>A nice property of the IRLS algorithm is the ease of finding starting values. The initial value of <span class="math inline">\(z\)</span> that kicks off the iterations does not necessarily require an estimate of <span class="math inline">\(\boldsymbol{\beta}\)</span>. If the link function can be evaluated at the data points (maybe after slight adjustments such as moving data points away from boundary values), then one can start the iterations using the observed data as the initial estimate of <span class="math inline">\(\mu\)</span>. For binary data, for example, initial adjustments to the data values such as <span class="math display">\[
 y^* = \frac{y+c}{y+2c}
 \]</span> can be used to avoid boundary problems. Another technique to get the iterations off the ground is to assume initially that <span class="math inline">\(\boldsymbol{\beta}= \textbf{0}\)</span>.</p>
@@ -1438,18 +1444,18 @@ Caution
 </section>
 <section id="example-beta-regression" class="level2" data-number="26.6">
 <h2 data-number="26.6" class="anchored" data-anchor-id="example-beta-regression"><span class="header-section-number">26.6</span> Example: Beta Regression</h2>
-<p>The typical <code>R</code> functions to fit generalized linear models or generalized additive models are <code>glm</code> and <code>gam::gam</code>. Unfortunately, neither of them support beta-distributed data, although the Beta distribution is in the two-parameter exponential family. Recall from <a href="#sec-dist-beta" class="quarto-xref"><span>Section 26.2.3.2.4</span></a> that a Beta random variable is continuous on <span class="math inline">\([0,1]\)</span> and a plausible model for ratios. Also, every random variable with finite support <span class="math inline">\([a,b]\)</span> can be normalized to lie in the <span class="math inline">\([0,1]\)</span> interval by the transformation <span class="math display">\[
+<p>The typical <code>R</code> functions to fit generalized linear models or generalized additive models are <code>glm</code> and <code>gam::gam</code>. Unfortunately, neither of them support beta-distributed data, although the Beta distribution is in the two-parameter exponential family. Recall from <a href="#sec-dist-beta" class="quarto-xref"><span class="quarto-unresolved-ref">sec-dist-beta</span></a> that a Beta random variable is continuous on <span class="math inline">\([0,1]\)</span> and a plausible model for ratios. Also, every random variable with finite support <span class="math inline">\([a,b]\)</span> can be normalized to lie in the <span class="math inline">\([0,1]\)</span> interval by the transformation <span class="math display">\[
 x_n = \frac{x - a}{b - a}
 \]</span></p>
-<p>The parameterization of the Beta distribution in <a href="#sec-dist-beta" class="quarto-xref"><span>Section 26.2.3.2.4</span></a> is not the most convenient to fit a generalized linear model. As shown there, <span class="math display">\[
+<p>The parameterization of the Beta distribution in <a href="#sec-dist-beta" class="quarto-xref"><span class="quarto-unresolved-ref">sec-dist-beta</span></a> is not the most convenient to fit a generalized linear model. As shown there, <span class="math display">\[
 f(y) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}\, y^{\alpha-1}\,(1-y)^{\beta-1}\quad 0 &lt; y &lt; 1
 \]</span></p>
-<p>and <span class="math inline">\(Y\)</span> has mean <span class="math inline">\(\alpha/(\alpha + \beta)\)</span>. <span class="citation" data-cites="FerrariCribariNeto">Ferrari and Cribari-Neto (<a href="references.html#ref-FerrariCribariNeto" role="doc-biblioref">2004</a>)</span> proposed a parameterization in terms of <span class="math inline">\(\mu=\alpha/(\alpha + \beta)\)</span> and a scale parameter <span class="math inline">\(\phi= \alpha + \beta\)</span>: <span class="math display">\[
+<p>and <span class="math inline">\(Y\)</span> has mean <span class="math inline">\(\alpha/(\alpha + \beta)\)</span>. <span class="citation" data-cites="FerrariCribariNeto">Ferrari and Cribari-Neto (<a href="#ref-FerrariCribariNeto" role="doc-biblioref">2004</a>)</span> proposed a parameterization in terms of <span class="math inline">\(\mu=\alpha/(\alpha + \beta)\)</span> and a scale parameter <span class="math inline">\(\phi= \alpha + \beta\)</span>: <span class="math display">\[
 f(y) = \frac{\Gamma(\phi)}{\Gamma(\mu\phi)\Gamma((1-\mu)\phi)}\, y^{\mu\phi-1}(1-y)^{(1-\mu)\phi-1}
 \]</span></p>
 <p>In this Beta<span class="math inline">\((\mu,\phi)\)</span> parameterization, <span class="math inline">\(\text{E}[Y] = \mu\)</span> and <span class="math inline">\(\text{Var}[Y] = \mu(1-\mu)/(1+\phi)\)</span>. The variance of the random variable is inversely related to the magnitude of <span class="math inline">\(\phi\)</span>, that is why it is called a <strong>precision</strong> parameter (<span class="math inline">\(1/\phi\)</span> is a dispersion parameter). The mean–variance relationship should look familiar, it is akin to that of the Bernoulli distribution, except for the involvement of the precision parameter. This is not too surprising as both Bernoulli and Beta random variables have means that range from 0 to 1. By the same token, the most common link function in Beta regressions is the logit link.</p>
-<p>You can fit beta regression models in the <span class="citation" data-cites="FerrariCribariNeto">Ferrari and Cribari-Neto (<a href="references.html#ref-FerrariCribariNeto" role="doc-biblioref">2004</a>)</span> parameterization in <code>R</code> with the <code>betareg</code> package and with the <code>glam</code> package. The <code>glam</code> package can also handle generalized additive models (<a href="gam.html" class="quarto-xref"><span>Chapter 27</span></a>) and grew out of a previous project in this course.</p>
-<p>We start with the gasoline yield data by <span class="citation" data-cites="Prater1956">Prater (<a href="references.html#ref-Prater1956" role="doc-biblioref">1956</a>)</span> that is supplied by the <code>betareg</code> package. The target variable is the proportion of crude oil converted to gasoline after distillation and fractionation. Potential input variables to the regression include the gravity and vapor pressure of the crude oil, the temperature at with 10% of the crude oil has vaporized, the temperature at which all gasoline has vaporized, and the batch number. The following code fits the model <span class="math display">\[
+<p>You can fit beta regression models in the <span class="citation" data-cites="FerrariCribariNeto">Ferrari and Cribari-Neto (<a href="#ref-FerrariCribariNeto" role="doc-biblioref">2004</a>)</span> parameterization in <code>R</code> with the <code>betareg</code> package and with the <code>glam</code> package. The <code>glam</code> package can also handle generalized additive models (<a href="#sec-gam" class="quarto-xref"><span class="quarto-unresolved-ref">sec-gam</span></a>) and grew out of a previous project in this course.</p>
+<p>We start with the gasoline yield data by <span class="citation" data-cites="Prater1956">Prater (<a href="#ref-Prater1956" role="doc-biblioref">1956</a>)</span> that is supplied by the <code>betareg</code> package. The target variable is the proportion of crude oil converted to gasoline after distillation and fractionation. Potential input variables to the regression include the gravity and vapor pressure of the crude oil, the temperature at with 10% of the crude oil has vaporized, the temperature at which all gasoline has vaporized, and the batch number. The following code fits the model <span class="math display">\[
 \begin{align*}
 Y &amp;\sim \text{Beta}(\mu,\phi) \\
 \mu &amp;= \frac{1}{1+\exp\{-\eta\}} \\
@@ -1494,7 +1500,7 @@ Number of iterations: 144 (BFGS) + 5 (Fisher scoring) </code></pre>
 </div>
 </div>
 <p>The maximum likelihood estimates of the model coefficients are <span class="math inline">\(\widehat{\beta}_0 =\)</span> -2.6949, <span class="math inline">\(\widehat{\beta}_1 =\)</span> 0.0045, and so forth. The estimate of the precision parameter is <span class="math inline">\(\widehat{\phi} =\)</span> 248.2419.</p>
-<p><a href="#fig-beta-reg-example" class="quarto-xref">Figure&nbsp;<span>26.14</span></a> displays the observed and fitted yield values against the temperature at which gasoline has vaporized (<code>temp</code>).</p>
+<p><a href="#fig-beta-reg-example" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-beta-reg-example</span></a> displays the observed and fitted yield values against the temperature at which gasoline has vaporized (<code>temp</code>).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-beta-reg-example" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -1537,9 +1543,9 @@ Figure&nbsp;26.14: Observed (empty circles) and fitted values (filled circles) i
 <p>Example: Poppy Counts in RCBD</p>
 </div>
 <div class="example-container">
-<p>The following data from <span class="citation" data-cites="Meadetal1993">(<a href="references.html#ref-Meadetal1993" role="doc-biblioref">Mead, Curnow, and Hasted 1993, 144</a>)</span>, are from a randomized complete block design (RCBD) with 4 blocks and 6 experimental treatments. The output variable was the number of poppies on the experimental unit.</p>
+<p>The following data from <span class="citation" data-cites="Meadetal1993">(<a href="#ref-Meadetal1993" role="doc-biblioref">Mead, Curnow, and Hasted 1993, 144</a>)</span>, are from a randomized complete block design (RCBD) with 4 blocks and 6 experimental treatments. The output variable was the number of poppies on the experimental unit.</p>
 <table class="table">
-<caption>Poppy count data from <span class="citation" data-cites="Meadetal1993">(<a href="references.html#ref-Meadetal1993" role="doc-biblioref">Mead, Curnow, and Hasted 1993</a>)</span></caption>
+<caption>Poppy count data from <span class="citation" data-cites="Meadetal1993">(<a href="#ref-Meadetal1993" role="doc-biblioref">Mead, Curnow, and Hasted 1993</a>)</span></caption>
 <thead>
 <tr class="header">
 <th style="text-align: center;">Treatment</th>
@@ -1595,7 +1601,7 @@ Figure&nbsp;26.14: Observed (empty circles) and fitted values (filled circles) i
 </tbody>
 </table>
 <p>There appears to be a strong treatment effect, the counts are generally higher for treatments A and B than for E and F. There also appears to be a block effect. Scanning the columns in the table, block 4 seems to have systematically smaller counts than the other blocks.</p>
-<p>In a randomized complete block design with <span class="math inline">\(t\)</span> treatments and <span class="math inline">\(b\)</span> blocks, there are <span class="math inline">\(t\times b\)</span> experimental units. A block of units is characterized by greater similarity of the experimental units within the block than between the blocks. The <span class="math inline">\(t\)</span> treatments are then randomly assigned to the experimental units within each block (<a href="#fig-rcbd" class="quarto-xref">Figure&nbsp;<span>26.15</span></a>). This design captures systematic differences between the blocks and the randomization of treatments within a block balances out the unaccounted effects within the blocks.</p>
+<p>In a randomized complete block design with <span class="math inline">\(t\)</span> treatments and <span class="math inline">\(b\)</span> blocks, there are <span class="math inline">\(t\times b\)</span> experimental units. A block of units is characterized by greater similarity of the experimental units within the block than between the blocks. The <span class="math inline">\(t\)</span> treatments are then randomly assigned to the experimental units within each block (<a href="#fig-rcbd" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-rcbd</span></a>). This design captures systematic differences between the blocks and the randomization of treatments within a block balances out the unaccounted effects within the blocks.</p>
 <div id="fig-rcbd" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rcbd-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1878,7 +1884,7 @@ Number of Fisher Scoring iterations: 1
 <span class="glightbox-desc lightbox-desc-3">Figure&nbsp;26.13: The inverse link maps <span class="math inline">\(\eta\)</span> to valid values of the mean and the target data. If <span class="math inline">\(Y \in \{0,1\}\)</span>, then <span class="math inline">\(0 \le \text{E}[Y] \le 1\)</span>.</span>
 <span class="glightbox-desc lightbox-desc-4">Figure&nbsp;26.15: Randomized Complete Block Design</span>
 </div>
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-FerrariCribariNeto" class="csl-entry" role="listitem">
 Ferrari, S. L. P., and F. Cribari-Neto. 2004. <span>“Beta Regression for Modeling Rates and Proportions.”</span> <em>Journal of Applied Statistics</em> 31 (7): 799–815.
 </div>
@@ -2478,7 +2484,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","loop":false,"closeEffect":"zoom","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

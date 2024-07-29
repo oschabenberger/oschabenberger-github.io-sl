@@ -466,6 +466,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -480,7 +486,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -512,7 +518,7 @@ window.Quarto = {
   <li><a href="#fitting-the-model" id="toc-fitting-the-model" class="nav-link" data-scroll-target="#fitting-the-model">Fitting the model</a></li>
   <li><a href="#random-numbers" id="toc-random-numbers" class="nav-link" data-scroll-target="#random-numbers">Random numbers</a></li>
   </ul></li>
-  <li><a href="#mnist-image-classification" id="toc-mnist-image-classification" class="nav-link" data-scroll-target="#mnist-image-classification">MNIST Image Classification</a>
+  <li><a href="#sec-mnist-analysis-ann" id="toc-sec-mnist-analysis-ann" class="nav-link" data-scroll-target="#sec-mnist-analysis-ann">MNIST Image Classification</a>
   <ul class="collapse">
   <li><a href="#setup-the-data" id="toc-setup-the-data" class="nav-link" data-scroll-target="#setup-the-data">Setup the data</a></li>
   <li><a href="#multi-layer-neural-network" id="toc-multi-layer-neural-network" class="nav-link" data-scroll-target="#multi-layer-neural-network">Multi layer neural network</a></li>
@@ -546,7 +552,7 @@ window.Quarto = {
 
 <section id="introduction" class="level2" data-number="32.1">
 <h2 data-number="32.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">32.1</span> Introduction</h2>
-<p>Working with neural networks in <code>R</code> can be a bit challenging. For one, there are many packages available that can train ANNs, see <a href="#tbl-ann-R-packages" class="quarto-xref">Table&nbsp;<span>32.1</span></a> for some examples. The packages vary greatly in capabilities and syntax.</p>
+<p>Working with neural networks in <code>R</code> can be a bit challenging. For one, there are many packages available that can train ANNs, see <a href="#tbl-ann-R-packages" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-ann-R-packages</span></a> for some examples. The packages vary greatly in capabilities and syntax.</p>
 <p>Several frameworks for ANNs and deep learning exist. <a href="https://www.tensorflow.org/">TensorFlow</a>, <a href="https://learn.microsoft.com/en-us/archive/msdn-magazine/2017/july/machine-learning-introduction-to-the-microsoft-cntk-v2-0-library">Microsoft CNTK</a>, <a href="https://pytorch.org/">PyTorch</a>, and <a href="https://pypi.org/project/Theano/">Theano</a> are among the most important ones.</p>
 <div id="tbl-ann-R-packages" class="striped quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -740,405 +746,405 @@ ________________________________________________________________________________
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Epoch 1/200
-6/6 - 1s - loss: 457485.4688 - mean_absolute_error: 533.9009 - val_loss: 556234.5625 - val_mean_absolute_error: 539.8822 - 572ms/epoch - 95ms/step
+6/6 - 1s - loss: 456784.0000 - mean_absolute_error: 533.8749 - val_loss: 555482.2500 - val_mean_absolute_error: 539.8095 - 548ms/epoch - 91ms/step
 Epoch 2/200
-6/6 - 0s - loss: 457012.5938 - mean_absolute_error: 533.7325 - val_loss: 555950.4375 - val_mean_absolute_error: 539.8307 - 64ms/epoch - 11ms/step
+6/6 - 0s - loss: 456538.1875 - mean_absolute_error: 533.7706 - val_loss: 555200.8125 - val_mean_absolute_error: 539.7563 - 62ms/epoch - 10ms/step
 Epoch 3/200
-6/6 - 0s - loss: 457058.6250 - mean_absolute_error: 533.7330 - val_loss: 555647.7500 - val_mean_absolute_error: 539.7861 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 456342.1875 - mean_absolute_error: 533.7234 - val_loss: 554990.8750 - val_mean_absolute_error: 539.7120 - 50ms/epoch - 8ms/step
 Epoch 4/200
-6/6 - 0s - loss: 456497.9062 - mean_absolute_error: 533.5406 - val_loss: 555372.3125 - val_mean_absolute_error: 539.7413 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 456160.1250 - mean_absolute_error: 533.6836 - val_loss: 554779.9375 - val_mean_absolute_error: 539.6660 - 49ms/epoch - 8ms/step
 Epoch 5/200
-6/6 - 0s - loss: 456515.2188 - mean_absolute_error: 533.5658 - val_loss: 555098.0000 - val_mean_absolute_error: 539.6979 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 456128.0000 - mean_absolute_error: 533.7167 - val_loss: 554537.8125 - val_mean_absolute_error: 539.6185 - 48ms/epoch - 8ms/step
 Epoch 6/200
-6/6 - 0s - loss: 456133.4688 - mean_absolute_error: 533.3720 - val_loss: 554844.8125 - val_mean_absolute_error: 539.6517 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 455915.6250 - mean_absolute_error: 533.6003 - val_loss: 554347.1875 - val_mean_absolute_error: 539.5714 - 48ms/epoch - 8ms/step
 Epoch 7/200
-6/6 - 0s - loss: 455970.7188 - mean_absolute_error: 533.4154 - val_loss: 554561.3750 - val_mean_absolute_error: 539.6050 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 455911.7188 - mean_absolute_error: 533.6066 - val_loss: 554115.6250 - val_mean_absolute_error: 539.5259 - 49ms/epoch - 8ms/step
 Epoch 8/200
-6/6 - 0s - loss: 455700.9062 - mean_absolute_error: 533.3095 - val_loss: 554326.5000 - val_mean_absolute_error: 539.5524 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 455602.1875 - mean_absolute_error: 533.4465 - val_loss: 553856.6250 - val_mean_absolute_error: 539.4778 - 48ms/epoch - 8ms/step
 Epoch 9/200
-6/6 - 0s - loss: 455620.9688 - mean_absolute_error: 533.2648 - val_loss: 554026.8750 - val_mean_absolute_error: 539.5015 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 455418.0938 - mean_absolute_error: 533.3472 - val_loss: 553639.9375 - val_mean_absolute_error: 539.4272 - 47ms/epoch - 8ms/step
 Epoch 10/200
-6/6 - 0s - loss: 455273.7188 - mean_absolute_error: 533.1612 - val_loss: 553760.6250 - val_mean_absolute_error: 539.4495 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 454922.1250 - mean_absolute_error: 533.0700 - val_loss: 553407.8750 - val_mean_absolute_error: 539.3762 - 48ms/epoch - 8ms/step
 Epoch 11/200
-6/6 - 0s - loss: 455318.8125 - mean_absolute_error: 533.1827 - val_loss: 553463.1875 - val_mean_absolute_error: 539.3954 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 454934.5312 - mean_absolute_error: 533.2408 - val_loss: 553195.9375 - val_mean_absolute_error: 539.3226 - 48ms/epoch - 8ms/step
 Epoch 12/200
-6/6 - 0s - loss: 454924.4688 - mean_absolute_error: 532.9325 - val_loss: 553170.7500 - val_mean_absolute_error: 539.3386 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 454895.3750 - mean_absolute_error: 533.2450 - val_loss: 552969.3750 - val_mean_absolute_error: 539.2669 - 47ms/epoch - 8ms/step
 Epoch 13/200
-6/6 - 0s - loss: 454618.0000 - mean_absolute_error: 532.8945 - val_loss: 552861.1875 - val_mean_absolute_error: 539.2806 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 454445.3750 - mean_absolute_error: 532.9643 - val_loss: 552710.5000 - val_mean_absolute_error: 539.2059 - 48ms/epoch - 8ms/step
 Epoch 14/200
-6/6 - 0s - loss: 454338.5312 - mean_absolute_error: 532.7811 - val_loss: 552564.4375 - val_mean_absolute_error: 539.2188 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 454696.4688 - mean_absolute_error: 533.0733 - val_loss: 552449.4375 - val_mean_absolute_error: 539.1467 - 48ms/epoch - 8ms/step
 Epoch 15/200
-6/6 - 0s - loss: 454394.3125 - mean_absolute_error: 532.8310 - val_loss: 552267.2500 - val_mean_absolute_error: 539.1575 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 454149.9688 - mean_absolute_error: 532.9285 - val_loss: 552205.2500 - val_mean_absolute_error: 539.0795 - 48ms/epoch - 8ms/step
 Epoch 16/200
-6/6 - 0s - loss: 453923.1875 - mean_absolute_error: 532.7867 - val_loss: 552001.5625 - val_mean_absolute_error: 539.0928 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 454147.2812 - mean_absolute_error: 532.8405 - val_loss: 551938.6875 - val_mean_absolute_error: 539.0154 - 48ms/epoch - 8ms/step
 Epoch 17/200
-6/6 - 0s - loss: 453993.5938 - mean_absolute_error: 532.6656 - val_loss: 551688.2500 - val_mean_absolute_error: 539.0270 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 453839.4688 - mean_absolute_error: 532.8549 - val_loss: 551646.3125 - val_mean_absolute_error: 538.9455 - 48ms/epoch - 8ms/step
 Epoch 18/200
-6/6 - 0s - loss: 453538.8750 - mean_absolute_error: 532.4808 - val_loss: 551323.0625 - val_mean_absolute_error: 538.9622 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 453507.2812 - mean_absolute_error: 532.5316 - val_loss: 551349.1250 - val_mean_absolute_error: 538.8745 - 48ms/epoch - 8ms/step
 Epoch 19/200
-6/6 - 0s - loss: 453260.3750 - mean_absolute_error: 532.3486 - val_loss: 550988.8750 - val_mean_absolute_error: 538.8925 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 453559.5312 - mean_absolute_error: 532.5025 - val_loss: 551072.5625 - val_mean_absolute_error: 538.8044 - 48ms/epoch - 8ms/step
 Epoch 20/200
-6/6 - 0s - loss: 452913.6875 - mean_absolute_error: 532.2740 - val_loss: 550657.5000 - val_mean_absolute_error: 538.8175 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 453344.0312 - mean_absolute_error: 532.5615 - val_loss: 550785.6250 - val_mean_absolute_error: 538.7319 - 49ms/epoch - 8ms/step
 Epoch 21/200
-6/6 - 0s - loss: 452661.9688 - mean_absolute_error: 532.0447 - val_loss: 550324.8750 - val_mean_absolute_error: 538.7437 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 453043.5312 - mean_absolute_error: 532.4379 - val_loss: 550513.3125 - val_mean_absolute_error: 538.6534 - 51ms/epoch - 9ms/step
 Epoch 22/200
-6/6 - 0s - loss: 452886.8750 - mean_absolute_error: 532.2856 - val_loss: 550005.5000 - val_mean_absolute_error: 538.6691 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 452471.0938 - mean_absolute_error: 532.1367 - val_loss: 550197.1875 - val_mean_absolute_error: 538.5716 - 49ms/epoch - 8ms/step
 Epoch 23/200
-6/6 - 0s - loss: 452173.1875 - mean_absolute_error: 531.9966 - val_loss: 549634.8125 - val_mean_absolute_error: 538.5840 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 452451.7188 - mean_absolute_error: 532.3115 - val_loss: 549902.8750 - val_mean_absolute_error: 538.4933 - 48ms/epoch - 8ms/step
 Epoch 24/200
-6/6 - 0s - loss: 452291.7188 - mean_absolute_error: 532.0027 - val_loss: 549281.0000 - val_mean_absolute_error: 538.5037 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 452260.0938 - mean_absolute_error: 532.0126 - val_loss: 549571.1875 - val_mean_absolute_error: 538.4121 - 47ms/epoch - 8ms/step
 Epoch 25/200
-6/6 - 0s - loss: 451811.4062 - mean_absolute_error: 531.8300 - val_loss: 548953.8125 - val_mean_absolute_error: 538.4205 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 452055.6250 - mean_absolute_error: 532.0512 - val_loss: 549253.3125 - val_mean_absolute_error: 538.3223 - 48ms/epoch - 8ms/step
 Epoch 26/200
-6/6 - 0s - loss: 451490.0938 - mean_absolute_error: 531.8033 - val_loss: 548544.7500 - val_mean_absolute_error: 538.3344 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 451777.9688 - mean_absolute_error: 531.8547 - val_loss: 548884.0625 - val_mean_absolute_error: 538.2370 - 48ms/epoch - 8ms/step
 Epoch 27/200
-6/6 - 0s - loss: 450789.3125 - mean_absolute_error: 531.4407 - val_loss: 548094.3125 - val_mean_absolute_error: 538.2455 - 53ms/epoch - 9ms/step
+6/6 - 0s - loss: 451613.0938 - mean_absolute_error: 531.5602 - val_loss: 548599.1875 - val_mean_absolute_error: 538.1520 - 53ms/epoch - 9ms/step
 Epoch 28/200
-6/6 - 0s - loss: 451051.5312 - mean_absolute_error: 531.6373 - val_loss: 547726.8750 - val_mean_absolute_error: 538.1595 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 450854.4688 - mean_absolute_error: 531.3973 - val_loss: 548267.3750 - val_mean_absolute_error: 538.0638 - 48ms/epoch - 8ms/step
 Epoch 29/200
-6/6 - 0s - loss: 450260.6875 - mean_absolute_error: 531.2198 - val_loss: 547315.4375 - val_mean_absolute_error: 538.0692 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 450610.5312 - mean_absolute_error: 531.2979 - val_loss: 547958.5000 - val_mean_absolute_error: 537.9706 - 48ms/epoch - 8ms/step
 Epoch 30/200
-6/6 - 0s - loss: 449951.9688 - mean_absolute_error: 531.0558 - val_loss: 546898.7500 - val_mean_absolute_error: 537.9756 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 450627.4062 - mean_absolute_error: 531.1898 - val_loss: 547574.4375 - val_mean_absolute_error: 537.8752 - 47ms/epoch - 8ms/step
 Epoch 31/200
-6/6 - 0s - loss: 449248.8125 - mean_absolute_error: 530.5360 - val_loss: 546473.7500 - val_mean_absolute_error: 537.8780 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 450424.5938 - mean_absolute_error: 531.1370 - val_loss: 547212.2500 - val_mean_absolute_error: 537.7792 - 48ms/epoch - 8ms/step
 Epoch 32/200
-6/6 - 0s - loss: 449442.8125 - mean_absolute_error: 530.9008 - val_loss: 546059.8125 - val_mean_absolute_error: 537.7800 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 449537.4062 - mean_absolute_error: 530.7831 - val_loss: 546798.8750 - val_mean_absolute_error: 537.6782 - 48ms/epoch - 8ms/step
 Epoch 33/200
-6/6 - 0s - loss: 449080.0000 - mean_absolute_error: 530.9127 - val_loss: 545558.6250 - val_mean_absolute_error: 537.6791 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 449521.7188 - mean_absolute_error: 530.9720 - val_loss: 546430.6250 - val_mean_absolute_error: 537.5760 - 47ms/epoch - 8ms/step
 Epoch 34/200
-6/6 - 0s - loss: 448982.7812 - mean_absolute_error: 530.8730 - val_loss: 545116.2500 - val_mean_absolute_error: 537.5797 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 449752.3125 - mean_absolute_error: 531.0206 - val_loss: 546059.1250 - val_mean_absolute_error: 537.4707 - 48ms/epoch - 8ms/step
 Epoch 35/200
-6/6 - 0s - loss: 448276.0312 - mean_absolute_error: 530.5655 - val_loss: 544658.8750 - val_mean_absolute_error: 537.4775 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 449370.3125 - mean_absolute_error: 530.9164 - val_loss: 545660.8125 - val_mean_absolute_error: 537.3661 - 48ms/epoch - 8ms/step
 Epoch 36/200
-6/6 - 0s - loss: 448184.3750 - mean_absolute_error: 530.3160 - val_loss: 544151.9375 - val_mean_absolute_error: 537.3763 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 449095.8125 - mean_absolute_error: 530.5751 - val_loss: 545283.1875 - val_mean_absolute_error: 537.2614 - 48ms/epoch - 8ms/step
 Epoch 37/200
-6/6 - 0s - loss: 447283.0312 - mean_absolute_error: 530.0479 - val_loss: 543653.6875 - val_mean_absolute_error: 537.2744 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 448716.7188 - mean_absolute_error: 530.5542 - val_loss: 544895.4375 - val_mean_absolute_error: 537.1540 - 47ms/epoch - 8ms/step
 Epoch 38/200
-6/6 - 0s - loss: 447802.1250 - mean_absolute_error: 530.0522 - val_loss: 543147.7500 - val_mean_absolute_error: 537.1700 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 448590.1875 - mean_absolute_error: 530.3874 - val_loss: 544455.5625 - val_mean_absolute_error: 537.0383 - 48ms/epoch - 8ms/step
 Epoch 39/200
-6/6 - 0s - loss: 446526.9688 - mean_absolute_error: 530.1268 - val_loss: 542601.8125 - val_mean_absolute_error: 537.0590 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 448265.0938 - mean_absolute_error: 530.1049 - val_loss: 543952.0000 - val_mean_absolute_error: 536.9216 - 48ms/epoch - 8ms/step
 Epoch 40/200
-6/6 - 0s - loss: 446769.4688 - mean_absolute_error: 529.9188 - val_loss: 542075.0625 - val_mean_absolute_error: 536.9474 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 448428.4062 - mean_absolute_error: 530.5132 - val_loss: 543570.3750 - val_mean_absolute_error: 536.8156 - 49ms/epoch - 8ms/step
 Epoch 41/200
-6/6 - 0s - loss: 445810.5000 - mean_absolute_error: 529.4910 - val_loss: 541619.1875 - val_mean_absolute_error: 536.8336 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 447561.3125 - mean_absolute_error: 530.1097 - val_loss: 543135.7500 - val_mean_absolute_error: 536.7064 - 48ms/epoch - 8ms/step
 Epoch 42/200
-6/6 - 0s - loss: 445510.5312 - mean_absolute_error: 529.3601 - val_loss: 541137.3125 - val_mean_absolute_error: 536.7322 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 446689.5312 - mean_absolute_error: 529.6268 - val_loss: 542712.2500 - val_mean_absolute_error: 536.5901 - 48ms/epoch - 8ms/step
 Epoch 43/200
-6/6 - 0s - loss: 444333.1250 - mean_absolute_error: 528.8745 - val_loss: 540628.3750 - val_mean_absolute_error: 536.6161 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 447080.0312 - mean_absolute_error: 529.6920 - val_loss: 542288.9375 - val_mean_absolute_error: 536.4737 - 48ms/epoch - 8ms/step
 Epoch 44/200
-6/6 - 0s - loss: 445130.5312 - mean_absolute_error: 529.2018 - val_loss: 540097.1875 - val_mean_absolute_error: 536.5027 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 445949.8750 - mean_absolute_error: 529.2893 - val_loss: 541827.5625 - val_mean_absolute_error: 536.3563 - 49ms/epoch - 8ms/step
 Epoch 45/200
-6/6 - 0s - loss: 443957.4062 - mean_absolute_error: 528.8849 - val_loss: 539546.3125 - val_mean_absolute_error: 536.3857 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 446693.3125 - mean_absolute_error: 529.4651 - val_loss: 541361.5625 - val_mean_absolute_error: 536.2391 - 48ms/epoch - 8ms/step
 Epoch 46/200
-6/6 - 0s - loss: 444731.3750 - mean_absolute_error: 528.9911 - val_loss: 538978.3750 - val_mean_absolute_error: 536.2693 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 445528.5938 - mean_absolute_error: 529.1868 - val_loss: 540897.6250 - val_mean_absolute_error: 536.1215 - 48ms/epoch - 8ms/step
 Epoch 47/200
-6/6 - 0s - loss: 443134.2812 - mean_absolute_error: 528.3932 - val_loss: 538452.3125 - val_mean_absolute_error: 536.1509 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 445759.9688 - mean_absolute_error: 529.1250 - val_loss: 540443.5625 - val_mean_absolute_error: 535.9930 - 48ms/epoch - 8ms/step
 Epoch 48/200
-6/6 - 0s - loss: 443644.9688 - mean_absolute_error: 528.8935 - val_loss: 537888.6250 - val_mean_absolute_error: 536.0362 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 444686.1250 - mean_absolute_error: 528.8359 - val_loss: 539917.1250 - val_mean_absolute_error: 535.8701 - 48ms/epoch - 8ms/step
 Epoch 49/200
-6/6 - 0s - loss: 441988.7188 - mean_absolute_error: 528.0367 - val_loss: 537324.8750 - val_mean_absolute_error: 535.9197 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 444710.5312 - mean_absolute_error: 528.6530 - val_loss: 539445.3125 - val_mean_absolute_error: 535.7512 - 48ms/epoch - 8ms/step
 Epoch 50/200
-6/6 - 0s - loss: 442733.8750 - mean_absolute_error: 528.3267 - val_loss: 536779.8125 - val_mean_absolute_error: 535.8062 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 443746.2188 - mean_absolute_error: 528.3812 - val_loss: 538980.4375 - val_mean_absolute_error: 535.6321 - 48ms/epoch - 8ms/step
 Epoch 51/200
-6/6 - 0s - loss: 442874.2812 - mean_absolute_error: 528.4522 - val_loss: 536263.5000 - val_mean_absolute_error: 535.6962 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 442839.9062 - mean_absolute_error: 527.7532 - val_loss: 538438.3750 - val_mean_absolute_error: 535.5063 - 47ms/epoch - 8ms/step
 Epoch 52/200
-6/6 - 0s - loss: 441270.9062 - mean_absolute_error: 527.5215 - val_loss: 535635.9375 - val_mean_absolute_error: 535.5753 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 443930.0000 - mean_absolute_error: 528.4436 - val_loss: 537927.3750 - val_mean_absolute_error: 535.3837 - 48ms/epoch - 8ms/step
 Epoch 53/200
-6/6 - 0s - loss: 440656.3750 - mean_absolute_error: 527.6580 - val_loss: 535076.4375 - val_mean_absolute_error: 535.4568 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 442731.9062 - mean_absolute_error: 527.9687 - val_loss: 537331.6875 - val_mean_absolute_error: 535.2457 - 47ms/epoch - 8ms/step
 Epoch 54/200
-6/6 - 0s - loss: 440467.9062 - mean_absolute_error: 527.5101 - val_loss: 534476.3750 - val_mean_absolute_error: 535.3364 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 442551.1250 - mean_absolute_error: 527.8182 - val_loss: 536872.2500 - val_mean_absolute_error: 535.1323 - 49ms/epoch - 8ms/step
 Epoch 55/200
-6/6 - 0s - loss: 440273.9688 - mean_absolute_error: 527.3442 - val_loss: 533889.6250 - val_mean_absolute_error: 535.2109 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 442784.1875 - mean_absolute_error: 527.7496 - val_loss: 536353.0000 - val_mean_absolute_error: 535.0131 - 49ms/epoch - 8ms/step
 Epoch 56/200
-6/6 - 0s - loss: 439423.1875 - mean_absolute_error: 527.1060 - val_loss: 533238.0000 - val_mean_absolute_error: 535.0841 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 442067.7188 - mean_absolute_error: 527.6697 - val_loss: 535844.8125 - val_mean_absolute_error: 534.8922 - 48ms/epoch - 8ms/step
 Epoch 57/200
-6/6 - 0s - loss: 438590.4062 - mean_absolute_error: 526.7805 - val_loss: 532599.7500 - val_mean_absolute_error: 534.9627 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 441098.1250 - mean_absolute_error: 527.1564 - val_loss: 535331.3125 - val_mean_absolute_error: 534.7665 - 47ms/epoch - 8ms/step
 Epoch 58/200
-6/6 - 0s - loss: 438826.7812 - mean_absolute_error: 526.6954 - val_loss: 532011.7500 - val_mean_absolute_error: 534.8461 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 440422.6250 - mean_absolute_error: 527.0430 - val_loss: 534796.8125 - val_mean_absolute_error: 534.6417 - 48ms/epoch - 8ms/step
 Epoch 59/200
-6/6 - 0s - loss: 439589.1250 - mean_absolute_error: 527.3502 - val_loss: 531388.6250 - val_mean_absolute_error: 534.7247 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 441296.0312 - mean_absolute_error: 527.6965 - val_loss: 534245.6875 - val_mean_absolute_error: 534.5151 - 47ms/epoch - 8ms/step
 Epoch 60/200
-6/6 - 0s - loss: 438015.8750 - mean_absolute_error: 526.8344 - val_loss: 530798.4375 - val_mean_absolute_error: 534.6039 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 440482.7188 - mean_absolute_error: 526.9172 - val_loss: 533685.2500 - val_mean_absolute_error: 534.3898 - 47ms/epoch - 8ms/step
 Epoch 61/200
-6/6 - 0s - loss: 437611.2188 - mean_absolute_error: 526.6870 - val_loss: 530136.3750 - val_mean_absolute_error: 534.4799 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 439239.4062 - mean_absolute_error: 526.4254 - val_loss: 533140.8750 - val_mean_absolute_error: 534.2648 - 47ms/epoch - 8ms/step
 Epoch 62/200
-6/6 - 0s - loss: 437227.8750 - mean_absolute_error: 526.4876 - val_loss: 529476.8750 - val_mean_absolute_error: 534.3451 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 439842.7188 - mean_absolute_error: 527.0380 - val_loss: 532566.9375 - val_mean_absolute_error: 534.1378 - 47ms/epoch - 8ms/step
 Epoch 63/200
-6/6 - 0s - loss: 435335.3750 - mean_absolute_error: 526.0125 - val_loss: 528834.4375 - val_mean_absolute_error: 534.2217 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 438832.1875 - mean_absolute_error: 526.1951 - val_loss: 532065.2500 - val_mean_absolute_error: 534.0181 - 47ms/epoch - 8ms/step
 Epoch 64/200
-6/6 - 0s - loss: 437240.1250 - mean_absolute_error: 526.1225 - val_loss: 528234.3750 - val_mean_absolute_error: 534.1041 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 437768.2188 - mean_absolute_error: 525.6770 - val_loss: 531457.6250 - val_mean_absolute_error: 533.8950 - 52ms/epoch - 9ms/step
 Epoch 65/200
-6/6 - 0s - loss: 435793.8750 - mean_absolute_error: 525.6494 - val_loss: 527631.6875 - val_mean_absolute_error: 533.9839 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 438534.6875 - mean_absolute_error: 526.1956 - val_loss: 530902.6875 - val_mean_absolute_error: 533.7658 - 47ms/epoch - 8ms/step
 Epoch 66/200
-6/6 - 0s - loss: 434587.5312 - mean_absolute_error: 525.4125 - val_loss: 527017.2500 - val_mean_absolute_error: 533.8610 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 436654.5000 - mean_absolute_error: 524.8121 - val_loss: 530238.8750 - val_mean_absolute_error: 533.6302 - 49ms/epoch - 8ms/step
 Epoch 67/200
-6/6 - 0s - loss: 433927.1250 - mean_absolute_error: 525.2905 - val_loss: 526306.5625 - val_mean_absolute_error: 533.7381 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 437401.8750 - mean_absolute_error: 525.8981 - val_loss: 529736.0625 - val_mean_absolute_error: 533.5156 - 48ms/epoch - 8ms/step
 Epoch 68/200
-6/6 - 0s - loss: 433943.0938 - mean_absolute_error: 525.2654 - val_loss: 525614.6875 - val_mean_absolute_error: 533.6157 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 437243.8125 - mean_absolute_error: 525.5844 - val_loss: 529165.5625 - val_mean_absolute_error: 533.3903 - 47ms/epoch - 8ms/step
 Epoch 69/200
-6/6 - 0s - loss: 432894.2812 - mean_absolute_error: 524.7710 - val_loss: 524865.9375 - val_mean_absolute_error: 533.4894 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 436114.6250 - mean_absolute_error: 525.1838 - val_loss: 528583.7500 - val_mean_absolute_error: 533.2654 - 47ms/epoch - 8ms/step
 Epoch 70/200
-6/6 - 0s - loss: 431612.6250 - mean_absolute_error: 523.7491 - val_loss: 524169.9688 - val_mean_absolute_error: 533.3649 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 437102.1250 - mean_absolute_error: 526.1127 - val_loss: 528002.8750 - val_mean_absolute_error: 533.1410 - 48ms/epoch - 8ms/step
 Epoch 71/200
-6/6 - 0s - loss: 432343.0000 - mean_absolute_error: 524.7369 - val_loss: 523498.0312 - val_mean_absolute_error: 533.2441 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 435660.3750 - mean_absolute_error: 525.0176 - val_loss: 527413.0000 - val_mean_absolute_error: 533.0217 - 47ms/epoch - 8ms/step
 Epoch 72/200
-6/6 - 0s - loss: 433602.8750 - mean_absolute_error: 525.1149 - val_loss: 522775.3125 - val_mean_absolute_error: 533.1186 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 434933.0938 - mean_absolute_error: 524.6431 - val_loss: 526806.1875 - val_mean_absolute_error: 532.9065 - 47ms/epoch - 8ms/step
 Epoch 73/200
-6/6 - 0s - loss: 432440.8750 - mean_absolute_error: 524.1406 - val_loss: 522112.2188 - val_mean_absolute_error: 532.9865 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 435155.8750 - mean_absolute_error: 524.7747 - val_loss: 526187.8125 - val_mean_absolute_error: 532.7822 - 47ms/epoch - 8ms/step
 Epoch 74/200
-6/6 - 0s - loss: 431584.1875 - mean_absolute_error: 524.1512 - val_loss: 521469.5938 - val_mean_absolute_error: 532.8621 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 435488.6875 - mean_absolute_error: 525.1272 - val_loss: 525683.6875 - val_mean_absolute_error: 532.6600 - 47ms/epoch - 8ms/step
 Epoch 75/200
-6/6 - 0s - loss: 429183.7188 - mean_absolute_error: 522.8130 - val_loss: 520666.9375 - val_mean_absolute_error: 532.7305 - 74ms/epoch - 12ms/step
+6/6 - 0s - loss: 432851.5000 - mean_absolute_error: 524.4395 - val_loss: 525030.4375 - val_mean_absolute_error: 532.5262 - 73ms/epoch - 12ms/step
 Epoch 76/200
-6/6 - 0s - loss: 429006.9062 - mean_absolute_error: 523.5437 - val_loss: 519933.1875 - val_mean_absolute_error: 532.6069 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 434463.6875 - mean_absolute_error: 524.6078 - val_loss: 524354.1250 - val_mean_absolute_error: 532.3952 - 47ms/epoch - 8ms/step
 Epoch 77/200
-6/6 - 0s - loss: 429606.0000 - mean_absolute_error: 523.2466 - val_loss: 519223.3438 - val_mean_absolute_error: 532.4750 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 430515.5938 - mean_absolute_error: 522.6186 - val_loss: 523700.8750 - val_mean_absolute_error: 532.2706 - 46ms/epoch - 8ms/step
 Epoch 78/200
-6/6 - 0s - loss: 429011.6250 - mean_absolute_error: 523.4173 - val_loss: 518531.9062 - val_mean_absolute_error: 532.3516 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 431848.6250 - mean_absolute_error: 523.4449 - val_loss: 523080.7812 - val_mean_absolute_error: 532.1536 - 47ms/epoch - 8ms/step
 Epoch 79/200
-6/6 - 0s - loss: 428181.8125 - mean_absolute_error: 522.9471 - val_loss: 517783.1875 - val_mean_absolute_error: 532.2147 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 433272.1875 - mean_absolute_error: 523.8771 - val_loss: 522441.6875 - val_mean_absolute_error: 532.0226 - 47ms/epoch - 8ms/step
 Epoch 80/200
-6/6 - 0s - loss: 427594.3125 - mean_absolute_error: 522.7690 - val_loss: 517009.3750 - val_mean_absolute_error: 532.0886 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 430933.1250 - mean_absolute_error: 523.1166 - val_loss: 521792.1875 - val_mean_absolute_error: 531.8976 - 47ms/epoch - 8ms/step
 Epoch 81/200
-6/6 - 0s - loss: 428301.0938 - mean_absolute_error: 523.1135 - val_loss: 516273.0938 - val_mean_absolute_error: 531.9650 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 429590.5312 - mean_absolute_error: 522.8112 - val_loss: 521126.4375 - val_mean_absolute_error: 531.7687 - 48ms/epoch - 8ms/step
 Epoch 82/200
-6/6 - 0s - loss: 427174.8750 - mean_absolute_error: 522.5493 - val_loss: 515559.4375 - val_mean_absolute_error: 531.8412 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 429705.1875 - mean_absolute_error: 522.4393 - val_loss: 520509.6875 - val_mean_absolute_error: 531.6502 - 47ms/epoch - 8ms/step
 Epoch 83/200
-6/6 - 0s - loss: 427791.0312 - mean_absolute_error: 523.1491 - val_loss: 514884.1875 - val_mean_absolute_error: 531.7188 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 429443.8750 - mean_absolute_error: 522.7783 - val_loss: 519886.8125 - val_mean_absolute_error: 531.5260 - 47ms/epoch - 8ms/step
 Epoch 84/200
-6/6 - 0s - loss: 424829.1250 - mean_absolute_error: 521.8710 - val_loss: 514093.9375 - val_mean_absolute_error: 531.5948 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 431085.3750 - mean_absolute_error: 523.3080 - val_loss: 519289.1875 - val_mean_absolute_error: 531.4102 - 47ms/epoch - 8ms/step
 Epoch 85/200
-6/6 - 0s - loss: 426383.5938 - mean_absolute_error: 522.4290 - val_loss: 513315.9062 - val_mean_absolute_error: 531.4646 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 430934.3125 - mean_absolute_error: 523.5637 - val_loss: 518615.0000 - val_mean_absolute_error: 531.2869 - 47ms/epoch - 8ms/step
 Epoch 86/200
-6/6 - 0s - loss: 424315.3750 - mean_absolute_error: 521.2327 - val_loss: 512521.8438 - val_mean_absolute_error: 531.3323 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 429504.8125 - mean_absolute_error: 523.0791 - val_loss: 517948.2812 - val_mean_absolute_error: 531.1577 - 47ms/epoch - 8ms/step
 Epoch 87/200
-6/6 - 0s - loss: 423356.1250 - mean_absolute_error: 521.6562 - val_loss: 511672.0938 - val_mean_absolute_error: 531.1974 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 428884.8750 - mean_absolute_error: 522.4858 - val_loss: 517301.1875 - val_mean_absolute_error: 531.0381 - 52ms/epoch - 9ms/step
 Epoch 88/200
-6/6 - 0s - loss: 424195.1250 - mean_absolute_error: 522.2168 - val_loss: 510971.6250 - val_mean_absolute_error: 531.0746 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 427663.7812 - mean_absolute_error: 521.3668 - val_loss: 516591.7812 - val_mean_absolute_error: 530.9077 - 47ms/epoch - 8ms/step
 Epoch 89/200
-6/6 - 0s - loss: 422593.8125 - mean_absolute_error: 520.7958 - val_loss: 510187.0000 - val_mean_absolute_error: 530.9398 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 428195.7188 - mean_absolute_error: 523.3748 - val_loss: 515888.8125 - val_mean_absolute_error: 530.7809 - 47ms/epoch - 8ms/step
 Epoch 90/200
-6/6 - 0s - loss: 422888.7188 - mean_absolute_error: 521.2501 - val_loss: 509388.3125 - val_mean_absolute_error: 530.8076 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 429013.4688 - mean_absolute_error: 523.1437 - val_loss: 515221.1875 - val_mean_absolute_error: 530.6604 - 47ms/epoch - 8ms/step
 Epoch 91/200
-6/6 - 0s - loss: 422022.7812 - mean_absolute_error: 520.8831 - val_loss: 508576.5625 - val_mean_absolute_error: 530.6753 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 428512.0312 - mean_absolute_error: 522.5074 - val_loss: 514613.4375 - val_mean_absolute_error: 530.5350 - 47ms/epoch - 8ms/step
 Epoch 92/200
-6/6 - 0s - loss: 421870.5000 - mean_absolute_error: 520.5410 - val_loss: 507731.7812 - val_mean_absolute_error: 530.5358 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 426054.0938 - mean_absolute_error: 521.0198 - val_loss: 513829.4375 - val_mean_absolute_error: 530.4031 - 47ms/epoch - 8ms/step
 Epoch 93/200
-6/6 - 0s - loss: 419793.0938 - mean_absolute_error: 519.8242 - val_loss: 506949.5625 - val_mean_absolute_error: 530.4028 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 424458.3750 - mean_absolute_error: 521.0703 - val_loss: 513028.7812 - val_mean_absolute_error: 530.2656 - 47ms/epoch - 8ms/step
 Epoch 94/200
-6/6 - 0s - loss: 421177.9688 - mean_absolute_error: 520.9564 - val_loss: 506044.7812 - val_mean_absolute_error: 530.2607 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 425367.8750 - mean_absolute_error: 521.7542 - val_loss: 512367.0000 - val_mean_absolute_error: 530.1412 - 47ms/epoch - 8ms/step
 Epoch 95/200
-6/6 - 0s - loss: 420752.0000 - mean_absolute_error: 520.2206 - val_loss: 505368.8750 - val_mean_absolute_error: 530.1380 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 424233.1250 - mean_absolute_error: 520.3643 - val_loss: 511677.5938 - val_mean_absolute_error: 530.0175 - 47ms/epoch - 8ms/step
 Epoch 96/200
-6/6 - 0s - loss: 417234.3750 - mean_absolute_error: 518.0733 - val_loss: 504552.0312 - val_mean_absolute_error: 530.0032 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 424780.8125 - mean_absolute_error: 521.2433 - val_loss: 510994.0312 - val_mean_absolute_error: 529.8887 - 47ms/epoch - 8ms/step
 Epoch 97/200
-6/6 - 0s - loss: 417830.3125 - mean_absolute_error: 519.8641 - val_loss: 503715.5000 - val_mean_absolute_error: 529.8578 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 423952.0938 - mean_absolute_error: 520.6751 - val_loss: 510242.8438 - val_mean_absolute_error: 529.7559 - 47ms/epoch - 8ms/step
 Epoch 98/200
-6/6 - 0s - loss: 414964.9688 - mean_absolute_error: 518.6200 - val_loss: 502906.8438 - val_mean_absolute_error: 529.7230 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 422723.1250 - mean_absolute_error: 520.2625 - val_loss: 509501.5312 - val_mean_absolute_error: 529.6265 - 47ms/epoch - 8ms/step
 Epoch 99/200
-6/6 - 0s - loss: 416062.5312 - mean_absolute_error: 517.4937 - val_loss: 501993.7812 - val_mean_absolute_error: 529.5771 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 422199.0938 - mean_absolute_error: 519.2992 - val_loss: 508748.1250 - val_mean_absolute_error: 529.4933 - 47ms/epoch - 8ms/step
 Epoch 100/200
-6/6 - 0s - loss: 416179.6250 - mean_absolute_error: 517.9955 - val_loss: 501161.4375 - val_mean_absolute_error: 529.4435 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 423283.9062 - mean_absolute_error: 521.0835 - val_loss: 508102.2500 - val_mean_absolute_error: 529.3622 - 47ms/epoch - 8ms/step
 Epoch 101/200
-6/6 - 0s - loss: 415173.3125 - mean_absolute_error: 518.1228 - val_loss: 500338.4688 - val_mean_absolute_error: 529.3065 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 421051.9688 - mean_absolute_error: 519.5124 - val_loss: 507381.2812 - val_mean_absolute_error: 529.2324 - 48ms/epoch - 8ms/step
 Epoch 102/200
-6/6 - 0s - loss: 415005.4688 - mean_absolute_error: 518.7928 - val_loss: 499467.4062 - val_mean_absolute_error: 529.1696 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 420220.1250 - mean_absolute_error: 519.3455 - val_loss: 506578.2188 - val_mean_absolute_error: 529.0975 - 47ms/epoch - 8ms/step
 Epoch 103/200
-6/6 - 0s - loss: 415271.6875 - mean_absolute_error: 518.6572 - val_loss: 498705.8750 - val_mean_absolute_error: 529.0397 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 421815.1250 - mean_absolute_error: 520.3221 - val_loss: 505816.8750 - val_mean_absolute_error: 528.9604 - 47ms/epoch - 8ms/step
 Epoch 104/200
-6/6 - 0s - loss: 413493.9688 - mean_absolute_error: 517.7533 - val_loss: 497831.2500 - val_mean_absolute_error: 528.8984 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 418470.2188 - mean_absolute_error: 519.3816 - val_loss: 505034.8438 - val_mean_absolute_error: 528.8269 - 47ms/epoch - 8ms/step
 Epoch 105/200
-6/6 - 0s - loss: 413054.8125 - mean_absolute_error: 517.6936 - val_loss: 497010.2188 - val_mean_absolute_error: 528.7661 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 418741.6250 - mean_absolute_error: 519.4680 - val_loss: 504247.8750 - val_mean_absolute_error: 528.6893 - 47ms/epoch - 8ms/step
 Epoch 106/200
-6/6 - 0s - loss: 414808.8750 - mean_absolute_error: 518.4620 - val_loss: 496164.7500 - val_mean_absolute_error: 528.6240 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 417119.7188 - mean_absolute_error: 517.4731 - val_loss: 503439.3438 - val_mean_absolute_error: 528.5533 - 47ms/epoch - 8ms/step
 Epoch 107/200
-6/6 - 0s - loss: 412671.6250 - mean_absolute_error: 517.0864 - val_loss: 495278.0312 - val_mean_absolute_error: 528.4829 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 415468.4688 - mean_absolute_error: 517.9192 - val_loss: 502733.6562 - val_mean_absolute_error: 528.4180 - 47ms/epoch - 8ms/step
 Epoch 108/200
-6/6 - 0s - loss: 408545.2812 - mean_absolute_error: 515.0051 - val_loss: 494344.0938 - val_mean_absolute_error: 528.3340 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 420084.0938 - mean_absolute_error: 521.0766 - val_loss: 502012.1250 - val_mean_absolute_error: 528.2885 - 47ms/epoch - 8ms/step
 Epoch 109/200
-6/6 - 0s - loss: 411059.2188 - mean_absolute_error: 516.8981 - val_loss: 493405.9688 - val_mean_absolute_error: 528.1849 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 416751.2188 - mean_absolute_error: 518.1823 - val_loss: 501207.4375 - val_mean_absolute_error: 528.1465 - 48ms/epoch - 8ms/step
 Epoch 110/200
-6/6 - 0s - loss: 412906.0312 - mean_absolute_error: 517.2230 - val_loss: 492583.3438 - val_mean_absolute_error: 528.0444 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 416147.4062 - mean_absolute_error: 517.9084 - val_loss: 500543.6250 - val_mean_absolute_error: 528.0231 - 47ms/epoch - 8ms/step
 Epoch 111/200
-6/6 - 0s - loss: 412742.0938 - mean_absolute_error: 518.7832 - val_loss: 491795.0000 - val_mean_absolute_error: 527.9065 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 413813.4688 - mean_absolute_error: 516.7189 - val_loss: 499684.1875 - val_mean_absolute_error: 527.8780 - 48ms/epoch - 8ms/step
 Epoch 112/200
-6/6 - 0s - loss: 408908.7188 - mean_absolute_error: 515.2658 - val_loss: 490865.4688 - val_mean_absolute_error: 527.7557 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 414934.6875 - mean_absolute_error: 517.9658 - val_loss: 498981.1562 - val_mean_absolute_error: 527.7433 - 49ms/epoch - 8ms/step
 Epoch 113/200
-6/6 - 0s - loss: 409336.0312 - mean_absolute_error: 516.5523 - val_loss: 490010.2188 - val_mean_absolute_error: 527.6125 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 415552.1875 - mean_absolute_error: 517.4645 - val_loss: 498229.5938 - val_mean_absolute_error: 527.6041 - 49ms/epoch - 8ms/step
 Epoch 114/200
-6/6 - 0s - loss: 410982.5000 - mean_absolute_error: 517.3329 - val_loss: 489188.0312 - val_mean_absolute_error: 527.4767 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 415263.0000 - mean_absolute_error: 517.1953 - val_loss: 497482.4688 - val_mean_absolute_error: 527.4672 - 54ms/epoch - 9ms/step
 Epoch 115/200
-6/6 - 0s - loss: 407357.8125 - mean_absolute_error: 515.8965 - val_loss: 488257.0625 - val_mean_absolute_error: 527.3271 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 413647.5938 - mean_absolute_error: 515.9368 - val_loss: 496633.7500 - val_mean_absolute_error: 527.3178 - 49ms/epoch - 8ms/step
 Epoch 116/200
-6/6 - 0s - loss: 403963.8125 - mean_absolute_error: 514.3325 - val_loss: 487423.4062 - val_mean_absolute_error: 527.1873 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 413940.5000 - mean_absolute_error: 517.4319 - val_loss: 495838.8125 - val_mean_absolute_error: 527.1789 - 51ms/epoch - 9ms/step
 Epoch 117/200
-6/6 - 0s - loss: 406982.2812 - mean_absolute_error: 515.8250 - val_loss: 486562.8125 - val_mean_absolute_error: 527.0425 - 50ms/epoch - 8ms/step
+6/6 - 0s - loss: 412463.3125 - mean_absolute_error: 517.0604 - val_loss: 494999.2188 - val_mean_absolute_error: 527.0330 - 50ms/epoch - 8ms/step
 Epoch 118/200
-6/6 - 0s - loss: 404286.0312 - mean_absolute_error: 513.4154 - val_loss: 485621.3438 - val_mean_absolute_error: 526.8925 - 50ms/epoch - 8ms/step
+6/6 - 0s - loss: 415841.0938 - mean_absolute_error: 517.7540 - val_loss: 494323.0938 - val_mean_absolute_error: 526.9025 - 49ms/epoch - 8ms/step
 Epoch 119/200
-6/6 - 0s - loss: 404807.1875 - mean_absolute_error: 515.0090 - val_loss: 484719.5312 - val_mean_absolute_error: 526.7465 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 407727.2188 - mean_absolute_error: 514.3171 - val_loss: 493482.3438 - val_mean_absolute_error: 526.7555 - 48ms/epoch - 8ms/step
 Epoch 120/200
-6/6 - 0s - loss: 406934.1875 - mean_absolute_error: 516.0468 - val_loss: 483915.7188 - val_mean_absolute_error: 526.6075 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 410475.4062 - mean_absolute_error: 515.2968 - val_loss: 492641.7812 - val_mean_absolute_error: 526.6063 - 50ms/epoch - 8ms/step
 Epoch 121/200
-6/6 - 0s - loss: 406695.8750 - mean_absolute_error: 515.0157 - val_loss: 483045.0938 - val_mean_absolute_error: 526.4658 - 50ms/epoch - 8ms/step
+6/6 - 0s - loss: 412546.3125 - mean_absolute_error: 516.6028 - val_loss: 491928.5625 - val_mean_absolute_error: 526.4728 - 49ms/epoch - 8ms/step
 Epoch 122/200
-6/6 - 0s - loss: 400326.3750 - mean_absolute_error: 511.6181 - val_loss: 481993.2500 - val_mean_absolute_error: 526.3031 - 52ms/epoch - 9ms/step
+6/6 - 0s - loss: 409789.2188 - mean_absolute_error: 515.1070 - val_loss: 491071.0312 - val_mean_absolute_error: 526.3243 - 48ms/epoch - 8ms/step
 Epoch 123/200
-6/6 - 0s - loss: 401062.5938 - mean_absolute_error: 514.4370 - val_loss: 481180.2188 - val_mean_absolute_error: 526.1631 - 53ms/epoch - 9ms/step
+6/6 - 0s - loss: 409772.0312 - mean_absolute_error: 515.2488 - val_loss: 490259.4062 - val_mean_absolute_error: 526.1808 - 50ms/epoch - 8ms/step
 Epoch 124/200
-6/6 - 0s - loss: 402099.4688 - mean_absolute_error: 512.5457 - val_loss: 480381.4688 - val_mean_absolute_error: 526.0251 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 407171.6875 - mean_absolute_error: 513.8035 - val_loss: 489474.8438 - val_mean_absolute_error: 526.0378 - 47ms/epoch - 8ms/step
 Epoch 125/200
-6/6 - 0s - loss: 402728.0938 - mean_absolute_error: 514.7766 - val_loss: 479426.8125 - val_mean_absolute_error: 525.8704 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 409700.4062 - mean_absolute_error: 514.9695 - val_loss: 488701.1562 - val_mean_absolute_error: 525.8992 - 47ms/epoch - 8ms/step
 Epoch 126/200
-6/6 - 0s - loss: 401431.5312 - mean_absolute_error: 514.4150 - val_loss: 478490.2188 - val_mean_absolute_error: 525.7148 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 406263.9688 - mean_absolute_error: 512.5838 - val_loss: 487809.3438 - val_mean_absolute_error: 525.7469 - 47ms/epoch - 8ms/step
 Epoch 127/200
-6/6 - 0s - loss: 403058.9062 - mean_absolute_error: 514.8116 - val_loss: 477691.6875 - val_mean_absolute_error: 525.5714 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 410142.8125 - mean_absolute_error: 514.3894 - val_loss: 487044.2812 - val_mean_absolute_error: 525.6077 - 47ms/epoch - 8ms/step
 Epoch 128/200
-6/6 - 0s - loss: 397587.6875 - mean_absolute_error: 511.2323 - val_loss: 476729.9688 - val_mean_absolute_error: 525.4164 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 408265.5938 - mean_absolute_error: 514.8544 - val_loss: 486243.2188 - val_mean_absolute_error: 525.4633 - 47ms/epoch - 8ms/step
 Epoch 129/200
-6/6 - 0s - loss: 397578.4688 - mean_absolute_error: 511.2543 - val_loss: 475829.4688 - val_mean_absolute_error: 525.2661 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 407680.8125 - mean_absolute_error: 513.5602 - val_loss: 485354.4375 - val_mean_absolute_error: 525.3102 - 52ms/epoch - 9ms/step
 Epoch 130/200
-6/6 - 0s - loss: 398211.8750 - mean_absolute_error: 512.3758 - val_loss: 474914.1562 - val_mean_absolute_error: 525.1146 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 404571.4062 - mean_absolute_error: 513.1495 - val_loss: 484539.5000 - val_mean_absolute_error: 525.1615 - 47ms/epoch - 8ms/step
 Epoch 131/200
-6/6 - 0s - loss: 394772.5312 - mean_absolute_error: 510.1483 - val_loss: 473854.8438 - val_mean_absolute_error: 524.9456 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 406491.1250 - mean_absolute_error: 513.9321 - val_loss: 483700.8750 - val_mean_absolute_error: 525.0126 - 47ms/epoch - 8ms/step
 Epoch 132/200
-6/6 - 0s - loss: 394988.1250 - mean_absolute_error: 510.1992 - val_loss: 472970.3125 - val_mean_absolute_error: 524.7963 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 404199.6875 - mean_absolute_error: 514.8923 - val_loss: 482891.9688 - val_mean_absolute_error: 524.8672 - 47ms/epoch - 8ms/step
 Epoch 133/200
-6/6 - 0s - loss: 400527.0938 - mean_absolute_error: 513.5870 - val_loss: 472075.7812 - val_mean_absolute_error: 524.6448 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 402103.7188 - mean_absolute_error: 512.9872 - val_loss: 481978.4062 - val_mean_absolute_error: 524.7151 - 46ms/epoch - 8ms/step
 Epoch 134/200
-6/6 - 0s - loss: 395998.5000 - mean_absolute_error: 511.0858 - val_loss: 471163.2188 - val_mean_absolute_error: 524.4897 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 399577.8750 - mean_absolute_error: 509.8604 - val_loss: 481072.3750 - val_mean_absolute_error: 524.5544 - 47ms/epoch - 8ms/step
 Epoch 135/200
-6/6 - 0s - loss: 400195.7188 - mean_absolute_error: 513.3775 - val_loss: 470267.7188 - val_mean_absolute_error: 524.3337 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 400703.9062 - mean_absolute_error: 511.2763 - val_loss: 480192.5625 - val_mean_absolute_error: 524.4023 - 47ms/epoch - 8ms/step
 Epoch 136/200
-6/6 - 0s - loss: 395695.9688 - mean_absolute_error: 510.9134 - val_loss: 469365.8750 - val_mean_absolute_error: 524.1886 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 401232.5312 - mean_absolute_error: 512.2930 - val_loss: 479323.6250 - val_mean_absolute_error: 524.2504 - 49ms/epoch - 8ms/step
 Epoch 137/200
-6/6 - 0s - loss: 393009.9688 - mean_absolute_error: 510.2986 - val_loss: 468454.6562 - val_mean_absolute_error: 524.0339 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 400871.7188 - mean_absolute_error: 513.6780 - val_loss: 478459.4062 - val_mean_absolute_error: 524.0961 - 47ms/epoch - 8ms/step
 Epoch 138/200
-6/6 - 0s - loss: 393429.6250 - mean_absolute_error: 510.0918 - val_loss: 467559.8125 - val_mean_absolute_error: 523.8829 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 399786.0000 - mean_absolute_error: 511.2595 - val_loss: 477639.0938 - val_mean_absolute_error: 523.9436 - 47ms/epoch - 8ms/step
 Epoch 139/200
-6/6 - 0s - loss: 394601.1250 - mean_absolute_error: 510.8286 - val_loss: 466583.9688 - val_mean_absolute_error: 523.7209 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 395783.7188 - mean_absolute_error: 508.9955 - val_loss: 476786.2188 - val_mean_absolute_error: 523.7903 - 48ms/epoch - 8ms/step
 Epoch 140/200
-6/6 - 0s - loss: 393109.9688 - mean_absolute_error: 512.2590 - val_loss: 465706.4688 - val_mean_absolute_error: 523.5696 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 398408.7812 - mean_absolute_error: 512.2058 - val_loss: 475853.7500 - val_mean_absolute_error: 523.6301 - 47ms/epoch - 8ms/step
 Epoch 141/200
-6/6 - 0s - loss: 394231.9062 - mean_absolute_error: 507.8921 - val_loss: 464866.7500 - val_mean_absolute_error: 523.4196 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 396583.0312 - mean_absolute_error: 509.4889 - val_loss: 474987.8750 - val_mean_absolute_error: 523.4712 - 49ms/epoch - 8ms/step
 Epoch 142/200
-6/6 - 0s - loss: 391880.3125 - mean_absolute_error: 510.9390 - val_loss: 463948.3125 - val_mean_absolute_error: 523.2618 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 400871.5000 - mean_absolute_error: 512.6384 - val_loss: 474208.4062 - val_mean_absolute_error: 523.3253 - 50ms/epoch - 8ms/step
 Epoch 143/200
-6/6 - 0s - loss: 391216.6875 - mean_absolute_error: 509.8468 - val_loss: 462986.4688 - val_mean_absolute_error: 523.1024 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 397277.2188 - mean_absolute_error: 510.8323 - val_loss: 473377.7500 - val_mean_absolute_error: 523.1789 - 49ms/epoch - 8ms/step
 Epoch 144/200
-6/6 - 0s - loss: 391363.4688 - mean_absolute_error: 507.3570 - val_loss: 462094.8438 - val_mean_absolute_error: 522.9490 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 396190.5312 - mean_absolute_error: 511.7693 - val_loss: 472475.5312 - val_mean_absolute_error: 523.0173 - 49ms/epoch - 8ms/step
 Epoch 145/200
-6/6 - 0s - loss: 390790.5938 - mean_absolute_error: 510.4445 - val_loss: 461131.0312 - val_mean_absolute_error: 522.7884 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 397655.1875 - mean_absolute_error: 511.5193 - val_loss: 471583.1250 - val_mean_absolute_error: 522.8622 - 48ms/epoch - 8ms/step
 Epoch 146/200
-6/6 - 0s - loss: 390164.1875 - mean_absolute_error: 510.2100 - val_loss: 460186.6562 - val_mean_absolute_error: 522.6225 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 394938.5000 - mean_absolute_error: 509.5002 - val_loss: 470683.1875 - val_mean_absolute_error: 522.7014 - 48ms/epoch - 8ms/step
 Epoch 147/200
-6/6 - 0s - loss: 385403.8125 - mean_absolute_error: 506.9644 - val_loss: 459094.0625 - val_mean_absolute_error: 522.4486 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 395270.9062 - mean_absolute_error: 509.3480 - val_loss: 469765.5312 - val_mean_absolute_error: 522.5383 - 48ms/epoch - 8ms/step
 Epoch 148/200
-6/6 - 0s - loss: 387631.9062 - mean_absolute_error: 508.2806 - val_loss: 458272.8125 - val_mean_absolute_error: 522.2977 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 396291.6250 - mean_absolute_error: 509.0708 - val_loss: 468938.2188 - val_mean_absolute_error: 522.3862 - 47ms/epoch - 8ms/step
 Epoch 149/200
-6/6 - 0s - loss: 383393.0938 - mean_absolute_error: 506.2577 - val_loss: 457338.8438 - val_mean_absolute_error: 522.1354 - 52ms/epoch - 9ms/step
+6/6 - 0s - loss: 399636.7812 - mean_absolute_error: 512.1634 - val_loss: 468038.8438 - val_mean_absolute_error: 522.2249 - 47ms/epoch - 8ms/step
 Epoch 150/200
-6/6 - 0s - loss: 383613.7812 - mean_absolute_error: 508.2752 - val_loss: 456450.2500 - val_mean_absolute_error: 521.9789 - 51ms/epoch - 9ms/step
+6/6 - 0s - loss: 392677.2812 - mean_absolute_error: 507.8359 - val_loss: 467164.9688 - val_mean_absolute_error: 522.0679 - 48ms/epoch - 8ms/step
 Epoch 151/200
-6/6 - 0s - loss: 387019.4062 - mean_absolute_error: 509.0276 - val_loss: 455539.3125 - val_mean_absolute_error: 521.8168 - 51ms/epoch - 8ms/step
+6/6 - 0s - loss: 394759.5000 - mean_absolute_error: 510.0462 - val_loss: 466363.9062 - val_mean_absolute_error: 521.9177 - 51ms/epoch - 8ms/step
 Epoch 152/200
-6/6 - 0s - loss: 385485.8750 - mean_absolute_error: 506.2011 - val_loss: 454594.1250 - val_mean_absolute_error: 521.6538 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 395105.0000 - mean_absolute_error: 509.4904 - val_loss: 465530.6562 - val_mean_absolute_error: 521.7623 - 48ms/epoch - 8ms/step
 Epoch 153/200
-6/6 - 0s - loss: 384779.5938 - mean_absolute_error: 509.6053 - val_loss: 453655.1250 - val_mean_absolute_error: 521.4848 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 387181.8750 - mean_absolute_error: 506.9959 - val_loss: 464689.4688 - val_mean_absolute_error: 521.6071 - 49ms/epoch - 8ms/step
 Epoch 154/200
-6/6 - 0s - loss: 385296.8125 - mean_absolute_error: 506.7779 - val_loss: 452730.4375 - val_mean_absolute_error: 521.3199 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 394133.0938 - mean_absolute_error: 508.8777 - val_loss: 463886.9062 - val_mean_absolute_error: 521.4503 - 48ms/epoch - 8ms/step
 Epoch 155/200
-6/6 - 0s - loss: 383817.2188 - mean_absolute_error: 506.2994 - val_loss: 451753.2812 - val_mean_absolute_error: 521.1516 - 46ms/epoch - 8ms/step
+6/6 - 0s - loss: 387094.7812 - mean_absolute_error: 507.0683 - val_loss: 462994.6562 - val_mean_absolute_error: 521.2948 - 47ms/epoch - 8ms/step
 Epoch 156/200
-6/6 - 0s - loss: 380768.7500 - mean_absolute_error: 506.2523 - val_loss: 450907.6875 - val_mean_absolute_error: 520.9950 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 392615.5312 - mean_absolute_error: 507.6019 - val_loss: 462146.2188 - val_mean_absolute_error: 521.1330 - 47ms/epoch - 8ms/step
 Epoch 157/200
-6/6 - 0s - loss: 384562.2188 - mean_absolute_error: 507.9794 - val_loss: 450024.1875 - val_mean_absolute_error: 520.8355 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 387732.3125 - mean_absolute_error: 504.8599 - val_loss: 461169.5312 - val_mean_absolute_error: 520.9621 - 47ms/epoch - 8ms/step
 Epoch 158/200
-6/6 - 0s - loss: 380327.0000 - mean_absolute_error: 504.8807 - val_loss: 449075.3125 - val_mean_absolute_error: 520.6662 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 388484.3750 - mean_absolute_error: 507.0545 - val_loss: 460238.2500 - val_mean_absolute_error: 520.7944 - 47ms/epoch - 8ms/step
 Epoch 159/200
-6/6 - 0s - loss: 380698.2188 - mean_absolute_error: 505.4790 - val_loss: 448129.3438 - val_mean_absolute_error: 520.5078 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 387002.6250 - mean_absolute_error: 506.3620 - val_loss: 459419.5312 - val_mean_absolute_error: 520.6383 - 47ms/epoch - 8ms/step
 Epoch 160/200
-6/6 - 0s - loss: 378137.9062 - mean_absolute_error: 504.6651 - val_loss: 447162.9062 - val_mean_absolute_error: 520.3377 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 388258.9688 - mean_absolute_error: 507.0990 - val_loss: 458559.8125 - val_mean_absolute_error: 520.4763 - 47ms/epoch - 8ms/step
 Epoch 161/200
-6/6 - 0s - loss: 379313.1875 - mean_absolute_error: 503.0475 - val_loss: 446215.8125 - val_mean_absolute_error: 520.1719 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 389941.0938 - mean_absolute_error: 508.0425 - val_loss: 457743.6875 - val_mean_absolute_error: 520.3175 - 47ms/epoch - 8ms/step
 Epoch 162/200
-6/6 - 0s - loss: 379600.4062 - mean_absolute_error: 506.5595 - val_loss: 445342.6250 - val_mean_absolute_error: 520.0154 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 386218.1250 - mean_absolute_error: 505.7715 - val_loss: 456843.6875 - val_mean_absolute_error: 520.1501 - 47ms/epoch - 8ms/step
 Epoch 163/200
-6/6 - 0s - loss: 383757.3750 - mean_absolute_error: 506.1641 - val_loss: 444463.8125 - val_mean_absolute_error: 519.8550 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 385917.0312 - mean_absolute_error: 505.1953 - val_loss: 455997.0000 - val_mean_absolute_error: 519.9897 - 47ms/epoch - 8ms/step
 Epoch 164/200
-6/6 - 0s - loss: 378602.7500 - mean_absolute_error: 504.5053 - val_loss: 443493.1875 - val_mean_absolute_error: 519.6782 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 381097.2500 - mean_absolute_error: 501.9095 - val_loss: 455067.5000 - val_mean_absolute_error: 519.8260 - 47ms/epoch - 8ms/step
 Epoch 165/200
-6/6 - 0s - loss: 376802.6875 - mean_absolute_error: 504.9055 - val_loss: 442639.7188 - val_mean_absolute_error: 519.5275 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 386475.5000 - mean_absolute_error: 505.7153 - val_loss: 454253.3438 - val_mean_absolute_error: 519.6666 - 47ms/epoch - 8ms/step
 Epoch 166/200
-6/6 - 0s - loss: 380361.5938 - mean_absolute_error: 506.7639 - val_loss: 441713.6562 - val_mean_absolute_error: 519.3549 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 382561.7188 - mean_absolute_error: 505.9250 - val_loss: 453357.0938 - val_mean_absolute_error: 519.4966 - 47ms/epoch - 8ms/step
 Epoch 167/200
-6/6 - 0s - loss: 379292.0312 - mean_absolute_error: 505.1688 - val_loss: 440925.5312 - val_mean_absolute_error: 519.2058 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 387764.3750 - mean_absolute_error: 506.3324 - val_loss: 452490.2188 - val_mean_absolute_error: 519.3278 - 47ms/epoch - 8ms/step
 Epoch 168/200
-6/6 - 0s - loss: 379847.1250 - mean_absolute_error: 506.1571 - val_loss: 440016.0000 - val_mean_absolute_error: 519.0338 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 385878.1875 - mean_absolute_error: 506.1737 - val_loss: 451715.5312 - val_mean_absolute_error: 519.1791 - 48ms/epoch - 8ms/step
 Epoch 169/200
-6/6 - 0s - loss: 374859.9062 - mean_absolute_error: 503.1670 - val_loss: 439222.2500 - val_mean_absolute_error: 518.8809 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 389578.4688 - mean_absolute_error: 509.0513 - val_loss: 450935.6250 - val_mean_absolute_error: 519.0171 - 48ms/epoch - 8ms/step
 Epoch 170/200
-6/6 - 0s - loss: 373963.7188 - mean_absolute_error: 505.6071 - val_loss: 438312.3750 - val_mean_absolute_error: 518.7128 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 385000.5000 - mean_absolute_error: 506.0127 - val_loss: 450007.2500 - val_mean_absolute_error: 518.8472 - 48ms/epoch - 8ms/step
 Epoch 171/200
-6/6 - 0s - loss: 370545.6250 - mean_absolute_error: 503.7125 - val_loss: 437380.8750 - val_mean_absolute_error: 518.5459 - 51ms/epoch - 8ms/step
+6/6 - 0s - loss: 382410.9688 - mean_absolute_error: 502.6877 - val_loss: 449136.5000 - val_mean_absolute_error: 518.6796 - 52ms/epoch - 9ms/step
 Epoch 172/200
-6/6 - 0s - loss: 370445.6250 - mean_absolute_error: 500.3293 - val_loss: 436488.5000 - val_mean_absolute_error: 518.3718 - 62ms/epoch - 10ms/step
+6/6 - 0s - loss: 383054.9062 - mean_absolute_error: 504.3199 - val_loss: 448287.0938 - val_mean_absolute_error: 518.5120 - 48ms/epoch - 8ms/step
 Epoch 173/200
-6/6 - 0s - loss: 379055.5938 - mean_absolute_error: 507.1311 - val_loss: 435661.9375 - val_mean_absolute_error: 518.2170 - 54ms/epoch - 9ms/step
+6/6 - 0s - loss: 374738.6250 - mean_absolute_error: 499.3575 - val_loss: 447323.7188 - val_mean_absolute_error: 518.3309 - 48ms/epoch - 8ms/step
 Epoch 174/200
-6/6 - 0s - loss: 369977.4375 - mean_absolute_error: 500.9925 - val_loss: 434786.1250 - val_mean_absolute_error: 518.0488 - 52ms/epoch - 9ms/step
+6/6 - 0s - loss: 387189.9688 - mean_absolute_error: 507.0824 - val_loss: 446461.3438 - val_mean_absolute_error: 518.1591 - 48ms/epoch - 8ms/step
 Epoch 175/200
-6/6 - 0s - loss: 375810.5312 - mean_absolute_error: 505.9774 - val_loss: 433914.3125 - val_mean_absolute_error: 517.8840 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 381138.0312 - mean_absolute_error: 504.7951 - val_loss: 445649.5625 - val_mean_absolute_error: 518.0005 - 52ms/epoch - 9ms/step
 Epoch 176/200
-6/6 - 0s - loss: 368161.8125 - mean_absolute_error: 497.5037 - val_loss: 432968.7500 - val_mean_absolute_error: 517.7111 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 385509.4688 - mean_absolute_error: 506.3925 - val_loss: 444783.0000 - val_mean_absolute_error: 517.8347 - 49ms/epoch - 8ms/step
 Epoch 177/200
-6/6 - 0s - loss: 375699.2812 - mean_absolute_error: 506.2407 - val_loss: 432158.5625 - val_mean_absolute_error: 517.5455 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 382291.7812 - mean_absolute_error: 503.9867 - val_loss: 443906.4688 - val_mean_absolute_error: 517.6614 - 48ms/epoch - 8ms/step
 Epoch 178/200
-6/6 - 0s - loss: 370304.8750 - mean_absolute_error: 501.2383 - val_loss: 431203.2500 - val_mean_absolute_error: 517.3763 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 380835.8750 - mean_absolute_error: 502.8057 - val_loss: 443037.5625 - val_mean_absolute_error: 517.4924 - 47ms/epoch - 8ms/step
 Epoch 179/200
-6/6 - 0s - loss: 371369.8750 - mean_absolute_error: 501.0780 - val_loss: 430354.1562 - val_mean_absolute_error: 517.2101 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 374456.7812 - mean_absolute_error: 499.4985 - val_loss: 442146.2188 - val_mean_absolute_error: 517.3226 - 48ms/epoch - 8ms/step
 Epoch 180/200
-6/6 - 0s - loss: 374566.2188 - mean_absolute_error: 505.3540 - val_loss: 429557.2500 - val_mean_absolute_error: 517.0467 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 377133.3750 - mean_absolute_error: 502.8618 - val_loss: 441362.0312 - val_mean_absolute_error: 517.1624 - 48ms/epoch - 8ms/step
 Epoch 181/200
-6/6 - 0s - loss: 371009.8750 - mean_absolute_error: 501.9899 - val_loss: 428647.7812 - val_mean_absolute_error: 516.8704 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 379285.3750 - mean_absolute_error: 504.7880 - val_loss: 440470.6250 - val_mean_absolute_error: 516.9861 - 48ms/epoch - 8ms/step
 Epoch 182/200
-6/6 - 0s - loss: 362227.5000 - mean_absolute_error: 501.5237 - val_loss: 427674.4688 - val_mean_absolute_error: 516.6857 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 375714.3750 - mean_absolute_error: 500.3170 - val_loss: 439632.8125 - val_mean_absolute_error: 516.8193 - 48ms/epoch - 8ms/step
 Epoch 183/200
-6/6 - 0s - loss: 364142.6875 - mean_absolute_error: 500.4909 - val_loss: 426836.5000 - val_mean_absolute_error: 516.5157 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 381303.0000 - mean_absolute_error: 504.7370 - val_loss: 438859.2188 - val_mean_absolute_error: 516.6534 - 47ms/epoch - 8ms/step
 Epoch 184/200
-6/6 - 0s - loss: 361447.9688 - mean_absolute_error: 496.5044 - val_loss: 425986.4375 - val_mean_absolute_error: 516.3405 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 371321.5000 - mean_absolute_error: 501.1363 - val_loss: 437935.9062 - val_mean_absolute_error: 516.4730 - 48ms/epoch - 8ms/step
 Epoch 185/200
-6/6 - 0s - loss: 368348.5625 - mean_absolute_error: 503.4016 - val_loss: 425138.6562 - val_mean_absolute_error: 516.1652 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 373423.1250 - mean_absolute_error: 504.7876 - val_loss: 437119.4375 - val_mean_absolute_error: 516.3001 - 48ms/epoch - 8ms/step
 Epoch 186/200
-6/6 - 0s - loss: 368482.4688 - mean_absolute_error: 498.4663 - val_loss: 424338.7500 - val_mean_absolute_error: 515.9973 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 381805.4688 - mean_absolute_error: 505.9868 - val_loss: 436375.3125 - val_mean_absolute_error: 516.1402 - 47ms/epoch - 8ms/step
 Epoch 187/200
-6/6 - 0s - loss: 365630.4375 - mean_absolute_error: 499.2942 - val_loss: 423554.8438 - val_mean_absolute_error: 515.8364 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 372282.9375 - mean_absolute_error: 499.6299 - val_loss: 435544.0938 - val_mean_absolute_error: 515.9753 - 48ms/epoch - 8ms/step
 Epoch 188/200
-6/6 - 0s - loss: 371474.0312 - mean_absolute_error: 504.9439 - val_loss: 422835.7812 - val_mean_absolute_error: 515.6812 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 381368.3750 - mean_absolute_error: 506.1079 - val_loss: 434686.0625 - val_mean_absolute_error: 515.7934 - 48ms/epoch - 8ms/step
 Epoch 189/200
-6/6 - 0s - loss: 363700.6875 - mean_absolute_error: 498.7305 - val_loss: 421928.4062 - val_mean_absolute_error: 515.5038 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 370428.0938 - mean_absolute_error: 498.9659 - val_loss: 433850.8438 - val_mean_absolute_error: 515.6237 - 48ms/epoch - 8ms/step
 Epoch 190/200
-6/6 - 0s - loss: 367167.8125 - mean_absolute_error: 499.7858 - val_loss: 421121.6562 - val_mean_absolute_error: 515.3382 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 376746.0938 - mean_absolute_error: 502.7500 - val_loss: 432970.0312 - val_mean_absolute_error: 515.4462 - 47ms/epoch - 8ms/step
 Epoch 191/200
-6/6 - 0s - loss: 366326.0312 - mean_absolute_error: 499.8334 - val_loss: 420198.4688 - val_mean_absolute_error: 515.2708 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 367395.1875 - mean_absolute_error: 500.3265 - val_loss: 432127.9688 - val_mean_absolute_error: 515.2712 - 48ms/epoch - 8ms/step
 Epoch 192/200
-6/6 - 0s - loss: 368887.6250 - mean_absolute_error: 502.4799 - val_loss: 419454.4375 - val_mean_absolute_error: 515.2084 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 377497.5625 - mean_absolute_error: 504.7374 - val_loss: 431396.3750 - val_mean_absolute_error: 515.1103 - 48ms/epoch - 8ms/step
 Epoch 193/200
-6/6 - 0s - loss: 366183.5625 - mean_absolute_error: 501.3491 - val_loss: 418727.5938 - val_mean_absolute_error: 515.1463 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 379281.4375 - mean_absolute_error: 503.9023 - val_loss: 430614.9062 - val_mean_absolute_error: 514.9394 - 48ms/epoch - 8ms/step
 Epoch 194/200
-6/6 - 0s - loss: 358301.0000 - mean_absolute_error: 499.1162 - val_loss: 417852.5938 - val_mean_absolute_error: 515.0863 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 367836.8750 - mean_absolute_error: 498.7358 - val_loss: 429900.1875 - val_mean_absolute_error: 514.7774 - 48ms/epoch - 8ms/step
 Epoch 195/200
-6/6 - 0s - loss: 363665.0625 - mean_absolute_error: 498.3564 - val_loss: 417018.2188 - val_mean_absolute_error: 515.0211 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 363267.9062 - mean_absolute_error: 496.6613 - val_loss: 429024.5625 - val_mean_absolute_error: 514.6016 - 47ms/epoch - 8ms/step
 Epoch 196/200
-6/6 - 0s - loss: 362186.5000 - mean_absolute_error: 499.2928 - val_loss: 416164.6562 - val_mean_absolute_error: 514.9539 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 368288.7812 - mean_absolute_error: 500.2124 - val_loss: 428172.5000 - val_mean_absolute_error: 514.4228 - 48ms/epoch - 8ms/step
 Epoch 197/200
-6/6 - 0s - loss: 361194.0312 - mean_absolute_error: 494.5461 - val_loss: 415360.8750 - val_mean_absolute_error: 514.8926 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 373003.2812 - mean_absolute_error: 503.9505 - val_loss: 427352.8125 - val_mean_absolute_error: 514.2451 - 48ms/epoch - 8ms/step
 Epoch 198/200
-6/6 - 0s - loss: 357170.6562 - mean_absolute_error: 497.1844 - val_loss: 414618.6562 - val_mean_absolute_error: 514.8275 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 369813.2500 - mean_absolute_error: 502.0022 - val_loss: 426525.2500 - val_mean_absolute_error: 514.0721 - 48ms/epoch - 8ms/step
 Epoch 199/200
-6/6 - 0s - loss: 361477.9688 - mean_absolute_error: 498.1729 - val_loss: 413783.5312 - val_mean_absolute_error: 514.7684 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 365440.8750 - mean_absolute_error: 497.5725 - val_loss: 425683.3125 - val_mean_absolute_error: 513.8909 - 48ms/epoch - 8ms/step
 Epoch 200/200
-6/6 - 0s - loss: 369230.5312 - mean_absolute_error: 502.3360 - val_loss: 413012.9688 - val_mean_absolute_error: 514.6928 - 48ms/epoch - 8ms/step</code></pre>
+6/6 - 0s - loss: 370445.7188 - mean_absolute_error: 496.3990 - val_loss: 424876.9688 - val_mean_absolute_error: 513.7159 - 48ms/epoch - 8ms/step</code></pre>
 </div>
 </div>
 <p>Keras reports for each epoch the value of the loss metric (mean squared error) for the training and validation data and the monitored metrics (mean absolute error) for the validation data. As you can see from the lengthy output, all criteria are still decreasing after 200 epochs. It is helpful to view the epoch history graphically. If you run the code in an interactive environment (e.g., RStudio), the epoch history is displayed and updated live. You can always plot the epoch <code>history</code> with the <code>plot</code> command:</p>
@@ -1157,7 +1163,7 @@ Figure&nbsp;32.1: Epoch history for the first 200 epochs.
 </div>
 </div>
 </div>
-<p>All criteria are steadily declining and have not leveled out after 200 epochs (<a href="#fig-hitters-ann-200" class="quarto-xref">Figure&nbsp;<span>32.1</span></a>). As expected, the mean squared error and mean absolute error are higher in the validation data than in the training data. This is not always the case when training neural networks. Maybe surprisingly, after about 75 epochs the metrics are showing more variability from epoch to epoch in the training data than in the validation data. Also, there is no guarantee that criteria decrease monotonically, the mean squared error of epoch <span class="math inline">\(t\)</span> can be higher than that of epoch <span class="math inline">\(t-1\)</span>. We are looking for the results to settle down and stabilize before calling the optimization completed. More epochs need to be run in this example. Fortunately, you can continue where the previous run has left off. The following code trains the network for another 100 epochs:</p>
+<p>All criteria are steadily declining and have not leveled out after 200 epochs (<a href="#fig-hitters-ann-200" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-hitters-ann-200</span></a>). As expected, the mean squared error and mean absolute error are higher in the validation data than in the training data. This is not always the case when training neural networks. Maybe surprisingly, after about 75 epochs the metrics are showing more variability from epoch to epoch in the training data than in the validation data. Also, there is no guarantee that criteria decrease monotonically, the mean squared error of epoch <span class="math inline">\(t\)</span> can be higher than that of epoch <span class="math inline">\(t-1\)</span>. We are looking for the results to settle down and stabilize before calling the optimization completed. More epochs need to be run in this example. Fortunately, you can continue where the previous run has left off. The following code trains the network for another 100 epochs:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>firstANN <span class="sc">%&gt;%</span> </span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fit</span>(x[<span class="sc">-</span>testid, ], </span>
@@ -1168,205 +1174,205 @@ Figure&nbsp;32.1: Epoch history for the first 200 epochs.
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Epoch 1/100
-6/6 - 0s - loss: 365147.2812 - mean_absolute_error: 500.5816 - val_loss: 412237.0625 - val_mean_absolute_error: 514.6265 - 71ms/epoch - 12ms/step
+6/6 - 0s - loss: 366723.5312 - mean_absolute_error: 500.0139 - val_loss: 424088.3750 - val_mean_absolute_error: 513.5447 - 65ms/epoch - 11ms/step
 Epoch 2/100
-6/6 - 0s - loss: 352661.9688 - mean_absolute_error: 492.8665 - val_loss: 411403.5312 - val_mean_absolute_error: 514.5582 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 367825.0000 - mean_absolute_error: 498.8979 - val_loss: 423248.9062 - val_mean_absolute_error: 513.3619 - 49ms/epoch - 8ms/step
 Epoch 3/100
-6/6 - 0s - loss: 352364.2188 - mean_absolute_error: 491.5524 - val_loss: 410641.7500 - val_mean_absolute_error: 514.4878 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 363962.6250 - mean_absolute_error: 497.0305 - val_loss: 422451.1250 - val_mean_absolute_error: 513.1888 - 48ms/epoch - 8ms/step
 Epoch 4/100
-6/6 - 0s - loss: 355729.1562 - mean_absolute_error: 494.7828 - val_loss: 409885.0000 - val_mean_absolute_error: 514.4188 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 375415.5312 - mean_absolute_error: 506.5023 - val_loss: 421750.9062 - val_mean_absolute_error: 513.0226 - 48ms/epoch - 8ms/step
 Epoch 5/100
-6/6 - 0s - loss: 365818.4375 - mean_absolute_error: 501.9479 - val_loss: 409168.0312 - val_mean_absolute_error: 514.3528 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 365433.6250 - mean_absolute_error: 497.4866 - val_loss: 420931.1875 - val_mean_absolute_error: 512.8422 - 47ms/epoch - 8ms/step
 Epoch 6/100
-6/6 - 0s - loss: 349382.9688 - mean_absolute_error: 488.6680 - val_loss: 408416.5625 - val_mean_absolute_error: 514.2808 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 364757.8438 - mean_absolute_error: 498.2191 - val_loss: 420122.6562 - val_mean_absolute_error: 512.6705 - 48ms/epoch - 8ms/step
 Epoch 7/100
-6/6 - 0s - loss: 355590.9375 - mean_absolute_error: 493.4650 - val_loss: 407645.3438 - val_mean_absolute_error: 514.2089 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 365147.3438 - mean_absolute_error: 500.5895 - val_loss: 419370.3125 - val_mean_absolute_error: 512.5981 - 47ms/epoch - 8ms/step
 Epoch 8/100
-6/6 - 0s - loss: 361538.9375 - mean_absolute_error: 495.9058 - val_loss: 406840.3750 - val_mean_absolute_error: 514.1394 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 362619.0000 - mean_absolute_error: 497.0582 - val_loss: 418619.4375 - val_mean_absolute_error: 512.5128 - 47ms/epoch - 8ms/step
 Epoch 9/100
-6/6 - 0s - loss: 354905.2812 - mean_absolute_error: 494.1031 - val_loss: 406076.3125 - val_mean_absolute_error: 514.0757 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 362810.9062 - mean_absolute_error: 498.0090 - val_loss: 417821.9688 - val_mean_absolute_error: 512.4383 - 55ms/epoch - 9ms/step
 Epoch 10/100
-6/6 - 0s - loss: 355141.2188 - mean_absolute_error: 496.5707 - val_loss: 405251.8125 - val_mean_absolute_error: 514.0060 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 362678.1562 - mean_absolute_error: 497.4013 - val_loss: 417027.1875 - val_mean_absolute_error: 512.3642 - 48ms/epoch - 8ms/step
 Epoch 11/100
-6/6 - 0s - loss: 360287.0625 - mean_absolute_error: 499.7583 - val_loss: 404540.6875 - val_mean_absolute_error: 513.9391 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 361072.8750 - mean_absolute_error: 495.1664 - val_loss: 416225.5312 - val_mean_absolute_error: 512.2904 - 47ms/epoch - 8ms/step
 Epoch 12/100
-6/6 - 0s - loss: 356302.6875 - mean_absolute_error: 497.9318 - val_loss: 403791.3438 - val_mean_absolute_error: 513.8746 - 46ms/epoch - 8ms/step
+6/6 - 0s - loss: 356335.1250 - mean_absolute_error: 494.2666 - val_loss: 415413.6875 - val_mean_absolute_error: 512.2084 - 48ms/epoch - 8ms/step
 Epoch 13/100
-6/6 - 0s - loss: 357275.2812 - mean_absolute_error: 492.0284 - val_loss: 403167.7812 - val_mean_absolute_error: 513.8085 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 367588.2812 - mean_absolute_error: 496.7112 - val_loss: 414725.7812 - val_mean_absolute_error: 512.1300 - 47ms/epoch - 8ms/step
 Epoch 14/100
-6/6 - 0s - loss: 352448.7812 - mean_absolute_error: 492.6255 - val_loss: 402360.5000 - val_mean_absolute_error: 513.7416 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 361910.8125 - mean_absolute_error: 495.6493 - val_loss: 413918.6250 - val_mean_absolute_error: 512.0514 - 48ms/epoch - 8ms/step
 Epoch 15/100
-6/6 - 0s - loss: 352926.4688 - mean_absolute_error: 493.7325 - val_loss: 401717.7500 - val_mean_absolute_error: 513.6746 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 357290.9688 - mean_absolute_error: 495.8105 - val_loss: 413103.2500 - val_mean_absolute_error: 511.9682 - 47ms/epoch - 8ms/step
 Epoch 16/100
-6/6 - 0s - loss: 355062.3750 - mean_absolute_error: 494.5887 - val_loss: 401133.9688 - val_mean_absolute_error: 513.6116 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 352975.7812 - mean_absolute_error: 491.5051 - val_loss: 412336.3750 - val_mean_absolute_error: 511.8937 - 47ms/epoch - 8ms/step
 Epoch 17/100
-6/6 - 0s - loss: 353299.6562 - mean_absolute_error: 491.3240 - val_loss: 400411.5000 - val_mean_absolute_error: 513.5388 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 354285.5312 - mean_absolute_error: 493.2787 - val_loss: 411543.7188 - val_mean_absolute_error: 511.8142 - 46ms/epoch - 8ms/step
 Epoch 18/100
-6/6 - 0s - loss: 351772.0938 - mean_absolute_error: 492.9532 - val_loss: 399808.6562 - val_mean_absolute_error: 513.4797 - 46ms/epoch - 8ms/step
+6/6 - 0s - loss: 361143.7812 - mean_absolute_error: 495.1172 - val_loss: 410884.0000 - val_mean_absolute_error: 511.7377 - 47ms/epoch - 8ms/step
 Epoch 19/100
-6/6 - 0s - loss: 358504.1562 - mean_absolute_error: 497.4082 - val_loss: 399221.0625 - val_mean_absolute_error: 513.4129 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 354239.5000 - mean_absolute_error: 493.5316 - val_loss: 410055.1250 - val_mean_absolute_error: 511.6542 - 47ms/epoch - 8ms/step
 Epoch 20/100
-6/6 - 0s - loss: 351850.2812 - mean_absolute_error: 492.9138 - val_loss: 398511.3438 - val_mean_absolute_error: 513.3474 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 359303.6250 - mean_absolute_error: 496.1428 - val_loss: 409309.7812 - val_mean_absolute_error: 511.5739 - 47ms/epoch - 8ms/step
 Epoch 21/100
-6/6 - 0s - loss: 354975.7500 - mean_absolute_error: 492.6649 - val_loss: 397977.7500 - val_mean_absolute_error: 513.2744 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 358194.0938 - mean_absolute_error: 493.8190 - val_loss: 408618.7500 - val_mean_absolute_error: 511.4869 - 47ms/epoch - 8ms/step
 Epoch 22/100
-6/6 - 0s - loss: 356554.0312 - mean_absolute_error: 496.7834 - val_loss: 397285.0000 - val_mean_absolute_error: 513.2042 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 362452.4688 - mean_absolute_error: 497.0506 - val_loss: 407907.6875 - val_mean_absolute_error: 511.4035 - 55ms/epoch - 9ms/step
 Epoch 23/100
-6/6 - 0s - loss: 355069.9688 - mean_absolute_error: 497.6052 - val_loss: 396709.3750 - val_mean_absolute_error: 513.1379 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 366614.5312 - mean_absolute_error: 495.7812 - val_loss: 407220.3125 - val_mean_absolute_error: 511.3146 - 53ms/epoch - 9ms/step
 Epoch 24/100
-6/6 - 0s - loss: 360197.5312 - mean_absolute_error: 499.8509 - val_loss: 396175.4375 - val_mean_absolute_error: 513.0699 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 359401.5000 - mean_absolute_error: 494.2376 - val_loss: 406505.5625 - val_mean_absolute_error: 511.2306 - 53ms/epoch - 9ms/step
 Epoch 25/100
-6/6 - 0s - loss: 355621.2188 - mean_absolute_error: 496.0405 - val_loss: 395548.1250 - val_mean_absolute_error: 512.9991 - 55ms/epoch - 9ms/step
+6/6 - 0s - loss: 359848.2500 - mean_absolute_error: 493.8848 - val_loss: 405726.6250 - val_mean_absolute_error: 511.1523 - 52ms/epoch - 9ms/step
 Epoch 26/100
-6/6 - 0s - loss: 346483.5312 - mean_absolute_error: 490.1424 - val_loss: 394840.4688 - val_mean_absolute_error: 512.9238 - 51ms/epoch - 8ms/step
+6/6 - 0s - loss: 360513.4062 - mean_absolute_error: 498.1766 - val_loss: 405062.2500 - val_mean_absolute_error: 511.0711 - 52ms/epoch - 9ms/step
 Epoch 27/100
-6/6 - 0s - loss: 352016.6250 - mean_absolute_error: 495.5812 - val_loss: 394214.9062 - val_mean_absolute_error: 512.8500 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 352892.4062 - mean_absolute_error: 489.6458 - val_loss: 404266.7188 - val_mean_absolute_error: 510.9836 - 52ms/epoch - 9ms/step
 Epoch 28/100
-6/6 - 0s - loss: 349055.1562 - mean_absolute_error: 492.9431 - val_loss: 393611.7188 - val_mean_absolute_error: 512.7806 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 349759.5312 - mean_absolute_error: 488.3154 - val_loss: 403510.4375 - val_mean_absolute_error: 510.8969 - 47ms/epoch - 8ms/step
 Epoch 29/100
-6/6 - 0s - loss: 345397.0000 - mean_absolute_error: 487.8767 - val_loss: 393016.4688 - val_mean_absolute_error: 512.7134 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 355189.7812 - mean_absolute_error: 497.4675 - val_loss: 402786.4062 - val_mean_absolute_error: 510.8094 - 47ms/epoch - 8ms/step
 Epoch 30/100
-6/6 - 0s - loss: 348977.6250 - mean_absolute_error: 493.7151 - val_loss: 392429.5625 - val_mean_absolute_error: 512.6425 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 351836.0938 - mean_absolute_error: 492.3603 - val_loss: 402029.4688 - val_mean_absolute_error: 510.7227 - 47ms/epoch - 8ms/step
 Epoch 31/100
-6/6 - 0s - loss: 343733.0312 - mean_absolute_error: 490.8257 - val_loss: 391816.0938 - val_mean_absolute_error: 512.5631 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 352006.8750 - mean_absolute_error: 493.7666 - val_loss: 401337.6875 - val_mean_absolute_error: 510.6456 - 46ms/epoch - 8ms/step
 Epoch 32/100
-6/6 - 0s - loss: 351393.3125 - mean_absolute_error: 495.8878 - val_loss: 391259.7188 - val_mean_absolute_error: 512.4988 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 351747.7812 - mean_absolute_error: 490.3284 - val_loss: 400614.1250 - val_mean_absolute_error: 510.5695 - 47ms/epoch - 8ms/step
 Epoch 33/100
-6/6 - 0s - loss: 345034.9688 - mean_absolute_error: 492.0683 - val_loss: 390664.7500 - val_mean_absolute_error: 512.4360 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 350280.1875 - mean_absolute_error: 486.7841 - val_loss: 399952.5625 - val_mean_absolute_error: 510.4887 - 48ms/epoch - 8ms/step
 Epoch 34/100
-6/6 - 0s - loss: 349037.9688 - mean_absolute_error: 494.6681 - val_loss: 390088.5000 - val_mean_absolute_error: 512.3613 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 359376.7500 - mean_absolute_error: 495.9523 - val_loss: 399304.4688 - val_mean_absolute_error: 510.3961 - 47ms/epoch - 8ms/step
 Epoch 35/100
-6/6 - 0s - loss: 352525.3750 - mean_absolute_error: 492.0183 - val_loss: 389614.3438 - val_mean_absolute_error: 512.2913 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 362630.3125 - mean_absolute_error: 497.4862 - val_loss: 398702.4375 - val_mean_absolute_error: 510.3119 - 47ms/epoch - 8ms/step
 Epoch 36/100
-6/6 - 0s - loss: 358342.1875 - mean_absolute_error: 498.3113 - val_loss: 389096.2812 - val_mean_absolute_error: 512.2263 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 353398.2500 - mean_absolute_error: 492.7207 - val_loss: 398026.4062 - val_mean_absolute_error: 510.2346 - 47ms/epoch - 8ms/step
 Epoch 37/100
-6/6 - 0s - loss: 354527.9375 - mean_absolute_error: 494.6120 - val_loss: 388541.4375 - val_mean_absolute_error: 512.1465 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 354392.2812 - mean_absolute_error: 488.2952 - val_loss: 397406.2500 - val_mean_absolute_error: 510.1462 - 47ms/epoch - 8ms/step
 Epoch 38/100
-6/6 - 0s - loss: 344763.5938 - mean_absolute_error: 489.4366 - val_loss: 387999.0000 - val_mean_absolute_error: 512.0748 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 353293.2812 - mean_absolute_error: 494.5154 - val_loss: 396781.3438 - val_mean_absolute_error: 510.0668 - 46ms/epoch - 8ms/step
 Epoch 39/100
-6/6 - 0s - loss: 349956.7188 - mean_absolute_error: 491.4189 - val_loss: 387446.0625 - val_mean_absolute_error: 512.0015 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 347359.6250 - mean_absolute_error: 489.2645 - val_loss: 396123.4375 - val_mean_absolute_error: 509.9818 - 46ms/epoch - 8ms/step
 Epoch 40/100
-6/6 - 0s - loss: 341134.4062 - mean_absolute_error: 487.4668 - val_loss: 386876.9688 - val_mean_absolute_error: 511.9369 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 353946.1250 - mean_absolute_error: 491.8744 - val_loss: 395439.0938 - val_mean_absolute_error: 509.8932 - 47ms/epoch - 8ms/step
 Epoch 41/100
-6/6 - 0s - loss: 340737.7812 - mean_absolute_error: 485.1160 - val_loss: 386323.9688 - val_mean_absolute_error: 511.8690 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 354190.2188 - mean_absolute_error: 494.5304 - val_loss: 394775.7188 - val_mean_absolute_error: 509.8153 - 47ms/epoch - 8ms/step
 Epoch 42/100
-6/6 - 0s - loss: 339247.1562 - mean_absolute_error: 488.8567 - val_loss: 385773.0625 - val_mean_absolute_error: 511.7968 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 351263.8125 - mean_absolute_error: 495.6570 - val_loss: 394223.8750 - val_mean_absolute_error: 509.7235 - 47ms/epoch - 8ms/step
 Epoch 43/100
-6/6 - 0s - loss: 353175.9062 - mean_absolute_error: 496.2742 - val_loss: 385293.6875 - val_mean_absolute_error: 511.7213 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 344989.1875 - mean_absolute_error: 489.0531 - val_loss: 393579.4062 - val_mean_absolute_error: 509.6444 - 47ms/epoch - 8ms/step
 Epoch 44/100
-6/6 - 0s - loss: 344642.7812 - mean_absolute_error: 489.1848 - val_loss: 384797.4688 - val_mean_absolute_error: 511.6382 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 351047.8750 - mean_absolute_error: 492.4752 - val_loss: 392925.0625 - val_mean_absolute_error: 509.5578 - 47ms/epoch - 8ms/step
 Epoch 45/100
-6/6 - 0s - loss: 343377.4375 - mean_absolute_error: 489.1048 - val_loss: 384203.2500 - val_mean_absolute_error: 511.5628 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 349008.4688 - mean_absolute_error: 490.3532 - val_loss: 392332.1250 - val_mean_absolute_error: 509.4685 - 47ms/epoch - 8ms/step
 Epoch 46/100
-6/6 - 0s - loss: 335861.0625 - mean_absolute_error: 485.3740 - val_loss: 383631.0000 - val_mean_absolute_error: 511.5005 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 348624.4375 - mean_absolute_error: 492.3387 - val_loss: 391672.6875 - val_mean_absolute_error: 509.3856 - 47ms/epoch - 8ms/step
 Epoch 47/100
-6/6 - 0s - loss: 347670.0000 - mean_absolute_error: 488.8091 - val_loss: 383123.6562 - val_mean_absolute_error: 511.4334 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 344260.7812 - mean_absolute_error: 482.3730 - val_loss: 391078.7500 - val_mean_absolute_error: 509.2979 - 47ms/epoch - 8ms/step
 Epoch 48/100
-6/6 - 0s - loss: 354496.6875 - mean_absolute_error: 496.0715 - val_loss: 382678.3438 - val_mean_absolute_error: 511.3720 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 347896.9062 - mean_absolute_error: 490.2516 - val_loss: 390411.9688 - val_mean_absolute_error: 509.2169 - 47ms/epoch - 8ms/step
 Epoch 49/100
-6/6 - 0s - loss: 343049.0000 - mean_absolute_error: 489.1631 - val_loss: 382123.1562 - val_mean_absolute_error: 511.3002 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 343506.4375 - mean_absolute_error: 489.3250 - val_loss: 389770.3125 - val_mean_absolute_error: 509.1278 - 48ms/epoch - 8ms/step
 Epoch 50/100
-6/6 - 0s - loss: 344196.3125 - mean_absolute_error: 491.1617 - val_loss: 381631.5625 - val_mean_absolute_error: 511.2227 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 336775.0000 - mean_absolute_error: 480.3546 - val_loss: 389145.0625 - val_mean_absolute_error: 509.0432 - 48ms/epoch - 8ms/step
 Epoch 51/100
-6/6 - 0s - loss: 345819.5938 - mean_absolute_error: 493.3412 - val_loss: 381126.7188 - val_mean_absolute_error: 511.1531 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 343014.3750 - mean_absolute_error: 486.5332 - val_loss: 388493.9688 - val_mean_absolute_error: 508.9554 - 48ms/epoch - 8ms/step
 Epoch 52/100
-6/6 - 0s - loss: 343258.0000 - mean_absolute_error: 491.5183 - val_loss: 380606.8125 - val_mean_absolute_error: 511.0843 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 348906.2188 - mean_absolute_error: 486.8154 - val_loss: 387902.6250 - val_mean_absolute_error: 508.8755 - 47ms/epoch - 8ms/step
 Epoch 53/100
-6/6 - 0s - loss: 339856.4688 - mean_absolute_error: 488.3695 - val_loss: 380086.8125 - val_mean_absolute_error: 511.0190 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 355640.4375 - mean_absolute_error: 494.4800 - val_loss: 387426.6562 - val_mean_absolute_error: 508.7820 - 50ms/epoch - 8ms/step
 Epoch 54/100
-6/6 - 0s - loss: 345488.7812 - mean_absolute_error: 486.7297 - val_loss: 379583.0938 - val_mean_absolute_error: 510.9410 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 345864.5938 - mean_absolute_error: 485.3607 - val_loss: 386819.1250 - val_mean_absolute_error: 508.6994 - 48ms/epoch - 8ms/step
 Epoch 55/100
-6/6 - 0s - loss: 334950.1250 - mean_absolute_error: 486.4966 - val_loss: 379164.7812 - val_mean_absolute_error: 510.8683 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 347025.8750 - mean_absolute_error: 486.9347 - val_loss: 386187.2500 - val_mean_absolute_error: 508.6167 - 48ms/epoch - 8ms/step
 Epoch 56/100
-6/6 - 0s - loss: 343321.5625 - mean_absolute_error: 487.1029 - val_loss: 378707.2188 - val_mean_absolute_error: 510.7993 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 336484.7188 - mean_absolute_error: 486.2156 - val_loss: 385556.0938 - val_mean_absolute_error: 508.5293 - 47ms/epoch - 8ms/step
 Epoch 57/100
-6/6 - 0s - loss: 327086.1562 - mean_absolute_error: 480.1974 - val_loss: 378169.4688 - val_mean_absolute_error: 510.7734 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 349123.1250 - mean_absolute_error: 493.2444 - val_loss: 384997.3125 - val_mean_absolute_error: 508.4409 - 47ms/epoch - 8ms/step
 Epoch 58/100
-6/6 - 0s - loss: 345492.2500 - mean_absolute_error: 487.9813 - val_loss: 377800.2188 - val_mean_absolute_error: 510.7345 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 342670.8125 - mean_absolute_error: 486.6414 - val_loss: 384458.2500 - val_mean_absolute_error: 508.3413 - 47ms/epoch - 8ms/step
 Epoch 59/100
-6/6 - 0s - loss: 345000.0312 - mean_absolute_error: 490.4059 - val_loss: 377452.3750 - val_mean_absolute_error: 510.6983 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 340880.5938 - mean_absolute_error: 488.3238 - val_loss: 383950.1875 - val_mean_absolute_error: 508.2519 - 47ms/epoch - 8ms/step
 Epoch 60/100
-6/6 - 0s - loss: 344065.2812 - mean_absolute_error: 491.7959 - val_loss: 377054.2188 - val_mean_absolute_error: 510.6671 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 342481.3750 - mean_absolute_error: 490.4230 - val_loss: 383404.3125 - val_mean_absolute_error: 508.1671 - 47ms/epoch - 8ms/step
 Epoch 61/100
-6/6 - 0s - loss: 337943.3750 - mean_absolute_error: 489.6431 - val_loss: 376586.6250 - val_mean_absolute_error: 510.6451 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 339528.9062 - mean_absolute_error: 483.3492 - val_loss: 382875.6250 - val_mean_absolute_error: 508.0812 - 47ms/epoch - 8ms/step
 Epoch 62/100
-6/6 - 0s - loss: 353420.6250 - mean_absolute_error: 495.8584 - val_loss: 376206.6562 - val_mean_absolute_error: 510.6125 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 353337.3750 - mean_absolute_error: 488.1700 - val_loss: 382454.5312 - val_mean_absolute_error: 507.9905 - 47ms/epoch - 8ms/step
 Epoch 63/100
-6/6 - 0s - loss: 344302.1562 - mean_absolute_error: 488.3867 - val_loss: 375778.5625 - val_mean_absolute_error: 510.5884 - 46ms/epoch - 8ms/step
+6/6 - 0s - loss: 356429.7812 - mean_absolute_error: 494.6584 - val_loss: 382040.3125 - val_mean_absolute_error: 507.9009 - 47ms/epoch - 8ms/step
 Epoch 64/100
-6/6 - 0s - loss: 346805.7812 - mean_absolute_error: 490.4602 - val_loss: 375465.5312 - val_mean_absolute_error: 510.5543 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 350260.3750 - mean_absolute_error: 492.4630 - val_loss: 381507.9062 - val_mean_absolute_error: 507.8173 - 47ms/epoch - 8ms/step
 Epoch 65/100
-6/6 - 0s - loss: 348484.1875 - mean_absolute_error: 490.5179 - val_loss: 375136.8125 - val_mean_absolute_error: 510.5180 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 344773.8750 - mean_absolute_error: 483.3904 - val_loss: 381043.9375 - val_mean_absolute_error: 507.7279 - 47ms/epoch - 8ms/step
 Epoch 66/100
-6/6 - 0s - loss: 342843.5938 - mean_absolute_error: 489.4226 - val_loss: 374814.0938 - val_mean_absolute_error: 510.4752 - 46ms/epoch - 8ms/step
+6/6 - 0s - loss: 342282.9688 - mean_absolute_error: 489.6752 - val_loss: 380504.4062 - val_mean_absolute_error: 507.6429 - 47ms/epoch - 8ms/step
 Epoch 67/100
-6/6 - 0s - loss: 342405.4375 - mean_absolute_error: 484.1535 - val_loss: 374394.6875 - val_mean_absolute_error: 510.4484 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 344569.9688 - mean_absolute_error: 489.9104 - val_loss: 380059.1250 - val_mean_absolute_error: 507.5636 - 47ms/epoch - 8ms/step
 Epoch 68/100
-6/6 - 0s - loss: 344752.2188 - mean_absolute_error: 487.1465 - val_loss: 374075.3125 - val_mean_absolute_error: 510.4011 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 350863.6562 - mean_absolute_error: 488.7365 - val_loss: 379633.0625 - val_mean_absolute_error: 507.5152 - 47ms/epoch - 8ms/step
 Epoch 69/100
-6/6 - 0s - loss: 344365.9062 - mean_absolute_error: 491.4438 - val_loss: 373779.4688 - val_mean_absolute_error: 510.3520 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 346361.1250 - mean_absolute_error: 485.8186 - val_loss: 379108.0000 - val_mean_absolute_error: 507.4756 - 47ms/epoch - 8ms/step
 Epoch 70/100
-6/6 - 0s - loss: 353265.5938 - mean_absolute_error: 495.0637 - val_loss: 373409.0000 - val_mean_absolute_error: 510.3306 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 346242.9375 - mean_absolute_error: 489.8688 - val_loss: 378722.4688 - val_mean_absolute_error: 507.4248 - 47ms/epoch - 8ms/step
 Epoch 71/100
-6/6 - 0s - loss: 346546.1562 - mean_absolute_error: 484.8041 - val_loss: 373145.5312 - val_mean_absolute_error: 510.2782 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 338000.6250 - mean_absolute_error: 482.1013 - val_loss: 378242.4688 - val_mean_absolute_error: 507.3867 - 47ms/epoch - 8ms/step
 Epoch 72/100
-6/6 - 0s - loss: 353810.4688 - mean_absolute_error: 494.6914 - val_loss: 372801.2500 - val_mean_absolute_error: 510.2430 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 349634.4688 - mean_absolute_error: 489.3830 - val_loss: 377789.6875 - val_mean_absolute_error: 507.3426 - 47ms/epoch - 8ms/step
 Epoch 73/100
-6/6 - 0s - loss: 347741.8750 - mean_absolute_error: 487.9662 - val_loss: 372506.5000 - val_mean_absolute_error: 510.2077 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 345153.7500 - mean_absolute_error: 486.5722 - val_loss: 377306.4688 - val_mean_absolute_error: 507.3025 - 47ms/epoch - 8ms/step
 Epoch 74/100
-6/6 - 0s - loss: 335327.8750 - mean_absolute_error: 487.6101 - val_loss: 372173.8750 - val_mean_absolute_error: 510.1863 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 349094.9688 - mean_absolute_error: 490.3807 - val_loss: 376817.3438 - val_mean_absolute_error: 507.2564 - 47ms/epoch - 8ms/step
 Epoch 75/100
-6/6 - 0s - loss: 343958.7812 - mean_absolute_error: 486.1572 - val_loss: 371840.4062 - val_mean_absolute_error: 510.1588 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 336489.0312 - mean_absolute_error: 481.2335 - val_loss: 376389.9688 - val_mean_absolute_error: 507.2058 - 49ms/epoch - 8ms/step
 Epoch 76/100
-6/6 - 0s - loss: 349545.0312 - mean_absolute_error: 495.0938 - val_loss: 371490.0938 - val_mean_absolute_error: 510.1177 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 352868.5312 - mean_absolute_error: 491.0159 - val_loss: 375988.2500 - val_mean_absolute_error: 507.1541 - 47ms/epoch - 8ms/step
 Epoch 77/100
-6/6 - 0s - loss: 341628.2500 - mean_absolute_error: 485.1312 - val_loss: 371236.4062 - val_mean_absolute_error: 510.0791 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 336980.8750 - mean_absolute_error: 481.2820 - val_loss: 375528.1250 - val_mean_absolute_error: 507.1128 - 47ms/epoch - 8ms/step
 Epoch 78/100
-6/6 - 0s - loss: 339422.7188 - mean_absolute_error: 486.5622 - val_loss: 370870.5938 - val_mean_absolute_error: 510.0569 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 329989.4062 - mean_absolute_error: 479.8490 - val_loss: 375028.9062 - val_mean_absolute_error: 507.0717 - 47ms/epoch - 8ms/step
 Epoch 79/100
-6/6 - 0s - loss: 334078.9688 - mean_absolute_error: 485.8403 - val_loss: 370502.6562 - val_mean_absolute_error: 510.0260 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 333541.9688 - mean_absolute_error: 481.1204 - val_loss: 374565.4375 - val_mean_absolute_error: 507.0299 - 47ms/epoch - 8ms/step
 Epoch 80/100
-6/6 - 0s - loss: 332196.0938 - mean_absolute_error: 481.1454 - val_loss: 370140.4062 - val_mean_absolute_error: 509.9970 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 331665.1875 - mean_absolute_error: 481.1052 - val_loss: 374098.1250 - val_mean_absolute_error: 506.9795 - 49ms/epoch - 8ms/step
 Epoch 81/100
-6/6 - 0s - loss: 349069.1875 - mean_absolute_error: 494.0684 - val_loss: 369870.4062 - val_mean_absolute_error: 509.9668 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 327373.8750 - mean_absolute_error: 476.0654 - val_loss: 373607.7812 - val_mean_absolute_error: 506.9314 - 48ms/epoch - 8ms/step
 Epoch 82/100
-6/6 - 0s - loss: 342388.4688 - mean_absolute_error: 489.4974 - val_loss: 369560.9688 - val_mean_absolute_error: 509.9343 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 336863.5000 - mean_absolute_error: 481.9846 - val_loss: 373191.3750 - val_mean_absolute_error: 506.8810 - 47ms/epoch - 8ms/step
 Epoch 83/100
-6/6 - 0s - loss: 344220.2188 - mean_absolute_error: 486.9444 - val_loss: 369336.5625 - val_mean_absolute_error: 509.8904 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 332712.3438 - mean_absolute_error: 480.1444 - val_loss: 372763.8125 - val_mean_absolute_error: 506.8283 - 48ms/epoch - 8ms/step
 Epoch 84/100
-6/6 - 0s - loss: 336571.6875 - mean_absolute_error: 483.4425 - val_loss: 369048.0000 - val_mean_absolute_error: 509.8582 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 341384.4688 - mean_absolute_error: 485.2153 - val_loss: 372417.2500 - val_mean_absolute_error: 506.7669 - 47ms/epoch - 8ms/step
 Epoch 85/100
-6/6 - 0s - loss: 335537.4062 - mean_absolute_error: 486.6262 - val_loss: 368736.5625 - val_mean_absolute_error: 509.8304 - 53ms/epoch - 9ms/step
+6/6 - 0s - loss: 330914.4375 - mean_absolute_error: 477.0816 - val_loss: 372027.5938 - val_mean_absolute_error: 506.7131 - 47ms/epoch - 8ms/step
 Epoch 86/100
-6/6 - 0s - loss: 344480.9688 - mean_absolute_error: 489.2449 - val_loss: 368478.9375 - val_mean_absolute_error: 509.7903 - 67ms/epoch - 11ms/step
+6/6 - 0s - loss: 347620.8750 - mean_absolute_error: 484.5981 - val_loss: 371635.0000 - val_mean_absolute_error: 506.6603 - 47ms/epoch - 8ms/step
 Epoch 87/100
-6/6 - 0s - loss: 339064.9375 - mean_absolute_error: 488.7478 - val_loss: 368207.8750 - val_mean_absolute_error: 509.7499 - 51ms/epoch - 8ms/step
+6/6 - 0s - loss: 331696.5312 - mean_absolute_error: 479.1432 - val_loss: 371175.0312 - val_mean_absolute_error: 506.6238 - 47ms/epoch - 8ms/step
 Epoch 88/100
-6/6 - 0s - loss: 334850.7188 - mean_absolute_error: 482.8951 - val_loss: 367892.9688 - val_mean_absolute_error: 509.7192 - 50ms/epoch - 8ms/step
+6/6 - 0s - loss: 340192.8125 - mean_absolute_error: 492.4324 - val_loss: 370760.7812 - val_mean_absolute_error: 506.5757 - 47ms/epoch - 8ms/step
 Epoch 89/100
-6/6 - 0s - loss: 328820.3750 - mean_absolute_error: 476.0215 - val_loss: 367594.3125 - val_mean_absolute_error: 509.6896 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 337711.5938 - mean_absolute_error: 485.6206 - val_loss: 370367.0000 - val_mean_absolute_error: 506.5312 - 47ms/epoch - 8ms/step
 Epoch 90/100
-6/6 - 0s - loss: 346116.7500 - mean_absolute_error: 489.2402 - val_loss: 367342.6875 - val_mean_absolute_error: 509.6405 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 329755.0938 - mean_absolute_error: 475.7763 - val_loss: 370005.2500 - val_mean_absolute_error: 506.4738 - 48ms/epoch - 8ms/step
 Epoch 91/100
-6/6 - 0s - loss: 343033.5625 - mean_absolute_error: 486.9976 - val_loss: 367028.0938 - val_mean_absolute_error: 509.5864 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 337417.7812 - mean_absolute_error: 480.1941 - val_loss: 369684.7812 - val_mean_absolute_error: 506.4257 - 47ms/epoch - 8ms/step
 Epoch 92/100
-6/6 - 0s - loss: 341928.2188 - mean_absolute_error: 484.0636 - val_loss: 366817.1875 - val_mean_absolute_error: 509.5502 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 346769.4688 - mean_absolute_error: 486.0732 - val_loss: 369336.5625 - val_mean_absolute_error: 506.3828 - 47ms/epoch - 8ms/step
 Epoch 93/100
-6/6 - 0s - loss: 343058.8750 - mean_absolute_error: 485.1991 - val_loss: 366525.1875 - val_mean_absolute_error: 509.5214 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 332632.0312 - mean_absolute_error: 483.3652 - val_loss: 368972.4062 - val_mean_absolute_error: 506.3350 - 47ms/epoch - 8ms/step
 Epoch 94/100
-6/6 - 0s - loss: 346277.7188 - mean_absolute_error: 486.9332 - val_loss: 366253.1562 - val_mean_absolute_error: 509.4857 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 332117.8125 - mean_absolute_error: 478.0042 - val_loss: 368536.0625 - val_mean_absolute_error: 506.2839 - 48ms/epoch - 8ms/step
 Epoch 95/100
-6/6 - 0s - loss: 337786.0312 - mean_absolute_error: 482.0085 - val_loss: 365971.3438 - val_mean_absolute_error: 509.4608 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 336809.4688 - mean_absolute_error: 477.8742 - val_loss: 368252.1875 - val_mean_absolute_error: 506.2131 - 48ms/epoch - 8ms/step
 Epoch 96/100
-6/6 - 0s - loss: 343570.8750 - mean_absolute_error: 486.1084 - val_loss: 365783.7188 - val_mean_absolute_error: 509.4071 - 47ms/epoch - 8ms/step
+6/6 - 0s - loss: 332806.3750 - mean_absolute_error: 476.6270 - val_loss: 367821.9375 - val_mean_absolute_error: 506.1750 - 52ms/epoch - 9ms/step
 Epoch 97/100
-6/6 - 0s - loss: 331375.5312 - mean_absolute_error: 478.2584 - val_loss: 365521.2500 - val_mean_absolute_error: 509.3850 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 347988.9688 - mean_absolute_error: 494.4049 - val_loss: 367516.4688 - val_mean_absolute_error: 506.0997 - 48ms/epoch - 8ms/step
 Epoch 98/100
-6/6 - 0s - loss: 336183.9375 - mean_absolute_error: 485.2026 - val_loss: 365233.8438 - val_mean_absolute_error: 509.3587 - 49ms/epoch - 8ms/step
+6/6 - 0s - loss: 352025.2812 - mean_absolute_error: 485.3349 - val_loss: 367238.7188 - val_mean_absolute_error: 506.0373 - 49ms/epoch - 8ms/step
 Epoch 99/100
-6/6 - 0s - loss: 344662.2812 - mean_absolute_error: 484.0164 - val_loss: 364978.8125 - val_mean_absolute_error: 509.3232 - 48ms/epoch - 8ms/step
+6/6 - 0s - loss: 345676.1875 - mean_absolute_error: 489.7222 - val_loss: 366973.0625 - val_mean_absolute_error: 505.9605 - 48ms/epoch - 8ms/step
 Epoch 100/100
-6/6 - 0s - loss: 339747.3750 - mean_absolute_error: 486.5609 - val_loss: 364726.5938 - val_mean_absolute_error: 509.2812 - 48ms/epoch - 8ms/step</code></pre>
+6/6 - 0s - loss: 347096.8750 - mean_absolute_error: 491.4272 - val_loss: 366656.2188 - val_mean_absolute_error: 505.8992 - 47ms/epoch - 8ms/step</code></pre>
 </div>
 </div>
 <hr>
@@ -1396,11 +1402,11 @@ Epoch 100/100
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>predvals <span class="ot">&lt;-</span> <span class="fu">predict</span>(firstANN, x[testid, ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>3/3 - 0s - 42ms/epoch - 14ms/step</code></pre>
+<pre><code>3/3 - 0s - 41ms/epoch - 14ms/step</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">abs</span>(y[testid] <span class="sc">-</span> predvals))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 509.2813</code></pre>
+<pre><code>[1] 505.8992</code></pre>
 </div>
 </div>
 </section>
@@ -1417,9 +1423,9 @@ Epoch 100/100
 <p>One recommendation to deal with non-deterministic results is training the model several times and averaging the results, essentially ensembling them. When a single training run takes several hours, doing it thirty times is not practical.</p>
 </section>
 </section>
-<section id="mnist-image-classification" class="level3">
-<h3 class="anchored" data-anchor-id="mnist-image-classification">MNIST Image Classification</h3>
-<p>We now return to the MNIST image classification data introduced in <a href="ann.html#sec-mnist-first-look" class="quarto-xref"><span>Section 30.4</span></a>. Recall that the data comprise 60,000 training images and 10,000 test images of handwritten digits (0–9). Each image has 28 x 28 pixels recording a grayscale value.</p>
+<section id="sec-mnist-analysis-ann" class="level3">
+<h3 class="anchored" data-anchor-id="sec-mnist-analysis-ann">MNIST Image Classification</h3>
+<p>We now return to the MNIST image classification data introduced in <a href="#sec-mnist-first-look" class="quarto-xref"><span class="quarto-unresolved-ref">sec-mnist-first-look</span></a>. Recall that the data comprise 60,000 training images and 10,000 test images of handwritten digits (0–9). Each image has 28 x 28 pixels recording a grayscale value.</p>
 <p>The MNIST data is provided by Keras:</p>
 <section id="setup-the-data" class="level4">
 <h4 class="anchored" data-anchor-id="setup-the-data">Setup the data</h4>
@@ -1538,7 +1544,7 @@ Epoch 100/100
 </section>
 <section id="multi-layer-neural-network" class="level4">
 <h4 class="anchored" data-anchor-id="multi-layer-neural-network">Multi layer neural network</h4>
-<p>We now train the network shown in <a href="ann.html#fig-mnist-2-layer" class="quarto-xref">Figure&nbsp;<span>30.14</span></a>, an ANN with two hidden layers. We also add dropout regularization layers after each fully connected hidden layer. The first layer specifies the input shape of 28 x 28 = 784. It has 128 neurons and ReLU activation. Why? Because. This is followed by a first dropout layer with rate <span class="math inline">\(\phi_1 = 0.3\)</span>, another fully connected hidden layer with 64 nodes and hyperbolic tangent activation function, a second dropout layer with rate <span class="math inline">\(\phi_2 = 0.2\)</span>, and a final softmax output layer. Why? Because.</p>
+<p>We now train the network shown in <a href="#fig-mnist-2-layer" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-mnist-2-layer</span></a>, an ANN with two hidden layers. We also add dropout regularization layers after each fully connected hidden layer. The first layer specifies the input shape of 28 x 28 = 784. It has 128 neurons and ReLU activation. Why? Because. This is followed by a first dropout layer with rate <span class="math inline">\(\phi_1 = 0.3\)</span>, another fully connected hidden layer with 64 nodes and hyperbolic tangent activation function, a second dropout layer with rate <span class="math inline">\(\phi_2 = 0.2\)</span>, and a final softmax output layer. Why? Because.</p>
 <section id="setup-the-network" class="level5">
 <h5 class="anchored" data-anchor-id="setup-the-network">Setup the network</h5>
 <p>The following statements set up the network in <code>keras</code>:</p>
@@ -1604,45 +1610,45 @@ ________________________________________________________________________________
 <span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>          )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Epoch 1/20
-469/469 - 6s - loss: 0.4495 - accuracy: 0.8677 - val_loss: 0.2422 - val_accuracy: 0.9303 - 6s/epoch - 12ms/step
+469/469 - 5s - loss: 0.4545 - accuracy: 0.8671 - val_loss: 0.2458 - val_accuracy: 0.9269 - 5s/epoch - 11ms/step
 Epoch 2/20
-469/469 - 5s - loss: 0.2955 - accuracy: 0.9133 - val_loss: 0.1979 - val_accuracy: 0.9430 - 5s/epoch - 10ms/step
+469/469 - 5s - loss: 0.3022 - accuracy: 0.9107 - val_loss: 0.2028 - val_accuracy: 0.9433 - 5s/epoch - 10ms/step
 Epoch 3/20
-469/469 - 5s - loss: 0.2618 - accuracy: 0.9229 - val_loss: 0.1786 - val_accuracy: 0.9493 - 5s/epoch - 10ms/step
+469/469 - 5s - loss: 0.2693 - accuracy: 0.9206 - val_loss: 0.1805 - val_accuracy: 0.9465 - 5s/epoch - 10ms/step
 Epoch 4/20
-469/469 - 5s - loss: 0.2455 - accuracy: 0.9279 - val_loss: 0.1720 - val_accuracy: 0.9508 - 5s/epoch - 10ms/step
+469/469 - 5s - loss: 0.2490 - accuracy: 0.9255 - val_loss: 0.1776 - val_accuracy: 0.9478 - 5s/epoch - 10ms/step
 Epoch 5/20
-469/469 - 5s - loss: 0.2338 - accuracy: 0.9306 - val_loss: 0.1654 - val_accuracy: 0.9517 - 5s/epoch - 10ms/step
+469/469 - 5s - loss: 0.2370 - accuracy: 0.9298 - val_loss: 0.1668 - val_accuracy: 0.9497 - 5s/epoch - 10ms/step
 Epoch 6/20
-469/469 - 5s - loss: 0.2259 - accuracy: 0.9340 - val_loss: 0.1570 - val_accuracy: 0.9522 - 5s/epoch - 10ms/step
+469/469 - 5s - loss: 0.2288 - accuracy: 0.9323 - val_loss: 0.1586 - val_accuracy: 0.9534 - 5s/epoch - 10ms/step
 Epoch 7/20
-469/469 - 5s - loss: 0.2178 - accuracy: 0.9361 - val_loss: 0.1525 - val_accuracy: 0.9555 - 5s/epoch - 11ms/step
+469/469 - 5s - loss: 0.2215 - accuracy: 0.9344 - val_loss: 0.1607 - val_accuracy: 0.9535 - 5s/epoch - 11ms/step
 Epoch 8/20
-469/469 - 5s - loss: 0.2155 - accuracy: 0.9365 - val_loss: 0.1508 - val_accuracy: 0.9566 - 5s/epoch - 11ms/step
+469/469 - 5s - loss: 0.2201 - accuracy: 0.9354 - val_loss: 0.1560 - val_accuracy: 0.9527 - 5s/epoch - 11ms/step
 Epoch 9/20
-469/469 - 5s - loss: 0.2104 - accuracy: 0.9376 - val_loss: 0.1446 - val_accuracy: 0.9582 - 5s/epoch - 10ms/step
+469/469 - 5s - loss: 0.2134 - accuracy: 0.9368 - val_loss: 0.1548 - val_accuracy: 0.9532 - 5s/epoch - 10ms/step
 Epoch 10/20
-469/469 - 5s - loss: 0.2061 - accuracy: 0.9385 - val_loss: 0.1480 - val_accuracy: 0.9565 - 5s/epoch - 10ms/step
+469/469 - 5s - loss: 0.2094 - accuracy: 0.9375 - val_loss: 0.1504 - val_accuracy: 0.9553 - 5s/epoch - 10ms/step
 Epoch 11/20
-469/469 - 5s - loss: 0.2031 - accuracy: 0.9395 - val_loss: 0.1412 - val_accuracy: 0.9614 - 5s/epoch - 10ms/step
+469/469 - 5s - loss: 0.2061 - accuracy: 0.9392 - val_loss: 0.1492 - val_accuracy: 0.9547 - 5s/epoch - 10ms/step
 Epoch 12/20
-469/469 - 5s - loss: 0.2009 - accuracy: 0.9407 - val_loss: 0.1419 - val_accuracy: 0.9598 - 5s/epoch - 10ms/step
+469/469 - 5s - loss: 0.2024 - accuracy: 0.9410 - val_loss: 0.1447 - val_accuracy: 0.9566 - 5s/epoch - 10ms/step
 Epoch 13/20
-469/469 - 5s - loss: 0.2006 - accuracy: 0.9403 - val_loss: 0.1386 - val_accuracy: 0.9613 - 5s/epoch - 11ms/step
+469/469 - 5s - loss: 0.2024 - accuracy: 0.9402 - val_loss: 0.1446 - val_accuracy: 0.9578 - 5s/epoch - 10ms/step
 Epoch 14/20
-469/469 - 5s - loss: 0.1934 - accuracy: 0.9435 - val_loss: 0.1400 - val_accuracy: 0.9605 - 5s/epoch - 10ms/step
+469/469 - 5s - loss: 0.2018 - accuracy: 0.9406 - val_loss: 0.1411 - val_accuracy: 0.9580 - 5s/epoch - 10ms/step
 Epoch 15/20
-469/469 - 5s - loss: 0.1953 - accuracy: 0.9421 - val_loss: 0.1414 - val_accuracy: 0.9596 - 5s/epoch - 11ms/step
+469/469 - 5s - loss: 0.1984 - accuracy: 0.9406 - val_loss: 0.1433 - val_accuracy: 0.9571 - 5s/epoch - 10ms/step
 Epoch 16/20
-469/469 - 5s - loss: 0.1935 - accuracy: 0.9420 - val_loss: 0.1344 - val_accuracy: 0.9605 - 5s/epoch - 11ms/step
+469/469 - 5s - loss: 0.1943 - accuracy: 0.9428 - val_loss: 0.1374 - val_accuracy: 0.9613 - 5s/epoch - 10ms/step
 Epoch 17/20
-469/469 - 5s - loss: 0.1901 - accuracy: 0.9430 - val_loss: 0.1340 - val_accuracy: 0.9625 - 5s/epoch - 10ms/step
+469/469 - 5s - loss: 0.1961 - accuracy: 0.9417 - val_loss: 0.1370 - val_accuracy: 0.9587 - 5s/epoch - 10ms/step
 Epoch 18/20
-469/469 - 5s - loss: 0.1893 - accuracy: 0.9439 - val_loss: 0.1358 - val_accuracy: 0.9637 - 5s/epoch - 11ms/step
+469/469 - 5s - loss: 0.1964 - accuracy: 0.9420 - val_loss: 0.1397 - val_accuracy: 0.9599 - 5s/epoch - 10ms/step
 Epoch 19/20
-469/469 - 5s - loss: 0.1881 - accuracy: 0.9448 - val_loss: 0.1372 - val_accuracy: 0.9627 - 5s/epoch - 11ms/step
+469/469 - 5s - loss: 0.1917 - accuracy: 0.9420 - val_loss: 0.1384 - val_accuracy: 0.9596 - 5s/epoch - 10ms/step
 Epoch 20/20
-469/469 - 5s - loss: 0.1911 - accuracy: 0.9437 - val_loss: 0.1356 - val_accuracy: 0.9612 - 5s/epoch - 11ms/step</code></pre>
+469/469 - 5s - loss: 0.1936 - accuracy: 0.9427 - val_loss: 0.1371 - val_accuracy: 0.9592 - 5s/epoch - 10ms/step</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history, <span class="at">smooth =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -1654,7 +1660,7 @@ Epoch 20/20
 </div>
 </div>
 <p>After about 10 epochs the training and validation accuracy are stabilizing although the loss continues to decrease. Interestingly, the accuracy and loss in the 10,000 image validation set is better than in the 60,000 image training data set. Considering that the grayscale values are entered into this neural network as 784 numeric input variables without taking into account any spatial arrangement of the pixels on the image, a classification accuracy of 96% on unseen images is quite good. Whether that is sufficient depends on the application.</p>
-<p>As we will see in <a href="deeplearning.html" class="quarto-xref"><span>Chapter 33</span></a>, neural networks that specialize in the processing of grid-like data such as images easily improve on this performance.</p>
+<p>As we will see in <a href="#sec-deep-learning" class="quarto-xref"><span class="quarto-unresolved-ref">sec-deep-learning</span></a>, neural networks that specialize in the processing of grid-like data such as images easily improve on this performance.</p>
 </section>
 <section id="calculate-predicted-categories" class="level5">
 <h5 class="anchored" data-anchor-id="calculate-predicted-categories">Calculate predicted categories</h5>
@@ -1662,14 +1668,14 @@ Epoch 20/20
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>predvals <span class="ot">&lt;-</span> modelnn <span class="sc">%&gt;%</span> <span class="fu">predict</span>(x_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>313/313 - 0s - 403ms/epoch - 1ms/step</code></pre>
+<pre><code>313/313 - 0s - 360ms/epoch - 1ms/step</code></pre>
 </div>
 </div>
 <p>For the first image, the probabilities that its digit belongs to any of the 10 classes is given by this vector</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(predvals[<span class="dv">1</span>,],<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.9999 0.0000 0.0000</code></pre>
+<pre><code> [1] 0.0000 0.0000 0.0000 0.0001 0.0000 0.0000 0.0000 0.9999 0.0000 0.0000</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which.max</span>(predvals[<span class="dv">1</span>,])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1681,11 +1687,11 @@ Epoch 20/20
 <div class="cell">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>predcl <span class="ot">&lt;-</span> modelnn <span class="sc">%&gt;%</span> <span class="fu">predict</span>(x_test) <span class="sc">%&gt;%</span> <span class="fu">k_argmax</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>313/313 - 0s - 361ms/epoch - 1ms/step</code></pre>
+<pre><code>313/313 - 0s - 323ms/epoch - 1ms/step</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>(predcl[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] 7 2 1 0 4 1 4 9 6 9 0 6 9 0 1 5 9 7 3 4 9 6 6 5 4 0 7 4 0 1 3 1 3 0 7 2</code></pre>
+<pre><code> [1] 7 2 1 0 4 1 4 9 6 9 0 6 9 0 1 5 9 7 8 4 9 6 6 5 4 0 7 4 0 1 3 1 3 4 7 2</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>g_test[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1696,7 +1702,7 @@ Epoch 20/20
 <div class="cell">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(predvals[<span class="dv">34</span>,],<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] 0.4134 0.0000 0.0184 0.0000 0.2629 0.0803 0.2214 0.0004 0.0015 0.0016</code></pre>
+<pre><code> [1] 0.3892 0.0000 0.0076 0.0001 0.3953 0.0377 0.1573 0.0052 0.0050 0.0025</code></pre>
 </div>
 </div>
 <p>We can visualize the data with the <code>image</code> function. The next code segment does this for the first and ninth observations.</p>
@@ -1723,11 +1729,19 @@ Epoch 20/20
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotIt</span>(<span class="dv">34</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotIt</span>(<span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="ann_R_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotIt</span>(<span class="dv">34</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ann_R_files/figure-html/unnamed-chunk-9-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
 </figure>
 </div>
 </div>
@@ -1739,13 +1753,13 @@ Epoch 20/20
 <h4 class="anchored" data-anchor-id="multinomial-logistic-regression">Multinomial logistic regression</h4>
 <p>A 96% accuracy is impressive, but maybe it is not good enough. In applications where the consequences of errors are high, this accuracy might be insufficient. Suppose we are using the trained network to recognize written digits on personal checks. Getting 400 out of 10,000 digits wrong would be unacceptable. Banks would deposit incorrect amounts all the time.</p>
 <p>If that is the application for the trained algorithm, we should consider other models for these data. This raises an interesting question: how much did we gain by adding the layers of the network? If this is an effective strategy to increase accuracy then we could consider adding more layers. If not, then maybe we need to research an entirely different network architecture.</p>
-<p>Before trying deeper alternatives we can establish one performance benchmark by removing the hidden layers and training what essentially is a single layer <strong>perceptron</strong> (<a href="ann.html#sec-ann-intro" class="quarto-xref"><span>Section 30.1</span></a>). This model has an input layer and an output layer. In terms of the <code>keras</code> syntax it is specified with a single layer:</p>
+<p>Before trying deeper alternatives we can establish one performance benchmark by removing the hidden layers and training what essentially is a single layer <strong>perceptron</strong> (<a href="#sec-ann-intro" class="quarto-xref"><span class="quarto-unresolved-ref">sec-ann-intro</span></a>). This model has an input layer and an output layer. In terms of the <code>keras</code> syntax it is specified with a single layer:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>modellr <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">layer_dense</span>(<span class="at">input_shape=</span><span class="dv">784</span>, </span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">units=</span><span class="dv">10</span>,</span>
-<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">activation=</span><span class="st">"softmax"</span>)</span>
-<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modellr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>modellr <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">layer_dense</span>(<span class="at">input_shape=</span><span class="dv">784</span>, </span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">units=</span><span class="dv">10</span>,</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">activation=</span><span class="st">"softmax"</span>)</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modellr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Model: "sequential_2"
 ________________________________________________________________________________
@@ -1762,58 +1776,58 @@ ________________________________________________________________________________
 <p>This is essentially a multinomial logistic regression model with a 10-category target variable and 784 input variables. The model is much smaller than the previous network (it has <em>only</em> 7,850 parameters) but is huge if we think of it as a multinomial logistic regression model. Many software packages for multinomial regression would struggle to fit a model of this size. When articulated as a neural network, training such a model is actually a breeze.</p>
 <p>We proceed just as before.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>modellr <span class="sc">%&gt;%</span> <span class="fu">compile</span>(<span class="at">loss =</span> <span class="st">"categorical_crossentropy"</span>,</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">optimizer =</span> <span class="fu">optimizer_rmsprop</span>(), </span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">"accuracy"</span>))</span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> modellr <span class="sc">%&gt;%</span> <span class="fu">fit</span>(x_train, </span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>                y_train, </span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">epochs=</span><span class="dv">20</span>,</span>
-<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">batch_size=</span><span class="dv">128</span>,</span>
-<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">validation_data=</span><span class="fu">list</span>(x_test, y_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>modellr <span class="sc">%&gt;%</span> <span class="fu">compile</span>(<span class="at">loss =</span> <span class="st">"categorical_crossentropy"</span>,</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">optimizer =</span> <span class="fu">optimizer_rmsprop</span>(), </span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">"accuracy"</span>))</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> modellr <span class="sc">%&gt;%</span> <span class="fu">fit</span>(x_train, </span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>                y_train, </span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">epochs=</span><span class="dv">20</span>,</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">batch_size=</span><span class="dv">128</span>,</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">validation_data=</span><span class="fu">list</span>(x_test, y_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Epoch 1/20
-469/469 - 4s - loss: 0.6095 - accuracy: 0.8461 - val_loss: 0.3414 - val_accuracy: 0.9085 - 4s/epoch - 9ms/step
+469/469 - 4s - loss: 0.6136 - accuracy: 0.8446 - val_loss: 0.3420 - val_accuracy: 0.9089 - 4s/epoch - 9ms/step
 Epoch 2/20
-469/469 - 4s - loss: 0.3310 - accuracy: 0.9089 - val_loss: 0.3000 - val_accuracy: 0.9175 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.3313 - accuracy: 0.9079 - val_loss: 0.3014 - val_accuracy: 0.9158 - 4s/epoch - 8ms/step
 Epoch 3/20
-469/469 - 4s - loss: 0.3022 - accuracy: 0.9161 - val_loss: 0.2858 - val_accuracy: 0.9190 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.3017 - accuracy: 0.9162 - val_loss: 0.2861 - val_accuracy: 0.9208 - 4s/epoch - 8ms/step
 Epoch 4/20
-469/469 - 4s - loss: 0.2882 - accuracy: 0.9194 - val_loss: 0.2799 - val_accuracy: 0.9212 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.2884 - accuracy: 0.9197 - val_loss: 0.2791 - val_accuracy: 0.9218 - 4s/epoch - 8ms/step
 Epoch 5/20
-469/469 - 4s - loss: 0.2800 - accuracy: 0.9220 - val_loss: 0.2767 - val_accuracy: 0.9229 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.2802 - accuracy: 0.9225 - val_loss: 0.2743 - val_accuracy: 0.9232 - 4s/epoch - 8ms/step
 Epoch 6/20
-469/469 - 4s - loss: 0.2749 - accuracy: 0.9240 - val_loss: 0.2742 - val_accuracy: 0.9245 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.2747 - accuracy: 0.9235 - val_loss: 0.2726 - val_accuracy: 0.9244 - 4s/epoch - 8ms/step
 Epoch 7/20
-469/469 - 4s - loss: 0.2707 - accuracy: 0.9244 - val_loss: 0.2714 - val_accuracy: 0.9248 - 4s/epoch - 9ms/step
+469/469 - 4s - loss: 0.2706 - accuracy: 0.9250 - val_loss: 0.2703 - val_accuracy: 0.9245 - 4s/epoch - 8ms/step
 Epoch 8/20
-469/469 - 4s - loss: 0.2676 - accuracy: 0.9262 - val_loss: 0.2699 - val_accuracy: 0.9259 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.2678 - accuracy: 0.9258 - val_loss: 0.2691 - val_accuracy: 0.9263 - 4s/epoch - 8ms/step
 Epoch 9/20
-469/469 - 4s - loss: 0.2649 - accuracy: 0.9270 - val_loss: 0.2704 - val_accuracy: 0.9255 - 4s/epoch - 9ms/step
+469/469 - 4s - loss: 0.2651 - accuracy: 0.9276 - val_loss: 0.2685 - val_accuracy: 0.9269 - 4s/epoch - 8ms/step
 Epoch 10/20
-469/469 - 4s - loss: 0.2629 - accuracy: 0.9276 - val_loss: 0.2705 - val_accuracy: 0.9246 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.2631 - accuracy: 0.9285 - val_loss: 0.2675 - val_accuracy: 0.9273 - 4s/epoch - 8ms/step
 Epoch 11/20
-469/469 - 4s - loss: 0.2611 - accuracy: 0.9287 - val_loss: 0.2682 - val_accuracy: 0.9272 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.2615 - accuracy: 0.9288 - val_loss: 0.2686 - val_accuracy: 0.9270 - 4s/epoch - 8ms/step
 Epoch 12/20
-469/469 - 4s - loss: 0.2597 - accuracy: 0.9287 - val_loss: 0.2719 - val_accuracy: 0.9267 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.2597 - accuracy: 0.9290 - val_loss: 0.2687 - val_accuracy: 0.9263 - 4s/epoch - 8ms/step
 Epoch 13/20
-469/469 - 4s - loss: 0.2581 - accuracy: 0.9294 - val_loss: 0.2686 - val_accuracy: 0.9258 - 4s/epoch - 9ms/step
+469/469 - 4s - loss: 0.2585 - accuracy: 0.9295 - val_loss: 0.2676 - val_accuracy: 0.9275 - 4s/epoch - 8ms/step
 Epoch 14/20
-469/469 - 4s - loss: 0.2572 - accuracy: 0.9301 - val_loss: 0.2687 - val_accuracy: 0.9276 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.2573 - accuracy: 0.9304 - val_loss: 0.2673 - val_accuracy: 0.9276 - 4s/epoch - 8ms/step
 Epoch 15/20
-469/469 - 4s - loss: 0.2563 - accuracy: 0.9305 - val_loss: 0.2690 - val_accuracy: 0.9260 - 4s/epoch - 9ms/step
+469/469 - 4s - loss: 0.2565 - accuracy: 0.9308 - val_loss: 0.2679 - val_accuracy: 0.9280 - 4s/epoch - 8ms/step
 Epoch 16/20
-469/469 - 4s - loss: 0.2552 - accuracy: 0.9314 - val_loss: 0.2692 - val_accuracy: 0.9279 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.2552 - accuracy: 0.9311 - val_loss: 0.2674 - val_accuracy: 0.9274 - 4s/epoch - 8ms/step
 Epoch 17/20
-469/469 - 4s - loss: 0.2544 - accuracy: 0.9315 - val_loss: 0.2679 - val_accuracy: 0.9278 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.2545 - accuracy: 0.9313 - val_loss: 0.2678 - val_accuracy: 0.9271 - 4s/epoch - 8ms/step
 Epoch 18/20
-469/469 - 4s - loss: 0.2536 - accuracy: 0.9320 - val_loss: 0.2678 - val_accuracy: 0.9277 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.2538 - accuracy: 0.9311 - val_loss: 0.2691 - val_accuracy: 0.9282 - 4s/epoch - 8ms/step
 Epoch 19/20
-469/469 - 4s - loss: 0.2531 - accuracy: 0.9323 - val_loss: 0.2695 - val_accuracy: 0.9273 - 4s/epoch - 8ms/step
+469/469 - 4s - loss: 0.2532 - accuracy: 0.9314 - val_loss: 0.2706 - val_accuracy: 0.9280 - 4s/epoch - 8ms/step
 Epoch 20/20
-469/469 - 4s - loss: 0.2521 - accuracy: 0.9319 - val_loss: 0.2724 - val_accuracy: 0.9268 - 4s/epoch - 8ms/step</code></pre>
+469/469 - 4s - loss: 0.2525 - accuracy: 0.9317 - val_loss: 0.2703 - val_accuracy: 0.9276 - 4s/epoch - 8ms/step</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history, <span class="at">smooth =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history, <span class="at">smooth =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -2412,7 +2426,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","loop":false,"selector":".lightbox","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

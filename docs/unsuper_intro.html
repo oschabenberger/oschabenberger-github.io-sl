@@ -432,6 +432,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -446,7 +452,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -487,9 +493,9 @@ window.Quarto = {
 </header>
 
 
-<p>The methods discussed so far fall into the category of <strong>supervised</strong> learning, where a target variable <span class="math inline">\(Y\)</span> is present and the goal is to predict or classify <span class="math inline">\(Y\)</span> or to test hypothesis about <span class="math inline">\(Y\)</span>. The distinction between supervised and <strong>unsupervised</strong> methods of learning from data was introduced in <a href="learningtypes.html" class="quarto-xref"><span>Chapter 6</span></a>.</p>
+<p>The methods discussed so far fall into the category of <strong>supervised</strong> learning, where a target variable <span class="math inline">\(Y\)</span> is present and the goal is to predict or classify <span class="math inline">\(Y\)</span> or to test hypothesis about <span class="math inline">\(Y\)</span>. The distinction between supervised and <strong>unsupervised</strong> methods of learning from data was introduced in <a href="#sec-types-learning" class="quarto-xref"><span class="quarto-unresolved-ref">sec-types-learning</span></a>.</p>
 <p>Recall that the term unsupervised learning seeks to evoke learning without a teacher who can judge the quality of an answer because the teacher is aware of the correct answer, the ground truth. In unsupervised learning there are no loss functions and no clear metrics on how to evaluate the quality of the analysis. The proliferation of method of unsupervised learning and the reliance on heuristics are a result of this condition.</p>
-<p>However, unsupervised learning is not a lesser form of learning from data and the questions it addresses can be more complex than estimating the mean of a random variable. In general, the data for unsupervised learning consists of <span class="math inline">\(n\)</span> tuples <span class="math inline">\([X_1, \cdots, X_p]\)</span>; because there is no target variable, the data structure is also referred to as <strong>unlabeled</strong> data. We are interested in discovering aspects of the joint distribution <span class="math inline">\(p(X_1, \cdots, X_p) = p(\textbf{X})\)</span> (<a href="#fig-unsuper-map" class="quarto-xref">Figure&nbsp;<span>21.1</span></a>). For example,</p>
+<p>However, unsupervised learning is not a lesser form of learning from data and the questions it addresses can be more complex than estimating the mean of a random variable. In general, the data for unsupervised learning consists of <span class="math inline">\(n\)</span> tuples <span class="math inline">\([X_1, \cdots, X_p]\)</span>; because there is no target variable, the data structure is also referred to as <strong>unlabeled</strong> data. We are interested in discovering aspects of the joint distribution <span class="math inline">\(p(X_1, \cdots, X_p) = p(\textbf{X})\)</span> (<a href="#fig-unsuper-map" class="quarto-xref">Figure&nbsp;<span class="quarto-unresolved-ref">fig-unsuper-map</span></a>). For example,</p>
 <ul>
 <li>are there low-dimensional regions where <span class="math inline">\(p(\textbf{X})\)</span> is large <span class="math inline">\(\rightarrow\)</span> <strong>principal component</strong> analysis.</li>
 <li>are there multiple regions in the <span class="math inline">\(X\)</span>-space that contain modes of <span class="math inline">\(p(\textbf{X}) \rightarrow\)</span> <strong>cluster</strong> analysis.</li>
@@ -1092,7 +1098,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","selector":".lightbox","loop":false,"openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

@@ -486,6 +486,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -500,7 +506,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -579,7 +585,7 @@ window.Quarto = {
 <li>Retail <strong>allocation</strong>: which item should be on shelves and how should they be grouped</li>
 <li><strong>Recommender</strong> systems: cross-marketing of products</li>
 <li><strong>Survey analysis</strong>: which responses go together?</li>
-<li><strong>Precursor</strong> analytics: <span class="citation" data-cites="Borne_2021">Borne (<a href="references.html#ref-Borne_2021" role="doc-biblioref">2021</a>)</span> mentions this interesting application of ARM, where data are time stamped. The analysis seeks time lags at which the association strength peaks. Precursor analysis has found that solar storm events show the strongest geomagnetic effects 2–3 hours after the storm and that video cameras are bought 3 months after the purchase of a video (VHS) player.</li>
+<li><strong>Precursor</strong> analytics: <span class="citation" data-cites="Borne_2021">Borne (<a href="#ref-Borne_2021" role="doc-biblioref">2021</a>)</span> mentions this interesting application of ARM, where data are time stamped. The analysis seeks time lags at which the association strength peaks. Precursor analysis has found that solar storm events show the strongest geomagnetic effects 2–3 hours after the storm and that video cameras are bought 3 months after the purchase of a video (VHS) player.</li>
 </ul>
 <p>The approach to association rule mining is essentially <strong>mode hunting</strong>, looking for areas of the joint distribution with high densities and finding associations of items that are more frequent than expected if shopping baskets were filled at random. This is conceptually pretty simple, it is just a matter of counting.</p>
 <div class="example">
@@ -587,7 +593,7 @@ window.Quarto = {
 <p>Example: Beers and Diapers</p>
 </div>
 <div class="example-container">
-<p><span class="citation" data-cites="Borne_2021">Borne (<a href="references.html#ref-Borne_2021" role="doc-biblioref">2021</a>)</span> cites beer–diaper association as the classic example of market basket analysis, although the particular example might be more legend than reality.</p>
+<p><span class="citation" data-cites="Borne_2021">Borne (<a href="#ref-Borne_2021" role="doc-biblioref">2021</a>)</span> cites beer–diaper association as the classic example of market basket analysis, although the particular example might be more legend than reality.</p>
 <p>Suppose that a retail store has 600,000 transactions (shopping baskets). 7,500 (1.25%) of the shopping baskets contain diapers, 60,000 (10%) of the baskets contain beer. So we know that a basket is 8 times more likely to contain beer than diapers. In order to analyze the association of beer and diapers we need to know how many of the baskets contain both. Suppose that number is 6000 (1%).</p>
 <p>If beer and diaper purchases were independent, then 10% of the diaper purchases would be accompanied by beer purchases, or, equivalently, 1.25% of beer buyers would pick up diapers. Either way, under independence of the two items we would expect <span class="math inline">\(600,000 \times 0.1 \times 0.0125 = 750\)</span> baskets with both beer and diapers. The actual number of baskets containing both is much higher.</p>
 <p>The ratio between what was observed and what was expected under independence is called the <strong>lift factor</strong>: <span class="math display">\[
@@ -774,7 +780,7 @@ Caution
 <p>When analyzing large databases of baskets, you will find a large number of spurious associations. Those occur when items appear together more frequently compared to independence, but only by chance. Suppose we apply a 5% significance rule, meaning that we declare associations as “significant” if they appear beyond the 95<sup>th</sup> percentile of the frequency distribution. A market basket analysis with 1,000,000 two-item sets in which there are no associations whatsoever will declare 50,000 associations as “significant” although none of them are relevant.</p>
 </div>
 </div>
-<p>The Apriori algorithm of <span class="citation" data-cites="Agrawal_etal_1993">Agrawal, Imieliński, and Swami (<a href="references.html#ref-Agrawal_etal_1993" role="doc-biblioref">1993</a>)</span> is based on setting a support threshold <span class="math inline">\(s\)</span> and a confidence threshold <span class="math inline">\(c\)</span>. Multiple passes over the data are made. In the first pass the support of single-item sets is computed and any items with <span class="math inline">\(S(A) &lt; s\)</span> are discarded. In the second pass the support of two-item sets is computed and any sets with <span class="math inline">\(S(A,B) &lt; s\)</span> are again discarded. This continues until all candidate rules in a pass have support less than <span class="math inline">\(s\)</span>.</p>
+<p>The Apriori algorithm of <span class="citation" data-cites="Agrawal_etal_1993">Agrawal, Imieliński, and Swami (<a href="#ref-Agrawal_etal_1993" role="doc-biblioref">1993</a>)</span> is based on setting a support threshold <span class="math inline">\(s\)</span> and a confidence threshold <span class="math inline">\(c\)</span>. Multiple passes over the data are made. In the first pass the support of single-item sets is computed and any items with <span class="math inline">\(S(A) &lt; s\)</span> are discarded. In the second pass the support of two-item sets is computed and any sets with <span class="math inline">\(S(A,B) &lt; s\)</span> are again discarded. This continues until all candidate rules in a pass have support less than <span class="math inline">\(s\)</span>.</p>
 <p>Based on the item sets determined so far, only those association rules are displayed for which the confidence exceeds the threshold <span class="math inline">\(c\)</span>.</p>
 <p>The Apriori algorithm makes it feasible to find relevant association rules in very large databases. It works because <span class="math inline">\(S(A,B) \le \min(S(A),S(B))\)</span>, in other words the support of any sets found on a subsequent pass cannot exceed the support of the subsets of the previous pass. However, the algorithm also has some disadvantages:</p>
 <ul>
@@ -1336,7 +1342,7 @@ mining info:
 </div>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-Agrawal_etal_1993" class="csl-entry" role="listitem">
 Agrawal, Rakesh, Tomasz Imieliński, and Arun Swami. 1993. <span>“Mining Association Rules Between Sets of Items in Large Databases.”</span> In <em>Proceedings of the 1993 ACM SIGMOD International Conference on Management of Data</em>, 207–16. SIGMOD ’93. New York, NY, USA: Association for Computing Machinery. <a href="https://doi.org/10.1145/170035.170072">https://doi.org/10.1145/170035.170072</a>.
 </div>
@@ -1927,7 +1933,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","descPosition":"bottom","selector":".lightbox","loop":false});
+<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

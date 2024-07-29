@@ -220,7 +220,7 @@ While not regularizing a network can lead to overfitting, choosing a dropout rat
 
 Training neural networks with backpropagation computes the objective function on a forward pass through the network---from input layer to output layer---and the gradient on the backward pass---from output to input. The goal is to find values for weights and biases where the objective function has a minimum, a zero gradient. In nonlinear optimizations, the gradient thus naturally approaches zero as the iterations converge to a solution. When the gradient is near zero, the model "stops learning" and the process stops.
 
-#### Vanishing gradients
+#### Vanishing gradients {#sec-ann-vanishing-gradients}
 
 The **vanishing gradient** problem describes the issue where the gradient values become very small and learning of the network slows down (or stops), simply because the gradients are small, not because we have found a minimum of the objective function. This affects deep networks more than shallow networks and the early layers suffer more from vanishing gradients than deep layers since the gradient is accumulated by moving backwards through the network. 
 
