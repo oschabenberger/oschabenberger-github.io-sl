@@ -11,6 +11,6 @@ This material on statistical learning accompanies
 - [Statistical Programming](https://oschabenberger.github.io/oschabenberger-github.io-sp/) (*StatProgramming*).
 
 *Foundations* covers fundamental concepts in data science and the data science project life cycle.
-*StatProgramming* is a comprehensive collection of modules on supervised and unsupervised learning from a statistical perspective.
+*StatProgramming* is a short treatise about statistical programming and statistical program packages.
 
 All three "books" were written in Quarto because it combines prose with math and supports multiple programming languages and kernels within the same framework. To learn more about Quarto books visit <https://quarto.org/docs/books>.
