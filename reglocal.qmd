@@ -259,9 +259,9 @@ The best value for $\lambda$ that resolves the bias-variance tradeoff for a part
 ::::{.example-header}
 Example: Kernel Regression with Simulated Data
 ::::
+::::{.example-container}
 Here we implement a function that performs leave-one-out CV and computes the average squared prediction residual (PRESS). The function is then evaluated on a grid of candidate bandwidth values.
 
-::::{.example-container}
 ```{r}
 ksm.cv <- function(X,Y,bw=0.5) {
     MSTe <- rep(0,length(bw))
@@ -441,7 +441,7 @@ suppressWarnings(library(caret))
 Example: LOESS Model of Degree 1 with Simulated Data
 ::::
 ::::{.example-container}
-``` {r loess_caret, warning=FALSE}
+``` {r loess_caret, warning=FALSE, message=FALSE}
 
 df <- data.frame(cbind(Y,X))
 model <- caret::train(Y ~ X, 
@@ -529,6 +529,12 @@ Each segment has a separate intercept and slope estimate. As the number of knots
 The name spline originates in construction where thin strips of wood were used to create curved shapes, for example, in shipbuilding. The strips of wood, called splines, are fixed at two points with devices called "dogs" or "ducks" and can be flexed between them (@fig-spline-construction). 
 
 ![A spline in construction. [Source](https://www.lancaster.ac.uk/stor-i-student-sites/tamas-papp/2020/02/10/splines/)](images/Spline.png){#fig-spline-construction fig-align="center" width="40%"}
+
+:::{.callout-note collapse=true title="Spline Table"}
+And now for something completely different! Inspired by the idea of a spline as a strip of wood bent around anchors I built a table from Pauwlonia wood harvested and dried on my property in Blacksburg, VA. The splines are 3/8 inches thick strips of wood, the "ducks" are small pieces of walnut. The legs are also made from the same tree. The board milled from the center of the trunk was used for the curved piece in the middle of the table; its natural channel is filled with colored epoxy.
+
+![Paulownia spline table.](images/spline_table2.png){fig-align="center" width=75% .lightbox}
+:::
 
 The segments in @fig-piecewise-linear are not curved, that can be fixed by increasing the degree of the polynomial in each segment. But we recognize another problem with the piecewise linear model, the fitted lines do not connect at the segments. In order for the model to be continuous across the interior knots, the parameter estimates cannot be chosen freely--they have to obey certain constraints. For example, in order for the first two segments in @fig-piecewise-linear to connect, we need to have
 $$

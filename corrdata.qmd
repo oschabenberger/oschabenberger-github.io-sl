@@ -100,8 +100,8 @@ equal or greater than 2.75 inches. Over a period of 12 weeks diameter measuremen
 can appear on multiple trees and only apples in the largest diameter size class
 appear in the data set.
 - `measurement`: the index of the measurements. Measurements are taken
-in two-week intervals, so that `measurement=1' refers to the state of the apple after
-2 weeks and `measurement=6' refers to the state of the apple at the end of the 12-week
+in two-week intervals, so that `measurement=1` refers to the state of the apple after
+2 weeks and `measurement=6` refers to the state of the apple at the end of the 12-week
 period
 - `diameter` the diameter of the apple at the time of measurement
 

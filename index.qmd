@@ -1,5 +1,131 @@
 # Preface {.unnumbered}
 
-TODO: Write the Preface.
+## Origin Story
 
-To learn more about Quarto books visit <https://quarto.org/docs/books>.
+Another treatise on statistical learning, data science, and machine learning. Sigh.
+Isn't there enough material already?
+
+The genesis of this material is a two-semester graduate-level data science methods sequence I am teaching
+at Virginia Tech. The courses are taken primarily by students from non-statistics programs. 
+
+They need to understand methods of supervised and unsupervised 
+learning and apply them in the real world. They work on research problems much more complex
+than Palmer Penguins or Fisher's Iris data. They are getting ready to take a role as a data scientist
+or statistical programmer at an organization. They want to know about classical and modern methods.
+They need to know how discriminant analysis is different from support vector machines but they
+do not know either of them yet.
+
+At the same time, their background in foundational aspects of data science---statistics and probability, 
+linear algebra, computer science---varies considerably. That is to be expected, many of us come to data 
+science from a non-statistical, non-computer science path. 
+
+## Philosophy
+
+So I asked myself: suppose you have two semesters to convey data science methods at the M.S. level to 
+this audience; what needs to be covered and at what depth? This material reflects the balance 
+I strike between mathematical hand waving, theorems and derivations, algorithms,
+and details of software implementation. 
+
+Examples of this philosophy are hopefully evident throughout the parts and chapters:
+
+* Being able to implement all methods with software is just as important to me as their underpinnings
+in statistics, probability, and computer science. 
+
+* Knowing how to build a multilayer neural network with Keras is as important as 
+understanding how activation functions in hidden layers 
+introduce nonlinearity. 
+
+* Representing linear mixed models in terms of vectors and matrices
+of constants and random variables is relevant to match model components to software syntax. 
+
+* Modeling overdispersed count data becomes a lot easier if mechanisms that lead to 
+overdispersion are framed in terms of finite mixtures of random processes.
+
+* Generalized linear models are a natural extension of the classical linear model 
+that can be understood without knowing the details of the exponential family of
+distributions. If you want to approach them from a theoretical perspective, knowing
+exponential family properties is not negotiable.
+
+* Nonlinear models and numerical optimization are under-served topics.
+
+### Mind Maps
+
+I believe that an important aspect of learning material is to organize it and structure it.
+How to best compartmentalize a topic is personal. Unfortunately, someone else's treatment enforces their structure
+on the material.
+
+Many chapters contain mind maps that reflect my organization of a topic. For example, @fig-proj-dsmodels1 categorizes statistical modeling approaches in data science and @fig-deep-mindmap1 is my high-level mind map for deep learning. Clicking on those and other images in the text will
+zoom into them for a close-up view.
+
+![Structuring and categorizing input, algorithm, and output in data science models.](images/DataScienceModels.png){#fig-proj-dsmodels1 .lightbox fig-alt="Structuring and categorizing input, algorithm, and output in data science models." fig-align="center"}
+
+![Deep learning mind map.](images/DeepLearningMindMap.png){#fig-deep-mindmap1 fig-align="center" width=90% .lightbox}
+
+These were drawn with the free version of [Excalidraw](excalidraw.com) and the source files are available on [GitHub](https://github.com/oschabenberger/oschabenberger-github.io-sl). I encourage you to modify these mind maps to suit 
+your personal views of a topic.
+
+## Statistical Learning
+
+Statistical learning is a blend of statistical modeling and machine learning. It draws
+on a data-generating mechanism as in statistical modeling and it is inspired by 
+a computing-oriented approach to solving problems with data. It leans more on predictive
+inference (prediction and classification) than confirmatory inference (hypothesis testing).
+It leans more on observational data where models need to be derived rather 
+than the analysis of experiments where the experiment determines the model.
+
+Statistical learning, unlike machine learning, is keenly interested in the uncertainty
+that transfers from the data-generating mechanism into the quantities computed from
+data and ultimately, into the decisions based on those.
+
+Statistical learning, unlike statistical modeling, is open to algorithmic approaches 
+to derive insights from data and recognizes data as a resource for learning. Working
+with data does not have to start with an hypothesis. It can start with the data.
+
+If these remarks apply to you and this philosophy and approach appeals to you, 
+then the material might work for you. If not, then there are oodles of other resources.
+
+## Software
+
+The programming language used almost entirely throughout this material is `R`. Wait, what?
+Yes, I spent the majority of my non-academic career at SAS---19 years---writing statistical 
+software, developing distributed analytic platforms, leading R\&D teams, and doing
+other stuff. 
+
+When I was in graduate school 30+ years ago, SAS was everywhere. 
+Today, the reality of statistics and data science is that almost all of it is done in `R` or 
+Python. You did not have to explain back then why teaching material is based on SAS. 
+How things have changed. 
+
+Regarding the `R`-vs-Python debate, it is my experience that those coming to data science 
+from a statistical path prefer `R`, those coming from a different path are more familiar 
+with Python as a general programming language. 
+`R` was developed a a statistical programming language--based on the S language. And it shows.
+It is highly efficient in interacting with data, in formulating statistical models, and 
+`R` packages tend to make the results available that matter to statisticians. For example,
+not computing standard errors for estimated quantities is a head-scratcher for me. Those should 
+matter in machine learning as well. The `R` code for statistical learning is short compared to
+the lengthy and wordy Python code I am writing for the same task. I must be doing something 
+wrong.
+
+Writing material that caters to multiple tools or programming language is a nightmare 
+for the author and the reader. My approach is to use a single framework where possible. 
+Once you know the basics you can map that to other languages, IDEs, and tools.
+
+The source for this material is available on [GitHub](https://github.com/oschabenberger/oschabenberger-github.io-sl). 
+I would very much welcome a Python version of it. 
+
+---
+
+This material is accompanied by 
+
+- [Foundations of Data Science--Beyond the Numbers](https://oschabenberger.github.io/oschabenberger-github.io-bn/) (*Foundations*) and
+
+- [Statistical Programming](https://oschabenberger.github.io/oschabenberger-github.io-sp/) (*StatProgramming*).
+
+*Foundations* covers fundamental concepts in data science and the data science project life cycle. 
+*StatProgramming* is a short introduction into programming from a statistical perspective---using mostly `R`.
+
+All of these are written in Quarto, because it handles multiple programming languages in the same 
+document, works in RStudio like RMarkdown on steroids, incorporates $\LaTeX$ beautifully, and creates 
+great-looking and highly functional documents. To learn more about Quarto books 
+visit <https://quarto.org/docs/books>.

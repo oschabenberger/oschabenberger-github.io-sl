@@ -1,3 +1,84 @@
-# Introduction
+# Introduction {#sec-intro .unnumbered}
 
-TODO: Write the introduction.
+## What is in it?
+
+The material is organized in several parts. 
+
+Part I covers foundation topics. Chapters @sec-linear-algebra
+and @sec-estimation are mostly for self study and serve as 
+reference material.
+
+Parts II and III discuss methods for **supervised** learning from the perspective of regression
+and classification. There is of course overlap between the two, a technique that predicts
+probabilities can be used for classification. Beyond the classical linear model, Part II
+also introduces nonlinear regression and a first look at regression problems with a 
+discrete target variable. Generalized models, linear and additive ones, are picked up again 
+in more theoretical detail in Chapters @sec-glm and @sec-gam of Part VII.
+
+Decision trees are regression and classification methods, they could go in Part II and Part III.
+I decided to give them their own section. They are simple, intrinsically interpretable, but by
+themselves perform pretty poorly. Yet they are important building blocks of methods that 
+perform extremely well in many situations, such as random forests and gradient boosting 
+machines.
+
+Ensemble learning (Part V) is a powerful approach to combine basic methods into highly
+performant prediction or classification engines. They are underrated in statistics and
+maybe overrated in machine learning. They are not without pitfalls, though.
+
+Methods for **unsupervised** learning are discussed in Part VI. Principal Component
+Analysis (PCA) is in its own chapter. It is a classical statistical method that is
+of great importance in modern data science workflows. 
+
+Part VII revisits generalized linear models introduced earlier in greater depth. The
+discussion of the exponential family of distribution is here. Many sampling or 
+design structures lead to correlated data: subsampling, hierarchical treatment assignments,
+time series, longitudinal and spatial data, etc. Ignoring correlations in the
+target variables has a negative effect on the analysis and decisions. Furthermore, 
+correlations allow us to make certain conclusions more precise, for example, statements
+about change and growth. We first introduce correlated error models in @sec-corrdata and then 
+cover (linear) mixed models for longitudinal data in @sec-mixed-longitudinal. 
+
+Part VIII moves from more traditional statistical techniques into modern territory. 
+Artificial neural networks have changed what algorithms trained on data are capable of.
+This part journeys from single-layer and multi-layer fully connected networks to 
+convolutional and recurrent neural networks to an introduction to transformer architectures.
+We are not able to give more than an introduction into deep learning here, but feel 
+strongly that a statistician or data scientist today needs to have at least a basic
+understanding of these technologies.
+
+Interpretability and explainability of models trained on data has risen greatly in 
+importance over the past decade. Things we do to make models perform better tend to 
+have a negative effect on interpretability and explainability. A linear regression model
+is highly interpretable, a regularized Ridge regression with 1,000 inputs is less so.
+A single decision tree is intrinsically interpretable, a random forest of 500 trees is not.
+This topic appears at the end of the material not because it is an afterthought but
+because we emphasize model-agnostic explainability tools that apply independently
+of how a model was initially trained.
+
+
+## Possible Organization into Courses
+
+In a two-semester sequence I cover in the first semester
+
+(I) Foundation
+(II) Regression
+(III) Classification
+(IV) Decision Trees
+
+and in the second semester
+
+(V) Ensemble Methods
+(VI) Unsupervised Learning
+(VII) Advanced Topics
+(VIII) Neural Networks and Deep Learning
+(IX) Explainability
+
+I have found that the material in Chapter @sec-local-models can be a bit much in the first semester. 
+Depending on the class, I might move basis expansions, regression and smoothing splines to
+the second semester. Also, a first semester course that covers decision trees might dip into
+bagging and boosting to improve performance.
+
+If you are an instructor, you will find different ways to break up or subset the material.
+
+Let's get started.
+

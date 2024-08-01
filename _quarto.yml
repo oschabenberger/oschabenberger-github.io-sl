@@ -4,9 +4,9 @@ project:
   
 book:
   title: "Statistical Learning"
-  subtitle: "with R and Python"
+  subtitle: "Beyond the Numbers"
   author: "Oliver Schabenberger"
-  date: "7/10/2024"
+  date: "8/01/2024"
   reader-mode: true
 
   page-footer:
@@ -14,13 +14,13 @@ book:
       Statistical Learning by Oliver Schabenberger
     right: |
       This book was built with <a href="https://quarto.org/">Quarto</a>.
-  cover-image: cover.png
+  cover-image: SLCover.png
 
   chapters:
-    - index.qmd
+    - index.qmd  # the preface
     - intro.qmd
 
-    - part: "Foundation"
+    - part: "Part I. Foundation"
       chapters:
         - statmodels.qmd
         - biasvariance.qmd
@@ -28,7 +28,7 @@ book:
         - estimation.qmd 
         - learningtypes.qmd
 
-    - part: "Supervised Learning I: Regression"
+    - part: "Part II. Supervised Learning I: Regression"
       chapters:
          - regintro.qmd
          - regglobal.qmd
@@ -37,17 +37,17 @@ book:
          - regdiscrete.qmd
          - reglocal.qmd
 
-    - part: "Supervised Learning II: Classification"
+    - part: "Part III. Supervised Learning II: Classification"
       chapters:
         - class_reg.qmd
         - discriminant.qmd
         - naivebayes.qmd
         - supportvectors.qmd
     
-    - part: "Decision Trees"
+    - part: "Part IV. Decision Trees"
 #        - decisiontrees.qmd
     
-    - part: "Ensemble Methods"
+    - part: "Part V. Ensemble Methods"
       chapters:
          - ensemble_intro.qmd
          - bagging.qmd
@@ -55,7 +55,7 @@ book:
          - bma.qmd
 #        - stacking.qmd
 
-    - part: "Unsupervised Learning"
+    - part: "Part VI. Unsupervised Learning"
       chapters:
         - unsuper_intro.qmd
         - pca.qmd
@@ -63,14 +63,14 @@ book:
         - mbc.qmd
         - arules.qmd
 
-    - part: "Supervised Learning III: Advanced Topics"
+    - part: "Part VII. Supervised Learning III: Advanced Topics"
       chapters:
          - glm.qmd
          - gam.qmd
          - corrdata.qmd
          - mixed.qmd
 
-    - part: "Neural Networks and Deep Learning"
+    - part: "Part VIII. Neural Networks and Deep Learning"
       chapters:
         - ann.qmd
         - training_ann.qmd
@@ -78,7 +78,7 @@ book:
         - deeplearning.qmd
         - reinforcement.qmd
     
-    - part: "Explainability"
+    - part: "Part IX. Explainability"
       chapters:
         - explainability.qmd
         

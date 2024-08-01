@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Oliver Schabenberger">
-<meta name="dcterms.date" content="2024-07-10">
+<meta name="dcterms.date" content="2024-08-01">
 
 <title>Statistical Learning</title>
 <style>
@@ -44,6 +44,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -73,6 +76,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -127,13 +159,13 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+ <span class="menu-text">Introduction</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
- <span class="menu-text">Foundation</span></a>
+ <span class="menu-text">Part I. Foundation</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -142,31 +174,31 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./linalg.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./estimation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
   </div>
 </li>
       </ul>
@@ -174,7 +206,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
- <span class="menu-text">Supervised Learning I: Regression</span></a>
+ <span class="menu-text">Part II. Supervised Learning I: Regression</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -183,37 +215,37 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./regintro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
   </div>
 </li>
       </ul>
@@ -221,7 +253,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
- <span class="menu-text">Supervised Learning II: Classification</span></a>
+ <span class="menu-text">Part III. Supervised Learning II: Classification</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -230,37 +262,37 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <span class="sidebar-item-text sidebar-link text-start">
- <span class="menu-text">Decision Trees</span></span>
+ <span class="menu-text">Part IV. Decision Trees</span></span>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
- <span class="menu-text">Ensemble Methods</span></a>
+ <span class="menu-text">Part V. Ensemble Methods</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -269,25 +301,25 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./bagging.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./boosting.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./bma.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
   </div>
 </li>
       </ul>
@@ -295,7 +327,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
- <span class="menu-text">Unsupervised Learning</span></a>
+ <span class="menu-text">Part VI. Unsupervised Learning</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -304,31 +336,31 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./pca.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./clustering.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mbc.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./arules.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
   </div>
 </li>
       </ul>
@@ -336,7 +368,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
- <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+ <span class="menu-text">Part VII. Supervised Learning III: Advanced Topics</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -345,25 +377,25 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./glm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./gam.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mixed.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
   </div>
 </li>
       </ul>
@@ -371,7 +403,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
- <span class="menu-text">Neural Networks and Deep Learning</span></a>
+ <span class="menu-text">Part VIII. Neural Networks and Deep Learning</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -380,31 +412,31 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ann.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
   </div>
 </li>
       </ul>
@@ -412,7 +444,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
- <span class="menu-text">Explainability</span></a>
+ <span class="menu-text">Part IX. Explainability</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -421,7 +453,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -442,7 +474,16 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a></li>
+  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
+  <ul>
+  <li><a href="#origin-story" id="toc-origin-story" class="nav-link" data-scroll-target="#origin-story">Origin Story</a></li>
+  <li><a href="#philosophy" id="toc-philosophy" class="nav-link" data-scroll-target="#philosophy">Philosophy</a>
+  <ul class="collapse">
+  <li><a href="#mind-maps" id="toc-mind-maps" class="nav-link" data-scroll-target="#mind-maps">Mind Maps</a></li>
+  </ul></li>
+  <li><a href="#statistical-learning" id="toc-statistical-learning" class="nav-link" data-scroll-target="#statistical-learning">Statistical Learning</a></li>
+  <li><a href="#software" id="toc-software" class="nav-link" data-scroll-target="#software">Software</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -452,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Statistical Learning</h1>
-<p class="subtitle lead">with R and Python</p>
+<p class="subtitle lead">Beyond the Numbers</p>
 </div>
 
 
@@ -469,7 +510,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 10, 2024</p>
+      <p class="date">August 1, 2024</p>
     </div>
   </div>
   
@@ -483,11 +524,82 @@ ul.task-list li input[type="checkbox"] {
 
 
 <section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1><p><img src="cover.png" title="Statistical Learning" class="quarto-cover-image img-fluid"></p>
-<p>TODO: Write the Preface.</p>
-<p>To learn more about Quarto books visit <a href="https://quarto.org/docs/books" class="uri">https://quarto.org/docs/books</a>.</p>
+<h1 class="unnumbered">Preface</h1><p><img src="SLCover.png" title="Statistical Learning" class="quarto-cover-image img-fluid"></p>
+<section id="origin-story" class="level2">
+<h2 class="anchored" data-anchor-id="origin-story">Origin Story</h2>
+<p>Another treatise on statistical learning, data science, and machine learning. Sigh. Isn’t there enough material already?</p>
+<p>The genesis of this material is a two-semester graduate-level data science methods sequence I am teaching at Virginia Tech. The courses are taken primarily by students from non-statistics programs.</p>
+<p>They need to understand methods of supervised and unsupervised learning and apply them in the real world. They work on research problems much more complex than Palmer Penguins or Fisher’s Iris data. They are getting ready to take a role as a data scientist or statistical programmer at an organization. They want to know about classical and modern methods. They need to know how discriminant analysis is different from support vector machines but they do not know either of them yet.</p>
+<p>At the same time, their background in foundational aspects of data science—statistics and probability, linear algebra, computer science—varies considerably. That is to be expected, many of us come to data science from a non-statistical, non-computer science path.</p>
+</section>
+<section id="philosophy" class="level2">
+<h2 class="anchored" data-anchor-id="philosophy">Philosophy</h2>
+<p>So I asked myself: suppose you have two semesters to convey data science methods at the M.S. level to this audience; what needs to be covered and at what depth? This material reflects the balance I strike between mathematical hand waving, theorems and derivations, algorithms, and details of software implementation.</p>
+<p>Examples of this philosophy are hopefully evident throughout the parts and chapters:</p>
+<ul>
+<li><p>Being able to implement all methods with software is just as important to me as their underpinnings in statistics, probability, and computer science.</p></li>
+<li><p>Knowing how to build a multilayer neural network with Keras is as important as understanding how activation functions in hidden layers introduce nonlinearity.</p></li>
+<li><p>Representing linear mixed models in terms of vectors and matrices of constants and random variables is relevant to match model components to software syntax.</p></li>
+<li><p>Modeling overdispersed count data becomes a lot easier if mechanisms that lead to overdispersion are framed in terms of finite mixtures of random processes.</p></li>
+<li><p>Generalized linear models are a natural extension of the classical linear model that can be understood without knowing the details of the exponential family of distributions. If you want to approach them from a theoretical perspective, knowing exponential family properties is not negotiable.</p></li>
+<li><p>Nonlinear models and numerical optimization are under-served topics.</p></li>
+</ul>
+<section id="mind-maps" class="level3">
+<h3 class="anchored" data-anchor-id="mind-maps">Mind Maps</h3>
+<p>I believe that an important aspect of learning material is to organize it and structure it. How to best compartmentalize a topic is personal. Unfortunately, someone else’s treatment enforces their structure on the material.</p>
+<p>Many chapters contain mind maps that reflect my organization of a topic. For example, <a href="#fig-proj-dsmodels1" class="quarto-xref">Figure&nbsp;<span>1</span></a> categorizes statistical modeling approaches in data science and <a href="#fig-deep-mindmap1" class="quarto-xref">Figure&nbsp;<span>2</span></a> is my high-level mind map for deep learning. Clicking on those and other images in the text will zoom into them for a close-up view.</p>
+<div id="fig-proj-dsmodels1" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" alt="Structuring and categorizing input, algorithm, and output in data science models." data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-proj-dsmodels1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/DataScienceModels.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/DataScienceModels.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Structuring and categorizing input, algorithm, and output in data science models."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-proj-dsmodels1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Structuring and categorizing input, algorithm, and output in data science models.
+</figcaption>
+</figure>
+</div>
+<div id="fig-deep-mindmap1" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-deep-mindmap1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/DeepLearningMindMap.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/DeepLearningMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-deep-mindmap1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Deep learning mind map.
+</figcaption>
+</figure>
+</div>
+<p>These were drawn with the free version of <a href="excalidraw.com">Excalidraw</a> and the source files are available on <a href="https://github.com/oschabenberger/oschabenberger-github.io-sl">GitHub</a>. I encourage you to modify these mind maps to suit your personal views of a topic.</p>
+</section>
+</section>
+<section id="statistical-learning" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-learning">Statistical Learning</h2>
+<p>Statistical learning is a blend of statistical modeling and machine learning. It draws on a data-generating mechanism as in statistical modeling and it is inspired by a computing-oriented approach to solving problems with data. It leans more on predictive inference (prediction and classification) than confirmatory inference (hypothesis testing). It leans more on observational data where models need to be derived rather than the analysis of experiments where the experiment determines the model.</p>
+<p>Statistical learning, unlike machine learning, is keenly interested in the uncertainty that transfers from the data-generating mechanism into the quantities computed from data and ultimately, into the decisions based on those.</p>
+<p>Statistical learning, unlike statistical modeling, is open to algorithmic approaches to derive insights from data and recognizes data as a resource for learning. Working with data does not have to start with an hypothesis. It can start with the data.</p>
+<p>If these remarks apply to you and this philosophy and approach appeals to you, then the material might work for you. If not, then there are oodles of other resources.</p>
+</section>
+<section id="software" class="level2">
+<h2 class="anchored" data-anchor-id="software">Software</h2>
+<p>The programming language used almost entirely throughout this material is <code>R</code>. Wait, what? Yes, I spent the majority of my non-academic career at SAS—19 years—writing statistical software, developing distributed analytic platforms, leading R&amp;D teams, and doing other stuff.</p>
+<p>When I was in graduate school 30+ years ago, SAS was everywhere. Today, the reality of statistics and data science is that almost all of it is done in <code>R</code> or Python. You did not have to explain back then why teaching material is based on SAS. How things have changed.</p>
+<p>Regarding the <code>R</code>-vs-Python debate, it is my experience that those coming to data science from a statistical path prefer <code>R</code>, those coming from a different path are more familiar with Python as a general programming language. <code>R</code> was developed a a statistical programming language–based on the S language. And it shows. It is highly efficient in interacting with data, in formulating statistical models, and <code>R</code> packages tend to make the results available that matter to statisticians. For example, not computing standard errors for estimated quantities is a head-scratcher for me. Those should matter in machine learning as well. The <code>R</code> code for statistical learning is short compared to the lengthy and wordy Python code I am writing for the same task. I must be doing something wrong.</p>
+<p>Writing material that caters to multiple tools or programming language is a nightmare for the author and the reader. My approach is to use a single framework where possible. Once you know the basics you can map that to other languages, IDEs, and tools.</p>
+<p>The source for this material is available on <a href="https://github.com/oschabenberger/oschabenberger-github.io-sl">GitHub</a>. I would very much welcome a Python version of it.</p>
+<hr>
+<p>This material is accompanied by</p>
+<ul>
+<li><p><a href="https://oschabenberger.github.io/oschabenberger-github.io-bn/">Foundations of Data Science–Beyond the Numbers</a> (<em>Foundations</em>) and</p></li>
+<li><p><a href="https://oschabenberger.github.io/oschabenberger-github.io-sp/">Statistical Programming</a> (<em>StatProgramming</em>).</p></li>
+</ul>
+<p><em>Foundations</em> covers fundamental concepts in data science and the data science project life cycle. <em>StatProgramming</em> is a short introduction into programming from a statistical perspective—using mostly <code>R</code>.</p>
+<p>All of these are written in Quarto, because it handles multiple programming languages in the same document, works in RStudio like RMarkdown on steroids, incorporates <span class="math inline">\(\LaTeX\)</span> beautifully, and creates great-looking and highly functional documents. To learn more about Quarto books visit <a href="https://quarto.org/docs/books" class="uri">https://quarto.org/docs/books</a>.</p>
 
 
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;1: Structuring and categorizing input, algorithm, and output in data science models.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;2: Deep learning mind map.</span>
+</div>
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -1049,7 +1161,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   </div>
   <div class="nav-page nav-page-next">
       <a href="./intro.html" class="pagination-link" aria-label="Introduction">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text">Introduction</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1067,6 +1179,31 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","closeEffect":"zoom","loop":false,"openEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
 
 
 

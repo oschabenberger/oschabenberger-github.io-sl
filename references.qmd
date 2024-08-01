@@ -258,7 +258,7 @@ pages={309--310}
 
 @book{Henderson1984,
 title={Applications of Linear Models in Animal Breeding},
-author={Henderson. C. R.},
+author={Henderson, C. R.},
 year={1984},
 publisher={University of Guelph}
 }

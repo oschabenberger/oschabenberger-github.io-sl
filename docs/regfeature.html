@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Statistical Learning - 9&nbsp; Feature Selection and Regularization</title>
+<title>Statistical Learning - 8&nbsp; Feature Selection and Regularization</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -170,7 +170,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./regintro.html">Supervised Learning I: Regression</a></li><li class="breadcrumb-item"><a href="./regfeature.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./regintro.html">Part II. Supervised Learning I: Regression</a></li><li class="breadcrumb-item"><a href="./regfeature.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -212,13 +212,13 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+ <span class="menu-text">Introduction</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
- <span class="menu-text">Foundation</span></a>
+ <span class="menu-text">Part I. Foundation</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -227,31 +227,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./linalg.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./estimation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
   </div>
 </li>
       </ul>
@@ -259,7 +259,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
- <span class="menu-text">Supervised Learning I: Regression</span></a>
+ <span class="menu-text">Part II. Supervised Learning I: Regression</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -268,37 +268,37 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./regintro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./regfeature.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
   </div>
 </li>
       </ul>
@@ -306,7 +306,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
- <span class="menu-text">Supervised Learning II: Classification</span></a>
+ <span class="menu-text">Part III. Supervised Learning II: Classification</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -315,37 +315,37 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <span class="sidebar-item-text sidebar-link text-start">
- <span class="menu-text">Decision Trees</span></span>
+ <span class="menu-text">Part IV. Decision Trees</span></span>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
- <span class="menu-text">Ensemble Methods</span></a>
+ <span class="menu-text">Part V. Ensemble Methods</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -354,25 +354,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./bagging.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./boosting.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./bma.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
   </div>
 </li>
       </ul>
@@ -380,7 +380,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
- <span class="menu-text">Unsupervised Learning</span></a>
+ <span class="menu-text">Part VI. Unsupervised Learning</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -389,31 +389,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./pca.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./clustering.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mbc.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./arules.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
   </div>
 </li>
       </ul>
@@ -421,7 +421,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
- <span class="menu-text">Supervised Learning III: Advanced Topics</span></a>
+ <span class="menu-text">Part VII. Supervised Learning III: Advanced Topics</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -430,25 +430,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./glm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./gam.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mixed.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
   </div>
 </li>
       </ul>
@@ -456,7 +456,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
- <span class="menu-text">Neural Networks and Deep Learning</span></a>
+ <span class="menu-text">Part VIII. Neural Networks and Deep Learning</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -465,31 +465,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ann.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
   </div>
 </li>
       </ul>
@@ -497,7 +497,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
- <span class="menu-text">Explainability</span></a>
+ <span class="menu-text">Part IX. Explainability</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -506,7 +506,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -527,7 +527,7 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#sec-feature-select" id="toc-sec-feature-select" class="nav-link active" data-scroll-target="#sec-feature-select"><span class="header-section-number">9.1</span> Algorithmic Feature Selection</a>
+  <li><a href="#sec-feature-select" id="toc-sec-feature-select" class="nav-link active" data-scroll-target="#sec-feature-select"><span class="header-section-number">8.1</span> Algorithmic Feature Selection</a>
   <ul>
   <li><a href="#indirect-estimates-of-test-error" id="toc-indirect-estimates-of-test-error" class="nav-link" data-scroll-target="#indirect-estimates-of-test-error">Indirect Estimates of Test Error</a>
   <ul class="collapse">
@@ -541,7 +541,7 @@ window.Quarto = {
   <li><a href="#stepwise-selection" id="toc-stepwise-selection" class="nav-link" data-scroll-target="#stepwise-selection">Stepwise Selection</a></li>
   <li><a href="#feature-selection-with-cross-validation" id="toc-feature-selection-with-cross-validation" class="nav-link" data-scroll-target="#feature-selection-with-cross-validation">Feature Selection with Cross-validation</a></li>
   </ul></li>
-  <li><a href="#sec-regularization" id="toc-sec-regularization" class="nav-link" data-scroll-target="#sec-regularization"><span class="header-section-number">9.2</span> Regularization</a>
+  <li><a href="#sec-regularization" id="toc-sec-regularization" class="nav-link" data-scroll-target="#sec-regularization"><span class="header-section-number">8.2</span> Regularization</a>
   <ul>
   <li><a href="#shrinkage-estimation" id="toc-shrinkage-estimation" class="nav-link" data-scroll-target="#shrinkage-estimation">Shrinkage Estimation</a></li>
   <li><a href="#sec-regularization-ridge" id="toc-sec-regularization-ridge" class="nav-link" data-scroll-target="#sec-regularization-ridge">Ridge Regression</a>
@@ -555,7 +555,7 @@ window.Quarto = {
   <li><a href="#high-dimensional-lasso-regression" id="toc-high-dimensional-lasso-regression" class="nav-link" data-scroll-target="#high-dimensional-lasso-regression">High-dimensional lasso regression</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#sec-feature-dimred" id="toc-sec-feature-dimred" class="nav-link" data-scroll-target="#sec-feature-dimred"><span class="header-section-number">9.3</span> Dimension Reduction</a>
+  <li><a href="#sec-feature-dimred" id="toc-sec-feature-dimred" class="nav-link" data-scroll-target="#sec-feature-dimred"><span class="header-section-number">8.3</span> Dimension Reduction</a>
   <ul>
   <li><a href="#principal-components" id="toc-principal-components" class="nav-link" data-scroll-target="#principal-components">Principal Components</a></li>
   <li><a href="#sec-pcr" id="toc-sec-pcr" class="nav-link" data-scroll-target="#sec-pcr">Principal Component Regression (PCR)</a></li>
@@ -566,9 +566,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./regintro.html">Supervised Learning I: Regression</a></li><li class="breadcrumb-item"><a href="./regfeature.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./regintro.html">Part II. Supervised Learning I: Regression</a></li><li class="breadcrumb-item"><a href="./regfeature.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-feature-reg" class="quarto-section-identifier"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></h1>
+<h1 class="title"><span id="sec-feature-reg" class="quarto-section-identifier"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></h1>
 </div>
 
 
@@ -625,7 +625,7 @@ window.Quarto = {
 </tr>
 </tbody>
 </table>
-<p>We will see in <a href="ann.html" class="quarto-xref"><span>Chapter 30</span></a> how to model the XOR gate with an artificial neural network with a single hidden layer with 2 units. The neural network requires 9 parameters to perfectly model the gate. We could also create a linear model that perfectly models the gate, requiring only three parameters.</p>
+<p>We will see in <a href="ann.html" class="quarto-xref"><span>Chapter 29</span></a> how to model the XOR gate with an artificial neural network with a single hidden layer with 2 units. The neural network requires 9 parameters to perfectly model the gate. We could also create a linear model that perfectly models the gate, requiring only three parameters.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">x2=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>reg_ia <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2 <span class="sc">+</span> x1<span class="sc">*</span>x2 <span class="sc">-</span><span class="dv">1</span>, <span class="at">data=</span>dat)</span>
@@ -674,25 +674,25 @@ F-statistic: 4.804e+31 on 3 and 1 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <div class="example-container">
 <p>A microarray is a rectangular array in which the expression of genes is compared between two samples, often a reference (healthy individual) and an experimental sample (cancer patient). The samples are dyed green and red. If gene expression is higher [lower] in the experimental sample the corresponding spot on the microarray appears red [green]. A 20 x 20 array yields 400 inputs, but you might have only data on 10 arrays.</p>
-<div id="fig-microarray" class="quarto-figure quarto-figure-center quarto-float anchored" data-out.width="80%" data-fig.align="center">
+<div id="fig-microarray" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig.align="center" data-out.width="80%">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-microarray-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="images/microarray.png" class="img-fluid figure-img" data-fig.align="center" data-out.width="80%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-microarray-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9.1: A gene expression microarray
+Figure&nbsp;8.1: A gene expression microarray
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>How can we address the shortcomings of the classical linear model as problems become higher dimensional?</p>
-<p><strong>Algorithmic feature selection</strong> uses search techniques and cross-validation to find well-fitting models among the <span class="math inline">\(2^p\)</span> possible linear models you can build with <span class="math inline">\(p\)</span> inputs (<a href="#sec-feature-select" class="quarto-xref"><span>Section 9.1</span></a>). The goal is to find a relatively small set of inputs that explains sufficient variability in the data and to eliminate inputs that do not contribute (much) to explaining the variability.</p>
-<p><strong>Regularization</strong> techniques consider all <span class="math inline">\(p\)</span> inputs, even if <span class="math inline">\(p\)</span> is large, and allay the shortcomings of the ordinary least squares estimator by penalizing its tendency toward instability (<a href="#sec-regularization" class="quarto-xref"><span>Section 9.2</span></a>). Regularization penalties shrink the estimators toward zero, thereby limiting the variability they can inflict on the model. The resulting estimators are biased, but at the same time their variability is suppressed enough to lead to an overall smaller mean-square prediction error compared to ordinary least squares.</p>
-<p><strong>Dimension reduction</strong> methods derive <span class="math inline">\(m\)</span> linear combinations of the <span class="math inline">\(p\)</span> inputs where <span class="math inline">\(m \ll p\)</span>. The <span class="math inline">\(m\)</span> combinations are treated as inputs to the model, thereby reducing the dimension of the regression while still consuming information from all <span class="math inline">\(p\)</span> inputs (<a href="#sec-feature-dimred" class="quarto-xref"><span>Section 9.3</span></a>).</p>
+<p><strong>Algorithmic feature selection</strong> uses search techniques and cross-validation to find well-fitting models among the <span class="math inline">\(2^p\)</span> possible linear models you can build with <span class="math inline">\(p\)</span> inputs (<a href="#sec-feature-select" class="quarto-xref"><span>Section 8.1</span></a>). The goal is to find a relatively small set of inputs that explains sufficient variability in the data and to eliminate inputs that do not contribute (much) to explaining the variability.</p>
+<p><strong>Regularization</strong> techniques consider all <span class="math inline">\(p\)</span> inputs, even if <span class="math inline">\(p\)</span> is large, and allay the shortcomings of the ordinary least squares estimator by penalizing its tendency toward instability (<a href="#sec-regularization" class="quarto-xref"><span>Section 8.2</span></a>). Regularization penalties shrink the estimators toward zero, thereby limiting the variability they can inflict on the model. The resulting estimators are biased, but at the same time their variability is suppressed enough to lead to an overall smaller mean-square prediction error compared to ordinary least squares.</p>
+<p><strong>Dimension reduction</strong> methods derive <span class="math inline">\(m\)</span> linear combinations of the <span class="math inline">\(p\)</span> inputs where <span class="math inline">\(m \ll p\)</span>. The <span class="math inline">\(m\)</span> combinations are treated as inputs to the model, thereby reducing the dimension of the regression while still consuming information from all <span class="math inline">\(p\)</span> inputs (<a href="#sec-feature-dimred" class="quarto-xref"><span>Section 8.3</span></a>).</p>
 <p>In summary, feature selection chooses a subset of the <span class="math inline">\(p\)</span> inputs, regularization keeps all <span class="math inline">\(p\)</span> inputs and introduces bias to limit variability, dimension reduction uses <span class="math inline">\(m &lt; p\)</span> linear combinations of the variables.</p>
-<section id="sec-feature-select" class="level2" data-number="9.1">
-<h2 data-number="9.1" class="anchored" data-anchor-id="sec-feature-select"><span class="header-section-number">9.1</span> Algorithmic Feature Selection</h2>
+<section id="sec-feature-select" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="sec-feature-select"><span class="header-section-number">8.1</span> Algorithmic Feature Selection</h2>
 <p>Suppose you have <span class="math inline">\(p\)</span> candidate input variables. How many possible linear models are there? One model without any inputs, one model with all <span class="math inline">\(p\)</span> inputs, <span class="math inline">\(p\)</span> models have a single input, and so on. The number of models having <span class="math inline">\(k \le p\)</span> inputs is <span class="math display">\[
 {p \choose k} = \frac{p!}{k!(p-k)!}
 \]</span> and the total number of models is <span class="math display">\[
@@ -728,11 +728,11 @@ Tip
 \Gamma_p = \frac{1}{\sigma^2}\text{E}\left [\sum_{i=1}^n \left(\widehat{Y}_i - \text{E}[Y_i|\textbf{x}_i]\right)^2 \right]
 \]</span> It is a prediction-oriented criteria that seeks to strike a balance between the bias of an underfit model and the variability of an overfit model. <span class="math inline">\(\Gamma_p\)</span> expands into <span id="eq-cp-pop"><span class="math display">\[
 \Gamma_p = \frac{1}{\sigma^2} \left(\sum_{i=1}^n\text{Var}[\widehat{Y}_i] + \sum_{i=1}^n\left[\text{Bias}(\widehat{Y}_i)\right]^2 \right)
-\tag{9.1}\]</span></span></p>
+\tag{8.1}\]</span></span></p>
 <p>The contribution of an overfit model is the first term in parentheses, <span class="math inline">\(\text{Var}[\widehat{Y}_i]\)</span>, the contribution of an underfit model is the squared bias term. It is insightful to take a look at the first piece, the sum of the variances of the predicted values. Suppose we have a model with <span class="math inline">\(d\)</span> inputs. From <span class="math inline">\(\widehat{\textbf{Y}} = \textbf{X}\widehat{\boldsymbol{\beta}}\)</span> it follows that <span class="math display">\[
 \text{Var}[\widehat{\textbf{Y}}] = \sigma^2 \textbf{X}(\textbf{X}^\prime\textbf{X})^{-1}\textbf{X}^\prime = \sigma^2 \textbf{H}
 \]</span> The Hat matrix is a projection matrix of rank <span class="math inline">\(d+1\)</span> and thus <span class="math inline">\(\sum_{i=1}^n \text{Var}[\widehat{Y}_i] = \sigma^2(d+1)\)</span>. The sum of the variances of the predicted values will go up when inputs are added to the model, whether the inputs are useful in explaining variability in <span class="math inline">\(Y\)</span> or not. Adding junk variables to a model results in greater variability of the predicted values–there is “no free lunch”.</p>
-<p>The bias term in <a href="#eq-cp-pop" class="quarto-xref">Equation&nbsp;<span>9.1</span></a> can be estimated as <span class="math display">\[
+<p>The bias term in <a href="#eq-cp-pop" class="quarto-xref">Equation&nbsp;<span>8.1</span></a> can be estimated as <span class="math display">\[
 (\widehat{\sigma}^2_d - \sigma^2)(n-d-1)
 \]</span> where <span class="math inline">\(\widehat{\sigma}^2_d\)</span> is the estimate of <span class="math inline">\(\sigma^2\)</span> in a model with <span class="math inline">\(d\)</span> inputs. Putting everything together we arrive at an estimator of <span class="math inline">\(\Gamma_p\)</span>, known as Mallow’s <span class="math inline">\(C_p\)</span> statistic <span class="math display">\[
 C_p = \frac{1}{\widehat{\sigma}^2}\left(\widehat{\sigma}^2(d+1) + (\widehat{\sigma}^2_d - \widehat{\sigma}^2)(n-d-1) \right) = \frac{\text{SSE}}{\widehat{\sigma}^2} - n + 2(d+1)
@@ -952,7 +952,7 @@ M_2^*: \text{Balance} = \beta_0 + \beta_1\text{Income} + \beta_2\text{Rating} + 
  [8] 0.9539649 0.9539243 0.9538912 0.9538287</code></pre>
 </div>
 </div>
-<p>Selecting models according to <span class="math inline">\(C_p\)</span> the best 6-input model is chosen. Base on BIC and Adjusted <span class="math inline">\(R^2\)</span> we would choose the best 4-input and best 7-input model, respectively (<a href="#fig-best-subset-results" class="quarto-xref">Figure&nbsp;<span>9.2</span></a>).</p>
+<p>Selecting models according to <span class="math inline">\(C_p\)</span> the best 6-input model is chosen. Base on BIC and Adjusted <span class="math inline">\(R^2\)</span> we would choose the best 4-input and best 7-input model, respectively (<a href="#fig-best-subset-results" class="quarto-xref">Figure&nbsp;<span>8.2</span></a>).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which.min</span>(s_all<span class="sc">$</span>cp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -975,7 +975,7 @@ M_2^*: \text{Balance} = \beta_0 + \beta_1\text{Income} + \beta_2\text{Rating} + 
 <img src="regfeature_files/figure-html/fig-best-subset-results-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-best-subset-results-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9.2: Results of best subsets regression.
+Figure&nbsp;8.2: Results of best subsets regression.
 </figcaption>
 </figure>
 </div>
@@ -1432,8 +1432,8 @@ The final value used for the model was nvmax = 6.</code></pre>
 </div>
 </section>
 </section>
-<section id="sec-regularization" class="level2" data-number="9.2">
-<h2 data-number="9.2" class="anchored" data-anchor-id="sec-regularization"><span class="header-section-number">9.2</span> Regularization</h2>
+<section id="sec-regularization" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="sec-regularization"><span class="header-section-number">8.2</span> Regularization</h2>
 <p>Feature selection attempts to select from <span class="math inline">\(p\)</span> candidate features a set that models the signal in the data well and eliminates unimportant variables. Having too many predictor variables, especially ones that do not contribute substantially to the model, increases the variability of the least squares coefficient and leads to overfitting. Regularization approaches the problem from a different perspective: can we work with all <span class="math inline">\(p\)</span> features and allay the negative effects on ordinary least squares estimation?</p>
 <section id="shrinkage-estimation" class="level3">
 <h3 class="anchored" data-anchor-id="shrinkage-estimation">Shrinkage Estimation</h3>
@@ -1451,13 +1451,13 @@ The final value used for the model was nvmax = 6.</code></pre>
 <p>Three penalty functions are common in statistical modeling and machine learning:</p>
 <p><span id="eq-ridge-penalty"><span class="math display">\[
 f(\boldsymbol{\beta}) = \sum_{j=1}^p \beta_j^2 = ||\,[\beta_1, \cdots, \beta_p]\, ||_2^2
-\tag{9.2}\]</span></span></p>
+\tag{8.2}\]</span></span></p>
 <p><span id="eq-lasso-penalty"><span class="math display">\[
 f(\boldsymbol{\beta}) = \sum_{j=1}^p |\beta_j|= ||\,[\beta_1,\cdots,\beta_p]\, ||_1
-\tag{9.3}\]</span></span></p>
+\tag{8.3}\]</span></span></p>
 <p><span id="eq-elastinet-penalty"><span class="math display">\[
 f(\boldsymbol{\beta},\alpha)  = \frac{1-\alpha}{2}\sum_{j=1}^p\beta_j^2 + \alpha\sum_{j=1}^p|\beta_j|
-\tag{9.4}\]</span></span></p>
+\tag{8.4}\]</span></span></p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1471,13 +1471,13 @@ Note
 <p>The intercept <span class="math inline">\(\beta_0\)</span> is not included in the penalty term. It models the mean of <span class="math inline">\(Y\)</span> when all inputs are zero and does not need to be penalized.</p>
 </div>
 </div>
-<p>The penalty function in <a href="#eq-ridge-penalty" class="quarto-xref">Equation&nbsp;<span>9.2</span></a> is known as a <span class="math inline">\(L_2\)</span> penalty (or <span class="math inline">\(L_2\)</span> regularization), since it is based on the (squared) <span class="math inline">\(L_2\)</span>-norm of the <span class="math inline">\([\beta_1, \cdots, \beta_p]\)</span>. The <span class="math inline">\(L_2\)</span>-norm of vector <span class="math inline">\(\textbf{z}\)</span> is <span class="math display">\[
+<p>The penalty function in <a href="#eq-ridge-penalty" class="quarto-xref">Equation&nbsp;<span>8.2</span></a> is known as a <span class="math inline">\(L_2\)</span> penalty (or <span class="math inline">\(L_2\)</span> regularization), since it is based on the (squared) <span class="math inline">\(L_2\)</span>-norm of the <span class="math inline">\([\beta_1, \cdots, \beta_p]\)</span>. The <span class="math inline">\(L_2\)</span>-norm of vector <span class="math inline">\(\textbf{z}\)</span> is <span class="math display">\[
 ||\textbf{z}||_2 = \sqrt{\sum_{j=1}^p z_j^2}
 \]</span> The <span class="math inline">\(L_1\)</span>-norm of a vector, on the other hand, is <span class="math display">\[
 ||\textbf{z}||_1 = \sum_{j=1}^p |z_j|
 \]</span></p>
-<p>and this is the basis of the penalty function <a href="#eq-lasso-penalty" class="quarto-xref">Equation&nbsp;<span>9.3</span></a>. The function <a href="#eq-elastinet-penalty" class="quarto-xref">Equation&nbsp;<span>9.4</span></a> is a combination of <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_2\)</span> regularization: <span class="math inline">\(\alpha=0\)</span> results in the <span class="math inline">\(L_2\)</span> penalty, <span class="math inline">\(\alpha=1\)</span> results in the <span class="math inline">\(L_1\)</span> penalty and values <span class="math inline">\(0 &lt; \alpha &lt; 1\)</span> mix the two.</p>
-<p>Regularization using <a href="#eq-ridge-penalty" class="quarto-xref">Equation&nbsp;<span>9.2</span></a> is known as <strong>ridge</strong> regression. The <span class="math inline">\(L_1\)</span>-norm regularization in <a href="#eq-lasso-penalty" class="quarto-xref">Equation&nbsp;<span>9.3</span></a> leads to <strong>lasso</strong> regression (also Lasso or LASSO) and the mixture is known as an <strong>elastic net</strong> regression.</p>
+<p>and this is the basis of the penalty function <a href="#eq-lasso-penalty" class="quarto-xref">Equation&nbsp;<span>8.3</span></a>. The function <a href="#eq-elastinet-penalty" class="quarto-xref">Equation&nbsp;<span>8.4</span></a> is a combination of <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_2\)</span> regularization: <span class="math inline">\(\alpha=0\)</span> results in the <span class="math inline">\(L_2\)</span> penalty, <span class="math inline">\(\alpha=1\)</span> results in the <span class="math inline">\(L_1\)</span> penalty and values <span class="math inline">\(0 &lt; \alpha &lt; 1\)</span> mix the two.</p>
+<p>Regularization using <a href="#eq-ridge-penalty" class="quarto-xref">Equation&nbsp;<span>8.2</span></a> is known as <strong>ridge</strong> regression. The <span class="math inline">\(L_1\)</span>-norm regularization in <a href="#eq-lasso-penalty" class="quarto-xref">Equation&nbsp;<span>8.3</span></a> leads to <strong>lasso</strong> regression (also Lasso or LASSO) and the mixture is known as an <strong>elastic net</strong> regression.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1553,7 +1553,7 @@ NewLeagueN    0.01310  -12.69060  -12.91619  -12.94903</code></pre>
 </div>
 </div>
 <p>There are 19 predictors in addition to the intercept. The coefficient columns labeled <code>s0</code>, <code>s1</code>, <code>s2</code>, and <code>s3</code> correspond to the four values of <span class="math inline">\(\lambda = [100, 10, 0.1, 0]\)</span>. Note that the intercept is the same because the variables have been standardized and <span class="math inline">\(\beta_0\)</span> is not shrunk. For each of the predictors, the values are smaller (in absolute value) for the larger values of <span class="math inline">\(\lambda\)</span>. For example, the coefficient estimate of <code>AtBat</code> increases from -16.8308 at <span class="math inline">\(\lambda=100\)</span> to -177.4445 at <span class="math inline">\(\lambda=10\)</span> and to -286.6393 at <span class="math inline">\(\lambda=0.1\)</span>.</p>
-<p><a href="#fig-ridge-standardized" class="quarto-xref">Figure&nbsp;<span>9.3</span></a> shows the standardized ridge regression coefficients for the four values of <span class="math inline">\(\lambda\)</span>. The larger variation of the coefficients for smaller values of <span class="math inline">\(\lambda\)</span> is evident.</p>
+<p><a href="#fig-ridge-standardized" class="quarto-xref">Figure&nbsp;<span>8.3</span></a> shows the standardized ridge regression coefficients for the four values of <span class="math inline">\(\lambda\)</span>. The larger variation of the coefficients for smaller values of <span class="math inline">\(\lambda\)</span> is evident.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-ridge-standardized" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -1562,7 +1562,7 @@ NewLeagueN    0.01310  -12.69060  -12.91619  -12.94903</code></pre>
 <img src="regfeature_files/figure-html/fig-ridge-standardized-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ridge-standardized-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9.3: Standardized Ridge Regression Coefficients
+Figure&nbsp;8.3: Standardized Ridge Regression Coefficients
 </figcaption>
 </figure>
 </div>
@@ -1617,7 +1617,7 @@ Figure&nbsp;9.3: Standardized Ridge Regression Coefficients
 </section>
 <section id="ridge-trace" class="level4">
 <h4 class="anchored" data-anchor-id="ridge-trace">Ridge trace</h4>
-<p>Another method of selecting <span class="math inline">\(\lambda\)</span> is based on the <strong>ridge trace</strong>, a plot of the standardized ridge regression coefficient estimates as a function of <span class="math inline">\(\lambda\)</span>. The point where the coefficients stop changing drastically as <span class="math inline">\(\lambda\)</span> increases is chosen. For the Credit data, the ridge trace stabilizes around <span class="math inline">\(\lambda\)</span>=20–25 (<a href="#fig-ridge-trace" class="quarto-xref">Figure&nbsp;<span>9.4</span></a>).</p>
+<p>Another method of selecting <span class="math inline">\(\lambda\)</span> is based on the <strong>ridge trace</strong>, a plot of the standardized ridge regression coefficient estimates as a function of <span class="math inline">\(\lambda\)</span>. The point where the coefficients stop changing drastically as <span class="math inline">\(\lambda\)</span> increases is chosen. For the Credit data, the ridge trace stabilizes around <span class="math inline">\(\lambda\)</span>=20–25 (<a href="#fig-ridge-trace" class="quarto-xref">Figure&nbsp;<span>8.4</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-ridge-trace" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -1626,7 +1626,7 @@ Figure&nbsp;9.3: Standardized Ridge Regression Coefficients
 <a href="regfeature_files/figure-html/fig-ridge-trace-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="regfeature_files/figure-html/fig-ridge-trace-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ridge-trace-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9.4: Rige trace for credit data
+Figure&nbsp;8.4: Rige trace for credit data
 </figcaption>
 </figure>
 </div>
@@ -1811,19 +1811,19 @@ NewLeagueN    .          .        -23.96279  -25.77874</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv.out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-lasso-cv" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center" width="90%">
+<div id="fig-lasso-cv" class="quarto-figure quarto-figure-center quarto-float anchored" width="90%" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-lasso-cv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="regfeature_files/figure-html/fig-lasso-cv-1.png" id="fig-lasso-cv" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:90.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-lasso-cv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9.5
+Figure&nbsp;8.5
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>The optimal value for <span class="math inline">\(\lambda\)</span> per 10-fold cross-validation is 2.674. <a href="#fig-lasso-cv" class="quarto-xref">Figure&nbsp;<span>9.5</span></a> displays the results of cross-validation graphically. At the optimal value of <span class="math inline">\(\lambda\)</span>, the lasso model has 13 non-zero coefficients, six of the variables have been deselected from the model. The following output shows the final model.</p>
+<p>The optimal value for <span class="math inline">\(\lambda\)</span> per 10-fold cross-validation is 2.674. <a href="#fig-lasso-cv" class="quarto-xref">Figure&nbsp;<span>8.5</span></a> displays the results of cross-validation graphically. At the optimal value of <span class="math inline">\(\lambda\)</span>, the lasso model has 13 non-zero coefficients, six of the variables have been deselected from the model. The following output shows the final model.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>bestIndex <span class="ot">&lt;-</span> cv.out<span class="sc">$</span>index[<span class="dv">1</span>]</span>
 <span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(cv.out<span class="sc">$</span>glmnet.fit<span class="sc">$</span>beta[,bestIndex],<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1889,8 +1889,8 @@ Figure&nbsp;9.5
 </section>
 </section>
 </section>
-<section id="sec-feature-dimred" class="level2" data-number="9.3">
-<h2 data-number="9.3" class="anchored" data-anchor-id="sec-feature-dimred"><span class="header-section-number">9.3</span> Dimension Reduction</h2>
+<section id="sec-feature-dimred" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="sec-feature-dimred"><span class="header-section-number">8.3</span> Dimension Reduction</h2>
 <p>We can think of regression as a dimension reduction technique. The target vector <span class="math inline">\(\textbf{Y}\)</span> is an <span class="math inline">\((n \times 1)\)</span> vector in <span class="math inline">\(n\)</span>-dimensional space. <span class="math inline">\(\textbf{X}\boldsymbol{\beta}\)</span> is a <span class="math inline">\((p+1 \times 1)\)</span> vector in <span class="math inline">\((p+1)\)</span>-dimensional space. We are finding the least squares solution by projecting <span class="math inline">\(\textbf{Y}\)</span> onto the column space of <span class="math inline">\(\textbf{X}\)</span>–in other words, we are finding the closest representation of <span class="math inline">\(\textbf{Y}\)</span> in a <span class="math inline">\((p+1)\)</span>-dimensional space. The techniques discussed so far in this chapter to deal with the problem of <span class="math inline">\(p\)</span> being large are</p>
 <ol type="1">
 <li>Set some <span class="math inline">\(\beta_j\)</span> to zero <span class="math inline">\(\rightarrow\)</span> feature selection</li>
@@ -1901,14 +1901,14 @@ Figure&nbsp;9.5
 <h3 class="anchored" data-anchor-id="principal-components">Principal Components</h3>
 <p>It is important that the <span class="math inline">\(Z_M\)</span> are linear combinations of <strong>all</strong> predictors <span id="eq-pca-scores"><span class="math display">\[
         Z_{im} = \sum_{j=1}^p \phi_{jm}X_{ij}
-\tag{9.5}\]</span></span></p>
-<p>The coefficients <span class="math inline">\(\phi_{jm}\)</span> are called the <strong>loadings</strong> or <strong>rotations</strong> and the <strong>scores</strong> <span class="math inline">\(Z_{im}\)</span> are constructed as the <strong>principal components</strong> of the <span class="math inline">\(\textbf{X}\)</span> matrix. We will discuss principal component analysis (PCA) and the construction of the <span class="math inline">\(Z_{im}\)</span> in detail in <a href="pca.html" class="quarto-xref"><span>Chapter 22</span></a>.</p>
+\tag{8.5}\]</span></span></p>
+<p>The coefficients <span class="math inline">\(\phi_{jm}\)</span> are called the <strong>loadings</strong> or <strong>rotations</strong> and the <strong>scores</strong> <span class="math inline">\(Z_{im}\)</span> are constructed as the <strong>principal components</strong> of the <span class="math inline">\(\textbf{X}\)</span> matrix. We will discuss principal component analysis (PCA) and the construction of the <span class="math inline">\(Z_{im}\)</span> in detail in <a href="pca.html" class="quarto-xref"><span>Chapter 21</span></a>.</p>
 <p>(PCA) finds linear combinations of <span class="math inline">\(p\)</span> inputs that explain decreasing amounts of variability among the <span class="math inline">\(x\)</span>’s. Not any linear combination will do, the principal components are orthogonal to each other and project in the directions in which the inputs are most variable. That means they decompose the variability in the inputs into non-overlapping chunks. The first principal component explains the most variability, the second principal component explains the second-most variability, and so forth.</p>
 <p>Consider the following data set with <span class="math inline">\(n=10\)</span> and <span class="math inline">\(p=4\)</span>.</p>
 <div id="tbl-pca-data" class="striped hover quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pca-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;9.1: Example data for principal component analysis. Sample mean and standard deviation of the columns shown in the last two rows.
+Table&nbsp;8.1: Example data for principal component analysis. Sample mean and standard deviation of the columns shown in the last two rows.
 </figcaption>
 <div aria-describedby="tbl-pca-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table-striped table-hover table">
@@ -2019,16 +2019,16 @@ Table&nbsp;9.1: Example data for principal component analysis. Sample mean and s
 0.286 &amp;0.948  &amp;0.047  &amp; 0.132\\
      \end{array} \right]
 \]</span></p>
-<p>This matrix can now be used, along with the data in <a href="#tbl-pca-data" class="quarto-xref">Table&nbsp;<span>9.1</span></a> to compute the scores <span class="math inline">\(Z_{im}\)</span>. For example,</p>
+<p>This matrix can now be used, along with the data in <a href="#tbl-pca-data" class="quarto-xref">Table&nbsp;<span>8.1</span></a> to compute the scores <span class="math inline">\(Z_{im}\)</span>. For example,</p>
 <p><span class="math display">\[\begin{align*}
     Z_{11} &amp;= -0.555 \frac{0.344-0.218}{0.076} -0.574\frac{0.364-0.222}{0.081} - 0.530\frac{0.806-0.544}{0.122} + 0.286\frac{0.16-0.211}{0.075} = -3.248 \\
     Z_{32} &amp;= 0.235 \frac{0.196-0.218}{0.076} +0.052\frac{0.189-0.222}{0.081} + 0.208\frac{0.437-0.544}{0.122} +0.948\frac{0.248-0.211}{0.075} = 0.194\\
 \end{align*}\]</span></p>
-<p><a href="#tbl-pca-scores" class="quarto-xref">Table&nbsp;<span>9.2</span></a> displays the four inputs and the four scores <span class="math inline">\(Z_1, \cdots Z_4\)</span> from the PCA.</p>
+<p><a href="#tbl-pca-scores" class="quarto-xref">Table&nbsp;<span>8.2</span></a> displays the four inputs and the four scores <span class="math inline">\(Z_1, \cdots Z_4\)</span> from the PCA.</p>
 <div id="tbl-pca-scores" class="striped hover quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pca-scores-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;9.2: Data (<span class="math inline">\(X_1,\cdots,X_4\)</span>) and principal component scores (<span class="math inline">\(Z_1,\cdots,Z_4\)</span>).
+Table&nbsp;8.2: Data (<span class="math inline">\(X_1,\cdots,X_4\)</span>) and principal component scores (<span class="math inline">\(Z_1,\cdots,Z_4\)</span>).
 </figcaption>
 <div aria-describedby="tbl-pca-scores-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table-striped table-hover table">
@@ -2187,7 +2187,7 @@ Z_{i1} = \sum_{j=1}^p \phi_{j1}X_{ij}
 <div id="tbl-pca-stats" class="striped quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pca-stats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;9.3: Statistics computed for <span class="math inline">\(X_j\)</span> and <span class="math inline">\(Z_j\)</span>.
+Table&nbsp;8.3: Statistics computed for <span class="math inline">\(X_j\)</span> and <span class="math inline">\(Z_j\)</span>.
 </figcaption>
 <div aria-describedby="tbl-pca-stats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table-striped table">
@@ -2265,14 +2265,14 @@ Table&nbsp;9.3: Statistics computed for <span class="math inline">\(X_j\)</span>
 </div>
 </figure>
 </div>
-<p>The sum of the sample variances of the <span class="math inline">\(Z_j\)</span> in <a href="#tbl-pca-stats" class="quarto-xref">Table&nbsp;<span>9.3</span></a> is (within rounding error) <span class="math display">\[
+<p>The sum of the sample variances of the <span class="math inline">\(Z_j\)</span> in <a href="#tbl-pca-stats" class="quarto-xref">Table&nbsp;<span>8.3</span></a> is (within rounding error) <span class="math display">\[
 2.957 + 0.844 + 0.199 + 0.0006 = 4
 \]</span> The first principal component, <span class="math inline">\(Z_1\)</span>, explains <span class="math inline">\(2.957/4 \times 100\% = 73.9\%\)</span> of the variability in the input variables.</p>
-<p>As you can see from <a href="#eq-pca-scores" class="quarto-xref">Equation&nbsp;<span>9.5</span></a>, PCA is an unsupervised learning method, it does not involve a target variable. The result of PCA, however, can be used in a supervised learning method, such as a regression model. A regression model that uses principal components as the input is called a <strong>principal component regression</strong> (PCR).</p>
+<p>As you can see from <a href="#eq-pca-scores" class="quarto-xref">Equation&nbsp;<span>8.5</span></a>, PCA is an unsupervised learning method, it does not involve a target variable. The result of PCA, however, can be used in a supervised learning method, such as a regression model. A regression model that uses principal components as the input is called a <strong>principal component regression</strong> (PCR).</p>
 </section>
 <section id="sec-pcr" class="level3">
 <h3 class="anchored" data-anchor-id="sec-pcr">Principal Component Regression (PCR)</h3>
-<p>Based on the variance decomposition of the principal components (see the last row of <a href="#tbl-pca-stats" class="quarto-xref">Table&nbsp;<span>9.3</span></a>), we can select a subset <span class="math inline">\(Z_1, \cdots, Z_M\)</span> from the scores <span class="math inline">\(Z_1, \cdots, Z_p\)</span>. The number of principal components included into the model depends on how much variability in the <span class="math inline">\(X\)</span>s we want to account for. If all <span class="math inline">\(p\)</span> principal components are included in the model we have not really reduced the dimensionality. In the example above, the first two principal components account for 73.9% + 21 % = 94.9% of the variability; there is not much gained in choosing <span class="math inline">\(M &gt; 2\)</span>.</p>
+<p>Based on the variance decomposition of the principal components (see the last row of <a href="#tbl-pca-stats" class="quarto-xref">Table&nbsp;<span>8.3</span></a>), we can select a subset <span class="math inline">\(Z_1, \cdots, Z_M\)</span> from the scores <span class="math inline">\(Z_1, \cdots, Z_p\)</span>. The number of principal components included into the model depends on how much variability in the <span class="math inline">\(X\)</span>s we want to account for. If all <span class="math inline">\(p\)</span> principal components are included in the model we have not really reduced the dimensionality. In the example above, the first two principal components account for 73.9% + 21 % = 94.9% of the variability; there is not much gained in choosing <span class="math inline">\(M &gt; 2\)</span>.</p>
 <p>Once the <span class="math inline">\(M\)</span> principal components have been selected, the linear model becomes</p>
 <p><span class="math display">\[
 \textbf{Y}_{n \times 1} = \theta_0 + \textbf{Z}_{n \times M}\boldsymbol{\theta}+ \boldsymbol{\epsilon}
@@ -2324,7 +2324,7 @@ Salary     53.01     53.85     54.61     54.61</code></pre>
 </div>
 </div>
 <p>There are 19 input variables and hence there are 19 principal components. The output displays two tables with 19 columns each. The first reports the cross-validated root mean square error of prediction and a bias-adjusted version. The smallest error is achieved with six components in the model. The second table displays the cumulative proportion of variability explained. Using just the first principal component explains 38.31 % of the variability in the <span class="math inline">\(X\)</span>s. That model has an <span class="math inline">\(R^2\)</span> of 0.4063. Adding the second principal component adds 21.84 % of variability in the <span class="math inline">\(X\)</span>s.</p>
-<p>The model with 6 components, chosen by cross-validation, explains 88.63% of the variability in <span class="math inline">\(X\)</span> and 46.48% of the variability in the <code>Salary</code> target. The sharp drop-off in mean-square error after the first component enters the model is seen in <a href="#fig-pcr-hit" class="quarto-xref">Figure&nbsp;<span>9.6</span></a>. This is a pretty typical picture, because the components are ordered in terms of the proportion of variability explained. Selecting the hyper-parameter based on the “kink” or “elbow” in cross-validation plots is sometimes referred to as the “elbow method”.</p>
+<p>The model with 6 components, chosen by cross-validation, explains 88.63% of the variability in <span class="math inline">\(X\)</span> and 46.48% of the variability in the <code>Salary</code> target. The sharp drop-off in mean-square error after the first component enters the model is seen in <a href="#fig-pcr-hit" class="quarto-xref">Figure&nbsp;<span>8.6</span></a>. This is a pretty typical picture, because the components are ordered in terms of the proportion of variability explained. Selecting the hyper-parameter based on the “kink” or “elbow” in cross-validation plots is sometimes referred to as the “elbow method”.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">validationplot</span>(pcr.fit,<span class="at">val.type=</span><span class="st">"MSEP"</span>,<span class="at">legendpos=</span><span class="st">"topright"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -2334,7 +2334,7 @@ Salary     53.01     53.85     54.61     54.61</code></pre>
 <img src="regfeature_files/figure-html/fig-pcr-hit-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pcr-hit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9.6: Mean square prediction error as a function of number of principal components in PCR.
+Figure&nbsp;8.6: Mean square prediction error as a function of number of principal components in PCR.
 </figcaption>
 </figure>
 </div>
@@ -2436,7 +2436,7 @@ NewLeagueN -0.0419 -0.0776 -0.5446 -0.4177 -0.0145 -0.1570</code></pre>
 
 
 <div class="hidden" aria-hidden="true">
-<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;9.4: Rige trace for credit data</span>
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;8.4: Rige trace for credit data</span>
 </div>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-FurnivalWilson1974" class="csl-entry" role="listitem">
@@ -3012,12 +3012,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./regglobal.html" class="pagination-link" aria-label="The Classical Linear Model">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./regnlr.html" class="pagination-link" aria-label="Nonlinear Regression">
-        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -3035,7 +3035,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","closeEffect":"zoom","loop":false,"openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","loop":false,"closeEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
