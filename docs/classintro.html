@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 12&nbsp; Introduction to Classification</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./class_reg.html" rel="next">
+<link href="./reglocal.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./classintro.html">Part III. Supervised Learning II: Classification</a></li><li class="breadcrumb-item"><a href="./classintro.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Classification</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Part I. Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Part II. Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Part III. Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./classintro.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_random.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Classification with Random Inputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Part IV. Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Part V. Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Part VI. Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Part VII. Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Part VIII. Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Part IX. Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#categorical-targets" id="toc-categorical-targets" class="nav-link active" data-scroll-target="#categorical-targets"><span class="header-section-number">12.1</span> Categorical Targets</a></li>
+  <li><a href="#from-label-to-encoding" id="toc-from-label-to-encoding" class="nav-link" data-scroll-target="#from-label-to-encoding"><span class="header-section-number">12.2</span> From Label to Encoding</a></li>
+  <li><a href="#sec-class-rule" id="toc-sec-class-rule" class="nav-link" data-scroll-target="#sec-class-rule"><span class="header-section-number">12.3</span> Classification Rule</a></li>
+  <li><a href="#sec-class-confusionmatrix" id="toc-sec-class-confusionmatrix" class="nav-link" data-scroll-target="#sec-class-confusionmatrix"><span class="header-section-number">12.4</span> Confusion Matrix</a></li>
+  <li><a href="#receiver-operator-characteristic-roc-and-area-under-the-curve-auc" id="toc-receiver-operator-characteristic-roc-and-area-under-the-curve-auc" class="nav-link" data-scroll-target="#receiver-operator-characteristic-roc-and-area-under-the-curve-auc"><span class="header-section-number">12.5</span> Receiver Operator Characteristic (ROC) and Area under the Curve (AUC)</a></li>
+  <li><a href="#precision-recall-curve" id="toc-precision-recall-curve" class="nav-link" data-scroll-target="#precision-recall-curve"><span class="header-section-number">12.6</span> Precision-Recall Curve</a></li>
+  <li><a href="#types-of-classification-models" id="toc-types-of-classification-models" class="nav-link" data-scroll-target="#types-of-classification-models"><span class="header-section-number">12.7</span> Types of Classification Models</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./classintro.html">Part III. Supervised Learning II: Classification</a></li><li class="breadcrumb-item"><a href="./classintro.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Classification</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-class-intro" class="quarto-section-identifier"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Classification</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>The target variable <span class="math inline">\(Y\)</span> in regression is a numerical variable, either continuous or discrete (a count, for example). The regression model expresses the relationship between the expected value of <span class="math inline">\(Y\)</span>, and input variables for each of the <span class="math inline">\(i=1,\cdots,n\)</span> samples: <span class="math display">\[
+\text{E}[Y_i | \textbf{x}_i] = f(\textbf{x}_i; \boldsymbol{\theta})
+\]</span></p>
+<section id="categorical-targets" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="categorical-targets"><span class="header-section-number">12.1</span> Categorical Targets</h2>
+<p>In a classification problem the target variable is qualitative (categorical). The <span class="math inline">\(k\)</span> categories of the target variable are also called the <strong>classes</strong>, hence the name <strong>classification</strong>. Recall from <a href="statmodels.html#sec-target-variables" class="quarto-xref"><span>Section 1.2.0.4</span></a> that categorical variables belong to the discrete variables that have a countable number of values. With categorical variables, in contrast to counts, the values consist of labels, even if numbers are used for labeling.</p>
+<ul>
+<li><strong>Multinomial Variables</strong>
+<ul>
+<li><p><strong>Nominal variables</strong>: The labels are unordered, for example the variable “fruit” takes on the values “apple”, “peach”, “tomato” (yes, tomatoes are fruit but do not belong in fruit salad).</p></li>
+<li><p><strong>Ordinal variables</strong>: the category labels can be arranged in a natural order in a lesser-greater sense. Examples are 1—5 star reviews or ratings of severity (“mild”, “modest”, “severe”).</p></li>
+</ul></li>
+<li><strong>Binary variables</strong>: take on exactly two values (dead/alive, Yes/No, 1/0, fraud/not fraud, diseased/not diseased)</li>
+</ul>
+<p>The observed values of the target variable are simply labels that enumerate the possible classes. The set of labels can be as small as two, we call those <strong>binary</strong> target variables or can have thousands of elements, as can be the case when classifying objects on images or analyzing words based on a dictionary. Even if the categories are labeled numerically, we think of the numbers as <strong>identifiers</strong> for the categories, not in a numerical sense. A two-category target for customers with and without a subscription could be labeled as “subscriber”/“non-subscriber”, or “1”/“0”, or “Green”/“Blue”, and so on.</p>
+<p>When using numeric class labels, the temptation to treat them as values of a continuous variable grows with the number of classes. A frequent example are ratings on a preference scale (<a href="#fig-5-star" class="quarto-xref">Figure&nbsp;<span>12.1</span></a>). If the possible ratings are 1-star, 2-stars, 3-stars, 4-stars, and 5-stars, how can we possibly achieve 0.5 or 3.5 stars?</p>
+<div id="fig-5-star" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-5-star-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/5-star-ratings.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-5-star-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.1: What is wrong with this picture?
+</figcaption>
+</figure>
+</div>
+<p>These calculations assume that the star-scale is continuous, which implies that differences between values are defined. This is not the case. A 4-star rating is higher than a 2-star rating, but it is not double that. The distance between a 4-star and a 3-star rating is not the same as that between a 3-star and a 2-star rating. The correct way to interpret the rating scale is as an <strong>ordinal</strong> lesser-greater sense. If a website claims that a product has a rating of 4.7, they are treating the rating as continuous. The correct way to state the central tendency of the ratings is to provide estimates of the multinomial category probabilities (<a href="#fig-5-star-dist" class="quarto-xref">Figure&nbsp;<span>12.2</span></a>).</p>
+<div id="fig-5-star-dist" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-5-star-dist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/5-star-review2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:40.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-5-star-dist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.2: There. This is better.
+</figcaption>
+</figure>
+</div>
+<p>Classification problems are everywhere. Here are some examples:</p>
+<ul>
+<li><strong>Medical diagnosis</strong>: given a patient’s symptoms and history assign a medical condition</li>
+<li><strong>Financial services</strong>: determine whether a payment transaction is fraudulent</li>
+<li><strong>Customer intelligence</strong>: assign a new customer to a customer profile (segmentation)</li>
+<li><strong>Computer vision</strong>: detect defective items on an assembly line</li>
+<li><strong>Computer vision</strong>: identify objects on an image</li>
+<li><strong>Text classification</strong>: detect spam email</li>
+<li><strong>Digital marketing</strong>: predict which advertisement a user will click on</li>
+<li><strong>Search engine</strong>: Given a user’s query and search history, predict which link they will follow</li>
+</ul>
+<p>These examples show that predicting an observation and assigning an observation are ultimately the same in classification models. The predicted value in a classification model is the category we predict an observation to fall in. Depending on the type of model, this classification of an observation might first go through a prediction of another kind: the prediction of the probability of category membership. This is precisely the link between regression and classification models—more on that below.</p>
+</section>
+<section id="from-label-to-encoding" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="from-label-to-encoding"><span class="header-section-number">12.2</span> From Label to Encoding</h2>
+<p>Separate from the labeling of the categories is the <strong>encoding</strong> of the categories. To process the data computationally, we need to replace at some point the descriptive class labels with numerical values. In logistic regression, for example, the two possible states of the target variable are coded as <span class="math inline">\(1\)</span>s and <span class="math inline">\(0\)</span>s where a <span class="math inline">\(1\)</span> represents the event of interest. Another common coding scheme for the two states is to use <span class="math inline">\(1\)</span> and <span class="math inline">\(-1\)</span>. This is common in boosting methods such as adaptive boosting (<a href="boosting.html#sec-boost-ada" class="quarto-xref"><span>Section 18.1</span></a>) and leads to a simple classification rule based on the sign of the predictor.</p>
+<p>In situations where <span class="math inline">\(k &gt; 2\)</span>, categories are typically <strong>one-hot encoded</strong>. This is a fancy way of saying that one <span class="math inline">\(Y\)</span> column with <span class="math inline">\(k\)</span> unique values is expanded into <span class="math inline">\(k\)</span> columns <span class="math inline">\(Y_1,\cdots,Y_k\)</span>, each consists of zeros and ones. <span class="math inline">\(X_j\)</span> contains ones in the rows where <span class="math inline">\(Y\)</span> takes on the <span class="math inline">\(j\)</span><sup>th</sup> label, zero otherwise. <a href="#tbl-factor-onehot" class="quarto-xref">Table&nbsp;<span>12.1</span></a> shows two categorical variables A and B with 2 and 4 levels, respectively, and their one-hot encoded expansions. A uses numerical values to identify the categories, B uses characters.</p>
+<div id="tbl-factor-onehot" class="striped quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-factor-onehot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;12.1: One-hot encoding of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>.
+</figcaption>
+<div aria-describedby="tbl-factor-onehot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">A</th>
+<th style="text-align: right;"><span class="math inline">\(A_1\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(A_2\)</span></th>
+<th style="text-align: right;">B</th>
+<th style="text-align: right;"><span class="math inline">\(B_1\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(B_2\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(B_3\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(B_4\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><strong>1</strong></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><strong>ff</strong></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><strong>1</strong></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><strong>gg</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><strong>1</strong></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><strong>hh</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><strong>2</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;"><strong>ff</strong></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><strong>2</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;"><strong>gg</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><strong>2</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;"><strong>hh</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><strong>1</strong></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><strong>ii</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>There is redundant information in <a href="#tbl-factor-onehot" class="quarto-xref">Table&nbsp;<span>12.1</span></a>. Once you know how many categories a variable has, you can fully determine the data from <span class="math inline">\(k-1\)</span> one-hot encoded columns. If <span class="math inline">\(Y_1,\cdots,Y_{k-1}\)</span> are all zero, then <span class="math inline">\(Y_k = 1\)</span>; if any of the <span class="math inline">\(Y_1,\cdots,Y_{k-1}\)</span> is <span class="math inline">\(1\)</span>, then we know that <span class="math inline">\(Y_k = 0\)</span>. In statistical models it is common to use only <span class="math inline">\(k-1\)</span> of the encoded columns, and to treat one of the columns as a baseline. In machine learning applications using neural networks for classification it is common to use all <span class="math inline">\(k\)</span> columns.</p>
+</section>
+<section id="sec-class-rule" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="sec-class-rule"><span class="header-section-number">12.3</span> Classification Rule</h2>
+<p>Suppose the <span class="math inline">\(k\)</span> possible labels of a categorical target are <span class="math inline">\(C_1, \cdots, C_k\)</span> and the probability that <span class="math inline">\(Y_i\)</span> takes on the label <span class="math inline">\(C_j\)</span> is <span class="math inline">\(\Pr(Y_i=j|\textbf{x}_i)\)</span>. A <strong>classifier</strong> is a rule that assigns a predicted label based on estimates <span class="math display">\[
+\widehat{\Pr}(Y_i=j|\textbf{x}_i)
+\]</span></p>
+<p>We use the shorthand <span class="math inline">\(Y_i\)</span> to refer to the observed label and <span class="math inline">\(\widehat{Y}_i\)</span> to refer to the classified value (the predicted label). So which label should we assign to <span class="math inline">\(\widehat{Y}_i\)</span>. With <span class="math inline">\(k\)</span> classes, there are <span class="math inline">\(k\)</span> probabilities, <span class="math inline">\(\widehat{\Pr}(Y=1|\textbf{x}), \cdots, \widehat{\Pr}(Y=k|\textbf{x})\)</span>. The most common rule is to assign the category with the highest probability. This rule is known as the <strong>Bayes classifier</strong>: <span class="math display">\[
+\widehat{Y}_i = \mathop{\mathrm{arg\,max}}_j \; \widehat{\Pr}(Y_i = j | \textbf{x}_i)
+\]</span></p>
+<p>The Bayes classifier is optimal in the sense that no other classification rule achieves a lower misclassification rate (MCR): <span id="eq-misclass-rate"><span class="math display">\[
+MCR = \frac{1}{n}\sum_{i=1}^n I(\widehat{y}_i \neq y_i)
+\tag{12.1}\]</span></span></p>
+<p>In <a href="#eq-misclass-rate" class="quarto-xref">Equation&nbsp;<span>12.1</span></a>, <span class="math inline">\(I()\)</span> is the identity function, returning <span class="math inline">\(1\)</span> if the condition in parentheses is true, <span class="math inline">\(0\)</span> otherwise. The misclassification rate is the proportion of observations for which the predicted category is different from the observed category.</p>
+<p>In a binary problem the Bayes rule reduces to choosing the category with the largest predicted probability. Or, equivalently, predict the category coded as <span class="math inline">\(1\)</span> if <span class="math display">\[
+\widehat{\Pr}(Y=1|\textbf{x}) &gt; 0.5
+\]</span></p>
+</section>
+<section id="sec-class-confusionmatrix" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="sec-class-confusionmatrix"><span class="header-section-number">12.4</span> Confusion Matrix</h2>
+<p>The performance of a classification model is not measured in terms of the mean-squared error. The difference between observed and predicted category is not a meaningful measure of discrepancy. Instead, the performance of classification model is measured by comparing the (relative) frequencies of observed and predicted categories. In the binary case, the performance measures are derived from the <strong>confusion matrix</strong> of the model.</p>
+<div class="definition">
+<div class="definition-header">
+<p>Definition: Confusion Matrix</p>
+</div>
+<div class="definition-container">
+<p>The <span class="math inline">\(k \times k\)</span> confusion matrix in a classification problem is the cross-classification between the observed and the predicted categories. In a problem with two categories, the confusion matrix is a <span class="math inline">\(2 \times 2\)</span> matrix.</p>
+<p>The cells of the matrix contain the number of data points that fall into the cross-classification when the classification rule is applied to <span class="math inline">\(n\)</span> observations. If one of the categories is labeled positive and the other is labeled negative, the cells give the number of true positive (TP), true negative (TN), false positive (FP), and false negative (FN) predictions.</p>
+</div>
+</div>
+<p>The following table shows the layout of a typical confusion matrix for a 2-category classification problem. A false positive prediction, for example, is to predict a positive (“Yes”) result when the true state (the observed state) was negative. A false negative result is when the decision rule assigns a “No” to an observation with positive state.</p>
+<table class="table-striped table">
+<caption>Confusion matrix for a classification problem with two classes.</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;">Observed Category</th>
+<th style="text-align: center;"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Predicted Category</strong></td>
+<td style="text-align: center;"><strong>Yes (Positive)</strong></td>
+<td style="text-align: center;"><strong>No (Negative)</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Yes (Positive)</strong></td>
+<td style="text-align: center;">True Positive (TP)</td>
+<td style="text-align: center;">False Positive (FP)</td>
+</tr>
+<tr class="odd">
+<td><strong>No (Negative)</strong></td>
+<td style="text-align: center;">False Negative (FN)</td>
+<td style="text-align: center;">True Negative (TN)</td>
+</tr>
+</tbody>
+</table>
+<p>Based on the four cells in the confusion matrix we can calculate several statistics (<a href="#tbl-confusion-statistics" class="quarto-xref">Table&nbsp;<span>12.2</span></a>).</p>
+<div id="tbl-confusion-statistics" class="striped hover quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-confusion-statistics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;12.2: Statistics calculated from a 2 x 2 confusion matrix.
+</figcaption>
+<div aria-describedby="tbl-confusion-statistics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table-hover table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 32%">
+<col style="width: 51%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Statistic</th>
+<th style="text-align: center;">Calculation</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>False Positive Rate (FPR)</strong></td>
+<td style="text-align: center;">FP / (FP + TN)</td>
+<td style="text-align: left;">The rate of the true negative cases that were predicted to be positive</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>False Negative Rate (FNR)</strong></td>
+<td style="text-align: center;">FN / (TP + FN)</td>
+<td style="text-align: left;">The rate of the true positive cases that were predicted to be negative</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Sensitivity</strong></td>
+<td style="text-align: center;">TP / (TP + FN) = 1 – FNR</td>
+<td style="text-align: left;">This is the true positive rate; also called <strong>Recall</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Specificity</strong></td>
+<td style="text-align: center;">TN / (FP + TN) = 1— FPR</td>
+<td style="text-align: left;">This is the true negative rate</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Accuracy</strong></td>
+<td style="text-align: center;">(TP + TN) / (TP + TN + FP + FN)</td>
+<td style="text-align: left;">Overall proportion of correct classifications</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Misclassification rate</strong></td>
+<td style="text-align: center;">(FP + FN) / (TP + TN + FP + FN)</td>
+<td style="text-align: left;">Overall proportion of incorrect classifications, 1 – Accuracy</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Precision</strong></td>
+<td style="text-align: center;">TP / (TP + FP)</td>
+<td style="text-align: left;">Ratio of true positives to anything predicted as positive; the accuracy of positive predictions</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong><span class="math inline">\(F_1\)</span>-score</strong></td>
+<td style="text-align: center;"><span class="math inline">\(\frac{2\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}\)</span></td>
+<td style="text-align: left;">Harmonic mean of precision and recall</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Detection Rate</strong></td>
+<td style="text-align: center;">TP / (TP + TN + FP + FN)</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>No Information Rate</strong></td>
+<td style="text-align: center;"><span class="math inline">\(\frac{\max(TP+FN,FP+TN)}{TP+TN+FP+FN}\)</span></td>
+<td style="text-align: left;">The proportion of observations in the larger observed class</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The model <strong>accuracy</strong> is measured by the ratio of observations that were correctly classified, the sum of the diagonal cells divided by the total number of observations. The <strong>misclassification rate</strong> is the complement of the accuracy.</p>
+<p>The <strong>sensitivity</strong> is the ratio of true positives to what should have been predicted as positive. In machine learning, this measure is called the <strong>recall</strong> of the model.</p>
+<p>The <strong>specificity</strong> is the ratio of true negatives to what should have been predicted as negative. Sensitivity and specificity are <strong>not</strong> complements of each other; they are calculated with different denominators.</p>
+<p>The <strong>no information rate</strong> is an interesting statistic, it represents how well a model would perform on the data if it were to assign all predictions to the more frequent class. That is the performance of a model without input variables.</p>
+<p>Just like regression models for continuous data are often (mis-)judged based on <span class="math inline">\(R^2\)</span>, classification models are often (mis-)judged based on their accuracy. That is not without problems. The issue is that the two possible errors, false positives and false negatives, might not be of equal consequence.</p>
+<p>Suppose a model is developed to diagnoses a serious medical condition. A false positive error is to tell a patient that they have the disease, when in fact they have not. A false negative error is the failure to diagnose the disease when the patient is ill.&nbsp;How to weigh the errors depends on their consequences and their prevalence.</p>
+<p>Fraudulent credit card transactions are rare, only a fraction of a percent of all transactions are not legitimate. A false positive in a credit card fraud detection algorithm means that a legitimate transaction is flagged as fraudulent with potentially embarrassing consequences for the card holder—a declined transaction when nothing was wrong. A false negative means not detecting a fraudulent transaction—which is rare to begin with. Banks try their hardest to reduce the false positive rate of their fraud detection models, a 2% change in that rate affects many more customers than a 2% change in the false negative rate. If it turns out later that a fraudulent transaction occurred, the bank will still make its customers whole. When a bank reaches out to you to confirm a transaction they are trying to manage potential false positives.</p>
+<p>It might not matter how accurate a model is unless it achieves a certain sensitivity—the ability to correctly identify positives.</p>
+<p>Consider the data in the <a href="#tbl-confusion-example" class="quarto-xref">Table&nbsp;<span>12.3</span></a>, representing 1,000 observations and predictions.</p>
+<div id="tbl-confusion-example" class="striped quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-confusion-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;12.3: Example of a confusion matrix for 1,000 observations.
+</figcaption>
+<div aria-describedby="tbl-confusion-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table">
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;">Observed Category</th>
+<th style="text-align: center;"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Predicted Category</strong></td>
+<td style="text-align: center;"><strong>Yes (Positive)</strong></td>
+<td style="text-align: center;"><strong>No (Negative)</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Yes (Positive)</strong></td>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">7</td>
+</tr>
+<tr class="odd">
+<td><strong>No (Negative)</strong></td>
+<td style="text-align: center;">26</td>
+<td style="text-align: center;">958</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The classification has an accuracy of 96.7%, which seems impressive. Its false positive and false negative rates are very different, however: FPR = 0.0073, FNR = 0.7429. The model is much less likely to predict a “Yes” when the true state is “No”, than it is to predict a “No” when the true state is “Yes”. Whether we can accept a model with such low sensitivity (100 – 74.29) = 25.71% is questionable, despite the high accuracy. An evaluation of this model should consider whether the two errors, false positive and false negative predictions, are of equal importance and consequence.</p>
+<p>It is also noteworthy that the accuracy of 96.7% is not as impressive if you check the no-information rate of the data. The proportion of observations in the larger observed class is (958 + 7)/1,000 = 0.965. The accuracy of the decision rule is only slightly larger. In other words, if you were to take a naïve (dumb) approach and predict all observations as “No” without looking at the data, that naïve decision rule would have an accuracy of 96.5%. The use of input variables to improve the model has not helped much compared to a dumb model. The accuracy improved by only .2 percentage points.</p>
+<p><a href="#tbl-confusion-statistics" class="quarto-xref">Table&nbsp;<span>12.2</span></a> also lists the <span class="math inline">\(F_1\)</span>-score, a combination of precision and recall (sensitivity) that is popular in machine learning. The <span class="math inline">\(F_1\)</span>-score is the harmonic mean of the two basic measures: <span id="eq-f1-score"><span class="math display">\[
+\begin{align*}
+F_1 &amp;= \frac{2}{\frac{1}{\text{Precision}}+\frac{1}{\text{Recall}}} \\
+    &amp;= \frac{2\,\text{Precision}\times\text{Recall}}{\text{Precision} + \text{Recall}} \\
+    &amp;= \frac{\frac{TP}{(TP+FP)(TP+FN)}}{\frac{1}{TP+FP} + \frac{1}{TP+FN}}
+\end{align*}
+\tag{12.2}\]</span></span></p>
+<p><span class="math inline">\(F_1\)</span> is bounded <span class="math inline">\(0 \le F_1 \le 1\)</span>; a model with <span class="math inline">\(F_1 = 1\)</span> has perfect precision and recall.</p>
+<p>The <span class="math inline">\(F_1\)</span>-score is sometimes preferred over accuracy when the data are unbalanced—that is, negative and positive outcomes occur with very different proportions. However, the <span class="math inline">\(F_1\)</span> can be misleading for unbalanced cases since it does not take into account the number of true negatives (there is no TN in <a href="#eq-f1-score" class="quarto-xref">Equation&nbsp;<span>12.2</span></a>). The <span class="math inline">\(F_1\)</span> score is also not symmetric; if you exchange the roles of positives and negatives, you can get a different <span class="math inline">\(F_1\)</span>, the accuracy will remain the same. The <span class="math inline">\(F_1\)</span> score can be a good performance measure for binary classification when you want a model that has both high sensitivity (high recall) and high precision. Such a model combines a low rate of false positives with a low rate of false negatives. If the costs of errors are the same, balancing recall and precision makes sense.</p>
+</section>
+<section id="receiver-operator-characteristic-roc-and-area-under-the-curve-auc" class="level2" data-number="12.5">
+<h2 data-number="12.5" class="anchored" data-anchor-id="receiver-operator-characteristic-roc-and-area-under-the-curve-auc"><span class="header-section-number">12.5</span> Receiver Operator Characteristic (ROC) and Area under the Curve (AUC)</h2>
+<p>So why do we not build models that have a high accuracy, small false positive rate, and small false negative rate? That seems desirable and we can affect those parameters through the decision rule. To reduce the likelihood of a false positive we could require more evidence before predicting a positive result. Similarly, to reduce the likelihood of false negatives, we could make it more difficult to classify an observation as negative. If <span class="math inline">\(c\)</span> is the threshold in the decision rule of a binary classification, we could treat it as a parameter and evaluate the performance of the model for different rules</p>
+<p><span class="math display">\[
+\widehat{\Pr}(Y=1|\textbf{x}) &gt; c
+\]</span> You can easily see that changing <span class="math inline">\(c\)</span> affects both false positives and false negatives, as well as the accuracy. For <span class="math inline">\(c=0.5\)</span> you arrive at the accuracy-optimal Bayes classifier.</p>
+<p>To see how the choice of cutoff affects the performance of a binary classifier, several graphical devices are in use. The <strong>receiver operator characteristic</strong> (ROC) is a plot of the true positive rate (TPR, sensitivity, recall) against the false positive rate for different values of <span class="math inline">\(c\)</span>. It shows the sensitivity of the classifier as a function of the false positive rate (<a href="#fig-roc-curves" class="quarto-xref">Figure&nbsp;<span>12.3</span></a>).</p>
+<div id="fig-roc-curves" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-roc-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/ROC_curves.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-roc-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.3: Schema of ROC curves.
+</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The name receiver operator characteristic stems from the method’s origin, it was developed in World War II for operators of military radar receivers to detect enemy objects in battlefields, specifically after the attack on Pearl Harbor in 1941 to measure the operator’s ability to correctly detect Japanese aircraft in radar signals.</p>
+</div>
+</div>
+<p>A perfect model is one with perfect sensitivity and perfect specificity, it makes no incorrect predictions. It is represented by the point at the (0,1) coordinate in <a href="#fig-roc-curves" class="quarto-xref">Figure&nbsp;<span>12.3</span></a>. The diagonal line represents a random classifier. Suppose you are flipping a coin to predict positive outcomes. The long-run (expected) behavior of this decision rule is captured by the diagonal line. If the coin is fair, you get a point on the line at coordinate (0.5, 0.5). Loaded coins where one side is more likely than the other generate the other points on the 45-degree line.</p>
+<p>An actual model will be somewhere between the random classifier and the perfect model. The closer the operating curve is to the left and upper margins of the plot, the more performant the model. Actual ROC curves appear as step functions, after calculating FPR and TPR for a set of threshold values <span class="math inline">\(c_1, c_2, \cdots\)</span>.</p>
+<p>The ROC curve shows how sensitivity and specificity change with the threshold value <span class="math inline">\(c\)</span> and help solve the tradeoff between sensitivity and specificity of the model. The ROC is often summarized by computing AUC, the <strong>area under the curve</strong>. AUC is a single summary statistic that ranges from 0 to 1, with the uninformative random classifier at AUC = 0.5. The idealistic optimal ROC line that passes through (0, 1) has an AUC of 1. While AUC is a popular summary of a binary classifier, it is not without problems:</p>
+<ul>
+<li><p>Reducing the ROC curve to a single number hides the tradeoffs associated with choosing thresholds; that is the point of the ROC in the first place.</p></li>
+<li><p>The integration under the ROC curve incorporates extreme ranges of FPR one would usually not consider in real applications. If a false positive rate of more than 80% is unacceptable, why consider such decision rules in evaluating the performance of a model? Typically we are interested in regions of the ROC rather than the entire curve. In screening tests interest is in the ranges of low FPR, for example. To overcome this issue, <strong>partial</strong> AUC statistics have been proposed. These restrict FPR, TPR, or both to certain regions of interest.</p></li>
+</ul>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Many performance metrics have 0 as the point of uninformedness, for example, correlation coefficients and <span class="math inline">\(R^2\)</span>. For AUC this point is 0.5, the area under the diagonal line in <a href="#fig-roc-curves" class="quarto-xref">Figure&nbsp;<span>12.3</span></a>. If someone presents an AUC of 0.36 for their classification model, remember that it performs <strong>worse</strong> than a random coin flip.</p>
+<p>I attended a seminar where a statistician presented a new model for classifying brain conditions. Their model slightly beat out different approaches, all of them had AUCs less than 0.5! It is embarrassing if after months or years of expenditures and time spent developing methodology, collecting data, and computing a coin flip would have been more accurate.</p>
+</div>
+</div>
+</section>
+<section id="precision-recall-curve" class="level2" data-number="12.6">
+<h2 data-number="12.6" class="anchored" data-anchor-id="precision-recall-curve"><span class="header-section-number">12.6</span> Precision-Recall Curve</h2>
+<p>Another graphical display that summarizes the performance of a binary classifier across multiple thresholds is the precision-recall curve (<a href="#fig-precision-recall" class="quarto-xref">Figure&nbsp;<span>12.4</span></a>). Like the ROC, it compares actual classifiers against a no-skill baseline (the horizontal line drawn at the proportion of positives) and an ideal classifier.</p>
+<div id="fig-precision-recall" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-precision-recall-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/PrecisionRecall.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-precision-recall-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.4: Schema of precision-recall curves.
+</figcaption>
+</figure>
+</div>
+<p>The precision-recall curve can also be summarized by computing the area under its curve (AUC-PR). A large area under the precision-recall curve indicates high precision and high recall of the model across the thresholds. Precision-recall curves are preferred over ROC curves when the data are very imbalanced with respect to positive and negative outcomes.</p>
+</section>
+<section id="types-of-classification-models" class="level2" data-number="12.7">
+<h2 data-number="12.7" class="anchored" data-anchor-id="types-of-classification-models"><span class="header-section-number">12.7</span> Types of Classification Models</h2>
+<p>The remaining chapters of this part are dedicated to specific types of classification models: regression-based models, pure classifiers approaches assuming the <span class="math inline">\(X\)</span>s are random, and support vector machines. <a href="#fig-classifier-mind-map" class="quarto-xref">Figure&nbsp;<span>12.5</span></a> organizes these approaches. However, there are many other methods that can be used in both a regression and a classification context. For example, decision trees, boosting machines, artificial neural networks and more. These techniques are covered in other parts of the material.</p>
+<div id="fig-classifier-mind-map" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-classifier-mind-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/ClassifierMindMap.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/ClassifierMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-classifier-mind-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.5: Classification mind map.
+</figcaption>
+</figure>
+</div>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;12.5: Classification mind map.</span>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./reglocal.html" class="pagination-link" aria-label="Local Models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Local Models</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./class_reg.html" class="pagination-link" aria-label="Regression Approach to Classification">
+        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","loop":false,"closeEffect":"zoom","descPosition":"bottom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

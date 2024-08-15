@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 14&nbsp; Classification with Random Inputs</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./supportvectors.html" rel="next">
+<link href="./class_reg.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./classintro.html">Part III. Supervised Learning II: Classification</a></li><li class="breadcrumb-item"><a href="./class_random.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Classification with Random Inputs</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Part I. Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Part II. Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Part III. Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./classintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_random.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Classification with Random Inputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Part IV. Decision Trees</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Part V. Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Part VI. Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Part VII. Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Part VIII. Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Part IX. Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">14.1</span> Introduction</a>
+  <ul>
+  <li><a href="#prior-and-posteriors" id="toc-prior-and-posteriors" class="nav-link" data-scroll-target="#prior-and-posteriors">Prior and Posteriors</a></li>
+  <li><a href="#bayes-decision-boundary" id="toc-bayes-decision-boundary" class="nav-link" data-scroll-target="#bayes-decision-boundary">Bayes Decision Boundary</a></li>
+  <li><a href="#simulation-of-accuracy-as-function-of-decision-boundary" id="toc-simulation-of-accuracy-as-function-of-decision-boundary" class="nav-link" data-scroll-target="#simulation-of-accuracy-as-function-of-decision-boundary">Simulation of Accuracy as Function of Decision Boundary</a></li>
+  </ul></li>
+  <li><a href="#sec-class-dca" id="toc-sec-class-dca" class="nav-link" data-scroll-target="#sec-class-dca"><span class="header-section-number">14.2</span> Discriminant Analysis</a>
+  <ul>
+  <li><a href="#linear-and-quadratic-da" id="toc-linear-and-quadratic-da" class="nav-link" data-scroll-target="#linear-and-quadratic-da">Linear and Quadratic DA</a></li>
+  <li><a href="#discriminant-analysis-in-r" id="toc-discriminant-analysis-in-r" class="nav-link" data-scroll-target="#discriminant-analysis-in-r">Discriminant Analysis in <code>R</code></a></li>
+  </ul></li>
+  <li><a href="#sec-class-nb" id="toc-sec-class-nb" class="nav-link" data-scroll-target="#sec-class-nb"><span class="header-section-number">14.3</span> Naïve Bayes Classifier</a>
+  <ul>
+  <li><a href="#conditional-independence" id="toc-conditional-independence" class="nav-link" data-scroll-target="#conditional-independence">Conditional Independence</a></li>
+  <li><a href="#the-classifier" id="toc-the-classifier" class="nav-link" data-scroll-target="#the-classifier">The Classifier</a></li>
+  <li><a href="#naïve-bayes-in-r" id="toc-naïve-bayes-in-r" class="nav-link" data-scroll-target="#naïve-bayes-in-r">Naïve Bayes in <code>R</code></a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./classintro.html">Part III. Supervised Learning II: Classification</a></li><li class="breadcrumb-item"><a href="./class_random.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Classification with Random Inputs</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-class-random" class="quarto-section-identifier"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Classification with Random Inputs</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="14.1">
+<h2 data-number="14.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">14.1</span> Introduction</h2>
+<p>In <a href="class_reg.html" class="quarto-xref"><span>Chapter 13</span></a> the approach to classification passed through a regression model. Characteristic of these models is that the mean of a random variable is modeled conditionally on the inputs. In other words, we assume that the <span class="math inline">\(X\)</span>s are fixed. If they are random variables, then we condition the inference on the observed values. This is expressed simply in the conditional probabilities such as <span class="math display">\[
+\Pr(Y = j | \textbf{x})
+\]</span></p>
+<p>How would things change if we treat the <span class="math inline">\(X\)</span>s as random variables?</p>
+<section id="prior-and-posteriors" class="level3">
+<h3 class="anchored" data-anchor-id="prior-and-posteriors">Prior and Posteriors</h3>
+<p>Recall the multinomial regression model in <a href="class_reg.html#sec-class-reg-iris" class="quarto-xref"><span>Section 13.2.1.2</span></a>, modeling Iris species as a function of petal length. If we think of petal length as a random variable, we can study its distribution for each of the three species (<a href="#fig-iris-densities" class="quarto-xref">Figure&nbsp;<span>14.1</span></a>).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-iris-densities" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-iris-densities-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="class_random_files/figure-html/fig-iris-densities-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-iris-densities-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14.1: Estimated densities of petal length by Iris species.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>There is an overall probability that a randomly chosen Iris belongs to one of the species. Call this overall probability <span class="math inline">\(\pi_j = \Pr(Y=j)\)</span>. In a Bayesian context <span class="math inline">\(\pi_j\)</span> is the <strong>prior</strong> probability to observe species <span class="math inline">\(j\)</span>. For each species <span class="math inline">\(j\)</span>, we now have a continuous distribution of the petal lengths:</p>
+<ul>
+<li><span class="math inline">\(f_1(x)\)</span> is the distribution of petal lengths for <em>I. setosa</em></li>
+<li><span class="math inline">\(f_2(x)\)</span> is the distribution of petal lengths for <em>I. versicolor</em></li>
+<li><span class="math inline">\(f_3(x)\)</span> is the distribution of petal lengths for <em>I. virginica</em></li>
+</ul>
+<p>Estimates of these densities are shown in <a href="#fig-iris-densities" class="quarto-xref">Figure&nbsp;<span>14.1</span></a>. These are <strong>conditional</strong> probabilities, <span class="math inline">\(\Pr(X | Y=j)\)</span>. Given those estimated densities and the prior probabilities of occurrence of the categories (species), can we classify an observation based on its input values? In other words, can we compute <span class="math inline">\(\Pr(Y=j | X=x)\)</span> based on <span class="math inline">\(\pi_j = \Pr(Y=j)\)</span> and <span class="math inline">\(\Pr(X | Y=j)\)</span>?</p>
+<p>Yes, we can, by applying Bayes’ Theorem: <span id="eq-class-bayes"><span class="math display">\[
+\Pr(Y = j | X=x) = \frac{\pi_j f_j(x)}{\sum_{l=1}^k \pi_l f_l(x)}
+\tag{14.1}\]</span></span></p>
+<div class="callout callout-style-default callout-note callout-titled" title="Bayes Rule">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Bayes Rule
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The generic formulation of Bayes’ rule, for events <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> is <span class="math display">\[
+\Pr(A | B) = \frac{\Pr(A \cap B)}{\Pr(B)} = \frac{\Pr(A)\Pr(B|A)}{\Pr(B)}
+\]</span> The rule allows us to reverse the conditioning from <span class="math inline">\(\Pr(B|A)\)</span> to <span class="math inline">\(\Pr(A|B)\)</span>.</p>
+</div>
+</div>
+</div>
+<p><span class="math inline">\(\pi_j\)</span> is the <strong>prior</strong> probability that <span class="math inline">\(Y\)</span> belongs to the <span class="math inline">\(j\)</span><sup>th</sup> class. In the absence of any additional information, if asked which Iris species you thinks a flower belongs to, you would go with the most frequent species. But now that we have seen data and can compute the distribution of petal lengths by species, we can use that information for a more precise calculation of the likelihood that <span class="math inline">\(Y\)</span> belongs to category <span class="math inline">\(j\)</span>; <span class="math inline">\(\Pr(Y=j|X=x)\)</span> is the <strong>posterior</strong> probability.</p>
+<p>Applying this rationale to the Iris data, suppose we have not taken any petal length measurement. The species have the same estimate of the prior probability, <span class="math inline">\(\widehat{\pi}_j = 1/3\)</span>, because we have the same number of observations for each. If someone now tells you that they measured a petal length of 1.8, then given the densities in <a href="#fig-iris-densities" class="quarto-xref">Figure&nbsp;<span>14.1</span></a>, we should assign a high <strong>posterior</strong> probability that this is indeed a member of <em>I. setosa</em>. Similarly, for a petal length of 4.2, <em>I. setosa</em> is highly unlikely, <em>I. versicolor</em> is quite likely, but <em>I. viriginica</em> cannot be ruled out. If we have to settle on one category, we would side with the species that has the largest posterior probability.</p>
+<p>The difference between the regression-based approach to classification and the methods in this chapter can be expressed as follows. In regression, we directly estimate <span class="math inline">\(\Pr(Y=j | \textbf{x})\)</span>. An alternative approach is to assemble this probability based on the prior probabilities <span class="math inline">\(\pi_j\)</span> and the distribution of the inputs in the <span class="math inline">\(k\)</span> categories.</p>
+</section>
+<section id="bayes-decision-boundary" class="level3">
+<h3 class="anchored" data-anchor-id="bayes-decision-boundary">Bayes Decision Boundary</h3>
+<p>Let’s consider the simple case where the <span class="math inline">\(X_j\)</span> follow a <span class="math inline">\(G(\mu_j,\sigma^2)\)</span> distribution. That means, they are Gaussian distributed and differ only in their means, not their variance. Plugging into <a href="#eq-class-bayes" class="quarto-xref">Equation&nbsp;<span>14.1</span></a> with the normal density function for the <span class="math inline">\(f_j(x)\)</span> yields <span class="math display">\[
+    \Pr(Y = j | X=x) = \frac{\pi_j \frac{1}{2\pi\sigma}\exp\{-\frac{1}{2\sigma^2}(x-\mu_j)^2\}}
+{f(x)}
+\]</span> In finding the category index <span class="math inline">\(j\)</span> that maximizes the right hand side, the denominator can be ignored–it is the same for all categories. Maximizing the numerator is equivalent to maximizing its logarithm. This leads to the following classification rule: for a given value of <span class="math inline">\(x\)</span>, choose the category for which <span class="math display">\[
+\delta_j(x) = \text{ln}(\pi_j) + x\frac{\mu_j}{\sigma^2} - \frac{\mu_j^2}{2\sigma^2}
+\]</span> is largest. The <strong>Bayes decision boundary</strong> between categories <span class="math inline">\(j\)</span> and <span class="math inline">\(k\)</span> is the value of <span class="math inline">\(x\)</span> for which <span class="math inline">\(\delta_j(x) = \delta_k(x)\)</span>: <span class="math display">\[
+    x = \frac{\sigma^2}{\mu_j - \mu_k} \left(\log(\pi_k) - \log(\pi_j) \right )+ \frac{\mu_j + \mu_k}{2}
+\]</span></p>
+<p>If <span class="math inline">\(\pi_j = \pi_k\)</span> this is simply <span class="math inline">\(x = (\mu_j + \mu_k)/2\)</span>, the average of the two means.</p>
+<p><a href="#fig-gauss-mix-30-70" class="quarto-xref">Figure&nbsp;<span>14.2</span></a> shows two Gaussian densities, <span class="math inline">\(G(-1,1)\)</span> and <span class="math inline">\(G(1.5,1)\)</span> and their 30:70 mixture. We can calculate the Bayes decision boundary with <span class="math inline">\(\mu_1 = -1\)</span>, <span class="math inline">\(\sigma^2 = 1\)</span>, <span class="math inline">\(\pi_1 = 0.3\)</span>, <span class="math inline">\(\mu_2 = 1.5\)</span>, and <span class="math inline">\(\pi_2 = 0.7\)</span> as <span class="math display">\[
+x = \frac{1}{-1 - 1.5}(\log(0.7) - \log(0.3)) + \frac{-1+1.5}{2}=-0.08892
+\]</span></p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-gauss-mix-30-70" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gauss-mix-30-70-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="class_random_files/figure-html/fig-gauss-mix-30-70-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gauss-mix-30-70-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14.2: 30:70 mixture of two Gaussian densities.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>If you randomly draw an observation and its value is greater than <span class="math inline">\(x=-0.08892\)</span> we conclude it comes from the <span class="math inline">\(G(1.5,1)\)</span> distribution (category 2), if it is smaller we conclude it comes from the <span class="math inline">\(G(-1,1)\)</span> distribution (category 1). If the value is exactly <span class="math inline">\(-0.08892\)</span> then both distributions have equal posterior probabilities.</p>
+</section>
+<section id="simulation-of-accuracy-as-function-of-decision-boundary" class="level3">
+<h3 class="anchored" data-anchor-id="simulation-of-accuracy-as-function-of-decision-boundary">Simulation of Accuracy as Function of Decision Boundary</h3>
+<p>We can validate with a simulation that any other classifier that assigns observations to categories 1 and 2 based on a value other than <span class="math inline">\(x=-0.08892\)</span> will have a larger misclassification rate (smaller accuracy).</p>
+<p>We simulate 20,000 draws from Gaussian distributions with mean <span class="math inline">\(-1\)</span> and <span class="math inline">\(1.5\)</span> and variance <span class="math inline">\(1\)</span>. We also draw 20,000 times from a uniform(0,1) distribution which helps to create the mixture. If the uniform variable is less than 0.3 we choose an observation from the normal distribution with mean <span class="math inline">\(-1\)</span>, otherwise we choose from the distribution with mean <span class="math inline">\(1.5\)</span>. The decision boundary of <span class="math inline">\(x=-0.08892\)</span> should have the greatest accuracy among all possible cutoffs if the experiment is repeated over and over.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">345</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">20000</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">20000</span>,<span class="fl">1.5</span>,<span class="dv">1</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">20000</span>,<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>x1obs <span class="ot">&lt;-</span> <span class="fu">subset</span>(x1, u <span class="sc">&lt;</span> <span class="fl">0.3</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>x2obs <span class="ot">&lt;-</span> <span class="fu">subset</span>(x2, u <span class="sc">&gt;=</span> <span class="fl">0.3</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">c</span>(x1obs,x2obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><a href="#fig-bayes-acc" class="quarto-xref">Figure&nbsp;<span>14.3</span></a> shows the accuracy of the classifier as the cutoffs are varied. At the cutoff value <span class="math inline">\(-0.08992\)</span> the highest accuracy is achieved (acc=0.908).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-bayes-acc" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bayes-acc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="class_random_files/figure-html/fig-bayes-acc-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bayes-acc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14.3: Accuracy of classifier as a function of the decision boundary. The Bayes decision rule is <span class="math inline">\(-0.08892\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Two important methods that apply these ideas are <strong>discriminant analysis</strong> and the <strong>naïve Bayes classifier</strong>. They differ in assumptions about the distribution of the inputs.</p>
+</section>
+</section>
+<section id="sec-class-dca" class="level2" data-number="14.2">
+<h2 data-number="14.2" class="anchored" data-anchor-id="sec-class-dca"><span class="header-section-number">14.2</span> Discriminant Analysis</h2>
+<p>Classification discriminant analysis (DA) was designed for the case of a qualitative target variable and one or more quantitative input variables. The typical assumption is that the input variables have a joint Gaussian distribution. When the distribution within each group is not known—or known not to be Gaussian—nonparametric forms of discriminant analysis that rely on kernel methods or nearest neighbor analysis are available.</p>
+<p>At the heart of DA is the <strong>discriminant function</strong>, a decision rule used to classify observations into categories. The discriminant function is based on a generalized measure of distance between data points to the groups. This is a generalized distance because it takes into account the variances and covariances among the inputs. The posterior probabilities are functions of discriminant scores which are in turn based on those distances. An observation is assigned to the category which has the largest posterior probability.</p>
+<p>Discriminant analysis is also a <strong>dimension reduction</strong> techniques, similar to principal component analysis (PCA, see <a href="pca.html" class="quarto-xref"><span>Chapter 21</span></a>). It computes one or more linear combinations between the quantitative variables that break down the variability between classes. In PCA, linear combinations are constructed that explain proportions of the total variability in the data.</p>
+<section id="linear-and-quadratic-da" class="level3">
+<h3 class="anchored" data-anchor-id="linear-and-quadratic-da">Linear and Quadratic DA</h3>
+<p>Suppose we have <span class="math inline">\(p\)</span> input variables <span class="math inline">\(X_1, \cdots, X_p\)</span>. Discriminant analysis assumes that the joint distribution of the inputs is multivariate Gaussian with mean vector <span class="math inline">\(\boldsymbol{\mu}= [\mu_1, \cdots, \mu_p]^\prime\)</span> and covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span>. A different multivariate Gaussian distribution applies to each of the <span class="math inline">\(k\)</span> categories.</p>
+<p>In <strong>linear</strong> discriminant analysis (LDA), the category-specific Gaussian distributions differ only in their mean vectors and not their covariance matrices. In <strong>quadratic</strong> discriminant analysis, the distributions differ in their mean vectors and their covariance matrices.</p>
+<ul>
+<li><strong>LDA</strong>: <span class="math inline">\(f_j(\textbf{x}) \sim G(\boldsymbol{\mu}_j,\boldsymbol{\Sigma})\)</span></li>
+<li><strong>QDA</strong>: <span class="math inline">\(f_j(\textbf{x}) \sim G(\boldsymbol{\mu}_j,\boldsymbol{\Sigma}_j)\)</span></li>
+</ul>
+<p>We focus on LDA now.</p>
+<p>Note that there are two “dimensions” to the problem. We have <span class="math inline">\(p\)</span> inputs and <span class="math inline">\(k\)</span> categories. For each of the <span class="math inline">\(j=1,\cdots,k\)</span> categories we are dealing with a <span class="math inline">\(p\)</span>-dimensional Gaussian distribution. With LDA, the p.m.f. for the <span class="math inline">\(j\)</span><sup>th</sup> distribution is</p>
+<p><span class="math display">\[
+    f_j(\textbf{x}) = \frac{1}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2}} \exp\left\{ -\frac{1}{2} (\textbf{x}-\boldsymbol{\mu}_j)^\prime\boldsymbol{\Sigma}^{-1}(\textbf{x}-\boldsymbol{\mu}_j)\right \}
+\]</span> where <span class="math inline">\(\boldsymbol{\mu}_j = [\mu_{j1},\cdots,\mu_{jp}]\)</span>. With <span class="math inline">\(p=3\)</span>, the covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span> has this form: <span class="math display">\[
+\boldsymbol{\Sigma}= \left [ \begin{array}{ccc} \ \text{Var}[X_1] &amp; \text{Cov}[X_1,X_2] &amp; \text{Cov}[X_1,X_3] \\
+    \text{Cov}[X_2,X_1] &amp; \text{Var}[X_2] &amp; \text{Cov}[X_2,X_3] \\
+    \text{Cov}[X_3,X_1] &amp; \text{Cov}[X_3,X_2] &amp; \text{Var}[X_3]
+    \end{array} \right ]
+\]</span></p>
+<p>The Bayes classifier assigns an observation with features <span class="math inline">\(\textbf{x}_0\)</span> to the category <span class="math inline">\(j\)</span> for which <span class="math display">\[
+    \delta_j(\textbf{x}_0) = \textbf{x}_0^\prime\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_j - \frac{1}{2}\boldsymbol{\mu}_j^\prime \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_j + \text{ln}(\pi_j)
+\]</span> is largest.</p>
+<p>The term <strong>linear</strong> describes this form of discriminant analysis because <span class="math inline">\(\delta_j(\textbf{x}_0)\)</span> is a linear function of the Xs—that is, the LDA decision rule depends on <span class="math inline">\(\textbf{x}\)</span> only through a linear combination of its elements.</p>
+<hr>
+<p>The assumption of a common variance across all categories helps to keep the number of parameters of the linear discriminant analysis in check. With <span class="math inline">\(k\)</span> categories and <span class="math inline">\(p\)</span> inputs the LDA has <span class="math inline">\(kp + p(p+1)/2\)</span> parameters. This quickly escalates; with <span class="math inline">\(k=3\)</span> and <span class="math inline">\(p=50\)</span> we are dealing with 1,425 parameters.</p>
+<p>In QDA the number of parameters is much larger because the covariance matrices are also category-specific. This leads to <span class="math inline">\(kp + kp(p+1)/2\)</span> parameters. With <span class="math inline">\(k=3\)</span> and <span class="math inline">\(p=50\)</span> this results in 3,975 parameters.</p>
+<p>Choosing between LDA and QDA is a classical bias-variance tradeoff. LDA is less flexible than QDA because of the equal-covariance-matrix constraint. If that constraint does not hold, LDA has high bias. QDA, on the other hand has high variability, in particular for small data sets where it is difficult to estimate variances and covariances well. If you have very large data sets or the common variance assumption is clearly wrong, choose QDA. Otherwise, give LDA a try.</p>
+<p>Discriminant analysis has another glaring issue. The assumption of a joint multivariate Gaussian distribution of the inputs is questionable for many data sets. The assumption is a stretch for binary inputs such as those from encoding factors. Many continuous input variables are far from symmetric. The Gaussian assumption is for mathematical convenience, not because it reflects reality.</p>
+</section>
+<section id="discriminant-analysis-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="discriminant-analysis-in-r">Discriminant Analysis in <code>R</code></h3>
+<p>We can perform LDA with the <code>MASS::lda</code> function and QDA with the <code>MASS:qda</code> function in <code>R</code>.</p>
+<div class="{example}">
+<div class="example-header">
+<p>Example: LDA for Iris Data</p>
+</div>
+<div class="example-container">
+<p>In <a href="class_reg.html#sec-class-reg-iris" class="quarto-xref"><span>Section 13.2.1.2</span></a>, the <code>Species</code> variable of the Iris data was classified using a multinomial regression with one input, petal length. The model had an accuracy of 0.9583 on the test data set, only two <em>I. versicolor</em> were misclassified as <em>I. virginica</em>.</p>
+<p>How does a linear discriminant analysis compare to the multinomial regression analysis?</p>
+<p>First, we create the same train:test data split as in <a href="class_reg.html#sec-class-reg-iris" class="quarto-xref"><span>Section 13.2.1.2</span></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">654</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>trainset <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">createDataPartition</span>(iris<span class="sc">$</span>Species, <span class="at">p=</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">list=</span><span class="cn">FALSE</span>,<span class="at">times=</span><span class="dv">1</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>iris_train <span class="ot">&lt;-</span> iris[trainset,]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>iris_test <span class="ot">&lt;-</span> iris[<span class="sc">-</span>trainset,]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(iris_train<span class="sc">$</span>Species)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    setosa versicolor  virginica 
+        34         34         34 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(iris_test<span class="sc">$</span>Species)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    setosa versicolor  virginica 
+        16         16         16 </code></pre>
+</div>
+</div>
+<p>The following statements compute the linear discriminant analysis and graph the results.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>iris_lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(Species <span class="sc">~</span> Petal.Length, <span class="at">data=</span>iris_train)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>iris_lda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+lda(Species ~ Petal.Length, data = iris_train)
+
+Prior probabilities of groups:
+    setosa versicolor  virginica 
+ 0.3333333  0.3333333  0.3333333 
+
+Group means:
+           Petal.Length
+setosa         1.461765
+versicolor     4.247059
+virginica      5.514706
+
+Coefficients of linear discriminants:
+                  LD1
+Petal.Length 2.258558</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(iris_lda)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="class_random_files/figure-html/iris_lda-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>By default, <code>lda</code> uses the class proportions as the prior probabilities. Since each species has the same number of observations, the prior probabilities are the same. The next table in the output shows the average value of the input(s) in the classes. Only one discriminant function was computed, it explains all the between-class variability.</p>
+<p>The graph shows the separation of the groups. With a single discriminant function, the graph consists of a series of histograms, one for each category. There is no overlap in the discriminant scores between <em>I. setosa</em> and the other species. <em>I. versicolor</em> and <em>I. virginica</em> show some overlap.</p>
+<p>The confusion matrix tells us how well the LDA classifier does. It is identical to the confusion matrix in the multinomial regression model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(iris_lda,<span class="at">newdata=</span>iris_test)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(pred<span class="sc">$</span>class,iris_test<span class="sc">$</span>Species, <span class="at">mode=</span><span class="st">"everything"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+            Reference
+Prediction   setosa versicolor virginica
+  setosa         16          0         0
+  versicolor      0         14         0
+  virginica       0          2        16
+
+Overall Statistics
+                                          
+               Accuracy : 0.9583          
+                 95% CI : (0.8575, 0.9949)
+    No Information Rate : 0.3333          
+    P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+                                          
+                  Kappa : 0.9375          
+                                          
+ Mcnemar's Test P-Value : NA              
+
+Statistics by Class:
+
+                     Class: setosa Class: versicolor Class: virginica
+Sensitivity                 1.0000            0.8750           1.0000
+Specificity                 1.0000            1.0000           0.9375
+Pos Pred Value              1.0000            1.0000           0.8889
+Neg Pred Value              1.0000            0.9412           1.0000
+Precision                   1.0000            1.0000           0.8889
+Recall                      1.0000            0.8750           1.0000
+F1                          1.0000            0.9333           0.9412
+Prevalence                  0.3333            0.3333           0.3333
+Detection Rate              0.3333            0.2917           0.3333
+Detection Prevalence        0.3333            0.2917           0.3750
+Balanced Accuracy           1.0000            0.9375           0.9688</code></pre>
+</div>
+</div>
+</div>
+</div>
+<hr>
+<p>Next we return to the credit card default analysis from <a href="class_reg.html#sec-class-reg-bin" class="quarto-xref"><span>Section 13.1</span></a>.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Credit Default–ISLR (Cont’d)</p>
+</div>
+<div class="example-container">
+<p>Recall that the <code>Default</code> data is part of the <code>ISLR2</code> library <span class="citation" data-cites="James2013_ISLR2">(<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">James et al. 2021</a>)</span>, a simulated data set with ten thousand observations. The target variable is <code>default</code>, whether a customer defaulted on their credit card debt. Input variables include a factor that indicates student status, account balance and income information.</p>
+<p>As before, we randomly split the data into 9,000 training observations and 1,000 test observations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  default student   balance    income
+1      No      No  729.5265 44361.625
+2      No     Yes  817.1804 12106.135
+3      No      No 1073.5492 31767.139
+4      No      No  529.2506 35704.494
+5      No      No  785.6559 38463.496
+6      No     Yes  919.5885  7491.559</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">765</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(Default)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>testset <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">sample</span>(n,n<span class="sc">*</span><span class="fl">0.1</span>))</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> Default[testset,]</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> Default[<span class="sc">-</span>testset,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Linear discriminant analysis, LDA with equal priors, and quadratic discriminant analysis follow:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(default <span class="sc">~</span> income <span class="sc">+</span> balance <span class="sc">+</span> student, <span class="at">data=</span>train)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>lda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+lda(default ~ income + balance + student, data = train)
+
+Prior probabilities of groups:
+        No        Yes 
+0.96688889 0.03311111 
+
+Group means:
+      income   balance studentYes
+No  33549.41  804.4596  0.2926913
+Yes 32318.24 1749.8002  0.3859060
+
+Coefficients of linear discriminants:
+                     LD1
+income      4.854450e-06
+balance     2.248323e-03
+studentYes -1.354917e-01</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>lda2 <span class="ot">&lt;-</span> <span class="fu">lda</span>(default <span class="sc">~</span> income <span class="sc">+</span> balance <span class="sc">+</span> student, <span class="at">data=</span>train,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">prior=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">0.5</span>))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>lda2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+lda(default ~ income + balance + student, data = train, prior = c(0.5, 
+    0.5))
+
+Prior probabilities of groups:
+ No Yes 
+0.5 0.5 
+
+Group means:
+      income   balance studentYes
+No  33549.41  804.4596  0.2926913
+Yes 32318.24 1749.8002  0.3859060
+
+Coefficients of linear discriminants:
+                     LD1
+income      4.854450e-06
+balance     2.248323e-03
+studentYes -1.354917e-01</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>qda <span class="ot">&lt;-</span> <span class="fu">qda</span>(default <span class="sc">~</span> income <span class="sc">+</span> balance <span class="sc">+</span> student, <span class="at">data=</span>train)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>qda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+qda(default ~ income + balance + student, data = train)
+
+Prior probabilities of groups:
+        No        Yes 
+0.96688889 0.03311111 
+
+Group means:
+      income   balance studentYes
+No  33549.41  804.4596  0.2926913
+Yes 32318.24 1749.8002  0.3859060</code></pre>
+</div>
+</div>
+<p>Does the choice of linear versus quadratic DA and the choice of prior affect the classification performance?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>lda_pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(lda, <span class="at">newdata=</span>test)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>lda_c <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(lda_pred_test<span class="sc">$</span>class,test<span class="sc">$</span>default, </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">positive=</span><span class="st">"Yes"</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>lda_c<span class="sc">$</span>table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Reference
+Prediction  No Yes
+       No  961  29
+       Yes   4   6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(lda_c<span class="sc">$</span>overall[<span class="dv">1</span>],lda_c<span class="sc">$</span>byClass[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Accuracy Sensitivity Specificity 
+  0.9670000   0.1714286   0.9958549 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>lda2_pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(lda2, <span class="at">newdata=</span>test)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>lda2_c <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(lda2_pred_test<span class="sc">$</span>class,test<span class="sc">$</span>default, </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">positive=</span><span class="st">"Yes"</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>lda2_c<span class="sc">$</span>table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Reference
+Prediction  No Yes
+       No  815   4
+       Yes 150  31</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(lda2_c<span class="sc">$</span>overall[<span class="dv">1</span>],lda2_c<span class="sc">$</span>byClass[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Accuracy Sensitivity Specificity 
+  0.8460000   0.8857143   0.8445596 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>qda_pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(qda, <span class="at">newdata=</span>test)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>qda_c <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(qda_pred_test<span class="sc">$</span>class,test<span class="sc">$</span>default, </span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">positive=</span><span class="st">"Yes"</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>qda_c<span class="sc">$</span>table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Reference
+Prediction  No Yes
+       No  959  27
+       Yes   6   8</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(qda_c<span class="sc">$</span>overall[<span class="dv">1</span>],qda_c<span class="sc">$</span>byClass[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Accuracy Sensitivity Specificity 
+  0.9670000   0.2285714   0.9937824 </code></pre>
+</div>
+</div>
+<p>The accuracy, sensitivity, and specificity of the default LDA and QDA are comparable, the QDA is slightly more sensitive, but neither model satisfies with respect to that metric.</p>
+<p>Assuming equal priors, (<code>lda2</code> analysis) means that prior to accounting for the inputs we assume that defaults and no defaults are equally likely. Under that (unreasonable) assumption the accuracy of the LDA classifier is lower but the sensitivity is much improved. A comparison of the classified values in the test set shows that 171 observations predicted as no defaults were classified as defaults under the equal prior assumption.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(lda_pred_test<span class="sc">$</span>class, lda2_pred_test<span class="sc">$</span>class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     
+       No Yes
+  No  819 171
+  Yes   0  10</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-class-nb" class="level2" data-number="14.3">
+<h2 data-number="14.3" class="anchored" data-anchor-id="sec-class-nb"><span class="header-section-number">14.3</span> Naïve Bayes Classifier</h2>
+<section id="conditional-independence" class="level3">
+<h3 class="anchored" data-anchor-id="conditional-independence">Conditional Independence</h3>
+<p>The parametric discriminant analysis relies on a joint (multivariate) Gaussian distributions of the inputs. That does not accommodate qualitative (categorical) features. After converting those to 0–1 encoded binary columns, a Gaussian assumption is not reasonable. The <strong>naïve Bayes classifier</strong> (NBC) handles inputs of different types more gracefully—you can combine quantitative and qualitative inputs in the same classifier.</p>
+<p>However, it does so by replacing the multivariate Gaussian assumption with another strong assumption: within a class <span class="math inline">\(j\)</span> the <span class="math inline">\(f_j(\textbf{x})\)</span> across the <span class="math inline">\(p\)</span> inputs are independent (given the response <span class="math inline">\(Y\)</span>).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that <span class="math inline">\(f_j(\textbf{x})\)</span> introduced earlier also has a conditional interpretation (<span class="math inline">\(f_j(\textbf{x}|y)\)</span>). The conditioning on <span class="math inline">\(Y\)</span> does not add anything new here.</p>
+</div>
+</div>
+<p>The new wrinkle is that under the independence assumption the <span class="math inline">\(p\)</span>-dimensional joint distribution of <span class="math inline">\([X_1,\cdots,X_p]\)</span> for category <span class="math inline">\(j\)</span> factors into the product of the marginal distributions <span class="math display">\[
+f_j(\textbf{x}|y) = f_{1}(x_1|Y=j) \times f_{2}(x_2 | Y=j) \times \cdots \times f_{p}(x_p | Y=j)
+\]</span> Or, using our shorthand notation <span class="math display">\[f_j(\textbf{x}|y) = f_{j1}(x_1) \times f_{j2}(x_2) \times \cdots \times f_{jp}(x_p)
+\]</span></p>
+<p>Does this mean we are assuming <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> are independent? Not quite. It means that if you know that <span class="math inline">\(Y\)</span> is in category <span class="math inline">\(j\)</span>, then knowing <span class="math inline">\(X_1\)</span> has no bearing on our beliefs about <span class="math inline">\(X_2\)</span>. In other words, if we know that <span class="math inline">\(Y\)</span> belongs to category <span class="math inline">\(j\)</span>, then <span class="math inline">\(f_j(x_2|y, x_1) = f_j(x_2|y)\)</span>: the distribution of <span class="math inline">\(X_2\)</span> is not affected by the values of <span class="math inline">\(X_1\)</span>.</p>
+<p>This is a very strong assumption. What did we gain by making it?</p>
+<ul>
+<li>Considerable simplification of the estimation procedure.</li>
+<li>We no longer have to model the <span class="math inline">\(p\)</span>-dimensional joint distribution among the <span class="math inline">\(X\)</span>s</li>
+<li>Features with different properties can be accommodated
+<ul>
+<li><span class="math inline">\(X_1\)</span> might be continuous</li>
+<li><span class="math inline">\(X_2\)</span> can be a count</li>
+<li><span class="math inline">\(X_3\)</span> can be qualitative</li>
+</ul></li>
+<li>The distributions of the inputs can be estimated separately using different methods (kernel density, histogram, frequency distribution)</li>
+<li>The distributions do not have to be the same across categories. <span class="math inline">\(f_{j1}(x_1)\)</span>, the distribution of <span class="math inline">\(X_1\)</span> in category <span class="math inline">\(j\)</span> can be from a different distributional family than <span class="math inline">\(f_{k1}(x_1)\)</span>, the distribution of <span class="math inline">\(X_1\)</span> in category <span class="math inline">\(k\)</span>.</li>
+</ul>
+</section>
+<section id="the-classifier" class="level3">
+<h3 class="anchored" data-anchor-id="the-classifier">The Classifier</h3>
+<p>The naïve Bayes classifier chooses as the predicted category of an observation the label for which <span class="math display">\[
+\Pr(Y= j | \textbf{x}) = \frac{\pi_j \times f_{j1}(x_1) \times \cdots \times f_{jp}(x_p)}{f(\textbf{x})}
+\]</span> is largest. Since the denominator does not depend on <span class="math inline">\(Y\)</span>, this rule is equivalent to finding the category label for which <span class="math display">\[
+\pi_j \times f_{j1}(x_1) \times \cdots \times f_{jp}(x_p)
+\]</span> is largest.</p>
+<p>The prior probabilities <span class="math inline">\(\pi_l\)</span> are estimated by the proportion of training observations in category <span class="math inline">\(j\)</span>. The densities <span class="math inline">\(f_{jm}(x_m)\)</span> are estimated as follows:</p>
+<ul>
+<li><strong>Quantitative</strong> <span class="math inline">\(X_m\)</span>:
+<ul>
+<li>assume <span class="math inline">\(N(\mu_{jm},\sigma^2_{jm})\)</span></li>
+<li>or using a histogram of observations of the <span class="math inline">\(m\)</span>th predictor in each class</li>
+<li>or using a kernel density estimator, essentially a smoothed histogram</li>
+</ul></li>
+<li><strong>Qualitative</strong> <span class="math inline">\(X_m\)</span>:
+<ul>
+<li>proportion of training observations for the <span class="math inline">\(m\)</span>th predictor in each class</li>
+</ul></li>
+</ul>
+</section>
+<section id="naïve-bayes-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="naïve-bayes-in-r">Naïve Bayes in <code>R</code></h3>
+<p>Naive Bayes is implemented in <code>R</code> in various packages. The <code>naiveBayes()</code> function in the <code>e1071</code> library uses syntax similar to that of <code>lda</code> and assumes that the numeric variables are Gaussian distributed. For factors (qualitative variables) it computes the conditional discrete distribution in each target category.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Credit Default–ISLR (Cont’d)</p>
+</div>
+<div class="example-container">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>nb <span class="ot">&lt;-</span> <span class="fu">naiveBayes</span>(default <span class="sc">~</span> income <span class="sc">+</span> balance <span class="sc">+</span> student, <span class="at">data=</span>train)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>nb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Naive Bayes Classifier for Discrete Predictors
+
+Call:
+naiveBayes.default(x = X, y = Y, laplace = laplace)
+
+A-priori probabilities:
+Y
+        No        Yes 
+0.96688889 0.03311111 
+
+Conditional probabilities:
+     income
+Y         [,1]     [,2]
+  No  33549.41 13323.37
+  Yes 32318.24 13728.98
+
+     balance
+Y          [,1]     [,2]
+  No   804.4596 454.9880
+  Yes 1749.8002 344.5415
+
+     student
+Y            No       Yes
+  No  0.7073087 0.2926913
+  Yes 0.6140940 0.3859060</code></pre>
+</div>
+</div>
+<p>The information for the conditional probability distribution can be easily verified. For numeric variables (<code>income</code>, <code>balance</code>) the tables display the sample mean and sample standard deviation for each category. These are then used to calculate the <span class="math inline">\(f_j(x)\)</span> as Gaussian densities.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior probabilities</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>prior_freq <span class="ot">&lt;-</span> <span class="fu">table</span>(train<span class="sc">$</span>default)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>prior_freq<span class="sc">/</span><span class="fu">sum</span>(prior_freq)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+        No        Yes 
+0.96688889 0.03311111 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mean and standard deviation of income by default</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(default) <span class="sc">%&gt;%</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">income_mn=</span><span class="fu">mean</span>(income),</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">income_sd=</span><span class="fu">sd</span>(income))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 3
+  default income_mn income_sd
+  &lt;fct&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+1 No         33549.    13323.
+2 Yes        32318.    13729.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mean and standard deviation of balance by default</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(default) <span class="sc">%&gt;%</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">balance_mn=</span><span class="fu">mean</span>(balance),</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">balance_sd=</span><span class="fu">sd</span>(balance))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 3
+  default balance_mn balance_sd
+  &lt;fct&gt;        &lt;dbl&gt;      &lt;dbl&gt;
+1 No            804.       455.
+2 Yes          1750.       345.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Proportions of students by default</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">table</span>(train<span class="sc">$</span>default,train<span class="sc">$</span>student)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>t</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     
+        No  Yes
+  No  6155 2547
+  Yes  183  115</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>t[<span class="dv">1</span>,]<span class="sc">/</span><span class="fu">sum</span>(t[<span class="dv">1</span>,])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       No       Yes 
+0.7073087 0.2926913 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>t[<span class="dv">2</span>,]<span class="sc">/</span><span class="fu">sum</span>(t[<span class="dv">2</span>,])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      No      Yes 
+0.614094 0.385906 </code></pre>
+</div>
+</div>
+<p>For example, the distribution of income given default=No is modeled as <span class="math display">\[
+f_{\text{No}}(\text{income}) = f(\text{income} | \text{default = No}) = G(33549.41,13323.37^2)
+\]</span> and <span class="math display">\[
+f_{\text{Yes}}(\text{income}) = f(\text{income} | \text{default = Yes}) = G(32318.24,13728.98^2)
+\]</span> The confusion matrix for the Naive Bayes estimates is identical to the confusion matrix of the logistic regression model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>nb_pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(nb,<span class="at">newdata=</span>test)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>nb_c <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(nb_pred_test,test<span class="sc">$</span>default, <span class="at">positive=</span><span class="st">"Yes"</span>)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>nb_c<span class="sc">$</span>table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Reference
+Prediction  No Yes
+       No  958  26
+       Yes   7   9</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(nb_c<span class="sc">$</span>overall[<span class="dv">1</span>],nb_c<span class="sc">$</span>byClass[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Accuracy Sensitivity Specificity 
+  0.9670000   0.2571429   0.9927461 </code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-James2013_ISLR2" class="csl-entry" role="listitem">
+James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2021. <em>An Introduction to Statistical Learning: With Applications in r, 2nd Ed.</em> Springer. <a href="https://www.statlearning.com/">https://www.statlearning.com/</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./class_reg.html" class="pagination-link" aria-label="Regression Approach to Classification">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./supportvectors.html" class="pagination-link" aria-label="Support Vectors">
+        <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Support Vectors</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

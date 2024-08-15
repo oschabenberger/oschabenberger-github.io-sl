@@ -5,15 +5,583 @@ $$
 $$
 :::
 
-
 # Regression Approach to Classification {#sec-class-reg}
 
-## Binary Data
+We have seen in @sec-class-rule that classification is based on a decision rule applied to
+an estimate of a probability. Any method that can predict probabilities can thus be used to 
+classify observations. The regression approach to classification relies on such models where
+$\Exp[Y]$ is a probability (binary case) or a vector of probabilities (multinomial case). Logistic regression and multinomial regression can be used for predicting the mean response---a probability (vector)---or class membership.
 
+## Binary Data {#sec-class-reg-bin}
+
+With binary data we can apply logistic regression to predict events (positives) and non-events (negatives).
+Recall from @sec-reg-discrete that a logistic regression model (with logit link) is a generalized linear model where
+$$
+\begin{align*}
+  Y &\sim \text{Bernoulli}(\pi) \\
+  \pi &= \frac{1}{1+\exp\{-\eta\}} \\
+  \eta &= \bx^\prime \bbeta
+\end{align*}
+$$
+
+Once $\bbeta$ is estimated by maximum likelihood, predicted values on the link scale and on the mean scale are obtained as 
+$$
+\begin{align*}
+\widehat{\eta} &= \bx^\prime\widehat{\bbeta} \\
+\widehat{\pi} &= \frac{1}{1+\exp\{-\widehat{\eta}\}}
+\end{align*}
+$$
+
+and an observation is classified as an event if $\widehat{\pi} > c$. If the threshold $c=0.5$, the Bayes classifier results.
+
+:::{.example}
+::::{.example-header}
+Example: Credit Default--ISLR
+::::
+::::{.example-container}
+We continue the analysis of the credit default data from @sec-reg-discrete, but with the goal to classify the observations in the test data set as defaulting/not defaulting on their credit and analyzing the performance of the model based on confusion matrix, ROC and Precision-recall curves.
+
+Recall that the `Default` data is part of the `ISLR2` library [@James2013_ISLR2], a simulated data set with ten thousand observations. The target variable is `default`, whether a customer defaulted on their credit card debt. Input variables include a factor that indicates student status, account balance and income information.
+
+As previously, we randomly split the data into 9,000 training observations and 1,000 test observations
+
+```{r}
+library(ISLR2)
+head(Default)
+
+set.seed(765)
+n <- nrow(Default)
+testset <- sort(sample(n,n*0.1))
+test <- Default[testset,]
+train <- Default[-testset,]
+nrow(train)
+nrow(test)
+```
+
+Next we fit a logistic regression model to the training data.
+
+```{r}
+log_reg <- glm(default ~ ., data=train, family=binomial)
+summary(log_reg)
+```
+Student status and account balance are significant predictors of credit default, the income seems less important given the other predictors ($p$-value of `{r} round(summary(log_reg)$coefficients[4,4],4)`).
+
+The confusion matrix can be computed with the `confusionMatrix` function in the `caret` package.
+The option `positive="Yes"` identifies the level of the factor considered the "positive" level for the calculation of the statistics. This will not affect the overall confusion matrix but will affect the interpretation of sensitivity, specificity and other statistics. By default, the function uses the first level of a factor as the "positive" result which would be "No" in our case.
+
+Before calling `confusionMatrix` we first calculate the predicted probabilities from the logistic regression model, then calculate the Bayes classifier ($c=0.5$). `mode="everything"` requests statistics based on sensitivity and specificity as well as statistics based on precision and recall.
+
+```{r confusion_matrix_test, warning=FALSE, message=FALSE}
+library(caret)
+
+predicted_prob_test <- predict(log_reg, newdata=test, type="response")
+classify_test <- as.factor(ifelse(predicted_prob_test > 0.5,"Yes","No"))
+
+confusionMatrix(classify_test,test$default, 
+                positive="Yes",
+                mode="everything")
+```
+
+The accuracy of the model appears high with 96.7\%, but the no-information rate of 0.965 shows that the inclusion of the three input variables did not improve the model much. If you were to simply classify all observations as "No", this naïve approach would result in an accuracy of 96.5\%, simply because defaults are very rare.
+
+The sensitivity of the model is dismal with 0.2571, the false negative rate is high (1-0.2571 = 0.7429). If someone defaults, the model has only a 25.71\% chance to detect that. Not surprisingly, the specificity is very high, 958/(958+7) = 0.9927. This is again driven by the high number of non-defaulters and a low false positive rate (FPR = 7 / (958 + 7) = 0.0073).
+
+Would changing the threshold improve the model by increasing its sensitivity?
+If we declare a default if the predicted probability exceeds 0.25, we get more positive predictions. How does this affect accuracy and other measures?
+
+```{r}
+classify_test <- as.factor(ifelse(predicted_prob_test > 0.25,"Yes","No"))
+
+confusionMatrix(classify_test,
+                test$default, 
+                positive="Yes",
+                mode="everything")
+```
+
+The sensitivity of the model increases, as expected, while the specificity does not take much of a hit. Interestingly, the accuracy of this decision rule has now sunk below the no-information rate. Precision has gone down but the $F_1$ score has gone up. This decision rule balances better between precision and recall than the Bayes classifier.
+
+The next code blocks uses the `ROCR` package to compute the ROC curve (@fig-credit-roc), the AUC, the Precision-recall curve (@fig-credit-pr) and the AUC-PR. The first step in using `ROCR` is to call the 
+`prediction` function to create a prediction object. The `performance` function of the package is then
+used to compute statistics and visualizations based on that object.
+
+```{r, fig.align='center', out.width="80%"}
+#| fig.cap: ROC curve for credit default logistic regression.
+#| label: fig-credit-roc
+library(ROCR)
+
+pred_prob <- predict(log_reg, newdata=test, type="response")
+
+pred_obj <- prediction(pred_prob,test$default,
+                       label.ordering=c("No","Yes"))
+
+perf <- performance(pred_obj,"sens","fpr")
+plot(perf,colorize=TRUE)
+
+auc <- performance(pred_obj,"auc")
+auc@y.values[[1]]	
+
+```
+
+The ROC curve looks quite good for this data--model combination. The cutoffs $c$ corresponding to the steps in the plot are shown with different colors. As the cutoff drops below 0.35, the sensitivity of the decision rule increases sharply. The area under the curve of `{r} round(auc@y.values[[1]],4)` is impressive. However, we know that the data are highly unbalanced, so let's take a look at the precision-recall plot (@fig-credit-pr)
+
+```{r, fig.align='center', out.width="80%"}
+#| fig.cap: Precision-recall curve for credit default logistic regression.
+#| label: fig-credit-pr
+
+perf <- performance(pred_obj,"prec","rec")
+plot(perf,colorize=TRUE)
+
+aucpr <- performance(pred_obj,"aucpr")
+aucpr@y.values[[1]]	
+```
+
+Another powerful feature of `ROCR` is the calculation of any measure as a function of the 
+threshold value. The next code block computes and displays accuracy and $F_1$ measure as a
+function of $c$. Both are maximized for values in the neighborhood of $c=0.4$
+
+```{r, fig.align="center", out.width="90%"}
+f1 <- performance(pred_obj,"f")
+acc <- performance(pred_obj,"acc")
+
+par(mfrow=c(1,2))
+plot(f1@x.values[[1]],f1@y.values[[1]],cex=0.4,
+     xlab="Threshold c",
+     ylab="F1",
+     las=1,bty="l")
+maxval <- which.max(f1@y.values[[1]])
+abline(v=f1@x.values[[1]][maxval],col="red")
+
+plot(acc@x.values[[1]],acc@y.values[[1]],cex=0.4,
+     xlab="Threshold c",
+     ylab="Accuracy",
+     las=1,bty="l")
+maxval <- which.max(acc@y.values[[1]])
+abline(v=acc@x.values[[1]][maxval],col="red")
+```
+
+::::
+:::
 
 ## Multinomial Data
 
-### Modeling Ordinal Data
+Suppose you draw $n$ observations from a population where labels $C_1, \cdots, C_k$ occur with probabilities $\pi_1, \cdots, \pi_k$. The probability to observe $C_1$ exactly $y_1$ times, $C_2$ exactly $y_2$ times, and so forth, is
+$$
+\begin{align*}
+\Pr(\bY = [y_1,\cdots,y_k]) &= \frac{n!}{y_1!y_2!\cdots y_k!} \pi_1 \times \cdots \pi_k \\
+       &= \frac{n!}{\prod_{j=1}^ky_j} \prod_{j=1}^k \pi_j
+\end{align*}
+$$
+This is the probability mass function of the **multinomial** distribution. For $k=2$ this reduces to the **binomial** distribution, 
+$$
+{n \choose y} \pi^y (1-\pi)^{n-y}
+$$
+The mean of the multinomial distribution is $n$ times the vector of the category probabilities $\boldsymbol{\pi} = [\pi_1, \cdots,\pi_k]^\prime$. 
+
+A classification model for multinomial data can thus be based on a multinomial regression model that predicts the category probabilities, and then applies a classification rule in a second step to determine the predicted category. How these regression models are constructed differs depending on whether the categories of the multinomial are unordered (nominal) or ordered.
 
 ### Modeling Nominal Data
+
+The models for unordered multinomial data are a direct extension of the logistic regression type models for binary data. The predicted probabilities in the logistic model are
+$$
+\begin{align*}
+\Pr(Y=1 | \bx) &= \frac{1}{1+\exp\{-\bx^\prime\bbeta\}} \\
+\Pr(Y=0 | \bx) &= \frac{\exp\{-\bx^\prime\bbeta\}}{1+\exp\{-\bx^\prime\bbeta\}}
+\end{align*}
+$$
+
+#### Softmax function and reference category
+
+The generalization to $k$ categories is
+$$
+\Pr(Y=j | \bx) = \frac{\exp\{\bx^\prime\bbeta_j\}}{\sum_{l=1}^k \exp\{\bx^\prime\bbeta_l\}}
+$$ {#eq-class-softmax}
+
+Each of the $k$ categories has its own parameter vector $\bbeta_j$. But wait, why does the logistic regression model with $k=2$ have only one ($k-1$) parameter vector? Since the category probabilities sum to 1, one of the probabilities is redundant, it can be calculated from the other probabilities. In multinomial logistic regression this constraint is built into the calculations by setting $\bbeta_j = \bzero$ for one of the categories. This is called the **reference category**. Suppose we choose the first category as reference. Then @eq-class-softmax becomes
+
+$$
+\begin{align*}
+\Pr(Y=1 | \bx) &= \frac{1}{1 + \sum_{l=2}^k \exp\{\bx^\prime\bbeta_l\}} \\
+\Pr(Y=j > 1 | \bx) &= \frac{\exp\{\bx^\prime\bbeta_j\}}{1 + \sum_{l=2}^k \exp\{\bx^\prime\bbeta_l\}}
+\end{align*}
+$$
+If the last category is chosen as the reference, @eq-class-softmax becomes
+$$
+\begin{align*}
+\Pr(Y=j < k | \bx) &= \frac{\exp\{\bx^\prime\bbeta_j\}}{1 + \sum_{l=1}^{k-1} \exp\{\bx^\prime\bbeta_l\}}\\
+\Pr(Y=k | \bx) &= \frac{1}{1 + \sum_{l=1}^{k-1} \exp\{\bx^\prime\bbeta_l\}} 
+\end{align*}
+$$
+
+::: {.callout-tip}
+When using software to model multinomial data, make sure to check how the code handles the reference category. There is no consistency across software packages, the choice is arbitrary. By default, SAS uses the last category as the reference, the `nnet:mulitnom` function in `R` uses the first category. The interpretation of the regression coefficients depends on the choice of the reference category. Fortunately, the predicted category probabilities do not depend on the choice of the reference category.
+
+In addition, check on how the levels of the target variable are ordered. 
+:::
+
+In training neural networks, @eq-class-softmax is called the **softmax** activation function (see @sec-ann). Activation functions have two important roles in neural networks: to introduce nonlinearity and to map between input and output of a network layer. The softmax activation function is used in networks that are built to classify data into $k$ categories. Since neural networks are typically overparameterized, that is, they have more parameters than observations, the softmax transformation is applied there without constraining one of the parameter vectors to zero. This parallel development will lead us down the path in @sec-ann-multinomial to express multinomial regression for classification as a special case of a neural network (without hidden layers) and a softmax output activation.
+
+::: {.callout-note title="Softmax in neural nets" collapse=true}
+Using the softmax criterion in multinomial logistic regression is the equivalence of the inverse logit link function in logistic regression. It maps from the linear predictor space to the mean of the target. The result is a probability. In neural networks, there are no distributional assumptions, so the softmax transformation should be seen as mapping $\bx^\prime\bbeta_1, \cdots, \bx^\prime\bbeta_k$ to buckets of the (0,1) interval such that 
+$$
+\sum_{j=1}^k \frac{\exp\{\bx^\prime\bbeta_j\}}{\sum_{l=1}^k \exp\{\bx^\prime\bbeta_l\}} = 1
+$$
+It is a stretch to think of the terms as probabilities in that context.
+:::
+
+#### Multinomial Regression in `R` {#sec-class-reg-iris}
+
+Multiple packages can fit multinomial regression models in `R`. 
+
+* The `nnet::multinom` function uses a neural network to estimate the parameters. It uses the first category as the reference. 
+
+* The `mlogit::mlogit` function fits multinomial models by maximum likelihood and has 
+the ability to include random effects (a multinomial mixed model). It uses a discrete
+choice formulation which is popular in econometrics.
+
+We use the `nnet::multinom` function here and demonstrate model fitting, prediction, 
+and classification for a simple model using the Iris data.
+
+Before fitting a multinomial regression model, we split the data into 
+training and test data sets with 1/3 of the observation for testing the model.
+Stratified sampling via `caret::CreateDataPartition` is used
+to make sure that all species are represented in the 
+training and test data sets with appropriate proportions.
+
+``` {r train_test_data}
+set.seed(654)
+trainset <- caret::createDataPartition(iris$Species, p=2/3, list=FALSE,times=1)
+iris_train <- iris[trainset,]
+iris_test <- iris[-trainset,]
+
+table(iris_train$Species)
+table(iris_test$Species)
+```
+
+Before we start modeling, let's confirm the ordering of the `Species` factor. 
+
+```{r}
+str(iris_train$Species)
+```
+
+There are three species, the first level of the factor is `setosa`. This will be the reference level in the multinomial regression---that is, the coefficients for the `I. setosa` category will be set to zero. 
+To choose a different level as the reference level, you can rearrange the factor with `relevel()`.
+
+The following code fits a multinomial regression model with a single input variable (`Petal.Length`) and target
+`Species`. The model tries to predict the iris species from just the measured length of the flower petals. 
+
+``` {r multi_fit}
+library(nnet)
+multi <- multinom(Species ~ Petal.Length, data=iris_train)
+
+s <- summary(multi)
+s
+```
+
+The fit converges after several iterations on the training data. The coefficient estimates for the multinomial regression model are 
+
+* $\bbeta_{\text{setosa}} = [0, 0]$, 
+
+* $\bbeta_{\text{versicolor}} =$ [ `{r} round(s$coefficients[1,1],4)`, `{r} round(s$coefficients[1,2],4)`], and
+
+* $\bbeta_{\text{virgnica}} =$ [ `{r} round(s$coefficients[2,1],4)`, `{r} round(s$coefficients[2,2],4)`].
+
+Suppose we wish to predict the predicted probabilities for the 35^th^ observation in the training set,
+a flower with petal length of `{r} iris_train[35,"Petal.Length"]`. 
+
+```{r}
+iris_train[35,]
+```
+
+First we need to compute the terms $\exp\{\beta_0 + \beta_1 \text{Petal.Length}\}$ for all three species. The sum of those is the term in the denominator of @eq-class-softmax. The following code computes the linear predictors, the denominator and the category probabilities for that observation
+
+```{r}
+# The input vector for the prediction
+x_data <- c(1,iris_train[35,"Petal.Length"])
+
+# The coefficient vectors for the three species 
+b_setosa <- rep(0,2)
+b_versicolor <- s$coefficients[1,]
+b_virginica <- s$coefficients[2,]
+
+# the linear predictors for the three species
+eta_setosa <- x_data%*%b_setosa
+eta_versicolor <- x_data%*%b_versicolor
+eta_virginica <- x_data%*%b_virginica
+
+# The denominator for the softmax criterion
+denom <- sum(exp(eta_setosa) + 
+             exp(eta_versicolor) +
+             exp(eta_virginica))
+
+# The category probabilities
+pr_setosa <- exp(eta_setosa)/denom
+pr_versicolor <- exp(eta_versicolor)/denom
+pr_virginica <- exp(eta_virginica)/denom
+
+cat("Pr(setosa | 4.7) = "    , round(pr_setosa,4),"\n")
+cat("Pr(versicolor | 4.7) = ", round(pr_versicolor,4),"\n")
+cat("Pr(virginica | 4.7) = " , round(pr_virginica,4),"\n")
+```
+
+The calculation is confirmed by checking the fitted value for this observation:
+
+``` {r}
+round(s$fitted.values[35,],4)
+```
+
+Predicted values for any value of the input(s) can also be constructed with the 
+`predict` function:
+
+```{r}
+x_pred <- data.frame("Petal.Length"=4.7)
+round(predict(multi,newdata=x_pred,type="probs"),4)
+```
+
+If you request a prediction of type `"class"`, the function performs classification
+based on the largest predicted probability. 
+
+``` {r}
+predict(multi,newdata=x_pred,type="class")
+```
+
+In this case, the predicted and observed category agree.
+
+How well does this single-regressor model classify iris species? To answer the 
+question we turn to the confusion matrix for the test data:
+
+``` {r}
+pred_class <- predict(multi,newdata=iris_test,type="class")
+
+cm <- caret::confusionMatrix(pred_class, iris_test$Species, mode="everything")
+cm
+```
+
+The model classifies extremely well based on just one input, `Petal.Length`. 
+2 *I. versicolor* are misclassified as *I. virginica*, the model has an 
+accuracy of `{r} round(cm$overall[1],4)`.
+
+In the binary classification, `confusionMatrix` returns a single column of confusion statistics.
+When $k > 2$, a separate column is returned for each of the factor levels, comparing that level to 
+all other levels combined. This is called the one-versus-all approach. For example, classifying *I. setosa* against the other two species, the model has perfect sensitivity, specificity, and recall. Classifying *I. versicolor* against the other species, the model has a sensitivity of `{r} round(cm$byClass[2,1],4)`.
+
+
+### Modeling Ordinal Data
+
+Ordered multinomial data has category labels that imply an ordering in a greater-lesser sense. While numeric distances between the categories are not defined, we at least know that one category is more or less than another category. Examples of ordinal data are ratings (5-star scale), assessments of severity (minor, moderate, extreme), indications of sentiment (strongly disagree, disagree, agree, strongly agree), and so forth.
+
+#### Cumulative link models
+
+A statistical model for ordinal data must preserve the ordering of the data. One method of accomplishing that is to base the model on cumulative probabilities rather than category probabilities. If $\pi_j = \Pr(Y = j)$ is the probability that $Y$ takes on the label associated with the $j$^th^ category, then $\gamma_j = \Pr(Y \leq j)$ is called the cumulative probability of the $j$^th^ category.
+
+To classify an observation based on the cumulative probabilities, we calculate the category probabilities
+$$
+\begin{align*}
+	\pi_1 &= \gamma_1 \\
+	\pi_j &= \gamma_j - \gamma_{j-1} \quad \text{for } 1 < j < k\\
+	\pi_k &= 1 - \gamma_{k-1}
+\end{align*}
+$$
+
+and then assign the class with the largest category probability.
+
+The **proportional odds model** (POM) is a representative of this type of model. It is also known as
+a **cumulative link model** because the link function is applied to the cumulative probabilities. In case of a logit link, the POM is
+$$
+\text{logit}(\gamma_j) = \log\{\frac{\gamma_j}{1-\gamma_j}\} = \eta_j = \bx^\prime\bbeta_j
+$$
+
+However, in contrast to the multinomial regression model for nominal data, the linear predictors in the proportional odds model are more constrained: only the intercepts vary between the categories:
+$$
+\eta_j = \beta_{0j} + \beta_1 x_1 + \cdots + \beta_p x_p
+$$
+The slopes are the same for all categories.
+
+:::{.callout-caution}
+Cumulative link models can be motivated in different ways. When formulated based on a latent variable approach ---where some unobserved random variable carves out segments of its support---you end up with a linear predictor of the form
+$$
+\eta_j = \beta_{0j} - \beta_1 x_1 - \cdots - \beta_p x_p
+$$
+As always, check the documentation! The `MASS::polr` function in `R` uses this formulation. SAS uses a linear predictor with plus signs.
+:::
+
+In the logistic or multinomial regression model we could reduce the number of parameters because of the built-in constraint that the categories must sum to 1. A related constraint applies to cumulative link models. The cumulative probability in the last category is known to be 1, $\gamma_k = \Pr(Y \leq k) = 1$. Thus we do not need to estimate a separate intercept for the last category. A proportional odds model with $p=4$ inputs and $k=3$ target categories has $p + k-1 = 6$ parameters.
+
+:::{example}
+::::{.example-header}
+Example: Ordinal Ratings in Completely Randomized Design
+::::
+::::{.example-container}
+For this exercise we use the data in Table 6.13 of @Schabenberger2001 [p .350].
+Four treatments (A, B, C, D) were assigned in a completely randomized design with four replications.
+The state of the replicates of the experimental units was rated as *Poor*, *Average*, or 
+*Good* on four occasions (@tbl-ordinal-crd). For example, on the first measurement occasion
+all replicates of treatment A were rated in the *Poor* category. At the second occasion
+two replicates of treatment A were in *Poor* condition, two replicates were in *Average* condition.
+
+| Rating | A | B | C | D | 
+|------|:------:|:------:|:------:|:------:|
+| Poor   | 4,2,4,4 | 4,3,4,4 | 0,0,0,0 | 1,0,0,0 |
+| Average| 0,2,0,0 | 0,1,0,0 | 1,0,4,4 | 2,2,4,4 |
+| Good   | 0,0,0,0 | 0,0,0,0 | 3,4,0,0 | 1,2,0,0 |
+
+: Observed frequencies for CRD measured on 4 occasions. {#tbl-ordinal-crd .striped} 
+
+The following code creates the data in data frame format with three columns, factor `rating` for the target variable, factor `tx` for the treatment, and a `date` variable for the measurement occasion.
+
+``` {r make_data}
+freqs <- c(4,2,4,4,4,3,4,4,1,2,1,1,4,4,2,2,4,4,3,4,1,2)
+cats <- c(1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3)
+tx <- c(1,1,1,1,2,2,2,2,4,1,2,3,3,3,4,4,4,4,3,3,4,4)
+date <- c(1,2,3,4,1,2,3,4,1,2,2,1,3,4,1,2,3,4,1,2,1,2)
+df <- data.frame(freqs,resp=cats,Treatment=tx,date)
+
+ordinal <- data.frame()
+for (i in 1:nrow(df)) {
+    for (j in 1:df$freqs[i]) {
+        if (df$resp[i] == 1) {
+            resp_ch = "Poor"
+        } else if (df$resp[i] == 2) {
+            resp_ch = "Average"
+        } else {
+            resp_ch = "Good"
+        }
+        ordinal <- rbind(ordinal,cbind(rating=resp_ch,
+                                   date=df$date[i],
+                                   tx=df$Treatment[i]))
+    }
+}
+ordinal$date <- as.numeric(ordinal$date)
+ordinal$rating <- factor(ordinal$rating)
+ordinal$tx <- factor(ordinal$tx)
+```
+
+When working with ordinal target variables, we need to make sure that the factor levels are 
+ordered correctly.
+
+``` {r ordinal_factor}
+ordinal$rating[25:35]
+```
+
+The response levels are ordered **alphabetically**, which is not the order in which
+the data should be processed. Use the `factor()` function to tell `R` how the levels
+should be arranged. 
+
+``` {r}
+ordinal$rating <- factor(ordinal$rating, 
+                         levels = c("Poor", "Average", "Good"))
+ordinal$rating[25:35]
+```
+
+Another issue to watch with factors is the factor-level coding. 
+An input factor such as `tx` with 4 levels will not contribute 4 parameters to a model
+that also contains an intercept because the $\textbf{X}$ matrix would be
+singular. One of the levels is usually dropped as the reference level. 
+
+`R` chooses the first level. SAS, for example, chooses the last level. You can 
+use the `relevel()` function to tell `R` which level to choose as the 
+reference. For example, the next statement makes the level with value 4 the 
+reference level for the `tx` factor. 
+
+``` {r relevel}
+ordinal$tx <- relevel(ordinal$tx, ref=4)
+ordinal$tx[1:20]
+```
+
+The POM can now be fit with the `MASS::polr` function. The 
+`method=` parameter chooses the link function for the cumulative probabilities. The value of the parameter is "logistic" rather than "logit" because `polr` uses the latent variable formulation for the POM.
+Assuming that the latent variable follows a logistic distribution leads to a cumulative
+link model with logit link function. Because of the latent variable genesis of the model, 
+`polr` constructs a linear predictor of the form
+$\eta_j = \beta_{0j} - \beta_1x_1 - \cdots - \beta_p x_p$.
+
+``` {r pom_fit, warning=FALSE, message=FALSE}
+library(MASS)
+pom <- polr(rating ~ tx + date, data=ordinal, 
+            method="logistic")
+pom_sum <- summary(pom)
+pom_coef <- pom_sum$coefficients
+pom_sum
+```
+
+The output of the `summary` has two sections with parameter estimates. `Coefficients` lists the slopes of the proportional odds model. These apply the same to all categories. `Intercepts` displays the intercepts $\beta_{0j}$ for the cumulative categories. The intercept labeled `Poor|Average` applies to $\eta_1$, the intercept labeled `Average|Good` applies to $\eta_2$.
+
+The coefficients labeled `tx1` through `tx3` do not measure the effect of the treatments. They measure the difference between the treatment and the reference level. With a `t value` of more than 4 in absolute value, there is strong evidence that the ratings between A and D and between B and D are significantly different. Also, it appears that the rating distribution, once adjusted for treatments, changes over time; the `t value` for the `date` is larger than 2 in absolute value. You can supplement these calculations with $p$-values to make these statements more statistically precise.
+
+--- 
+
+To calculate the probability to get at most an average rating for treatment 2
+at date 3 (observation \# 22), the linear predictor and the (cumulative) probability are
+
+``` {r}
+linp_ave_cumul <- pom_coef[6,1] - pom_coef[2,1] - 3*pom_coef[4,1]
+prob_ave_cumul<- 1/(1+exp(-linp_ave_cumul))
+c(linp_ave_cumul,prob_ave_cumul)
+```
+
+Similarly, for the probability of (at most) a poor rating at date 3 for treatment 2
+
+``` {r}
+linp_poor <- pom_coef[5,1] - pom_coef[2,1] - 3*pom_coef[4,1]
+prob_poor <- 1/(1+exp(-linp_poor))
+c(linp_poor,prob_poor)
+```
+
+The category probabilities to get an average or good rating are obtained by subtraction:
+
+``` {r }
+prob_ave = prob_ave_cumul - prob_poor
+prob_good = 1 - prob_ave_cumul
+c(prob_poor,prob_ave, prob_good)
+```
+
+This are the **category** probabilities in contrast to the cumulative
+probabilities. You can see the category probabilities for all levels of the
+response variables as
+
+``` {r}
+round(pom_sum$fitted.values[22,],4)
+```
+
+Observation 22 would be classified as `Poor` since this has the largest 
+predicted category probability.
+
+--- 
+
+You can compute predictions directly and more easily with the `predict` function. 
+The `type="probs"` option produces the predicted category probabilities, 
+`type="class"` produces the classification.
+
+``` {r}
+newx <- data.frame("tx"=as.factor(2),date=3)
+predict(pom,newdata=newx,type="probs")
+predict(pom,newdata=newx,type="class")
+```
+
+--- 
+
+The confusion matrix of this model is a 3 x 3 table with
+correct classifications on the diagonal. 
+
+```{r}
+predicted_class <- predict(pom, type="class")
+caret::confusionMatrix(predicted_class,ordinal$rating)
+```
+
+The accuracy is calculated similar to the 2 x 2 case: the ratio of the sum of
+the diagonal cells versus the total number: (29+20+7)/64 = 0.875. 
+
+The proportional odds model has a misclassification rate of $MCR = 1-0.875 = 0.125$.
+
+The Kappa statistic is a measure of the strength of the agreement of the 
+predicted and the observed values. The more counts are concentrated on
+the diagonal, the stronger the agreement and the larger the Kappa statistic.
+Values of Kappa between 0.4 and 0.6 indicate moderate agreement, 0.6-0.8 substantial
+agreement, > 0.8 very strong agreement. 
+
+As in the multinomial case, the confusion statistics are calculated
+for each category using an one-versus-all approach. For example, the sensitivity of 
+0.9667 for `Poor` is calculated by contrasting `Poor` against the two other classes
+combined: 29 / (29 + 1) = 0.9667.
+::::
+:::
 

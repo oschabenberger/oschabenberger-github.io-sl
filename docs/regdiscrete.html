@@ -314,20 +314,20 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./classintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./discriminant.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Discriminant Analysis</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./naivebayes.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Naive Bayes Classification</span></span></a>
+  <a href="./class_random.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Classification with Random Inputs</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -532,10 +532,7 @@ window.Quarto = {
   <ul>
   <li><a href="#logistic-regression" id="toc-logistic-regression" class="nav-link" data-scroll-target="#logistic-regression">Logistic Regression</a></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
-  <li><a href="#from-regression-to-classification" id="toc-from-regression-to-classification" class="nav-link" data-scroll-target="#from-regression-to-classification">From Regression to Classification</a>
-  <ul class="collapse">
-  <li><a href="#confusion-matrix" id="toc-confusion-matrix" class="nav-link" data-scroll-target="#confusion-matrix">Confusion matrix</a></li>
-  </ul></li>
+  <li><a href="#from-regression-to-classification" id="toc-from-regression-to-classification" class="nav-link" data-scroll-target="#from-regression-to-classification">From Regression to Classification</a></li>
   </ul></li>
   <li><a href="#modeling-counts" id="toc-modeling-counts" class="nav-link" data-scroll-target="#modeling-counts"><span class="header-section-number">10.3</span> Modeling Counts</a>
   <ul>
@@ -553,7 +550,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./regintro.html">Part II. Supervised Learning I: Regression</a></li><li class="breadcrumb-item"><a href="./regdiscrete.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></h1>
+<h1 class="title"><span id="sec-reg-discrete" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></h1>
 </div>
 
 
@@ -835,22 +832,13 @@ OR(\eta_1,\eta_2) = \frac{O(\eta_1)}{O(\eta_2)}=\exp\{\eta_1 - \eta_2\}
 <h3 class="anchored" data-anchor-id="from-regression-to-classification">From Regression to Classification</h3>
 <p>Classification methods assign observations to categories. Any statistical method that yields probabilities can be used as a classifier. The difference between the two is in the statements</p>
 <blockquote class="blockquote">
-<p><em>The predicted probability of a student with $x account balance and $$xx income to default is …</em></p>
+<p><em>The predicted probability of a student with $x account balance and $xx income to default is …</em></p>
 </blockquote>
 <blockquote class="blockquote">
-<p><em>A student with $x account balance and $$xx income to default is classified as a (non-)defaulter</em></p>
+<p><em>A student with $x account balance and $xx income to default is classified as a (non-)defaulter</em></p>
 </blockquote>
-<p>All we need to turn the predictions from a logistic regression model into a classification model is a rule that assigns predictions to events or non-events based on the predicted probabilities. The <strong>cutoff</strong> <span class="math inline">\(c = 0.5\)</span> is common and is known as the <strong>Bayes classifier</strong>. If a predicted probability is greater than 0.5 it is classified as an event, otherwise it is classified as a non-event. More generally, the Bayes classifier is the rule that assigns the category for which the predicted probability is highest. With two categories, this is equivalent to classifying an event if the predicted probability exceeds 0.5. The Bayes classifier is optimal in that it has the smallest probability of a misclassification.</p>
-<section id="confusion-matrix" class="level4">
-<h4 class="anchored" data-anchor-id="confusion-matrix">Confusion matrix</h4>
-<div class="definition">
-<div class="definition-header">
-<p>Definition: Confusion Matrix</p>
-</div>
-<div class="definition-container">
-<p>The confusion matrix is the cross-classification between the observed and the predicted categories in a classification problem. If there are two categories, the confusion matrix is a 2 x 2 matrix.</p>
-<p>The cells of the matrix contain the number of data points that fall into the cross-classification when the model’s decision rule is applied to <span class="math inline">\(n\)</span> observations. If one of the categories is labeled positive and the other is labeled negative, the cells give the number of true positive (TP), true negative (TN), false positive (FP), and false negative (FN) predictions.</p>
-<p>The following table shows the layout of a typical confusion matrix for a 2-category classification problem. A false positive prediction, for example, is to predict a positive (“Yes”) result when the true state (the observed state) was negative. A false negative result arises when the decision rule assigns a “No” to an observation with a positive (“Yes”) state.</p>
+<p>All we need to turn the predictions from a logistic regression model into a classification model is a rule that assigns predictions to events or non-events based on the predicted probabilities. The <strong>cutoff</strong> <span class="math inline">\(c = 0.5\)</span> is common and is known as the <strong>Bayes classifier</strong>. If a predicted probability is greater than 0.5 it is classified as an event, otherwise it is classified as a non-event. Classification models are explored in much more detail in the next part of the material.</p>
+<p>The results of a binary classification are displayed in a 2 x 2 table, called the <strong>confusion matrix</strong>. It compares the observed and predicted categories. The cells of the matrix contain the number of data points that fall into the cross-classification when the decision rule is applied to <span class="math inline">\(n\)</span> observations. If one of the categories is labeled positive and the other is labeled negative, the cells give the number of true positive (TP), true negative (TN), false positive (FP), and false negative (FN) predictions.</p>
 <table class="table">
 <caption>Confusion matrix for a classification problem with two states.</caption>
 <thead>
@@ -878,76 +866,59 @@ OR(\eta_1,\eta_2) = \frac{O(\eta_1)}{O(\eta_2)}=\exp\{\eta_1 - \eta_2\}
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<p>A number of statistics are calculated based on the cells in the confusion matrix.</p>
-<table class="table">
-<caption>Statistics calculated from a 2 x 2 confusion matrix.</caption>
+<p>Given the counts in the four cells, we can calculate a number of statistics (<a href="#tbl-basic-confstats" class="quarto-xref">Table&nbsp;<span>10.1</span></a>). A more in-depth look at confusion statistics follows in <a href="classintro.html#sec-class-confusionmatrix" class="quarto-xref"><span>Section 12.4</span></a>.</p>
+<div id="tbl-basic-confstats" class="striped quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-basic-confstats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;10.1: Some statistics calculated from a 2 x 2 confusion matrix.
+</figcaption>
+<div aria-describedby="tbl-basic-confstats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="table-striped table">
 <colgroup>
-<col style="width: 21%">
-<col style="width: 28%">
-<col style="width: 50%">
+<col style="width: 16%">
+<col style="width: 32%">
+<col style="width: 51%">
 </colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Statistic</th>
+<th style="text-align: center;">Calculation</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><strong>Statistic</strong></td>
-<td><strong>Expression</strong></td>
-<td><strong>Notes</strong></td>
+<td style="text-align: left;"><strong>Sensitivity</strong></td>
+<td style="text-align: center;">TP / (TP + FN)</td>
+<td style="text-align: left;">This is the true positive rate; also called <strong>Recall</strong></td>
 </tr>
 <tr class="even">
-<td><strong>False Positive Rate (FPR)</strong></td>
-<td>FP / (FP + TN)</td>
-<td>The rate of the true negative cases that were predicted to be positive</td>
+<td style="text-align: left;"><strong>Specificity</strong></td>
+<td style="text-align: center;">TN / (FP + TN)</td>
+<td style="text-align: left;">This is the true negative rate</td>
 </tr>
 <tr class="odd">
-<td><strong>False Negative Rate (FNR)</strong></td>
-<td>FN / (TP + FN)</td>
-<td>The rate of the true positive cases that were predicted to be negative</td>
+<td style="text-align: left;"><strong>Accuracy</strong></td>
+<td style="text-align: center;">(TP + TN) / (TP + TN + FP + FN)</td>
+<td style="text-align: left;">Overall proportion of correct classifications</td>
 </tr>
 <tr class="even">
-<td><strong>Sensitivity</strong></td>
-<td>TP / (TP + FN) = 1 – FNR</td>
-<td>This is the true positive rate; also called <strong>Recall</strong></td>
+<td style="text-align: left;"><strong>Misclassification rate</strong></td>
+<td style="text-align: center;">(FP + FN) / (TP + TN + FP + FN)</td>
+<td style="text-align: left;">Overall proportion of incorrect classifications, 1 – Accuracy</td>
 </tr>
 <tr class="odd">
-<td><strong>Specificity</strong></td>
-<td>TN / (FP + TN) = 1— FPR</td>
-<td>This is the true negative rate</td>
-</tr>
-<tr class="even">
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><strong>Accuracy</strong></td>
-<td>(TP + TN) / (TP + TN + FP + FN)</td>
-<td>Overall proportion of correct classifications</td>
-</tr>
-<tr class="even">
-<td><strong>Misclassification rate</strong></td>
-<td>(FP + FN) / (TP + TN + FP + FN)</td>
-<td>Overall proportion of incorrect classifications, 1 – Accuracy</td>
-</tr>
-<tr class="odd">
-<td><strong>Precision</strong></td>
-<td>TP / (TP + FP)</td>
-<td>Ratio of true positives to anything predicted as positive</td>
-</tr>
-<tr class="even">
-<td><strong>Detection Rate</strong></td>
-<td>TP / (TP + TN + FP + FN)</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><strong>No Information Rate</strong></td>
-<td><span class="math inline">\(\frac{\max(TP+FN,FP+TN)}{TP+TN+FP+FN}\)</span></td>
-<td>The proportion of observations in the larger observed class</td>
+<td style="text-align: left;"><strong>Precision</strong></td>
+<td style="text-align: center;">TP / (TP + FP)</td>
+<td style="text-align: left;">Ratio of true positives to anything predicted as positive</td>
 </tr>
 </tbody>
 </table>
-<p>The model accuracy is measured by the ratio of observations that were correctly classified, the sum of the diagonal cells divided by the total number of observations. The misclassification rate, another common performance measure is the complement of the accuracy.</p>
-<p>The sensitivity is the ratio of true positives to what should have been predicted as positive. The specificity is the ratio of true negatives to what should have been predicted as negative. They are <strong>not</strong> complements of each other; they are calculated with different denominators.</p>
+</div>
+</figure>
+</div>
+<p>The model <strong>accuracy</strong> is measured by the ratio of observations that were correctly classified, the sum of the diagonal cells divided by the total number of observations. The <strong>misclassification rate</strong>, another common performance measure is the complement of the accuracy.</p>
+<p>The <strong>sensitivity</strong> is the ratio of true positives to what should have been predicted as positive. The <strong>specificity</strong> is the ratio of true negatives to what should have been predicted as negative. Note that these are are <strong>not</strong> complements of each other; they are calculated with different denominators.</p>
 <div class="example">
 <div class="example-header">
 <p>Example: Credit Default–ISLR (Cont’d)</p>
@@ -992,38 +963,9 @@ Prediction  No Yes
 </div>
 </div>
 </div>
-<p>Probably the most frequently used confusion statistic is accuracy, the overall proportion of predicting correctly. The problem with focusing solely on accuracy is that the two possible errors, false positives and false negatives might not be of equal consequence. For example, it might not matter how accurate a model is unless it achieves a certain sensitivity—the ability to correctly identify positives.</p>
-<p>The following table arranges the results in the format of the definition.</p>
-<table class="table">
-<caption>Confusion matrix for test data in credit default example.</caption>
-<thead>
-<tr class="header">
-<th></th>
-<th style="text-align: center;">Observed Category</th>
-<th style="text-align: center;"></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Predicted Category</strong></td>
-<td style="text-align: center;"><strong>Yes (Positive)</strong></td>
-<td style="text-align: center;"><strong>No (Negative)</strong></td>
-</tr>
-<tr class="even">
-<td><strong>Yes (Positive)</strong></td>
-<td style="text-align: center;">9</td>
-<td style="text-align: center;">7</td>
-</tr>
-<tr class="odd">
-<td><strong>No (Negative)</strong></td>
-<td style="text-align: center;">26</td>
-<td style="text-align: center;">958</td>
-</tr>
-</tbody>
-</table>
-<p>The classification has an accuracy of 96.7%, which seems impressive. Its false positive and false negative rates are very different, however: FPR = 0.0073, FNR = 0.7429. The model is much less likely to predict a “Yes” when the true state is “No”, than it is to predict a “No” when the true state is “Yes”. Whether we can accept a model with such low sensitivity (100 – 74.29) = 25.71% is questionable, despite the high accuracy. An evaluation of this model should consider whether the two errors, false positive and false negative predictions, are of equal importance and consequence.</p>
-<p>It is also noteworthy that the accuracy of 96.7% is not as impressive if you check the no-information rate of the data. The proportion of observations in the larger observed class is (958 + 7)/1,000 = 0.965. The accuracy of the decision rule is only slightly larger. In other words, if you were to take a naïve approach and predict all observations as “No” without looking at the data, that naïve decision rule would have an accuracy of 96.5%.</p>
-</section>
+<p>The classification has an accuracy of 96.7%, which seems impressive. But consider that the proportion of observations in the larger observed class is (958 + 7)/1,000 = 0.965. If you were to take a naïve approach and predict all observations as “No” without looking at the data, that decision rule would have an accuracy of 96.5%. In light of this, using tree inputs has not much approved the quality of the model.</p>
+<p>The model is very sensitive, but not specific. It is much less likely to predict a “Yes” when the true state is “No”, than it is to predict a “No” when the true state is “Yes”. Whether we can accept a model with a sensitivity of only 25.71% is questionable, despite its high accuracy. An evaluation of this model should consider whether the two errors, false positive and false negative predictions, are of equal importance and consequence.</p>
+<p>We will revisit decision rules for these data in <a href="class_reg.html" class="quarto-xref"><span>Chapter 13</span></a>.</p>
 </section>
 </section>
 <section id="modeling-counts" class="level2" data-number="10.3">
@@ -2650,7 +2592,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","openEffect":"zoom","selector":".lightbox","loop":false});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","loop":false,"closeEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

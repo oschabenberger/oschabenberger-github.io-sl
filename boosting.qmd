@@ -1,6 +1,6 @@
 # Boosting {#sec-boosting}
 
-## Adaptive Boosting (AdaBoost)
+## Adaptive Boosting (AdaBoost) {#sec-boost-ada}
 
 ## Gradient Boosting
 

@@ -435,7 +435,7 @@ plotIt(34)
 
 We see why predicting image \#34 correctly could be challenging. That is one ugly "4".
 
-#### Multinomial logistic regression
+#### Multinomial logistic regression {#sec-ann-multinomial}
 
 A 96\% accuracy is impressive, but maybe it is not good enough. In applications where the consequences of errors are high, this accuracy might be insufficient. Suppose we are using the trained network to recognize written digits on personal checks. Getting 400 out of 10,000 digits wrong would be unacceptable. Banks would deposit incorrect amounts all the time.
 

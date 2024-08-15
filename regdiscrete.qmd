@@ -5,7 +5,7 @@ $$
 $$
 :::
 
-# Discrete Target Variables
+# Discrete Target Variables {#sec-reg-discrete}
 
 ## Introduction
 
@@ -57,7 +57,7 @@ This transformation, when applied to the mean, is called the **link** function. 
     \pi &= g^{-1}(\eta)    
 \end{align*}
 
-### Logistic Regression
+### Logistic Regression 
 
 Where do we find functions that can be used as link/inverse link functions? One place to look are the cumulative distribution functions of random variables that are defined on $-\infty < x < \infty$. For example, take the c.d.f. of the logistic distribution
 $$F(x) = \Pr(X \le x) = \frac{1}{1-\exp\{-(x-\mu)/\phi\}} \quad -\infty < x < \infty$$ 
@@ -234,25 +234,13 @@ We have finally established that the logistic regression coefficients are interp
 
 Classification methods assign observations to categories. Any statistical method that yields probabilities can be used as a classifier. The difference between the two is in the statements
 
-> *The predicted probability of a student with \$x account balance and $$xx income to default is ...*
+> *The predicted probability of a student with \$x account balance and \$xx income to default is ...*
 
-> *A student  with \$x account balance and $$xx income to default is classified as a (non-)defaulter*
+> *A student  with \$x account balance and \$xx income to default is classified as a (non-)defaulter*
 
-All we need to turn the predictions from a logistic regression model into a classification model is a rule that assigns predictions to events or non-events based on the predicted probabilities. The **cutoff** $c = 0.5$ is common and is known as the **Bayes classifier**. If a predicted probability is greater than 0.5 it is classified as an event, otherwise it is classified as a non-event. More generally, the Bayes classifier is the rule that assigns the category for which the predicted probability is highest. With two categories, this is equivalent to classifying an event if the predicted probability exceeds 0.5. The Bayes classifier is optimal in that it has the smallest probability of a misclassification.
+All we need to turn the predictions from a logistic regression model into a classification model is a rule that assigns predictions to events or non-events based on the predicted probabilities. The **cutoff** $c = 0.5$ is common and is known as the **Bayes classifier**. If a predicted probability is greater than 0.5 it is classified as an event, otherwise it is classified as a non-event. Classification models are explored in much more detail in the next part of the material.
 
-
-#### Confusion matrix
-
-:::{.definition}
-::::{.definition-header}
-Definition: Confusion Matrix
-::::
-::::{.definition-container}
-The confusion matrix is the cross-classification between the observed and the predicted categories in a classification problem. If there are two categories, the confusion matrix is a 2 x 2 matrix.
-
-The cells of the matrix contain the number of data points that fall into the cross-classification when the model’s decision rule is applied to $n$ observations. If one of the categories is labeled positive and the other is labeled negative, the cells give the number of true positive (TP), true negative (TN), false positive (FP), and false negative (FN) predictions.
-
-The following table shows the layout of a typical confusion matrix for a 2-category classification problem. A false positive prediction, for example, is to predict a positive (“Yes”) result when the true state (the observed state) was negative. A false negative result arises when the decision rule assigns a “No” to an observation with a positive ("Yes") state.
+The results of a binary classification are displayed in a 2 x 2 table, called the **confusion matrix**. It compares the observed and predicted categories. The cells of the matrix contain the number of data points that fall into the cross-classification when the decision rule is applied to $n$ observations. If one of the categories is labeled positive and the other is labeled negative, the cells give the number of true positive (TP), true negative (TN), false positive (FP), and false negative (FN) predictions.
 
 |                        |  Observed Category  |                     |
 |------------------------|:-------------------:|:-------------------:|
@@ -262,30 +250,23 @@ The following table shows the layout of a typical confusion matrix for a 2-categ
 
 : Confusion matrix for a classification problem with two states.
 
-::::
-:::
 
-A number of statistics are calculated based on the cells in the confusion matrix.
+Given the counts in the four cells, we can calculate a number of statistics (@tbl-basic-confstats).
+A more in-depth look at confusion statistics follows in @sec-class-confusionmatrix.
 
-|                               |                                         |                                                                        |
-|-------------------------------|-----------------------------------------|------------------------------------------------------------------------|
-| **Statistic**                 | **Expression**                          | **Notes**                                                              |
-| **False Positive Rate (FPR)** | FP / (FP + TN)                          | The rate of the true negative cases that were predicted to be positive |
-| **False Negative Rate (FNR)** | FN / (TP + FN)                          | The rate of the true positive cases that were predicted to be negative |
-| **Sensitivity**               | TP / (TP + FN) = 1 – FNR                | This is the true positive rate; also called **Recall**                 |
-| **Specificity**               | TN / (FP + TN) = 1— FPR                 | This is the true negative rate                                         |
-|                               |                                         |                                                                        |
+| Statistic  |   Calculation  | Notes         |
+|:--------|:----------------:|:----------------------------|
+| **Sensitivity**               | TP / (TP + FN)                 | This is the true positive rate; also called **Recall**                 |
+| **Specificity**               | TN / (FP + TN)                  | This is the true negative rate |
 | **Accuracy**                  | (TP + TN) / (TP + TN + FP + FN)         | Overall proportion of correct classifications                          |
 | **Misclassification rate**    | (FP + FN) / (TP + TN + FP + FN)         | Overall proportion of incorrect classifications, 1 – Accuracy          |
 | **Precision**                 | TP / (TP + FP)                          | Ratio of true positives to anything predicted as positive              |
-| **Detection Rate**            | TP / (TP + TN + FP + FN)                |                                                                        |
-| **No Information Rate**       | $\frac{\max(TP+FN,FP+TN)}{TP+TN+FP+FN}$ | The proportion of observations in the larger observed class            |
 
-: Statistics calculated from a 2 x 2 confusion matrix.
+: Some statistics calculated from a 2 x 2 confusion matrix. {#tbl-basic-confstats .striped}
 
-The model accuracy is measured by the ratio of observations that were correctly classified, the sum of the diagonal cells divided by the total number of observations. The misclassification rate, another common performance measure is the complement of the accuracy.
+The model **accuracy** is measured by the ratio of observations that were correctly classified, the sum of the diagonal cells divided by the total number of observations. The **misclassification rate**, another common performance measure is the complement of the accuracy.
 
-The sensitivity is the ratio of true positives to what should have been predicted as positive. The specificity is the ratio of true negatives to what should have been predicted as negative. They are **not** complements of each other; they are calculated with different denominators.
+The **sensitivity** is the ratio of true positives to what should have been predicted as positive. The **specificity** is the ratio of true negatives to what should have been predicted as negative. Note that these are are **not** complements of each other; they are calculated with different denominators.
 
 :::{.example}
 ::::{.example-header}
@@ -307,22 +288,11 @@ caret::confusionMatrix(classify_test,test$default, positive="Yes")
 ::::
 :::
 
-Probably the most frequently used confusion statistic is accuracy, the overall proportion of predicting correctly. 
-The problem with focusing solely on accuracy is that the two possible errors, false positives and false negatives might not be of equal consequence. For example, it might not matter how accurate a model is unless it achieves a certain sensitivity—the ability to correctly identify positives.
+The classification has an accuracy of 96.7%, which seems impressive. But consider that the proportion of observations in the larger observed class is (958 + 7)/1,000 = 0.965. If you were to take a naïve approach and predict all observations as “No” without looking at the data, that decision rule would have an accuracy of 96.5%. In light of this, using tree inputs has not much approved the quality of the model.
 
-The following table arranges the results in the format of the definition.
+The model is very sensitive, but not specific. It is much less likely to predict a “Yes” when the true state is “No”, than it is to predict a “No” when the true state is “Yes”. Whether we can accept a model with a sensitivity of only 25.71% is questionable, despite its high accuracy. An evaluation of this model should consider whether the two errors, false positive and false negative predictions, are of equal importance and consequence.
 
-|                        | Observed Category  |                   |
-|------------------------|:------------------:|:-----------------:|
-| **Predicted Category** | **Yes (Positive)** | **No (Negative)** |
-| **Yes (Positive)**     |         9          |         7         |
-| **No (Negative)**      |         26         |        958        |
-
-: Confusion matrix for test data in credit default example.
-
-The classification has an accuracy of 96.7%, which seems impressive. Its false positive and false negative rates are very different, however: FPR = 0.0073, FNR = 0.7429. The model is much less likely to predict a “Yes” when the true state is “No”, than it is to predict a “No” when the true state is “Yes”. Whether we can accept a model with such low sensitivity (100 – 74.29) = 25.71% is questionable, despite the high accuracy. An evaluation of this model should consider whether the two errors, false positive and false negative predictions, are of equal importance and consequence.
-
-It is also noteworthy that the accuracy of 96.7% is not as impressive if you check the no-information rate of the data. The proportion of observations in the larger observed class is (958 + 7)/1,000 = 0.965. The accuracy of the decision rule is only slightly larger. In other words, if you were to take a naïve approach and predict all observations as “No” without looking at the data, that naïve decision rule would have an accuracy of 96.5%.
+We will revisit decision rules for these data in @sec-class-reg.
 
 
 ## Modeling Counts
