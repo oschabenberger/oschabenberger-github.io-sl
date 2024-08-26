@@ -20,7 +20,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -43,6 +97,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -72,6 +129,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -437,7 +523,30 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">15.1</span> Introduction</a>
+  <ul>
+  <li><a href="#sec-svm-banana" id="toc-sec-svm-banana" class="nav-link" data-scroll-target="#sec-svm-banana">Example</a></li>
+  <li><a href="#what-is-a-support-vector" id="toc-what-is-a-support-vector" class="nav-link" data-scroll-target="#what-is-a-support-vector">What is a Support Vector</a></li>
+  <li><a href="#types-of-support-vector-methods" id="toc-types-of-support-vector-methods" class="nav-link" data-scroll-target="#types-of-support-vector-methods">Types of Support Vector Methods</a></li>
+  </ul></li>
+  <li><a href="#sec-mmc" id="toc-sec-mmc" class="nav-link" data-scroll-target="#sec-mmc"><span class="header-section-number">15.2</span> Maximal Margin Classifier (MMC)</a></li>
+  <li><a href="#sec-svc" id="toc-sec-svc" class="nav-link" data-scroll-target="#sec-svc"><span class="header-section-number">15.3</span> Support Vector Classifier</a></li>
+  <li><a href="#sec-svm" id="toc-sec-svm" class="nav-link" data-scroll-target="#sec-svm"><span class="header-section-number">15.4</span> Support Vector Machines (SVM)</a>
+  <ul>
+  <li><a href="#the-kernel-trick" id="toc-the-kernel-trick" class="nav-link" data-scroll-target="#the-kernel-trick">The Kernel Trick</a>
+  <ul class="collapse">
+  <li><a href="#inner-products" id="toc-inner-products" class="nav-link" data-scroll-target="#inner-products">Inner products</a></li>
+  <li><a href="#kernel-functions" id="toc-kernel-functions" class="nav-link" data-scroll-target="#kernel-functions">Kernel functions</a></li>
+  </ul></li>
+  <li><a href="#pros-and-cons-of-svm" id="toc-pros-and-cons-of-svm" class="nav-link" data-scroll-target="#pros-and-cons-of-svm">Pros and Cons of SVM</a></li>
+  </ul></li>
+  <li><a href="#svm-in-r" id="toc-svm-in-r" class="nav-link" data-scroll-target="#svm-in-r"><span class="header-section-number">15.5</span> SVM in <code>R</code></a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -461,8 +570,560 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="introduction" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">15.1</span> Introduction</h2>
+<p>Classification methods based on <strong>support vectors</strong> were introduced in the 1990s and made a big splash. Their approach to solving classification problems was novel and intuitive, they showed excellent performance, and worked well in high dimensions even when <span class="math inline">\(p \gg n\)</span>. The approach was refreshing and distinctly different from traditional approaches such as logistic regression or linear discriminant analysis.</p>
+<p>The performance of support vector methods, especially support vector machines (SVM, see <a href="#sec-svm" class="quarto-xref"><span>Section 15.4</span></a> below) was so impressive that the technique became an off-the-shelf standard classifier for many data scientists. Much so as (extreme) gradient boosting has become an off-the-shelf default method for many data scientists solving regression problems. Support vector machines have since been extended to regression problems; we consider them primarily for classification here.</p>
+<p>How impressive is the performance of support vector methods? Consider the following example, classifying bananas into “Good” and “Bad” quality based on fruit attributes such as size, weight, sweetness, ripeness, etc. You can find the data set for this analysis on <a href="https://www.kaggle.com/datasets/l3llff/banana">kaggle</a>.</p>
+<section id="sec-svm-banana" class="level3">
+<h3 class="anchored" data-anchor-id="sec-svm-banana">Example</h3>
+<div class="{example}">
+<div class="example-header">
+<p>Example: Banana Quality</p>
+</div>
+<div class="example-container">
+<p>4,000 observations are in the training set, 4,000 observations are in the test data set. <a href="#fig-banana-hist" class="quarto-xref">Figure&nbsp;<span>15.1</span></a> displays histograms for the fruit attributes in the training data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>ban_train <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM banana_train"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>ban_test <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM banana_test"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>ban_train<span class="sc">$</span>Quality <span class="ot">&lt;-</span> <span class="fu">factor</span>(ban_train<span class="sc">$</span>Quality)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>ban_test<span class="sc">$</span>Quality <span class="ot">&lt;-</span> <span class="fu">factor</span>(ban_test<span class="sc">$</span>Quality)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ban_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   4000 obs. of  8 variables:
+ $ Size       : num  1.71 3.7 -3.89 -3.05 1.97 ...
+ $ Weight     : num  -0.0369 1.1188 1.3261 -0.588 -1.3787 ...
+ $ Sweetness  : num  -4.4634 -3.0434 0.0461 -1.6347 -3.1428 ...
+ $ Softness   : num  -1.51 0.029 2.259 1.049 -3.246 ...
+ $ HarvestTime: num  4.564 -0.971 0.507 -0.21 -0.612 ...
+ $ Ripeness   : num  -0.0417 -1.47 0.7371 -1.8188 1.8153 ...
+ $ Acidity    : num  4.327 -0.588 2.583 3.957 -0.5 ...
+ $ Quality    : Factor w/ 2 levels "Bad","Good": 2 2 1 1 1 2 2 1 1 2 ...</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(<span class="sc">~</span> Size <span class="sc">+</span> Weight <span class="sc">+</span> Sweetness <span class="sc">+</span> Softness <span class="sc">+</span> HarvestTime</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                   <span class="sc">+</span> Ripeness <span class="sc">+</span> Acidity , </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">cex=</span><span class="fl">0.5</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">as.table=</span><span class="cn">TRUE</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">par.strip.text=</span><span class="fu">list</span>(<span class="at">cex=</span><span class="fl">0.75</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">xlab=</span><span class="st">""</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data=</span>ban_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-banana-hist" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-banana-hist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="supportvectors_files/figure-html/fig-banana-hist-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-banana-hist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.1: Histogram of attributes in banana training data set.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The following statements use the <code>e1071::svm</code> function to train a support vector machine on the training data and compute the confusion matrix for the test data. Because the data are already scaled (see <a href="#fig-banana-hist" class="quarto-xref">Figure&nbsp;<span>15.1</span></a>), we set <code>scale=FALSE</code>. Otherwise, this is the default SVM analysis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">176</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>ban.svm <span class="ot">&lt;-</span> <span class="fu">svm</span>(Quality <span class="sc">~</span> . ,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">data=</span>ban_train, </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">scale=</span><span class="cn">FALSE</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(ban.svm,<span class="at">newdata=</span>ban_test)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(pred,ban_test<span class="sc">$</span>Quality,<span class="at">positive=</span><span class="st">"Good"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>cm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction  Bad Good
+      Bad  1957   44
+      Good   37 1962
+                                          
+               Accuracy : 0.9798          
+                 95% CI : (0.9749, 0.9839)
+    No Information Rate : 0.5015          
+    P-Value [Acc &gt; NIR] : &lt;2e-16          
+                                          
+                  Kappa : 0.9595          
+                                          
+ Mcnemar's Test P-Value : 0.505           
+                                          
+            Sensitivity : 0.9781          
+            Specificity : 0.9814          
+         Pos Pred Value : 0.9815          
+         Neg Pred Value : 0.9780          
+             Prevalence : 0.5015          
+         Detection Rate : 0.4905          
+   Detection Prevalence : 0.4998          
+      Balanced Accuracy : 0.9798          
+                                          
+       'Positive' Class : Good            
+                                          </code></pre>
+</div>
+</div>
+<p>This out-of-the-box analysis achieves an impressive 97.975% accuracy on the test data set. With tuning of hyperparameters (see <a href="#sec-svm" class="quarto-xref"><span>Section 15.4</span></a>), this accuracy can be increased even further. The sensitivity and specificity of the model are also impressive. For comparisons, an out-of-the-box logistic regression achieves 88.1% accuracy, a finely grown and pruned decision tree achieves 89.5% accuracy.</p>
+</div>
+</div>
+</section>
+<section id="what-is-a-support-vector" class="level3">
+<h3 class="anchored" data-anchor-id="what-is-a-support-vector">What is a Support Vector</h3>
+<p>The name of this family of methods stems from classification rules that are based on a subset of the observations, these observations are called the <strong>support vectors</strong> of the classifier. A support vector classifier with 10 support vectors, for example, uses the data from 10 observations to construct the classification rule, even if the training data contains 1 million observations. The number of support vectors is not a parameter you set in advance, however. Rather, you specify the constraints imposed on the classifier through other hyperparameters—such as the cost of a misclassification and the kernel function—and the number of support vectors is the result of training the classifier.</p>
+</section>
+<section id="types-of-support-vector-methods" class="level3">
+<h3 class="anchored" data-anchor-id="types-of-support-vector-methods">Types of Support Vector Methods</h3>
+<p>Chapter 9 of <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">2021</a>)</span> provides a great introduction into the support-vector based methods and we follow their general flow here. To arrive at support vector machines it is helpful to develop them from simpler methods, the maximal margin classifier and the support vector classifier (<a href="#fig-svm-mindmap" class="quarto-xref">Figure&nbsp;<span>15.2</span></a>).</p>
+<div id="fig-svm-mindmap" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-svm-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/SupportVectorMindMap.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/SupportVectorMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-svm-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.2: The family of support vector-based classifiers.
+</figcaption>
+</figure>
+</div>
+<p>The maximal margin classifier (MMC) is a rather simple classifier for <strong>separable cases</strong>. Suppose you are dealing with a two-category problem. This is said to be separable if you can find a classification rule that assigns every observation in the training data without error to one of the two classes.</p>
+<p>Although intuitive, MMC is not a strong contender, most data are not completely separable. The support vector classifier (SVC) improves over the MMC by permitting a gray area of misclassification. It is OK to have a certain misclassification rate on the training data, if it improves generalizability to new observations. Finally, the support vector machine (SVM) generalizes the linear decision rule of the SVC to nonlinear decision boundaries by introducing kernel functions. The SVC emerges as a special case of SVM with a linear kernel function.</p>
+<p>In the remainder of the chapter we discuss the three margin classifiers for binary data. As is customary with classification models not based on regression techniques, the target variable is coded <span class="math inline">\(Y \in \{-1,1\}\)</span>, rather than <span class="math inline">\(Y \in \{0,1\}\)</span>. A side effect of this target encoding is that the classification rule uses only the sign of the predicted value. If <span class="math inline">\(Y = -1\)</span> encodes label <span class="math inline">\(A\)</span> and <span class="math inline">\(Y=1\)</span> encodes label <span class="math inline">\(B\)</span>, then we predict <span class="math inline">\(A\)</span> if <span class="math inline">\(\widehat{y} &lt; 0\)</span> and predict <span class="math inline">\(B\)</span> if <span class="math inline">\(\widehat{y}&gt; 0\)</span>.</p>
+</section>
+</section>
+<section id="sec-mmc" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="sec-mmc"><span class="header-section-number">15.2</span> Maximal Margin Classifier (MMC)</h2>
+<p>Suppose we have <span class="math inline">\(p\)</span> input variables <span class="math inline">\(X_1,\cdots,X_p\)</span>. For each observation in the training data we have <span class="math inline">\([y_i, x_{i1}, \cdots, x_{ip}]^\prime = [y_i, \textbf{x}_i]\)</span>. Given a new data point for the inputs, <span class="math inline">\(\textbf{x}_0 = [x_{01}, \cdots, x_{0p}]^\prime\)</span>, should we assign it to the <span class="math inline">\(-1\)</span> or the <span class="math inline">\(1\)</span> category?</p>
+<p>The MMC asks to find a hyperplane <span class="math display">\[
+h(\textbf{x}) = \beta_0 + \beta_1 x_1 + \cdots + \beta_p x_p
+\]</span> that satisfies <span class="math display">\[
+y_i h(\textbf{x}_i) = y_i \, \left ( \beta_0 + \beta_1 x_{i1} + \cdots + \beta_p x_{ip} \right )&gt; 0\text{, } \forall i=1, \cdots, n
+\]</span> Recall that <span class="math inline">\(y_i \in \{-1,1\}\)</span>. This condition states that all training observations fall either on the right or the left side of <span class="math inline">\(h(\textbf{x})\)</span>. There are no misclassifications which would occur if <span class="math inline">\(h(\textbf{x}_i) &lt; 0\)</span> and <span class="math inline">\(y = 1\)</span> or if <span class="math inline">\(h(\textbf{x}_i) &gt; 0\)</span> and <span class="math inline">\(y = -1\)</span>.</p>
+<p>Once we have found <span class="math inline">\(h(\textbf{x})\)</span>, we classify <span class="math inline">\(\textbf{x}_0\)</span> by computing <span class="math inline">\(h(\textbf{x}_0)\)</span> <span class="math display">\[
+    \widehat{y} = \left \{ \begin{array}{r l}
+    1 &amp; h(\textbf{x}_0) &gt; 0 \\ -1 &amp; h(\textbf{x}_0) &lt; 0
+    \end{array} \right .
+\]</span></p>
+<p><a href="#fig-mmc-setup" class="quarto-xref">Figure&nbsp;<span>15.3</span></a> shows the basic setup for a maximal margin classifier with two inputs. The hyperplane <span class="math inline">\(h(\textbf{x}) = \beta_0 + \beta_1 x_1 + \beta_2 x_2\)</span> in two dimensions is a line. The data are separable in the sense that we can find coefficients <span class="math inline">\(\beta_0, \beta_1, \beta_2\)</span> so that the line carves through the figure in such a way that all points with <span class="math inline">\(y=1\)</span> fall on one side of the line (<span class="math inline">\(h(\textbf{x}) &gt; 0\)</span>), and all points with <span class="math inline">\(y= -1\)</span> fall on the other side of the line (<span class="math inline">\(h(\textbf{x}) &lt; 0\)</span>). For all points that lie exactly on the hyperplane, we have <span class="math inline">\(h(\textbf{x}) = 0\)</span>.</p>
+<div id="fig-mmc-setup" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mmc-setup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/MMC_Setup.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/MMC_Setup.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mmc-setup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.3: Maximal margin classifier for <span class="math inline">\(p=2\)</span>.
+</figcaption>
+</figure>
+</div>
+<p>This problem can have more than one solution. For example, <a href="#fig-mmc-solutions" class="quarto-xref">Figure&nbsp;<span>15.4</span></a> depicts three hyperplanes <span class="math inline">\(h_1(\textbf{x})\)</span>, <span class="math inline">\(h_2(\textbf{x})\)</span>, and <span class="math inline">\(h_3(\textbf{x})\)</span> that satisfy the no-misclassification requirement. How should we define an optimal solution?</p>
+<div id="fig-mmc-solutions" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mmc-solutions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/MMC_3Solutions.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/MMC_3Solutions.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mmc-solutions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.4: Three possible solutions for the MMC problem.
+</figcaption>
+</figure>
+</div>
+<p>The <strong>margin</strong> of a classifier is the shortest perpendicular distance between the training observations and the hyperplane. The best solution to the problem of classifying separable observations with a linear decision boundary is to find the hyperplane that has the <strong>largest margin</strong> (the largest minimum distance between training obs and hyperplane). The rationale is that a large margin on the training data will lead to a high accuracy on the test data, if the test data are a random subset of the training data.</p>
+<p>The observations that have the shortest distance to the hyperplane—the observations that define the margin—are called the <strong>support vectors</strong> (<a href="#fig-mmc-margin" class="quarto-xref">Figure&nbsp;<span>15.5</span></a>) because they support the hyperplane as the decision boundary of the classification problem. What happens if we were to move an observation in <a href="#fig-mmc-margin" class="quarto-xref">Figure&nbsp;<span>15.5</span></a>, with the caveat that the observation has to stay on the same side of the hyperplane? If the observation is not a support vector, then the hyperplane is not affected, unless the observation is moved closer to the plane than any of the support vectors. Changing the support vectors will change the hyperplane.</p>
+<div id="fig-mmc-margin" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mmc-margin-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/MMC_Margin.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4"><img src="images/MMC_Margin.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mmc-margin-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.5: Example of an MMC that depends on two support vectors.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="sec-svc" class="level2" data-number="15.3">
+<h2 data-number="15.3" class="anchored" data-anchor-id="sec-svc"><span class="header-section-number">15.3</span> Support Vector Classifier</h2>
+<p>The MMC is based on a simple and intuitive idea and a solution can be found with a straightforward optimization algorithm. However, we will not consider this classifier much further, its utility lies in introducing the idea of a margin-based classifier, a linear decision boundary, and the concept of the support vector. It is not that useful in practical applications because most problems are not separable. How could we separate the points in <a href="#fig-svc-simdata" class="quarto-xref">Figure&nbsp;<span>15.6</span></a> without error by drawing a line through the plot?</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-svc-simdata" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-svc-simdata-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="supportvectors_files/figure-html/fig-svc-simdata-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-svc-simdata-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.6: A non-separable case in two dimensions
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>A perfect classification on the training data is also not generally desirable. It will likely lead to an overfit model that does not generalize well to new observations.</p>
+<p>The <strong>support vector classifier</strong> (SVC) extends the MMC by finding a hyperplane that provides better classification of <strong>most</strong> observations and is more robust to individual data points (<a href="#fig-svc-example" class="quarto-xref">Figure&nbsp;<span>15.7</span></a>).</p>
+<p>The margin of the SVC is called a <strong>soft margin</strong>: some observations are allowed to be on the wrong side of the margin and some observations are allowed to be on the wrong side of the hyperplane (misclassified).</p>
+<div id="fig-svc-example" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-svc-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/SVC.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" data-glightbox="description: .lightbox-desc-5"><img src="images/SVC.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-svc-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.7: Support vector classifier in two dimensions.
+</figcaption>
+</figure>
+</div>
+<p>The support vectors of the SVC are the observations that lie on the margin or lie on the wrong side of the margin for their category. As with the MMC, the decision boundary depends only on these observations. Moving any of the other observations without crossing into the margin or across the decision boundary has no effect on the optimal hyperplane.</p>
+<p>How do we find the optimal hyperplane for the support vector classifier? One approach is to give ourselves a <em>budget</em> of observations that violate the margin and make sure that the chosen hyperplane does not exceed the budget. Alternatively, we can specify the <em>cost</em> associated with a margin violation and find the hyperplane that minimizes the overall expense.</p>
+<p>Using the cost approach, the optimization problem that finds the SVC can be expressed as follows: <span class="math display">\[
+\begin{align*}
+\mathop{\mathrm{arg\,min}}_{\boldsymbol{\beta},\boldsymbol{\epsilon}} &amp;\, \frac12 \boldsymbol{\beta}^\prime\boldsymbol{\beta}+ C\sum_{i=1}^n \epsilon_i \\
+\text{subject to } &amp;\, y_i(\beta_0 + \beta_1x_1 + \cdots + \beta_p x_p) \ge 1-\epsilon_i \\
+\epsilon_i &amp;\ge 0, \quad i=1,\cdots,n
+\end{align*}
+\]</span></p>
+<p>The <span class="math inline">\(\epsilon_i\)</span> are called the <strong>slack</strong> variables, each observation is associated with one. If <span class="math inline">\(\epsilon_i = 0\)</span>, the <span class="math inline">\(i\)</span><sup>th</sup> observation does not violate the margin. If <span class="math inline">\(0 &lt; \epsilon_i \le 1\)</span>, the observation violates the margin but is not misclassified. Finally, misclassified observations in the training data have <span class="math inline">\(\epsilon_i &gt; 1\)</span>.</p>
+<p><span class="math inline">\(C\)</span> is the hyperparameter representing the <strong>cost</strong> of a margin violation and is usually determined by some form of cross-validation. Choosing <span class="math inline">\(C\)</span> is a typical bias-variance tradeoff.</p>
+<ul>
+<li><p><span class="math inline">\(C\)</span> small: the cost of a margin violation is low, encouraging more violations. The resulting classifier will have a wider margin and more support vectors. This results in classifiers that are more stable, with lower variance but potentially higher bias.</p></li>
+<li><p><span class="math inline">\(C\)</span> large: we have a low tolerance for margin violations. This encourages a small margin and few support vectors, resulting in classifiers that are closely fit to the training data, have low bias but potentially high variance.</p></li>
+</ul>
+<p><a href="#fig-svc-fit" class="quarto-xref">Figure&nbsp;<span>15.8</span></a> displays the decision rule for a support vector classifier fit to the data in <a href="#fig-svc-simdata" class="quarto-xref">Figure&nbsp;<span>15.6</span></a>. For the particular choice of <span class="math inline">\(C\)</span>, the classification boundary depends on 14 support vectors (data points). These are shown in the plot as “x” symbols. Observations on which the hyperplane does not depend are shown as “o” symbols. You can see that some of the support vectors are on the correct side of the decision boundary and others are not. Given the chosen value of <span class="math inline">\(C\)</span>, this is the best one can achieve using a linear decision boundary for this non-separable problem.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-svc-fit" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-svc-fit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="supportvectors_files/figure-html/fig-svc-fit-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-svc-fit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.8: Support vector classifier trained on data in <a href="#fig-svc-simdata" class="quarto-xref">Figure&nbsp;<span>15.6</span></a>
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>We have not shown the <code>R</code> code that leads to the classification plot in <a href="#fig-svc-fit" class="quarto-xref">Figure&nbsp;<span>15.8</span></a> because the SVC turns out to be a special case of the next family of models, the support vector machines.</p>
+</section>
+<section id="sec-svm" class="level2" data-number="15.4">
+<h2 data-number="15.4" class="anchored" data-anchor-id="sec-svm"><span class="header-section-number">15.4</span> Support Vector Machines (SVM)</h2>
+<p>The support vector classifier is a marked improvement over the maximal margin classifier in that it can handle non-separable cases, allows cross-validation of the cost (or budget) hyperparameter, and is robust to observations that are far away from the decision boundary.</p>
+<p>The shortcoming of the SVC is its linear decision boundary. If such a boundary applies in the case of two inputs, it means we can segment the <span class="math inline">\(x_1\)</span>—<span class="math inline">\(x_2\)</span> plane with a line as the classification rule. Consider the data in <a href="#fig-svm-data" class="quarto-xref">Figure&nbsp;<span>15.9</span></a>. No linear decision boundary would slice the data to produce a good classification.</p>
+<div id="fig-svm-data" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-svm-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/SVM_nonlinear.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" data-glightbox="description: .lightbox-desc-6"><img src="images/SVM_nonlinear.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-svm-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.9: Data for which a linear decision boundary does not work well.
+</figcaption>
+</figure>
+</div>
+<p>Just like linear regression models do not perform well if the relationship between target and inputs is nonlinear, a classifier with a linear decision rule will not classify well if the decision boundary should be nonlinear. One approach to introduce nonlinearity (in the inputs) in the regression context is to add transformations of the variables, for example, using polynomials. Similarly, we could consider revising the decision boundary in a margin classifier to include additional terms: <span class="math display">\[
+h(\textbf{x}) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2
+\]</span> But where do we stop? What is the best order of the polynomial terms, and what about the transformations <span class="math inline">\(\log(X)\)</span> or <span class="math inline">\(\sqrt{X}\)</span> or <span class="math inline">\(1/x\)</span> and what about interaction terms? This could get quickly out of hand.</p>
+<p>Support vector machines rely on what is known as <strong>the kernel trick</strong> to essentially increase the number of features, introduce nonlinearity, but without increasing numerical complexity. The principal idea is to apply a nonlinear transformation to the <span class="math inline">\(X\)</span>-space such that a linear decision boundary is reasonable in the transformed space. In other words, find a nonlinear decision boundary in <span class="math inline">\(X\)</span>-space as a linear decision boundary in the transformed space.</p>
+<section id="the-kernel-trick" class="level3">
+<h3 class="anchored" data-anchor-id="the-kernel-trick">The Kernel Trick</h3>
+<p><a href="#fig-svm-nonlinear" class="quarto-xref">Figure&nbsp;<span>15.10</span></a> from <span class="citation" data-cites="ZhangMedium">Zhang (<a href="references.html#ref-ZhangMedium" role="doc-biblioref">2018</a>)</span> evokes how a problem that appears not linearly separable in a lower-dimensional space becomes linearly separable in a higher-dimensional space.</p>
+<div id="fig-svm-nonlinear" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-svm-nonlinear-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/NonlinearSeparable.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-svm-nonlinear-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.10: A nonseparable problem in 2-D becomes linearly separable in 3-D. From <span class="citation" data-cites="ZhangMedium">Zhang (<a href="references.html#ref-ZhangMedium" role="doc-biblioref">2018</a>)</span>.
+</figcaption>
+</figure>
+</div>
+<p>In 2-dimensional space, the linear decision boundary is a line, in 3-dimensional space the linear decision boundary (the hyperplane) is an actual plane.</p>
+<p>The kernel trick allows us to make computations in higher-dimensional, nonlinear spaces based on only inner products of the coordinates in the original space. Wait, what?</p>
+<section id="inner-products" class="level4">
+<h4 class="anchored" data-anchor-id="inner-products">Inner products</h4>
+<p>A kernel <span class="math inline">\(K(\textbf{x}_j,\textbf{x}_j)\)</span> is a generalization of the inner product <span class="math display">\[
+    \langle \textbf{x}_i, \textbf{x}_j \rangle = \sum_{k=1}^p x_{ik} x_{jk}
+\]</span> Instead of applying the inner product to the original coordinates <span class="math inline">\(\textbf{x}_i\)</span> and <span class="math inline">\(\textbf{x}_j\)</span>, we first transform the coordinates. <span class="math display">\[
+K(\textbf{x}_i,\textbf{x}_j) = \langle g(\textbf{x}_i), g(\textbf{x}_j) \rangle
+\]</span> Let’s look at an example. Suppose <span class="math inline">\(\textbf{x}\)</span> is two-dimensional, <span class="math inline">\(\textbf{x}= [x_1,x_2]\)</span> and we define the transformations <span id="eq-kernel-transformation"><span class="math display">\[
+\begin{align*}
+    g_1(\textbf{x}) &amp;= 1 \\
+    g_2(\textbf{x}) &amp;= \sqrt{2}x_1 \\
+    g_3(\textbf{x}) &amp;= \sqrt{2}x_2\\
+    g_4(\textbf{x}) &amp;= x_1^2 \\
+    g_5(\textbf{x}) &amp;= x_2^2 \\
+    g_6(\textbf{x}) &amp;= \sqrt{2}x_1 x_2
+\end{align*}
+\tag{15.1}\]</span></span> The inner product of <span class="math inline">\(g(\textbf{x})\)</span> with itself is then <span class="math display">\[
+g(\textbf{x})^\prime g(\textbf{x}) = 1 + 2 x_1^2 + 2 x_2^2 + x_1^4 + x_2^4 + 2x_1^2 x_2^2
+\]</span> The inner product in the transformed space includes higher-dimensional terms, without increasing the number of inputs in the calculation. That is neat, but have we gained that much? How are we to choose the transformations <span class="math inline">\(g_1(\textbf{x}),\cdots, g_m(\textbf{x})\)</span> in a meaningful way?</p>
+</section>
+<section id="kernel-functions" class="level4">
+<h4 class="anchored" data-anchor-id="kernel-functions">Kernel functions</h4>
+<p>This is where the following result comes to the rescue. We do not need to specify the functions <span class="math inline">\(g_1(\textbf{x}),\cdots, g_m(\textbf{x})\)</span> explicitly. Instead, we can start by choosing the kernel function <span class="math inline">\(K(\textbf{x}_i,\textbf{x}_j)\)</span>. Any valid kernel implies <strong>some</strong> transformation: <span class="math display">\[
+K(\textbf{x}_i, \textbf{x}_j) = \langle \phi(\textbf{x}_i), \phi(\textbf{x}_j) \rangle
+\]</span> for some function <span class="math inline">\(\phi()\)</span>.</p>
+<p>Popular kernel functions in support vector machines include the following:</p>
+<ul>
+<li><p><strong>Linear</strong> <span class="math display">\[
+K(\textbf{x}_i, \textbf{x}_j) = \langle \textbf{x}_i, \textbf{x}_j \rangle = \textbf{x}_i^\prime \textbf{x}_j
+\]</span></p></li>
+<li><p><strong>Polynomial of degree</strong> <span class="math inline">\(d\)</span> <span class="math display">\[K(\textbf{x}_i, \textbf{x}_j) = \left (c_0 + \gamma \langle \textbf{x}_i, \textbf{x}_j \rangle\right )^d
+\]</span></p></li>
+<li><p><strong>Radial basis</strong> <span class="math display">\[
+K(\textbf{x}_i, \textbf{x}_j) = \exp \left \{-\gamma ||\textbf{x}_i - \textbf{x}_j||^2 \right \} \quad \gamma &gt; 0
+\]</span></p></li>
+<li><p><strong>Sigmoid</strong> <span class="math display">\[K(\textbf{x}_i, \textbf{x}_j) = \tanh\left(\gamma \langle \textbf{x}_i, \textbf{x}_j \rangle + c_0 \right )
+\]</span></p></li>
+</ul>
+<p>The quantities <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(c_0\)</span> in these expressions are parameters of the kernel functions. They are treated as hyperparameters in training the models and often determined by a form of cross-validation.</p>
+<p>To see the connection between choosing a kernel function and its implied transformations <span class="math inline">\(g_1(\textbf{x}), \cdots, g_m(\textbf{x})\)</span>, consider the polynomial kernel of second degree (<span class="math inline">\(d=2\)</span>), <span class="math inline">\(c_0 = 1\)</span> and <span class="math inline">\(\gamma = 1\)</span>. Then <span class="math display">\[
+\begin{align*}
+    (1+\langle [x_1, x_2], [x_1, x_2]\rangle)^2 &amp;= \left ( 1 + x_1 x_1 + x_2 x_2\right )^2 \\
+    &amp;= \left ( 1 + x_1^2 + x_2^2 \right )^2 \\
+    &amp;= 1 + 2x_1^2 + 2x_2^2 + x_1^4 + x_2^4 + 2x_1^2 x_2^2 \\
+\end{align*}
+\]</span></p>
+<p>This kernel function implies the functions <span class="math inline">\(g_1(\textbf{x}), \cdots, g_6(\textbf{x})\)</span> in <a href="#eq-kernel-transformation" class="quarto-xref">Equation&nbsp;<span>15.1</span></a>.</p>
+<p>The last piece of the puzzle is establishing the connection between kernels, SVMs and SVCs. It turns out that the decision rule in the support vector classifier (SVC) from the previous section can be written as a function of inner products, rather than as a linear equation in the <span class="math inline">\(x\)</span>s: <span class="math display">\[
+f(\textbf{x}_0) = \beta_0 + \sum_{i=1}^n \alpha_i \langle \textbf{x}_0, \textbf{x}_i \rangle
+\]</span> for some coefficients <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\alpha_1, \cdots, \alpha_n\)</span>. However, this simplifies because <span class="math inline">\(\alpha_i = 0\)</span>, unless the <span class="math inline">\(i\)</span><sup>th</sup> data point is a support vector. If <span class="math inline">\(\mathcal{S}\)</span> denotes the set of support vectors, then the decision boundary in the SVC can be written as <span class="math display">\[
+f(\textbf{x}_0) = \beta_0 + \sum_{\mathcal{S}} \alpha_i \langle \textbf{x}_0, \textbf{x}_i \rangle
+\]</span> and for the support vector machine (SVM) it can be written as <span class="math display">\[
+f(\textbf{x}_0) = \beta_0 + \sum_{\mathcal{S}} \alpha_i K(\textbf{x}_0, \textbf{x}_i)
+\]</span></p>
+<p>The support vector <strong>classifier</strong> is a special case of a support vector <strong>machine</strong> where the kernel function is the <strong>linear</strong> kernel. Now you know why we delayed training SVC in <code>R</code> until here. Training an SVC is a special case of training an SVM—just choose the linear kernel.</p>
+</section>
+</section>
+<section id="pros-and-cons-of-svm" class="level3">
+<h3 class="anchored" data-anchor-id="pros-and-cons-of-svm">Pros and Cons of SVM</h3>
+<p>What are some of the advantages and disadvantages of support vector machines? Among the advantages are:</p>
+<ul>
+<li>Often perform extremely well</li>
+<li>Very flexible through use of kernel functions</li>
+<li>Handle high-dimensional problems.</li>
+<li>Have been applied successfully in many fields</li>
+<li>Can be extended from classification to regression</li>
+</ul>
+<p>However, a support vector machine can be</p>
+<ul>
+<li>difficult to explain.</li>
+<li>sensitive to noise in data and to outliers.</li>
+<li>slow, especially when cross-validating hyperparameters.</li>
+<li>difficult to extend to more than two categories.</li>
+</ul>
+<p>Unlike boosting methods (<a href="boosting.html" class="quarto-xref"><span>Chapter 18</span></a>) that have a built-in mechanism to judge the importance of an input in training the model, support vector machines have no such metric. The equivalent of variable importance is obtained by applying model-agnostic tools such as permutation-based variable importance. Although these can be applied to any type of model, they come with their own set of problems (computational intensity, high variability).</p>
+<p>That leaves us in a bit of a quandary when it comes to support vector machines. While they frequently perform extremely well, they are also difficult to communicate. “It just works” is rarely a sufficient answer.</p>
+<p>Extending regression-based classification methods from <span class="math inline">\(K=2\)</span> to <span class="math inline">\(K &gt; 2\)</span> in <a href="class_reg.html" class="quarto-xref"><span>Chapter 13</span></a> meant extending logistic regression to multinomial logistic regression. The key result was to replace the inverse logit link with the softmax function. With support vectors, extending to more than two categories is not possible. A decision boundary that separates two classes is fundamentally different from one that separates three classes. Two approaches are taken to handle <span class="math inline">\(K &gt; 2\)</span>:</p>
+<ul>
+<li><strong>one-versus-all</strong>: <span class="math inline">\(K\)</span> separate SVMs are trained, each classifies one category against all others combined. For example, to classify between bananas, apples, oranges, and tomatoes, we fit 4 SMVS.
+<ul>
+<li>bananas versus non-bananas</li>
+<li>apples versus non-apples</li>
+<li>oranges versus non-oranges</li>
+<li>tomatoes versus non-tomatoes</li>
+</ul></li>
+<li><strong>one-versus-one</strong>: A separate SMV is trained for each pair of categories:
+<ul>
+<li>bananas versus apples</li>
+<li>bananas versus oranges</li>
+<li>bananas versus tomatoes</li>
+<li>apples versus oranges</li>
+<li>and so forth</li>
+</ul></li>
+</ul>
+<p>We encountered the one-versus-all approach in previous chapters on classification when <code>caret::confusionMatrix</code> computes the confusion matrix statistics for <span class="math inline">\(K &gt; 2\)</span>.</p>
+</section>
+</section>
+<section id="svm-in-r" class="level2" data-number="15.5">
+<h2 data-number="15.5" class="anchored" data-anchor-id="svm-in-r"><span class="header-section-number">15.5</span> SVM in <code>R</code></h2>
+<p>Support vector machines (and classifiers) can be trained in <code>R</code> with the <code>svm</code> function in the <code>e1071</code> package. We return to the banana quality data of <a href="#sec-svm-banana" class="quarto-xref"><span>Section 15.1.1</span></a>.</p>
+<div class="{example}">
+<div class="example-header">
+<p>Example: Banana Quality (Cont’d)</p>
+</div>
+<div class="example-container">
+<p>Recall that the training data set contains the quality (“Good”, “Bad”) of 4,000 bananas along with seven fruit attributes (see <a href="#fig-banana-hist" class="quarto-xref">Figure&nbsp;<span>15.1</span></a>). The training data set also contains 4,000 observations.</p>
+<p>We start by training a support vector <strong>classifier</strong> using all fruit attributes by setting the <code>kernel=</code> option to <code>"linear</code>. The only hyperparameter of this model is the cost of constraints violation. We set cost to 10, well, because. You have to start somewhere. The <code>scale=</code> option is set to FALSE because the inputs have already been scaled, see <a href="#fig-banana-hist" class="quarto-xref">Figure&nbsp;<span>15.1</span></a>.</p>
+<p>The following code trains the SVC and computes the confusion matrix for this setting.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>ban.svc <span class="ot">&lt;-</span> <span class="fu">svm</span>(Quality <span class="sc">~</span> . ,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data=</span>ban_train, </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">kernel=</span><span class="st">"linear"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">cost=</span><span class="dv">10</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">scale=</span><span class="cn">FALSE</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>ban.svc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+svm(formula = Quality ~ ., data = ban_train, kernel = "linear", cost = 10, 
+    scale = FALSE)
 
 
+Parameters:
+   SVM-Type:  C-classification 
+ SVM-Kernel:  linear 
+       cost:  10 
+
+Number of Support Vectors:  1228</code></pre>
+</div>
+</div>
+<p>The trained model has 1228 support vectors which seems like a lot. Almost one out of every three observation is needed to compute the decision boundary. The proportion should not be that high. How well does the model classify the bananas in the test data set?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(ban.svc,<span class="at">newdata=</span>ban_test)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ban.svc.cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(pred,ban_test<span class="sc">$</span>Quality,<span class="at">positive=</span><span class="st">"Good"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>ban.svc.cm<span class="sc">$</span>overall</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+     0.8815000      0.7629915      0.8710795      0.8913595      0.5015000 
+AccuracyPValue  McnemarPValue 
+     0.0000000      0.4348990 </code></pre>
+</div>
+</div>
+<p>With 1228 support vectors, the model achieves “only” 88.15 % accuracy on the test data. We know from <a href="#sec-svm-banana" class="quarto-xref"><span>Section 15.1.1</span></a> that we can do much better.</p>
+<p>So let’s see if choosing a different cost value improves the model? To this end we use the <code>tune</code> function in the <code>e1071</code> library. <code>tune</code> performs a grid search over the ranges of hyperparameters and computes mean squared error in regression problems or classification error in classification problems. We set a seed value for the random number generator because <code>tune</code> by default performs 10-fold cross-validation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5432</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>tune.out <span class="ot">&lt;-</span> <span class="fu">tune</span>(svm,Quality <span class="sc">~</span> .,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data=</span>ban_train, </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">kernel =</span> <span class="st">"linear"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">scale  =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ranges =</span> <span class="fu">list</span>(<span class="at">cost =</span> <span class="fu">c</span>(<span class="fl">0.1</span> , <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                 )</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(tune.out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Parameter tuning of 'svm':
+
+- sampling method: 10-fold cross validation 
+
+- best parameters:
+ cost
+  0.1
+
+- best performance: 0.126 
+
+- Detailed performance results:
+   cost   error dispersion
+1   0.1 0.12600 0.01776388
+2   1.0 0.12675 0.01814486
+3  10.0 0.12700 0.01755151
+4 100.0 0.12675 0.01814486</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>tune.out<span class="sc">$</span>best.model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+best.tune(METHOD = svm, train.x = Quality ~ ., data = ban_train, 
+    ranges = list(cost = c(0.1, 1, 10, 100)), kernel = "linear", 
+    scale = FALSE)
+
+
+Parameters:
+   SVM-Type:  C-classification 
+ SVM-Kernel:  linear 
+       cost:  0.1 
+
+Number of Support Vectors:  1243</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(tune.out<span class="sc">$</span>best.model,<span class="at">newdata=</span>ban_test)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>ban.svm.cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(pred,ban_test<span class="sc">$</span>Quality,<span class="at">positive=</span><span class="st">"Good"</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>ban.svm.cm<span class="sc">$</span>overall</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+     0.8812500      0.7624932      0.8708206      0.8911188      0.5015000 
+AccuracyPValue  McnemarPValue 
+     0.0000000      0.5819094 </code></pre>
+</div>
+</div>
+<p>The tuned model does not perform any better than the first model with <code>cost=10</code>. This is an indication that the linear decision boundary implied by the linear kernel probably does not work well for these data. If we would believe that a linear kernel is correct, then we should continue to tune the model because the selected value falls on the edge of the supplied grid. The classification error might continue to fall below 0.126 for smaller values of cost.</p>
+<p>But my belief in the appropriateness of the linear kernel is shaken and I move on to a support vector <strong>machine</strong> by modifying the kernel function from linear to a radial basis kernel:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>tune.out <span class="ot">&lt;-</span> <span class="fu">tune</span>(svm,Quality <span class="sc">~</span> . ,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data   =</span> ban_train, </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">kernel =</span> <span class="st">"radial"</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ranges =</span> <span class="fu">list</span>(<span class="at">cost =</span> <span class="fu">c</span>(<span class="fl">0.1</span> , <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                 )</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(tune.out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Parameter tuning of 'svm':
+
+- sampling method: 10-fold cross validation 
+
+- best parameters:
+ cost
+   10
+
+- best performance: 0.018 
+
+- Detailed performance results:
+   cost  error  dispersion
+1   0.1 0.0280 0.007799573
+2   1.0 0.0225 0.008740074
+3  10.0 0.0180 0.006433420
+4 100.0 0.0240 0.006892024</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>tune.out<span class="sc">$</span>best.model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+best.tune(METHOD = svm, train.x = Quality ~ ., data = ban_train, 
+    ranges = list(cost = c(0.1, 1, 10, 100)), kernel = "radial")
+
+
+Parameters:
+   SVM-Type:  C-classification 
+ SVM-Kernel:  radial 
+       cost:  10 
+
+Number of Support Vectors:  358</code></pre>
+</div>
+</div>
+<p>Only one of the hyperparameters is cross-validated, the cost parameter. We could also include the <code>gamma</code> parameter in the <code>ranges=</code> list, I leave it up to you to further improve on this SVC.</p>
+<p>The best choice of cost from the four values supplied is cost = 10 with a misclassification rate of 0.018 on the training data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(tune.out<span class="sc">$</span>best.model,<span class="at">newdata=</span>ban_test)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>ban.svm.cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(pred,ban_test<span class="sc">$</span>Quality,<span class="at">positive=</span><span class="st">"Good"</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>ban.svm.cm<span class="sc">$</span>overall</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+     0.9810000      0.9620002      0.9762757      0.9850017      0.5015000 
+AccuracyPValue  McnemarPValue 
+     0.0000000      0.3018984 </code></pre>
+</div>
+</div>
+<p>On the test data, the accuracy of the model is only slightly smaller: 98.1 %.</p>
+</div>
+</div>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;15.2: The family of support vector-based classifiers.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;15.3: Maximal margin classifier for <span class="math inline">\(p=2\)</span>.</span>
+<span class="glightbox-desc lightbox-desc-3">Figure&nbsp;15.4: Three possible solutions for the MMC problem.</span>
+<span class="glightbox-desc lightbox-desc-4">Figure&nbsp;15.5: Example of an MMC that depends on two support vectors.</span>
+<span class="glightbox-desc lightbox-desc-5">Figure&nbsp;15.7: Support vector classifier in two dimensions.</span>
+<span class="glightbox-desc lightbox-desc-6">Figure&nbsp;15.9: Data for which a linear decision boundary does not work well.</span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-James2013_ISLR2" class="csl-entry" role="listitem">
+James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2021. <em>An Introduction to Statistical Learning: With Applications in r, 2nd Ed.</em> Springer. <a href="https://www.statlearning.com/">https://www.statlearning.com/</a>.
+</div>
+<div id="ref-ZhangMedium" class="csl-entry" role="listitem">
+Zhang, Grace. 2018. <span>“What Is the Kernel Trick? Why Is It Important?”</span> <em>Medium</em>. <a href="https://medium.com/@zxr.nju/what-is-the-kernel-trick-why-is-it-important-98a98db0961d">https://medium.com/@zxr.nju/what-is-the-kernel-trick-why-is-it-important-98a98db0961d</a>.
+</div>
+</div>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1044,6 +1705,31 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","closeEffect":"zoom","descPosition":"bottom","loop":false});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
 
 
 

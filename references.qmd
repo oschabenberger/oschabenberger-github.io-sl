@@ -428,4 +428,15 @@ location = {Long Beach, California, USA},
 series = {NIPS'17}
 }
 
+
+@article{ZhangMedium,
+author={Zhang, Grace},
+title={What is the kernel trick? Why is it important?},
+journal={Medium},
+year={2018},
+month={November},
+issue_date = {Nov 11, 2018},
+url={https://medium.com/@zxr.nju/what-is-the-kernel-trick-why-is-it-important-98a98db0961d}
+}
+
 :::

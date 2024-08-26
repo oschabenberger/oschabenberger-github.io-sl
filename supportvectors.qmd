@@ -1,3 +1,589 @@
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
 
 # Support Vectors {#sec-support-vectors}
 
+## Introduction
+
+Classification methods based on **support vectors** were introduced in the 1990s and made a big splash.
+Their approach to solving classification problems was novel and intuitive, they showed excellent performance, 
+and worked well in high dimensions even when $p \gg n$. The approach was refreshing and distinctly different
+from traditional approaches such as logistic regression or linear discriminant analysis.
+
+The performance of support vector methods, especially support vector machines (SVM, see @sec-svm below) was so
+impressive that the technique became an off-the-shelf standard classifier for many data scientists. Much so 
+as (extreme) gradient boosting has become an off-the-shelf default method for many data scientists solving 
+regression problems. Support vector machines have since been extended to regression problems; we consider them
+primarily for classification here.
+
+How impressive is the performance of support vector methods? 
+Consider the following example, classifying bananas into "Good" and "Bad" quality
+based on fruit attributes such as size, weight, sweetness, ripeness, etc. 
+You can find the data set for this analysis on 
+[kaggle](https://www.kaggle.com/datasets/l3llff/banana).
+
+
+### Example {#sec-svm-banana}
+
+:::{example}
+::::{.example-header}
+Example: Banana Quality
+::::
+::::{.example-container}
+4,000 observations are in the training set, 4,000 observations are in the
+test data set. @fig-banana-hist displays histograms for the fruit attributes in the 
+training data 
+
+```{r banana_data, warning=FALSE, message=FALSE}
+library(duckdb)
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+ban_train <- dbGetQuery(con, "SELECT * FROM banana_train")
+ban_test <- dbGetQuery(con, "SELECT * FROM banana_test")
+
+ban_train$Quality <- factor(ban_train$Quality)
+ban_test$Quality <- factor(ban_test$Quality)
+dbDisconnect(con)
+str(ban_train)
+```
+```{r banana_hist, fig.align="center", out.width="90%"}
+#| fig.cap: Histogram of attributes in banana training data set.
+#| label: fig-banana-hist
+lattice::histogram(~ Size + Weight + Sweetness + Softness + HarvestTime
+                   + Ripeness + Acidity , 
+                   cex=0.5,
+                   as.table=TRUE,
+                   par.strip.text=list(cex=0.75),
+                   xlab="",
+                   data=ban_train)
+```
+
+The following statements use the `e1071::svm` function to train a support vector machine
+on the training data and compute the confusion matrix for the test data. Because the
+data are already scaled (see @fig-banana-hist), we set `scale=FALSE`. Otherwise, this
+is the default SVM analysis.
+
+```{r, warning=FALSE, message=FALSE}
+library(caret)
+library(e1071)
+set.seed(176)
+
+ban.svm <- svm(Quality ~ . ,
+               data=ban_train, 
+               scale=FALSE)
+
+pred <- predict(ban.svm,newdata=ban_test)
+
+cm <- confusionMatrix(pred,ban_test$Quality,positive="Good")
+cm
+```
+This out-of-the-box analysis achieves an impressive `{r} round(cm$overall[1]*100,3)`\% accuracy on the test 
+data set. With tuning of hyperparameters (see @sec-svm), this accuracy can be increased even further.
+The sensitivity and specificity of the model are also impressive. For comparisons, an out-of-the-box
+logistic regression achieves 88.1\% accuracy, a finely grown and pruned decision tree achieves 89.5\% 
+accuracy.
+::::
+:::
+
+### What is a Support Vector 
+
+The name of this family of methods stems from classification rules that are based on a 
+subset of the observations, these observations are called the **support vectors** of
+the classifier. A support vector classifier with 10 support vectors, for example, uses the 
+data from 10 observations to construct the classification rule, even if the training data
+contains 1 million observations. The number of support vectors is not a parameter you set in advance,
+however. Rather, you specify the constraints imposed on the classifier through other hyperparameters---such as 
+the cost of a misclassification and the kernel function---and the number of support vectors
+is the result of training the classifier.
+
+### Types of Support Vector Methods
+
+Chapter 9 of @James2013_ISLR2 provides a great introduction into the support-vector based methods
+and we follow their general flow here. To arrive at support vector machines it is helpful
+to develop them from simpler methods, the maximal margin classifier and the 
+support vector classifier (@fig-svm-mindmap).
+
+![The family of support vector-based classifiers.](images/SupportVectorMindMap.png){#fig-svm-mindmap fig-align="center" width=90% .lightbox}
+
+The maximal margin classifier (MMC) is a rather simple classifier for **separable cases**. Suppose you are dealing
+with a two-category problem. This is said to be separable if you can find a classification rule that assigns
+every observation in the training data without error to one of the two classes.
+
+Although intuitive, MMC is not a strong contender, most data are not completely separable. The support vector 
+classifier (SVC) improves over the MMC by permitting a gray area of misclassification. It is OK to have a 
+certain misclassification rate on the training data, if it improves generalizability to new observations.
+Finally, the support vector machine (SVM) generalizes the linear decision rule of the SVC to nonlinear decision 
+boundaries by introducing kernel functions. The SVC emerges as a special case of SVM with a linear kernel function.
+
+In the remainder of the chapter we discuss the three margin classifiers for binary data. 
+As is customary with classification models not based on regression techniques, the target
+variable is coded $Y \in \{-1,1\}$, rather than $Y \in \{0,1\}$. A side effect of this target encoding is 
+that the classification rule uses only the sign of the predicted value. If $Y = -1$ encodes label $A$ and $Y=1$ 
+encodes label $B$, then we predict $A$ if $\widehat{y} < 0$ and predict $B$ if $\widehat{y}> 0$.
+
+## Maximal Margin Classifier (MMC) {#sec-mmc}
+
+Suppose we have $p$ input variables $X_1,\cdots,X_p$. For each observation in the training data we have
+$[y_i, x_{i1}, \cdots, x_{ip}]^\prime = [y_i, \bx_i]$. Given a new data point for the inputs, 
+$\bx_0 = [x_{01}, \cdots, x_{0p}]^\prime$, should we assign it to the $-1$ or the $1$ category? 
+
+The MMC asks to find a hyperplane 
+$$
+h(\bx) = \beta_0 + \beta_1 x_1 + \cdots + \beta_p x_p 
+$$
+that satisfies
+$$
+y_i h(\bx_i) = y_i \, \left ( \beta_0 + \beta_1 x_{i1} + \cdots + \beta_p x_{ip} \right )> 0\text{, } \forall i=1, \cdots, n
+$$
+Recall that $y_i \in \{-1,1\}$. This condition states that all training observations fall either 
+on the right or the left side of $h(\bx)$. There are no misclassifications which would occur if 
+$h(\bx_i) < 0$ and $y = 1$ or if $h(\bx_i) > 0$ and $y = -1$.
+
+Once we have found $h(\bx)$, we classify $\bx_0$ by computing $h(\bx_0)$
+$$
+    \widehat{y} = \left \{ \begin{array}{r l} 
+	1 & h(\bx_0) > 0 \\ -1 & h(\bx_0) < 0 
+	\end{array} \right .
+$$
+
+@fig-mmc-setup shows the basic setup for a maximal margin classifier with two inputs. 
+The hyperplane $h(\bx) = \beta_0 + \beta_1 x_1 + \beta_2 x_2$ in two dimensions is a line. 
+The data are separable in the sense that we can find coefficients $\beta_0, \beta_1, \beta_2$
+so that the line carves through the figure in such a way that all points with $y=1$ fall on one
+side of the line ($h(\bx) > 0$), and all points with $y= -1$ fall on the other side of the line ($h(\bx) < 0$).
+For all points that lie exactly on the hyperplane, we have $h(\bx) = 0$.
+
+![Maximal margin classifier for $p=2$.](images/MMC_Setup.png){#fig-mmc-setup fig-align="center" width=80% .lightbox}
+
+This problem can have more than one solution. For example, @fig-mmc-solutions depicts three
+hyperplanes $h_1(\bx)$, $h_2(\bx)$, and $h_3(\bx)$ that satisfy the no-misclassification 
+requirement. How should we define an optimal solution?
+
+![Three possible solutions for the MMC problem.](images/MMC_3Solutions.png){#fig-mmc-solutions fig-align="center" width=80% .lightbox}
+
+The **margin** of a classifier is the shortest perpendicular distance between the training observations and the hyperplane.
+The best solution to the problem of classifying separable observations with a linear decision boundary is to find 
+the hyperplane that has the **largest margin** (the largest minimum distance between training obs and hyperplane).
+The rationale is that a large margin on the training data will lead to a high accuracy on the test data, if the 
+test data are a random subset of the training data.
+
+The observations that have the shortest distance to the hyperplane---the observations that define the margin---are called the 
+**support vectors** (@fig-mmc-margin) because they support the hyperplane as the decision boundary of the classification 
+problem. What happens if we were to move an observation in @fig-mmc-margin, with the caveat that the observation has to stay 
+on the same side of the hyperplane? If the observation is not a support vector, then the hyperplane is not affected, unless
+the observation is moved closer to the plane than any of the support vectors. Changing the support vectors will change the 
+hyperplane.
+
+![Example of an MMC that depends on two support vectors.](images/MMC_Margin.png){#fig-mmc-margin fig-align="center" width=80% .lightbox}
+
+## Support Vector Classifier {#sec-svc}
+
+The MMC is based on a simple and intuitive idea and a solution can be found with a straightforward optimization algorithm.
+However, we will not consider this classifier much further, its utility lies in introducing the idea of a margin-based classifier, 
+a linear decision boundary, and the concept of the support vector. It is not that useful in practical applications because most
+problems are not separable. How could we separate the points in @fig-svc-simdata without error by drawing a line through the plot?
+
+```{r svc_sim, echo=FALSE, fig.align="center", out.width="70%", fig.asp=1}
+#| fig.cap: A non-separable case in two dimensions
+#| label: fig-svc-simdata
+
+set.seed(242)
+x <- matrix(rnorm (30 * 2), ncol = 2)
+y <- c(rep(-1, 15), rep(1, 15))
+x[y == 1, ] <- x[y == 1, ] + 1
+dat <- data.frame(x=x, y=as.factor(y))
+
+plot(x, col=(3-y), pch=16,cex=1.3, xlab="x1", ylab="x2")
+```
+
+A perfect classification on the training data is also not generally desirable. It will likely lead to
+an overfit model that does not generalize well to new observations. 
+
+The **support vector classifier** (SVC) extends the MMC by finding a
+hyperplane that provides better classification of **most** observations and is
+more robust to individual data points (@fig-svc-example). 
+
+The margin of the SVC is called a **soft margin**:
+some observations are allowed to be on the wrong side of the margin and 
+some observations are allowed to be on the wrong side of the hyperplane (misclassified).
+
+![Support vector classifier in two dimensions.](images/SVC.png){#fig-svc-example fig-align="center" width=80% .lightbox}
+
+The support vectors of the SVC are the observations that lie on the margin or lie on the
+wrong side of the margin for their category. As with the MMC, the decision boundary depends only on these
+observations. Moving any of the other observations without crossing into the margin or across the
+decision boundary has no effect on the optimal hyperplane.
+
+How do we find the optimal hyperplane for the support vector classifier? One approach 
+is to give ourselves a *budget* of observations that violate the margin and make sure
+that the chosen hyperplane does not exceed the budget. Alternatively,
+we can specify the *cost* associated with a margin violation and find the hyperplane
+that minimizes the overall expense.
+
+Using the cost approach, the optimization problem that finds the SVC can be
+expressed as follows:
+$$
+\begin{align*}
+\argmin_{\bbeta,\bepsilon} &\, \frac12 \bbeta^\prime\bbeta + C\sum_{i=1}^n \epsilon_i \\
+\text{subject to } &\, y_i(\beta_0 + \beta_1x_1 + \cdots + \beta_p x_p) \ge 1-\epsilon_i \\
+\epsilon_i &\ge 0, \quad i=1,\cdots,n
+\end{align*}
+$$
+
+The $\epsilon_i$ are called the **slack** variables, each observation is associated with one. If $\epsilon_i = 0$, the $i$^th^ observation
+does not violate the margin. If $0 < \epsilon_i \le 1$, the observation violates the margin but is not misclassified. Finally, misclassified 
+observations in the training data have $\epsilon_i > 1$. 
+
+$C$ is the hyperparameter representing the **cost** of a margin violation and is usually determined by some form of cross-validation. 
+Choosing $C$ is a typical bias-variance tradeoff.
+
+* $C$ small: the cost of a margin violation is low, encouraging more violations. The resulting classifier will have a
+wider margin and more support vectors. This results in classifiers that are more stable, with lower variance but
+potentially higher bias.
+
+* $C$ large: we have a low tolerance for margin violations. This encourages a small margin and few support vectors, resulting
+in classifiers that are closely fit to the training data, have low bias but potentially high variance.
+
+@fig-svc-fit displays the decision rule for a support vector classifier fit to the data in @fig-svc-simdata.
+For the particular choice of $C$, the classification boundary depends on 14 support vectors (data points). 
+These are shown in the plot as "x" symbols. Observations on which the hyperplane does not depend are
+shown as "o" symbols. You can see that some of the support vectors are on the correct side of the
+decision boundary and others are not. Given the chosen value of $C$, this is the best 
+one can achieve using a linear decision boundary for this non-separable problem.
+
+
+```{r svm_fit, echo=FALSE, fig.align='center', out.width="80%"}
+#| fig.cap: Support vector classifier trained on data in @fig-svc-simdata
+#| label: fig-svc-fit
+#| 
+library(e1071)
+svm.fit_1 <- svm(y ~ .,
+              data=dat, 
+              kernel="linear",
+              cost=10,
+              scale=FALSE)
+
+
+#svm.fit_1
+plot(svm.fit_1 ,dat,grid=100)
+```
+
+We have not shown the `R` code that leads to the classification plot in @fig-svc-fit because the 
+SVC turns out to be a special case of the next family of models, the support vector machines.
+
+## Support Vector Machines (SVM) {#sec-svm}
+
+The support vector classifier is a marked improvement over the maximal margin classifier in that it
+can handle non-separable cases, allows cross-validation of the cost (or budget) hyperparameter, and is
+robust to observations that are far away from the decision boundary.
+
+The shortcoming of the SVC is its linear decision boundary. If such a boundary applies in the case of two inputs, it means we 
+can segment the $x_1$---$x_2$ plane with a line as the classification rule. Consider the data in 
+@fig-svm-data. No linear decision boundary would slice the data to produce a good classification. 
+
+![Data for which a linear decision boundary does not work well.](images/SVM_nonlinear.png){#fig-svm-data fig-align="center" width="80%" .lightbox}
+
+Just like linear regression models do not perform well if the relationship between target and inputs
+is nonlinear, a classifier with a linear decision rule will not classify well if the decision
+boundary should be nonlinear. One approach to introduce nonlinearity (in the inputs) in the regression
+context is to add transformations of the variables, for example, using polynomials. Similarly, we
+could consider revising the decision boundary in a margin classifier to include additional terms:
+$$
+h(\bx) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2
+$$
+But where do we stop? What is the best order of the polynomial terms, and what about
+the transformations $\log(X)$ or $\sqrt{X}$ or $1/x$ and what about interaction terms?
+This could get quickly out of hand. 
+
+Support vector machines rely on what is known as 
+**the kernel trick** to essentially increase the number of features, introduce nonlinearity, but without
+increasing numerical complexity. The principal idea is to apply a nonlinear transformation to the
+$X$-space such that a linear decision boundary is reasonable in the transformed space. In other words,
+find a nonlinear decision boundary in $X$-space as a linear decision boundary in the transformed space.
+
+### The Kernel Trick
+
+@fig-svm-nonlinear from @ZhangMedium evokes how a problem that appears not linearly
+separable in a lower-dimensional space becomes linearly separable in a higher-dimensional space.
+
+![A nonseparable problem in 2-D becomes linearly separable in 3-D. From @ZhangMedium.](images/NonlinearSeparable.png){#fig-svm-nonlinear fig-align="center" width="80%"}
+
+In 2-dimensional space, the linear decision boundary is a line, in 3-dimensional space the linear
+decision boundary (the hyperplane) is an actual plane. 
+
+The kernel trick allows us to make 
+computations in higher-dimensional, nonlinear spaces based on only inner products of the
+coordinates in the original space. Wait, what?
+
+#### Inner products
+
+A kernel $K(\bx_j,\bx_j)$ is a generalization of the inner product
+$$
+	\langle \bx_i, \bx_j \rangle = \sum_{k=1}^p x_{ik} x_{jk} 
+$$
+Instead of applying the inner product to the original coordinates $\bx_i$ and $\bx_j$, 
+we first transform the coordinates.
+$$
+K(\bx_i,\bx_j) = \langle g(\bx_i), g(\bx_j) \rangle
+$$
+Let's look at an example. Suppose $\bx$ is two-dimensional, $\bx = [x_1,x_2]$ and we define the
+transformations
+$$
+\begin{align*}
+	g_1(\bx) &= 1 \\
+	g_2(\bx) &= \sqrt{2}x_1 \\
+	g_3(\bx) &= \sqrt{2}x_2\\
+	g_4(\bx) &= x_1^2 \\
+	g_5(\bx) &= x_2^2 \\
+	g_6(\bx) &= \sqrt{2}x_1 x_2
+\end{align*}
+$${#eq-kernel-transformation}
+The inner product of $g(\bx)$ with itself is then
+$$
+g(\bx)^\prime g(\bx) = 1 + 2 x_1^2 + 2 x_2^2 + x_1^4 + x_2^4 + 2x_1^2 x_2^2 
+$$
+The inner product in the transformed space includes higher-dimensional terms, without increasing 
+the number of inputs in the calculation. That is neat, but have we gained that much? How are 
+we to choose the transformations $g_1(\bx),\cdots, g_m(\bx)$ in a meaningful way?
+
+#### Kernel functions
+
+This is where the following result comes to the rescue. We do not need to specify the functions
+$g_1(\bx),\cdots, g_m(\bx)$ explicitly. Instead, we can start by choosing the kernel function $K(\bx_i,\bx_j)$. 
+Any valid kernel implies **some** transformation:
+$$
+K(\bx_i, \bx_j) = \langle \phi(\bx_i), \phi(\bx_j) \rangle
+$$
+for some function $\phi()$.
+
+Popular kernel functions in support vector machines include the following:
+
+- **Linear**
+$$
+K(\bx_i, \bx_j) = \langle \bx_i, \bx_j \rangle = \bx_i^\prime \bx_j
+$$
+
+- **Polynomial of degree** $d$
+$$K(\bx_i, \bx_j) = \left (c_0 + \gamma \langle \bx_i, \bx_j \rangle\right )^d
+$$
+
+- **Radial basis**
+$$
+K(\bx_i, \bx_j) = \exp \left \{-\gamma ||\bx_i - \bx_j||^2 \right \} \quad \gamma > 0
+$$
+
+- **Sigmoid** 
+$$K(\bx_i, \bx_j) = \tanh\left(\gamma \langle \bx_i, \bx_j \rangle + c_0 \right )
+$$
+
+The quantities $\gamma$ and $c_0$ in these expressions are parameters of the kernel functions.
+They are treated as hyperparameters in training the models and often determined by a form of 
+cross-validation. 
+
+To see the connection between choosing a kernel function and its implied transformations $g_1(\bx), \cdots, g_m(\bx)$, 
+consider the polynomial kernel of second degree ($d=2$), $c_0 = 1$ and $\gamma = 1$. Then
+$$
+\begin{align*}
+	(1+\langle [x_1, x_2], [x_1, x_2]\rangle)^2 &= \left ( 1 + x_1 x_1 + x_2 x_2\right )^2 \\
+	&= \left ( 1 + x_1^2 + x_2^2 \right )^2 \\
+	&= 1 + 2x_1^2 + 2x_2^2 + x_1^4 + x_2^4 + 2x_1^2 x_2^2 \\
+\end{align*}
+$$
+
+This kernel function implies the functions $g_1(\bx), \cdots, g_6(\bx)$ in @eq-kernel-transformation.
+
+The last piece of the puzzle is establishing the connection between kernels, SVMs and SVCs.
+It turns out that the decision rule in the support vector classifier (SVC) from the previous section
+can be written as a function of inner products, rather than as a linear equation in the $x$s:
+$$
+f(\bx_0) = \beta_0 + \sum_{i=1}^n \alpha_i \langle \bx_0, \bx_i \rangle
+$$
+for some coefficients $\beta_0$ and $\alpha_1, \cdots, \alpha_n$. However, this simplifies
+because $\alpha_i = 0$, unless the $i$^th^ data point is a support vector. If $\mathcal{S}$ denotes
+the set of support vectors, then the decision boundary in the SVC can be written as
+$$
+f(\bx_0) = \beta_0 + \sum_{\mathcal{S}} \alpha_i \langle \bx_0, \bx_i \rangle
+$$
+and for the support vector machine (SVM) it can be written as
+$$
+f(\bx_0) = \beta_0 + \sum_{\mathcal{S}} \alpha_i K(\bx_0, \bx_i)
+$$
+
+The support vector **classifier** is a special case of a support vector **machine** where
+the kernel function is the **linear** kernel. Now you know why we delayed training SVC in `R` until here.
+Training an SVC is a special case of training an SVM---just choose the linear kernel.
+
+### Pros and Cons of SVM
+
+What are some of the advantages and disadvantages of support vector machines?
+Among the advantages are:
+
+- Often perform extremely well
+- Very flexible through use of kernel functions
+- Handle high-dimensional problems.
+- Have been applied successfully in many fields
+- Can be extended from classification to regression
+	
+However, a support vector machine can be
+
+- difficult to explain.
+- sensitive to noise in data and to outliers.
+- slow, especially when cross-validating hyperparameters.
+- difficult to extend to more than two categories.
+
+Unlike boosting methods (@sec-boosting) that have a built-in mechanism to judge the 
+importance of an input in training the model, support vector machines have no such 
+metric. The equivalent of variable importance is obtained by applying model-agnostic
+tools such as permutation-based variable importance. Although these can be applied
+to any type of model, they come with their own set of problems (computational intensity,
+high variability).
+
+That leaves us in a bit of a quandary when it comes to support vector machines. 
+While they frequently perform extremely well, they are also difficult to communicate.
+"It just works" is rarely a sufficient answer.
+
+Extending regression-based classification methods from $K=2$ to $K > 2$ in @sec-class-reg meant
+extending logistic regression to multinomial logistic regression. The key result was to 
+replace the inverse logit link with the softmax function. With support vectors, extending
+to more than two categories is not possible. A decision boundary that separates two classes
+is fundamentally different from one that separates three classes. Two approaches are taken
+to handle $K > 2$:
+
+- **one-versus-all**: $K$ separate SVMs are trained, each classifies one category 
+against all others combined. For example, to classify between bananas, apples, oranges, 
+and tomatoes, we fit 4 SMVS. 
+    - bananas versus non-bananas
+    - apples versus non-apples
+    - oranges versus non-oranges
+    - tomatoes versus non-tomatoes
+    
+    
+- **one-versus-one**: A separate SMV is trained for each pair of categories:
+    - bananas versus apples
+    - bananas versus oranges
+    - bananas versus tomatoes
+    - apples versus oranges
+    - and so forth
+    
+We encountered the one-versus-all approach in previous chapters on classification
+when `caret::confusionMatrix` computes the confusion matrix statistics for $K > 2$.
+
+## SVM in `R`
+
+Support vector machines (and classifiers) can be trained in `R` with the `svm` 
+function in the `e1071` package. We return to the banana quality data of @sec-svm-banana.
+
+:::{example}
+::::{.example-header}
+Example: Banana Quality (Cont'd)
+::::
+::::{.example-container}
+Recall that the training data set contains the quality ("Good", "Bad") of 4,000
+bananas along with seven fruit attributes (see @fig-banana-hist). The training
+data set also contains 4,000 observations.
+
+We start by training a support vector **classifier** using all fruit attributes
+by setting the `kernel=` option to `"linear`. The only hyperparameter of this model 
+is the cost of constraints violation. We set cost to 10, well, because. You have
+to start somewhere. The `scale=` option is set to FALSE because
+the inputs have already been scaled, see @fig-banana-hist. 
+
+The following code trains the SVC and computes the confusion matrix for this setting.
+
+``` {r svc_banana, warning=FALSE, message=FALSE}
+library(e1071)
+library(caret)
+
+ban.svc <- svm(Quality ~ . ,
+              data=ban_train, 
+              kernel="linear",
+              cost=10,
+              scale=FALSE)
+ban.svc
+```
+
+The trained model has `{r} ban.svc$tot.nSV` support vectors which seems like a lot. Almost
+one out of every three observation is needed to compute the decision boundary. The proportion
+should not be that high. How well does the model classify the bananas in the test data set?
+
+``` {r}
+pred <- predict(ban.svc,newdata=ban_test)
+
+ban.svc.cm <- confusionMatrix(pred,ban_test$Quality,positive="Good")
+ban.svc.cm$overall
+```
+
+With `{r} ban.svc$tot.nSV` support vectors, the model achieves "only" `{r} round(ban.svc.cm$overall[1]*100,4)` 
+\% accuracy on the test data. We know from @sec-svm-banana that we can do much
+better. 
+
+So let's see if choosing a different cost value improves the model? To this end
+we use the `tune` function in the `e1071` library. `tune` performs a grid search
+over the ranges of hyperparameters and computes mean squared error in regression
+problems or classification error in classification problems.
+We set a seed value for the random number generator because `tune` by default
+performs 10-fold cross-validation.
+
+``` {r}
+set.seed(5432)
+tune.out <- tune(svm,Quality ~ .,
+                 data=ban_train, 
+                 kernel = "linear",
+                 scale  = FALSE,
+                 ranges = list(cost = c(0.1 , 1, 10, 100))
+                 )
+
+summary(tune.out)
+tune.out$best.model
+
+pred <- predict(tune.out$best.model,newdata=ban_test)
+
+ban.svm.cm <- confusionMatrix(pred,ban_test$Quality,positive="Good")
+ban.svm.cm$overall
+```
+
+The tuned model does not perform any better than the first model with `cost=10`. 
+This is an indication that the linear decision boundary implied by the linear kernel
+probably does not work well for these data. If we would believe that a linear
+kernel is correct, then we should continue to tune the model because the selected
+value falls on the edge of the supplied grid. The classification error might
+continue to fall below `{r} round(tune.out$performances[1,2],4)` for smaller 
+values of cost.
+
+But my belief in the appropriateness of the linear kernel is shaken and I
+move on to a support vector **machine** by modifying the kernel function
+from linear to a radial basis kernel:
+
+``` {r svm_banana}
+tune.out <- tune(svm,Quality ~ . ,
+                 data   = ban_train, 
+                 kernel = "radial",
+                 ranges = list(cost = c(0.1 , 1, 10, 100))
+                 )
+
+summary(tune.out)
+
+tune.out$best.model
+```
+
+Only one of the hyperparameters is cross-validated, the cost parameter. We could also
+include the `gamma` parameter in the `ranges=` list, I leave it up to you to further
+improve on this SVC.
+
+The best choice of cost from the four values supplied is cost = `{r} tune.out$best.parameters[[1]]` with a misclassification
+rate of `{r} min(tune.out$performances[,2])` on the training data. 
+
+```{r}
+pred <- predict(tune.out$best.model,newdata=ban_test)
+
+ban.svm.cm <- confusionMatrix(pred,ban_test$Quality,positive="Good")
+
+ban.svm.cm$overall
+```
+On the test data, the accuracy of the
+model is only slightly smaller: `{r} round(ban.svm.cm$overall[1]*100,4)` \%.
+
+::::
+:::
