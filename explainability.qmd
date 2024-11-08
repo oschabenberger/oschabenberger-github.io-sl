@@ -4,3 +4,33 @@
 
 ![Model explainability mind map](images/ExplainabilityMindMap.png){#fig-explain-map .lightbox fig.align="center"}
 
+
+To answer the question "What makes a model interpretable?", @sankaran_2024 draw
+parallels between model interpretability and data visualization, asking
+"What makes a visualization effective?" A good visualization 
+
+- streamlines a taxing cognitive operation into a perceptual one
+- uses representations that are  familiar or easily learnable
+- uses graphical elements that are legible and well-annotated
+- prevents oversummarization and highlights details for follow-up
+- pushes readers past passive condsumption, inspiring deeper exploration
+- shows data provenance and lineage
+
+Similarly, an interpretable model can be broken down into
+relevant components, each of which can be assigned meaning. Instead of information density
+(showing more of the data), interpretability relies on faithfulness (showing more of the model).
+The parallels run deeper. As in a good visualization, the data provenance of a trustworthy
+model can be traced back to the original measurement mechanism — beautiful design and
+high-accuracy have little value otherwise. Moreover, like visualization, interpretability must be
+tailored to an audience and the problems they need solved (Lipton, 2018). There are different levels
+of data literacy, and visual representations may be familiar to some audiences but not others.
+Similarly, AI models are employed across a range of problem domains, necessitating validation
+in realistic settings (see Section 3). Finally, effective visualizations push readers beyond passive
+consumption — they inspire deeper exploration of complexity. Likewise, interpretability can
+support the transition from automated to augmented decision-making (Heer, 2019), enhancing
+rather than substituting human reason.
+Model interpretability can be approached
+
+
+Intrinsically interpretable models are also called **glass boxes** to distinguish
+them from **black boxes** that are inherently non-interpretable [@sankaran_2024].

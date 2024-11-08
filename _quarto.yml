@@ -42,12 +42,12 @@ book:
         - classintro.qmd
         - class_reg.qmd
         - class_random.qmd
-#        - discriminant.qmd
-#        - naivebayes.qmd
         - supportvectors.qmd
     
     - part: "Part IV. Decision Trees"
-#        - decisiontrees.qmd
+      chapters:
+        - decisiontrees.qmd
+        - treesinR.qmd
     
     - part: "Part V. Ensemble Methods"
       chapters:

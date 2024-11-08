@@ -5,7 +5,7 @@ $$
 $$
 :::
 
-# Introduction to Classification {#sec-class-intro}
+# Introduction {#sec-class-intro}
 
 The target variable $Y$ in regression is a numerical variable, either continuous or discrete (a count, for example). 
 The regression model expresses the relationship between the expected value of $Y$, and input variables for each of the $i=1,\cdots,n$ samples:

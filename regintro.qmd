@@ -4,7 +4,7 @@ $$
 $$
 :::
 
-# Introduction to Regression {#sec-reg-intro}
+# Introduction {#sec-reg-intro}
 
 ## Adding Structure
 

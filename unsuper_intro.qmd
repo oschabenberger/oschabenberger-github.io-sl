@@ -4,7 +4,7 @@ $$
 $$
 :::
 
-# Introduction to Unsupervised Learning {#sec-unsuper-intro}
+# Introduction {#sec-unsuper-intro}
 
 The methods discussed so far fall into the category of **supervised** learning, where a target variable $Y$ is present and the goal is to predict or classify $Y$ or to test hypothesis about $Y$. The distinction between supervised and **unsupervised** methods of learning from data was introduced in @sec-types-learning.
 

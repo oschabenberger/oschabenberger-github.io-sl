@@ -105,6 +105,14 @@ number={3},
 pages={199--231},
 }
 
+
+@book{Breiman_etal_1984,
+title={Classification and Regression Trees},
+author={Breiman, L. and Friedman, J.H. and Olshen, R.A. and Stone, C.J.},
+year={1984},
+publisher={Wadsworth, Pacific Grove, CA.}
+}
+
 @article{Cleveland1997,
 author = {William S. Cleveland},
 title = {Robust Locally Weighted Regression and Smoothing Scatterplots},
@@ -302,6 +310,13 @@ isbn={9781285051086},
 publisher={Cengage Learning}
 }
 
+@book{LittleRubin,
+title={Statistical Analysis with Missing Data},
+author={Little, R. and Rubin, D.},
+publisher={Wiley, New York.},
+year={1987}
+}
+
 @article{Mallows1973,
 title={Some Comments on $C_p$},
 author={Mallows, C.L.},
@@ -389,6 +404,18 @@ year={1990},
 publisher={Marcel Dekker, New York}
 }
 
+@article{sankaran_2024,
+    author = {Kris Sankaran},
+    title = {Data Science Principles for Interpretable and Explainable AI},
+    journal = {Journal of Data Science},
+    year = {2024},
+    pages = {1--27},
+    doi = {10.6339/24-JDS1150},
+    issn = {1680-743X},
+    url={doi.org/10.6339/24-JDS1150},
+    publisher = {School of Statistics, Renmin University of China}
+}
+
 @book{Schabenberger2001,
 title={Contemporary Statistical Models for the Plant and Soil Sciences},
 author={Schabenberger, O. and Pierce, Francis J.},
@@ -413,6 +440,15 @@ journal={The R Journal},
 year={2016},
 volume={21},
 url={https://journal.r-project.org/archive/2016/RJ-2016-021/RJ-2016-021.pdf}
+}
+
+@article{Sutton_2005,
+title={Classification and Regression Trees, Bagging, and Boosting},
+author={Sutton, Clifton D.},
+journal={Handbook of Statistics},
+year={2005},
+volume={24},
+pages={303--329}
 }
 
 @inproceedings{Vaswani_etal_2017,

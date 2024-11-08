@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistical Learning - 17&nbsp; Trees in R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./ensemble_intro.html" rel="next">
+<link href="./decisiontrees.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./decisiontrees.html">Part IV. Decision Trees</a></li><li class="breadcrumb-item"><a href="./treesinR.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Trees in <code>R</code></span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Part I. Foundation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statmodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./biasvariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Bias Variance Tradeoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linalg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./learningtypes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Types of Statistical Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Part II. Supervised Learning I: Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regglobal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">The Classical Linear Model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regfeature.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feature Selection and Regularization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regnlr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Nonlinear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./regdiscrete.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Discrete Target Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reglocal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Local Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Part III. Supervised Learning II: Classification</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./classintro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_reg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Regression Approach to Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./class_random.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Classification with Random Inputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./supportvectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Support Vectors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Part IV. Decision Trees</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./decisiontrees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Regression and Classification Trees</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./treesinR.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Trees in <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Part V. Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bagging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boosting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bma.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Part VI. Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mbc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Part VII. Supervised Learning III: Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mixed.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Part VIII. Neural Networks and Deep Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text">Part IX. Explainability</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./explainability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#packages" id="toc-packages" class="nav-link active" data-scroll-target="#packages"><span class="header-section-number">17.1</span> Packages</a></li>
+  <li><a href="#regression-trees" id="toc-regression-trees" class="nav-link" data-scroll-target="#regression-trees"><span class="header-section-number">17.2</span> Regression Trees</a>
+  <ul>
+  <li><a href="#basic-construction" id="toc-basic-construction" class="nav-link" data-scroll-target="#basic-construction">Basic Construction</a></li>
+  <li><a href="#tree-summary" id="toc-tree-summary" class="nav-link" data-scroll-target="#tree-summary">Tree Summary</a></li>
+  <li><a href="#rules" id="toc-rules" class="nav-link" data-scroll-target="#rules">Rules</a></li>
+  <li><a href="#cross-validation-and-pruning" id="toc-cross-validation-and-pruning" class="nav-link" data-scroll-target="#cross-validation-and-pruning">Cross-validation and Pruning</a></li>
+  <li><a href="#controlling-the-tree" id="toc-controlling-the-tree" class="nav-link" data-scroll-target="#controlling-the-tree">Controlling the Tree</a>
+  <ul class="collapse">
+  <li><a href="#fitting-stumps" id="toc-fitting-stumps" class="nav-link" data-scroll-target="#fitting-stumps">Fitting stumps</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#classification-trees" id="toc-classification-trees" class="nav-link" data-scroll-target="#classification-trees"><span class="header-section-number">17.3</span> Classification Trees</a>
+  <ul>
+  <li><a href="#binary-classification" id="toc-binary-classification" class="nav-link" data-scroll-target="#binary-classification">Binary Classification</a></li>
+  <li><a href="#nominal-classification" id="toc-nominal-classification" class="nav-link" data-scroll-target="#nominal-classification">Nominal Classification</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./decisiontrees.html">Part IV. Decision Trees</a></li><li class="breadcrumb-item"><a href="./treesinR.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Trees in <code>R</code></span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-trees-R" class="quarto-section-identifier"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Trees in <code>R</code></span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="packages" class="level2" data-number="17.1">
+<h2 data-number="17.1" class="anchored" data-anchor-id="packages"><span class="header-section-number">17.1</span> Packages</h2>
+<p>There are several packages in <code>R</code> to compute decision trees.</p>
+<p>The <code>tree</code> package is based on the original implementation in the <code>S</code> language (the precursor to <code>R</code>). The <code>tree::tree()</code> function fits classification and regression trees and provides modest control over the tree building process. Cost-complexity pruning the tree is performed with <code>tree::prune.tree</code>, using deviance as cost criterion for regression trees and either deviance or misclassification rate for classification trees. (Note that the deviance for regression trees is just squared error complexity). Pruning can be combined with cross-validation using <code>tree::cv.tree</code>. The <code>tree</code> package does not support surrogate splits to handle missing values.</p>
+<p>The <a href="https://cran.r-project.org/web/packages/party/vignettes/party.pdf"><code>party</code> package</a> uses recursive partitioning as the building block for varied statistical models, including trees (<code>party::ctree</code> is the main function in the package). It also supports random forests through <code>party::cforest</code> and surrogate splits for missing values.</p>
+<p>A comprehensive and widely used package is <code>rpart</code>, which fits regression and classification trees following the CART philosophy of <span class="citation" data-cites="Breiman_etal_1984">Breiman et al. (<a href="references.html#ref-Breiman_etal_1984" role="doc-biblioref">1984</a>)</span>. <code>rpart</code> is <em>the</em> CART package in <code>R</code>. Because CART was the trademarked name of a commercial software implementation of Breiman’s ideas by Salford Systems and <code>tree</code> had already been taken, the authors settled on <code>rpart</code> as the package name. <a href="https://cran.r-project.org/web/packages/rpart/vignettes/longintro.pdf">This</a> vignette gives an introduction to the capabilities of the <code>rpart</code> package.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Ironically, <code>rpart</code> is probably used more frequently today than the CART software by Salford Systems (acquired by Minitab in 2017).</p>
+<p><a href="file:///Users/olivers/Downloads/IntroCART.pdf">Minitab/Salford System claims</a> that theirs is the only <em>true</em> implementation of CART, that they have worked with the inventors (Breiman and colleagues), that only they have access to the original source code, and that the famous papers described only 20% of the code.</p>
+</div>
+</div>
+</div>
+<p><code>rpart</code> provides detailed control over the tree building process and supports surrogate splits for missing values. An interesting aspect of <code>rpart</code> is to evaluate subtrees for different values of the cost complexity parameter during the training phase and to apply cross-validation. You can thus select the desired value of the complexity parameter immediately after training and pass the value on to the <code>rpart::prune</code> function to get the optimal tree.</p>
+<p>Getting to know <code>rpart</code> is also useful because it is used by other <code>R</code> packages that depend on trees. For example, the <code>ada</code> package for adaptive boosting models uses <code>rpart</code> to compute boosted trees. To affect the construction of the trees during boosting you need to know how to control tree construction in <code>rpart</code>.</p>
+<p>Most tree packages have their own functions to plot trees and annotate them with labels for splits and nodes. <code>rpart</code> provides <code>plot.rpart</code> and <code>text.rpart</code>, <code>tree</code> provides <code>plot.tree</code> and <code>text.tree</code>. The <code>rpart.plot</code> package extends the functions provided by the <code>rpart</code> package. We use the <code>rpart</code> and <code>rpart.plot</code> packages in what follows.</p>
+</section>
+<section id="regression-trees" class="level2" data-number="17.2">
+<h2 data-number="17.2" class="anchored" data-anchor-id="regression-trees"><span class="header-section-number">17.2</span> Regression Trees</h2>
+<section id="basic-construction" class="level3">
+<h3 class="anchored" data-anchor-id="basic-construction">Basic Construction</h3>
+<p>For this application we use the <code>Hitters</code> data on performance and salaries of baseball players in the 1986/1987 seasons, the data are provided in the ISLR2 library. Because the salaries are highly skewed a log transformation is applied prior to constructing the tree (<a href="#fig-hitters-salary" class="quarto-xref">Figure&nbsp;<span>17.1</span></a>). We will examine later the effect of the log-transformation on the tree.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Hitters)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">na.omit</span>(Hitters<span class="sc">$</span>Salary)), <span class="at">main=</span><span class="st">"Salary"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">na.omit</span>(<span class="fu">log</span>(Hitters<span class="sc">$</span>Salary))), <span class="at">main=</span><span class="st">"log(Salary)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-hitters-salary" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hitters-salary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="treesinR_files/figure-html/fig-hitters-salary-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hitters-salary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.1: Salaries and log(Salaries) for the Hitters data.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The following statements load the <code>rpart</code> library and request a decision tree according to the model formula. Note that not all variables specified in the model are necessarily used in constructing the tree. <code>method="anova"</code> requests a regression tree, the complexity criterion is the residual sum of squares. Since the target variable is continuous, <code>rpart</code> defaults to a regression tree in this case and the <code>method=</code> specification is not necessary. However, because <code>rpart</code> has several tree-building methods to choose from, it is not a bad idea to state explicitly what is intended.</p>
+<p>Note that a random number seed is set prior to the call to <code>rpart</code> since the function performs 10-fold cross-validation by default. While the tree returned by <code>rpart</code> is not affected by the seed, the evaluations of the complexity (penalty) parameter during cross-validation depend on the random number stream.</p>
+</section>
+<section id="tree-summary" class="level3">
+<h3 class="anchored" data-anchor-id="tree-summary">Tree Summary</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">87654</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> <span class="fu">rpart</span>(<span class="fu">log</span>(Salary) <span class="sc">~</span> Years <span class="sc">+</span> Hits <span class="sc">+</span> RBI <span class="sc">+</span> Walks <span class="sc">+</span> Runs <span class="sc">+</span> HmRun <span class="sc">+</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                PutOuts <span class="sc">+</span> AtBat <span class="sc">+</span> Errors, </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>Hitters,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">method=</span><span class="st">"anova"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(t1, <span class="at">cp=</span><span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+rpart(formula = log(Salary) ~ Years + Hits + RBI + Walks + Runs + 
+    HmRun + PutOuts + AtBat + Errors, data = Hitters, method = "anova")
+  n=263 (59 observations deleted due to missingness)
+
+          CP nsplit rel error    xerror       xstd
+1 0.44457445      0 1.0000000 1.0024572 0.06529349
+2 0.11454550      1 0.5554255 0.5936326 0.06177974
+3 0.04446021      2 0.4408800 0.5190135 0.06426742
+4 0.01831268      3 0.3964198 0.4639453 0.06373984
+5 0.01806689      4 0.3781072 0.4734726 0.06728376
+6 0.01678632      6 0.3419734 0.4776621 0.06718932
+7 0.01617738      7 0.3251871 0.4679886 0.06739159
+8 0.01000000      8 0.3090097 0.4570960 0.06731152
+
+Variable importance
+  Years    Hits    Runs   AtBat     RBI   Walks   HmRun PutOuts 
+     38      13      12      10      10      10       5       4 
+
+Node number 1: 263 observations,    complexity param=0.4445745
+  mean=5.927222, MSE=0.7876568 
+  left son=2 (90 obs) right son=3 (173 obs)
+  Primary splits:
+      Years &lt; 4.5   to the left,  improve=0.4445745, (0 missing)
+      Hits  &lt; 117.5 to the left,  improve=0.2229369, (0 missing)
+      RBI   &lt; 43.5  to the left,  improve=0.2161883, (0 missing)
+      AtBat &lt; 472.5 to the left,  improve=0.1865249, (0 missing)
+      Walks &lt; 34.5  to the left,  improve=0.1678353, (0 missing)
+  Surrogate splits:
+      HmRun &lt; 1.5   to the left,  agree=0.696, adj=0.111, (0 split)
+      RBI   &lt; 24.5  to the left,  agree=0.688, adj=0.089, (0 split)
+      Walks &lt; 11.5  to the left,  agree=0.681, adj=0.067, (0 split)
+      Runs  &lt; 13.5  to the left,  agree=0.673, adj=0.044, (0 split)
+      Hits  &lt; 29.5  to the left,  agree=0.669, adj=0.033, (0 split)
+
+Node number 2: 90 observations
+  mean=5.10679, MSE=0.4705907 
+
+Node number 3: 173 observations
+  mean=6.354036, MSE=0.4202619 </code></pre>
+</div>
+</div>
+<p>The <code>summary</code> function produces a lengthy listing of the tree. The <code>cp=</code> option is used here to specify a cutoff value for displaying nodes that fall below the value of the complexity parameter, simply to limit the amount of output. The <code>cp=</code> option on the <code>summary</code> call prunes the output, it does not prune the tree.</p>
+<p>The first table lists the result of 10-fold cross-validation of the cost-complexity parameter, more on this below. The variable importance listing ranks variables by a combination measure that accounts for the quality of split where the variable was the primary split variable, and an adjustment for splits where the variable was a surrogate. The sum of the variable importance measures is 100, but due to rounding it might sum to a slightly different value. A variable that has a relative high variable importance might not get used in the final tree, due to pruning.</p>
+<p>The first node at the trunk of the tree contains 263 observation. The best split variable at this level is <code>Years</code> with split value of 4.5. Using this variable and split point leads to the largest improvement in the complexity criterion. <code>rpart</code> also constructs a list of the surrogate variables should the primary split variable be missing. For this node a missing value in <code>Years</code> would be split on <code>HmRun</code>. The numbers in parentheses tell you how many observations actually had missing values and which split variables were used as surrogates. For these data, only the target variable contains missing values.</p>
+<p><code>rpart</code> removes observations with missing values from the analysis if the target is missing or if all inputs are missing. The missing values in this data set occur only in the target variable, which means that surrogates were not used in training the model.</p>
+<p>A more concise listing of the tree is obtained with the <code>print</code> method.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>n=263 (59 observations deleted due to missingness)
+
+node), split, n, deviance, yval
+      * denotes terminal node
+
+ 1) root 263 207.153700 5.927222  
+   2) Years&lt; 4.5 90  42.353170 5.106790  
+     4) Years&lt; 3.5 62  23.008670 4.891812  
+       8) Hits&lt; 114 43  17.145680 4.727386 *
+       9) Hits&gt;=114 19   2.069451 5.263932 *
+     5) Years&gt;=3.5 28  10.134390 5.582812  
+      10) Runs&lt; 74.5 21   4.229230 5.379350 *
+      11) Runs&gt;=74.5 7   2.427815 6.193200 *
+   3) Years&gt;=4.5 173  72.705310 6.354036  
+     6) Hits&lt; 117.5 90  28.093710 5.998380  
+      12) Walks&lt; 21.5 26   5.001884 5.687706 *
+      13) Walks&gt;=21.5 64  19.562870 6.124591  
+        26) Years&lt; 6.5 18   6.411418 5.727128 *
+        27) Years&gt;=6.5 46   9.195161 6.280120 *
+     7) Hits&gt;=117.5 83  20.883070 6.739687  
+      14) Walks&lt; 60.5 50  10.225000 6.576444 *
+      15) Walks&gt;=60.5 33   7.306869 6.987024 *</code></pre>
+</div>
+</div>
+<p>There are a total of 15 nodes in the tree and 9 terminal nodes (leaves) as indicated by asterisks. For each node, the listing shows the split variable and split point, the number of observations, the residual sum of squares, and the representative value for the node. For example, at the root node (trunk) of the tree there are 263 observations, the sum of squares <span class="math inline">\(\sum (y-\overline{y})^2 = 207.153\)</span> and the average log salary is 5.9272. Ninety observations are split off to the left at the first split on <code>Years</code> with split value of 4.5. The sum of squares of those ninety observations is 42.353 and their average is 5.1067.</p>
+<hr>
+<p>The easiest way to consume the results of constructing a tree is by visualizing the tree. The <code>rpart.plot</code> function in the <code>rpart.plot</code> package creates good-looking trees and has many options to affect the rendering. <a href="#fig-tree-hitter1" class="quarto-xref">Figure&nbsp;<span>17.2</span></a> displays the regression tree for the Hitters data built so far.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(t1,<span class="at">roundint=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-tree-hitter1" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tree-hitter1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="treesinR_files/figure-html/fig-tree-hitter1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="treesinR_files/figure-html/fig-tree-hitter1-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tree-hitter1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.2: Default regression tree for log(salary) constructed by <code>rpart</code> for Hitters data.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The boxes annotating the nodes display the representative (predicted) value for the node and the percent of observations that fall into the node. The intensity of the node color is proportional to the value predicted at the node.</p>
+<p>If we were to choose a “stump”—that is, a tree with a single split, we would predict a log salary of 6.4 for players who have been in the league for more than 4.5 years and a salary for 5.1 for the players with less tenure. For a player with 7 years experience, 100 hits and 30 walks in 1986 we would predict a log salary of 6.3.</p>
+<p>Note that not all variables in the model are used in constructing the tree. Variables that do not improve a tree at any split in a meaningful way do not show up. For example, the number of RBIs or errors in 1986 are not used as primary split variables. This does not mean that these variables are unrelated to the target, they can enter the model indirectly through correlation with other variables. They might also be used as surrogate split variables, which the figure does not convey.</p>
+<p>Also note that variables can be <em>reused</em>. A variable that serves as the primary split variable can later be used again as a split variable. For example, <code>Years</code> is the first split variable and is used again on both sides of the tree. The number of <code>Walks</code> in 1986 separates observations differently for longer-tenured players that have less than 118 <code>Hits</code> and those who have more.</p>
+<hr>
+<p>What would the tree look like if we had not transformed the target variable by taking logarithms?</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> <span class="fu">rpart</span>(Salary <span class="sc">~</span> Years <span class="sc">+</span> Hits <span class="sc">+</span> RBI <span class="sc">+</span> Walks <span class="sc">+</span> Runs <span class="sc">+</span> HmRun <span class="sc">+</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                PutOuts <span class="sc">+</span> AtBat <span class="sc">+</span> Errors, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>Hitters,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">method=</span><span class="st">"anova"</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(t2,<span class="at">roundint=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-tree-hitter2" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tree-hitter2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="treesinR_files/figure-html/fig-tree-hitter2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="treesinR_files/figure-html/fig-tree-hitter2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tree-hitter2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.3: Default regression tree for salary constructed by <code>rpart</code> for Hitters data.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Clearly, <a href="#fig-tree-hitter2" class="quarto-xref">Figure&nbsp;<span>17.3</span></a> is not the same tree as shown in <a href="#fig-tree-hitter1" class="quarto-xref">Figure&nbsp;<span>17.2</span></a>. Although the log transformation is monotonic for the positive salary values, it affects the distribution of the target variable and its relationship to the inputs.</p>
+<p>However, if we apply a monotone transformation to inputs, the constructed tree does not change. The following code fits the initial tree but uses log(years) instead of years. Only the values for the split variable change, but not the tree (<a href="#fig-tree-hitter3" class="quarto-xref">Figure&nbsp;<span>17.4</span></a>). Compare this to <a href="#fig-tree-hitter1" class="quarto-xref">Figure&nbsp;<span>17.2</span></a>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>t3 <span class="ot">&lt;-</span> <span class="fu">rpart</span>(<span class="fu">log</span>(Salary) <span class="sc">~</span> <span class="fu">log</span>(Years) <span class="sc">+</span> Hits <span class="sc">+</span> RBI <span class="sc">+</span> Walks <span class="sc">+</span> Runs <span class="sc">+</span> HmRun <span class="sc">+</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                PutOuts <span class="sc">+</span> AtBat <span class="sc">+</span> Errors, </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>Hitters,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">method=</span><span class="st">"anova"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(t3,<span class="at">roundint=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-tree-hitter3" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tree-hitter3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="treesinR_files/figure-html/fig-tree-hitter3-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="treesinR_files/figure-html/fig-tree-hitter3-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tree-hitter3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.4: Default regression tree for log(salary) with log-transformed year as input.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Changing in the model from years to log(years) does not impact the splits or split values for any of the other inputs. This is fundamentally different from a linear regression model where transforming one input variable affects the coefficients of other inputs unless they are completely uncorrelated. Compare the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lm</span>(<span class="fu">log</span>(Salary) <span class="sc">~</span> Years <span class="sc">+</span> Hits <span class="sc">+</span> RBI <span class="sc">+</span> Walks <span class="sc">+</span> Runs <span class="sc">+</span> HmRun <span class="sc">+</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                PutOuts <span class="sc">+</span> AtBat <span class="sc">+</span> Errors,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>Hitters)<span class="sc">$</span>coefficients,<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)       Years        Hits         RBI       Walks        Runs 
+     4.3797      0.0933      0.0128      0.0004      0.0066      0.0014 
+      HmRun     PutOuts       AtBat      Errors 
+     0.0033      0.0003     -0.0025     -0.0029 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lm</span>(<span class="fu">log</span>(Salary) <span class="sc">~</span> <span class="fu">log</span>(Years) <span class="sc">+</span> Hits <span class="sc">+</span> RBI <span class="sc">+</span> Walks <span class="sc">+</span> Runs <span class="sc">+</span> HmRun <span class="sc">+</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                PutOuts <span class="sc">+</span> AtBat <span class="sc">+</span> Errors,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>Hitters)<span class="sc">$</span>coefficients,<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)  log(Years)        Hits         RBI       Walks        Runs 
+     3.9394      0.6952      0.0108     -0.0002      0.0059      0.0024 
+      HmRun     PutOuts       AtBat      Errors 
+     0.0057      0.0004     -0.0023      0.0000 </code></pre>
+</div>
+</div>
+</section>
+<section id="rules" class="level3">
+<h3 class="anchored" data-anchor-id="rules">Rules</h3>
+<p>A very helpful extension of <code>rpart</code> in <code>rpart.plot</code> is the <code>rpart.rules</code> function. It expresses the decisions captured in an <code>rpart</code> model as a set of text rules. The variables are listed in the order of frequency in the rules. A variable that appears in more rules is listed first. Adding the <code>cover=TRUE</code> option also displays the percentage of cases covered by each rule. For the initial tree constructed above, this yields:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.rules</span>(t1, <span class="at">roundint=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> log(Salary)                                                                  
+         4.7 when Years &lt;  3.5        &amp; Hits &lt;  114                           
+         5.3 when Years &lt;  3.5        &amp; Hits &gt;= 114                           
+         5.4 when Years is 3.5 to 4.5                             &amp; Runs &lt;  75
+         5.7 when Years &gt;=        4.5 &amp; Hits &lt;  118 &amp; Walks &lt;  22             
+         5.7 when Years is 4.5 to 6.5 &amp; Hits &lt;  118 &amp; Walks &gt;= 22             
+         6.2 when Years is 3.5 to 4.5                             &amp; Runs &gt;= 75
+         6.3 when Years &gt;=        6.5 &amp; Hits &lt;  118 &amp; Walks &gt;= 22             
+         6.6 when Years &gt;=        4.5 &amp; Hits &gt;= 118 &amp; Walks &lt;  61             
+         7.0 when Years &gt;=        4.5 &amp; Hits &gt;= 118 &amp; Walks &gt;= 61             </code></pre>
+</div>
+</div>
+<p>The information displayed in the rules can be affected through options, for example,</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.rules</span>(t1, <span class="at">cover=</span><span class="cn">TRUE</span>, <span class="at">style=</span><span class="st">"tallw"</span>, <span class="at">roundint=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>log(Salary) is 4.7 with cover 16% when
+                   Years &lt; 3.5
+                   Hits &lt; 114
+
+log(Salary) is 5.3 with cover 7% when
+                   Years &lt; 3.5
+                   Hits &gt;= 114
+
+log(Salary) is 5.4 with cover 8% when
+                   Years is 3.5 to 4.5
+                   Runs &lt; 75
+
+log(Salary) is 5.7 with cover 10% when
+                   Years &gt;= 4.5
+                   Hits &lt; 118
+                   Walks &lt; 22
+
+log(Salary) is 5.7 with cover 7% when
+                   Years is 4.5 to 6.5
+                   Hits &lt; 118
+                   Walks &gt;= 22
+
+log(Salary) is 6.2 with cover 3% when
+                   Years is 3.5 to 4.5
+                   Runs &gt;= 75
+
+log(Salary) is 6.3 with cover 17% when
+                   Years &gt;= 6.5
+                   Hits &lt; 118
+                   Walks &gt;= 22
+
+log(Salary) is 6.6 with cover 19% when
+                   Years &gt;= 4.5
+                   Hits &gt;= 118
+                   Walks &lt; 61
+
+log(Salary) is 7.0 with cover 13% when
+                   Years &gt;= 4.5
+                   Hits &gt;= 118
+                   Walks &gt;= 61</code></pre>
+</div>
+</div>
+</section>
+<section id="cross-validation-and-pruning" class="level3">
+<h3 class="anchored" data-anchor-id="cross-validation-and-pruning">Cross-validation and Pruning</h3>
+<p>As mentioned earlier, <code>rpart</code> performs cross-validation for cost complexity values as part of the tree construction. This is the origin of the CP table that appears at the top of the <code>summary.rpart</code> output. You can print this information by itself with the <code>printcp</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>cp <span class="ot">&lt;-</span> <span class="fu">printcp</span>(t1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Regression tree:
+rpart(formula = log(Salary) ~ Years + Hits + RBI + Walks + Runs + 
+    HmRun + PutOuts + AtBat + Errors, data = Hitters, method = "anova")
+
+Variables actually used in tree construction:
+[1] Hits  Runs  Walks Years
+
+Root node error: 207.15/263 = 0.78766
+
+n=263 (59 observations deleted due to missingness)
+
+        CP nsplit rel error  xerror     xstd
+1 0.444574      0   1.00000 1.00246 0.065293
+2 0.114545      1   0.55543 0.59363 0.061780
+3 0.044460      2   0.44088 0.51901 0.064267
+4 0.018313      3   0.39642 0.46395 0.063740
+5 0.018067      4   0.37811 0.47347 0.067284
+6 0.016786      6   0.34197 0.47766 0.067189
+7 0.016177      7   0.32519 0.46799 0.067392
+8 0.010000      8   0.30901 0.45710 0.067312</code></pre>
+</div>
+</div>
+<p>The complexity table lists trees in order of the complexity criterion, smaller trees are on top (larger <code>CP</code> value), larger trees at the bottom. The number of (internal) nodes in the tree is <code>nsplit</code> plus one. The error columns are reported relative to the error at the first node. <code>xerror</code> is the error from cross-validation and <code>xstd</code> is the standard error. Scanning the <code>xerror</code> column we see that the error is minimized at 3 splits (4 nodes). The standard error is useful to determine the best number of split points by taking in the uncertainty in the error estimate and the fact that there is often a neighborhood of similar values. The 1-SE rule says to consider all values within one standard error of the achieved minimum. Those are essentially equivalent and we choose the simplest model. In <a href="#fig-tree-cp" class="quarto-xref">Figure&nbsp;<span>17.5</span></a> this is a tree of size 4 (3 splits). The horizontal line is drawn 1 standard error above the smallest cross-validated error.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotcp</span>(t1, <span class="at">upper=</span><span class="st">"size"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-tree-cp" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tree-cp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="treesinR_files/figure-html/fig-tree-cp-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4"><img src="treesinR_files/figure-html/fig-tree-cp-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tree-cp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.5: Complexity parameter plot for Hitters data. The size of the tree refers to the number of nodes (number of splits + 1).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>To produce the final tree, apply the <code>prune</code> function with the selected value of the complexity parameter (<a href="#fig-tree-final" class="quarto-xref">Figure&nbsp;<span>17.6</span></a>).</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>t_final <span class="ot">&lt;-</span> <span class="fu">prune</span>(t1,<span class="at">cp=</span>cp[cp[,<span class="dv">2</span>]<span class="sc">==</span><span class="dv">3</span>,<span class="dv">1</span>])</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(t_final,<span class="at">roundint=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-tree-final" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tree-final-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="treesinR_files/figure-html/fig-tree-final-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" data-glightbox="description: .lightbox-desc-5"><img src="treesinR_files/figure-html/fig-tree-final-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tree-final-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.6: Final tree for Hitters data after pruning and cross-validation.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="controlling-the-tree" class="level3">
+<h3 class="anchored" data-anchor-id="controlling-the-tree">Controlling the Tree</h3>
+<p>Many parameters and setting affect the construction of the tree. The split criterion, cost function, minimum number of observations before attempting a split or in terminal nodes, the use of surrogate variables, the maximum depth, cross-validation settings, and so on.</p>
+<p>Changing tree control parameters affects primarily the depth of the tree and the computational requirements. For example, <code>rpart</code> computes by default up to 5 surrogate split variables. Unless you have missing values in input variables, surrogate splits will not be used. If you are sure that you also do not have missing values in non-training data, then you can skip the determination of the surrogates. Approximately half of the computing time during tree construction is used to find surrogate splits.</p>
+<p>In <code>rpart</code>, parameters that determine the tree construction are passed as a <code>rpart.control</code> structure to the <code>control=</code> parameter. The most important parameters that determine the <strong>depth</strong> of the tree are</p>
+<ul>
+<li><p><code>minsplit</code>: The minimum number of observations in a node for which a split is even attempted, default 20. Setting this to a small number will save computation time since nodes that have fewer than <code>minsplit</code> observations will not be split and are likely chopped off during pruning.<br>
+<br>
+(Note: I have seen advice to use <code>minsplit=0</code> to fit “stumps”, trees with a single split. That does not seem to work. I could not debug what was happening as the pertinent code is in C and not accessible with <code>R</code> debugging tools.)</p></li>
+<li><p><code>minbucket</code>: The minimum number of observations in terminal nodes (leaves). The default is <code>minsplit/3</code>.</p></li>
+<li><p><code>cp</code>: Threshold for the complexity parameter. Recall from <a href="decisiontrees.html#sec-trees-pruning" class="quarto-xref"><span>Section 16.3.2</span></a> that the complexity of the tree is measured during pruning as <span class="math display">\[
+C_\alpha(T) = Q(T) + \alpha|T|
+\]</span> where <span class="math inline">\(Q(T)\)</span> is the cost criterion by which tree <span class="math inline">\(T\)</span> is evaluated, <span class="math inline">\(|T|\)</span> is the number of terminal nodes in <span class="math inline">\(T\)</span>, and <span class="math inline">\(\alpha\)</span> is the penalty parameter. The <code>rpart</code> version of this is <span class="math display">\[
+C_\alpha(T) = Q(T) + cp|T|\, Q(T_1)
+\]</span> where <span class="math inline">\(Q(T_1)\)</span> is a tree with no splits. A split that does not improve the fit by at least the <code>cp=</code> threshold value will not be attempted. Setting <code>cp=1</code> results in a tree with no splits. The default is <code>cp=0.01</code>. During cost-complexity pruning <code>rpart</code> evaluates trees for values that are larger than the threshold parameter. Setting <code>cp=0</code> asks <code>rpart</code> to evaluate very deep trees, subject to the other parameters such as <code>minsplit</code>, <code>minbucket</code>, and <code>maxdepth</code>.</p></li>
+<li><p><code>maxdepth</code>: the maximum depth of the final tree, with the root node counting as depth zero. For example, <code>maxdepth=1</code> results in a single split, also known as a “stump”. (Technically, a stump would have no splits.)</p></li>
+</ul>
+<p>Important parameters that control the memory and computational requirements beyond computing trees at various depths are</p>
+<ul>
+<li><p><code>maxsurrogate</code>: the number of surrogate splits, default is 5. Set it to 0 to prevent the search for surrogate split variables.</p></li>
+<li><p><code>xval</code>: the number of cross-validations, default is 10.</p></li>
+<li><p><code>cp</code>: The complexity parameter threshold also affects the computing requirements as splits that do not improve the overall fit by at least that value will not be attempted.</p></li>
+</ul>
+<section id="fitting-stumps" class="level4">
+<h4 class="anchored" data-anchor-id="fitting-stumps">Fitting stumps</h4>
+<p>A special application of controlling the construction of decision trees are trees with a single split, also called “stumps”. In most scenarios such trees will underfit the data. However, in <strong>adaptive boosting</strong>, we fit a large number of trees where subsequent trees are weighing observations according to the level of misclassification, those trees focus on observations poorly classified so far. The individual trees are not deep trees, relying only on the most important variables. The use of stumps is common in adaptive boosting.</p>
+<p>The following code fits a stump to the <code>Hitters</code> data. <code>minsplit=2</code> specifies that a split will not be attempted unless at least two observations are present. This guarantees that at least one split occurs (setting <code>minsplit=0</code> as recommended in some places does not seem to work in guaranteeing a single split). Setting the threshold for the complexity parameter to -1 essentially turns off checking whether the split improves the overall fit. <code>maxdepth=1</code> sets the maximum depth of the tree to two nodes; zero depth refers to the root node. Finally, <code>xval=0</code> turns off the cross-validation.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>stump <span class="ot">&lt;-</span> <span class="fu">rpart</span>(<span class="fu">log</span>(Salary) <span class="sc">~</span> Years <span class="sc">+</span> Hits <span class="sc">+</span> RBI <span class="sc">+</span> Walks <span class="sc">+</span> Runs <span class="sc">+</span> HmRun <span class="sc">+</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                PutOuts <span class="sc">+</span> AtBat <span class="sc">+</span> Errors, </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>Hitters,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">control=</span><span class="fu">rpart.control</span>(<span class="at">maxdepth =</span> <span class="dv">1</span>,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">cp       =</span><span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">minsplit =</span> <span class="dv">2</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">xval     =</span> <span class="dv">0</span>),</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">method=</span><span class="st">"anova"</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>stump</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>n=263 (59 observations deleted due to missingness)
+
+node), split, n, deviance, yval
+      * denotes terminal node
+
+1) root 263 207.15370 5.927222  
+  2) Years&lt; 4.5 90  42.35317 5.106790 *
+  3) Years&gt;=4.5 173  72.70531 6.354036 *</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(stump,<span class="at">roundint=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-tree-stump" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tree-stump-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="treesinR_files/figure-html/fig-tree-stump-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" data-glightbox="description: .lightbox-desc-6"><img src="treesinR_files/figure-html/fig-tree-stump-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tree-stump-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.7: A stump fit to the Hitters data.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The result of the stump fit are as expected based on the previous analysis. The number of years in the league is the most important variable and the basis of the first split (<a href="#fig-tree-stump" class="quarto-xref">Figure&nbsp;<span>17.7</span></a>).</p>
+</section>
+</section>
+</section>
+<section id="classification-trees" class="level2" data-number="17.3">
+<h2 data-number="17.3" class="anchored" data-anchor-id="classification-trees"><span class="header-section-number">17.3</span> Classification Trees</h2>
+<p>Fitting a classification tree in <code>rpart</code> is simple, when the target variable is a factor the software defaults to building a classification tree. Choosing <code>method=class</code> makes that explicit.</p>
+<section id="binary-classification" class="level3">
+<h3 class="anchored" data-anchor-id="binary-classification">Binary Classification</h3>
+<p>For this example we use the <code>stagec</code> data frame that ships with the <code>rpart</code> package. It contains data on 146 patients with stage C prostate cancer from a study on the prognostic value of flow cytometry.</p>
+<p>Input variables include</p>
+<ul>
+<li><code>age</code>: age of patient in years</li>
+<li><code>eet</code>: a binary variable indicating early endocrine therapy (1=no, 2=yes)</li>
+<li><code>g2</code>: percent of cells in G2 phase as determined by flow cytometry</li>
+<li><code>grade</code>: the grade of the tumor according to the Farrow system</li>
+<li><code>gleason</code>: the Gleason score of the tumor, higher values indicate a more aggressive cancer</li>
+<li><code>ploidy</code>: a three-level factor that indicates the tumor status according to flow cytometry as diplioid, tetraploid, or aneuploid.</li>
+</ul>
+<p>The outcome (target) variable for this classification is <code>pgstat</code>, a binary variable that indicates progression of the cancer (<code>pgstat=1</code>). The variable is recoded as a factor for a nicer display on the tree. Similarly, the <code>eet</code> variable is recoded as a factor.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(stagec)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(stagec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  pgtime pgstat age eet    g2 grade gleason     ploidy
+1    6.1      0  64   2 10.26     2       4    diploid
+2    9.4      0  62   1    NA     3       8  aneuploid
+3    5.2      1  59   2  9.99     3       7    diploid
+4    3.2      1  62   2  3.57     2       4    diploid
+5    1.9      1  64   2 22.56     4       8 tetraploid
+6    4.8      0  69   1  6.14     3       7    diploid</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>progstat <span class="ot">&lt;-</span> <span class="fu">factor</span>(stagec<span class="sc">$</span>pgstat, <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Prog"</span>))</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>eetfac <span class="ot">&lt;-</span> <span class="fu">factor</span>(stagec<span class="sc">$</span>eet, <span class="at">levels=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"No, Yes"</span>))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">543</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>cfit <span class="ot">&lt;-</span> <span class="fu">rpart</span>(progstat <span class="sc">~</span> age <span class="sc">+</span> eetfac <span class="sc">+</span> g2 <span class="sc">+</span> grade <span class="sc">+</span> gleason <span class="sc">+</span> ploidy,</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> stagec, </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">method =</span> <span class="st">'class'</span>)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cfit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>n= 146 
+
+node), split, n, loss, yval, (yprob)
+      * denotes terminal node
+
+ 1) root 146 54 No (0.6301370 0.3698630)  
+   2) grade&lt; 2.5 61  9 No (0.8524590 0.1475410) *
+   3) grade&gt;=2.5 85 40 Prog (0.4705882 0.5294118)  
+     6) g2&lt; 13.2 40 17 No (0.5750000 0.4250000)  
+      12) ploidy=diploid,tetraploid 31 11 No (0.6451613 0.3548387)  
+        24) g2&gt;=11.845 7  1 No (0.8571429 0.1428571) *
+        25) g2&lt; 11.845 24 10 No (0.5833333 0.4166667)  
+          50) g2&lt; 11.005 17  5 No (0.7058824 0.2941176) *
+          51) g2&gt;=11.005 7  2 Prog (0.2857143 0.7142857) *
+      13) ploidy=aneuploid 9  3 Prog (0.3333333 0.6666667) *
+     7) g2&gt;=13.2 45 17 Prog (0.3777778 0.6222222)  
+      14) g2&gt;=17.91 22  8 No (0.6363636 0.3636364)  
+        28) age&gt;=62.5 15  4 No (0.7333333 0.2666667) *
+        29) age&lt; 62.5 7  3 Prog (0.4285714 0.5714286) *
+      15) g2&lt; 17.91 23  3 Prog (0.1304348 0.8695652) *</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(cfit, <span class="at">roundint=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-tree-stagec-full" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tree-stagec-full-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="treesinR_files/figure-html/fig-tree-stagec-full-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" data-glightbox="description: .lightbox-desc-7"><img src="treesinR_files/figure-html/fig-tree-stagec-full-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tree-stagec-full-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.8: Classification tree for stagec data prior to pruning.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-tree-stagec-full" class="quarto-xref">Figure&nbsp;<span>17.8</span></a> shows the full tree fit to the data prior to pruning. The initial split is on the <code>grade</code> variable. Note that on the right hand side of the tree, at depth 2, the qualitative input variable <code>ploidy</code> is split into two groups: the left branch contains levels diploid and tetraploid, the right branch aneuploid. This confirms DNA ploidy as a major predictor variable in this study. From the <code>rpart</code> longintro vignette:</p>
+<blockquote class="blockquote">
+<p><em>For diploid and tetraploid tumors, the flow cytometry method was also able to estimate the percent of tumor cells in a G2 (growth) stage of their cell cycle; G2% is systematically missing for most aneuploid tumors.</em></p>
+</blockquote>
+<p>The boxes annotating the nodes contain three pieces of information:</p>
+<ul>
+<li><p>The representative value (majority vote) in the node; this is the predicted category for the node. For example, there are 92 patients who did not progress and 54 patients who progressed. The majority vote in the root node would be no progression.</p></li>
+<li><p>The proportion of events in the node. For example, in the first node that proportion is 54/146 = 0.37. There are 61 observations where <code>grade &lt; 2.5</code>, 9 of these progressed. That leads to the terminal node on the far left of the tree: its majority vote is no progression, 9/61 = 0.15 and 42% of the observations fall into this node.</p></li>
+<li><p>The percentage of observations covered by the node.</p></li>
+</ul>
+<p>This numeric breakdown can be seen easily from the printed tree:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>cfit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>n= 146 
+
+node), split, n, loss, yval, (yprob)
+      * denotes terminal node
+
+ 1) root 146 54 No (0.6301370 0.3698630)  
+   2) grade&lt; 2.5 61  9 No (0.8524590 0.1475410) *
+   3) grade&gt;=2.5 85 40 Prog (0.4705882 0.5294118)  
+     6) g2&lt; 13.2 40 17 No (0.5750000 0.4250000)  
+      12) ploidy=diploid,tetraploid 31 11 No (0.6451613 0.3548387)  
+        24) g2&gt;=11.845 7  1 No (0.8571429 0.1428571) *
+        25) g2&lt; 11.845 24 10 No (0.5833333 0.4166667)  
+          50) g2&lt; 11.005 17  5 No (0.7058824 0.2941176) *
+          51) g2&gt;=11.005 7  2 Prog (0.2857143 0.7142857) *
+      13) ploidy=aneuploid 9  3 Prog (0.3333333 0.6666667) *
+     7) g2&gt;=13.2 45 17 Prog (0.3777778 0.6222222)  
+      14) g2&gt;=17.91 22  8 No (0.6363636 0.3636364)  
+        28) age&gt;=62.5 15  4 No (0.7333333 0.2666667) *
+        29) age&lt; 62.5 7  3 Prog (0.4285714 0.5714286) *
+      15) g2&lt; 17.91 23  3 Prog (0.1304348 0.8695652) *</code></pre>
+</div>
+</div>
+<p>To prune the tree we print the CP table and plot the results including the 1-SE reference line.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">printcp</span>(cfit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Classification tree:
+rpart(formula = progstat ~ age + eetfac + g2 + grade + gleason + 
+    ploidy, data = stagec, method = "class")
+
+Variables actually used in tree construction:
+[1] age    g2     grade  ploidy
+
+Root node error: 54/146 = 0.36986
+
+n= 146 
+
+        CP nsplit rel error  xerror    xstd
+1 0.104938      0   1.00000 1.00000 0.10802
+2 0.055556      3   0.68519 0.98148 0.10760
+3 0.027778      4   0.62963 0.87037 0.10454
+4 0.018519      6   0.57407 0.87037 0.10454
+5 0.010000      7   0.55556 0.88889 0.10511</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotcp</span>(cfit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="treesinR_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The optimal tree is a tree with 5 nodes (4 splits). A tree with 6 splits has the same cross-validation error and standard error. We choose the simpler tree (<a href="#fig-tree-stagec-pruned" class="quarto-xref">Figure&nbsp;<span>17.9</span></a>).</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(<span class="fu">prune</span>(cfit,<span class="at">cp=</span><span class="fl">0.027778</span>), <span class="at">roundint=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-tree-stagec-pruned" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tree-stagec-pruned-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="treesinR_files/figure-html/fig-tree-stagec-pruned-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" data-glightbox="description: .lightbox-desc-8"><img src="treesinR_files/figure-html/fig-tree-stagec-pruned-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tree-stagec-pruned-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.9: Classification tree for stagec data after pruning.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="nominal-classification" class="level3">
+<h3 class="anchored" data-anchor-id="nominal-classification">Nominal Classification</h3>
+<p>The data frame <code>cu.summary</code> ships with the <code>rpart</code> package. It contains data from the April, 1990 issue of <em>Consumer Reports</em> on makes of cars. One of the columns in the data frame is <code>Reliability</code>, an ordered factor with levels <code>Much worse</code>, <code>worse</code>, <code>average</code>, <code>better</code>, and <code>Much better</code>.</p>
+<p>The following code fits a multi-classification decision tree and graphs the result.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(cu.summary)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>mcfit <span class="ot">&lt;-</span> <span class="fu">rpart</span>(Reliability <span class="sc">~</span> ., <span class="at">data =</span> cu.summary)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(mcfit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-tree-reliab-pruned" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tree-reliab-pruned-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="treesinR_files/figure-html/fig-tree-reliab-pruned-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" data-glightbox="description: .lightbox-desc-9"><img src="treesinR_files/figure-html/fig-tree-reliab-pruned-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tree-reliab-pruned-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.10: Classification tree for car reliability prior to pruning.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The node annotation displays the predicted category for the node, the predicted probability in each category, and the percentage of observations in the node.</p>
+
+
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;17.2: Default regression tree for log(salary) constructed by <code>rpart</code> for Hitters data.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;17.3: Default regression tree for salary constructed by <code>rpart</code> for Hitters data.</span>
+<span class="glightbox-desc lightbox-desc-3">Figure&nbsp;17.4: Default regression tree for log(salary) with log-transformed year as input.</span>
+<span class="glightbox-desc lightbox-desc-4">Figure&nbsp;17.5: Complexity parameter plot for Hitters data. The size of the tree refers to the number of nodes (number of splits + 1).</span>
+<span class="glightbox-desc lightbox-desc-5">Figure&nbsp;17.6: Final tree for Hitters data after pruning and cross-validation.</span>
+<span class="glightbox-desc lightbox-desc-6">Figure&nbsp;17.7: A stump fit to the Hitters data.</span>
+<span class="glightbox-desc lightbox-desc-7">Figure&nbsp;17.8: Classification tree for stagec data prior to pruning.</span>
+<span class="glightbox-desc lightbox-desc-8">Figure&nbsp;17.9: Classification tree for stagec data after pruning.</span>
+<span class="glightbox-desc lightbox-desc-9">Figure&nbsp;17.10: Classification tree for car reliability prior to pruning.</span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-Breiman_etal_1984" class="csl-entry" role="listitem">
+Breiman, L., J. H. Friedman, R. A. Olshen, and C. J. Stone. 1984. <em>Classification and Regression Trees</em>. Wadsworth, Pacific Grove, CA.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./decisiontrees.html" class="pagination-link" aria-label="Regression and Classification Trees">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Regression and Classification Trees</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./ensemble_intro.html" class="pagination-link" aria-label="Introduction">
+        <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Statistical Learning by Oliver Schabenberger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"loop":false,"selector":".lightbox","descPosition":"bottom","closeEffect":"zoom","openEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

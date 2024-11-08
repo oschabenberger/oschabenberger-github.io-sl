@@ -1,4 +1,0 @@
-
-
-# Naive Bayes Classification {#sec-naive-bayes}
-

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Statistical Learning - 16&nbsp; Introduction to Ensemble Learning</title>
+<title>Statistical Learning - 18&nbsp; Introduction</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./bagging.html" rel="next">
-<link href="./supportvectors.html" rel="prev">
+<link href="./treesinR.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -150,7 +150,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ensemble_intro.html">Part V. Ensemble Methods</a></li><li class="breadcrumb-item"><a href="./ensemble_intro.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ensemble_intro.html">Part V. Ensemble Methods</a></li><li class="breadcrumb-item"><a href="./ensemble_intro.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -248,7 +248,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./regintro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Regression</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -295,7 +295,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./classintro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Classification</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -319,8 +319,27 @@ window.Quarto = {
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
-      <span class="sidebar-item-text sidebar-link text-start">
- <span class="menu-text">Part IV. Decision Trees</span></span>
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Part IV. Decision Trees</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./decisiontrees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Regression and Classification Trees</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./treesinR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Trees in <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
@@ -334,25 +353,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ensemble_intro.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./bagging.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Bagging</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./boosting.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Boosting</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./bma.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Bayesian Model Averaging</span></span></a>
   </div>
 </li>
       </ul>
@@ -369,31 +388,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./unsuper_intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Introduction to Unsupervised Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./pca.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Principal Component Analysis (PCA)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./clustering.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Cluster Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mbc.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Model-based Clustering</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./arules.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Association Rules</span></span></a>
   </div>
 </li>
       </ul>
@@ -410,25 +429,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./glm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./gam.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Generalized Additive Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./corrdata.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Correlated Data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mixed.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Mixed Models for Longitudinal Data</span></span></a>
   </div>
 </li>
       </ul>
@@ -445,31 +464,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ann.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Artificial Neural Networks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./training_ann.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Training Neural Networks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ann_R.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Neural Networks in <code>R</code> (with Keras)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./deeplearning.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Deep Learning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./reinforcement.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
   </div>
 </li>
       </ul>
@@ -486,7 +505,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./explainability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Interpretability and Explainability</span></span></a>
   </div>
 </li>
       </ul>
@@ -507,8 +526,8 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#what-is-an-ensemble" id="toc-what-is-an-ensemble" class="nav-link active" data-scroll-target="#what-is-an-ensemble"><span class="header-section-number">16.1</span> What is an Ensemble</a></li>
-  <li><a href="#sec-ensemble-bootstrap" id="toc-sec-ensemble-bootstrap" class="nav-link" data-scroll-target="#sec-ensemble-bootstrap"><span class="header-section-number">16.2</span> The Bootstrap</a>
+  <li><a href="#what-is-an-ensemble" id="toc-what-is-an-ensemble" class="nav-link active" data-scroll-target="#what-is-an-ensemble"><span class="header-section-number">18.1</span> What is an Ensemble</a></li>
+  <li><a href="#sec-ensemble-bootstrap" id="toc-sec-ensemble-bootstrap" class="nav-link" data-scroll-target="#sec-ensemble-bootstrap"><span class="header-section-number">18.2</span> The Bootstrap</a>
   <ul>
   <li><a href="#variance-estimation" id="toc-variance-estimation" class="nav-link" data-scroll-target="#variance-estimation">Variance Estimation</a></li>
   <li><a href="#out-of-bag-error" id="toc-out-of-bag-error" class="nav-link" data-scroll-target="#out-of-bag-error">Out-of-bag Error</a></li>
@@ -519,9 +538,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ensemble_intro.html">Part V. Ensemble Methods</a></li><li class="breadcrumb-item"><a href="./ensemble_intro.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ensemble_intro.html">Part V. Ensemble Methods</a></li><li class="breadcrumb-item"><a href="./ensemble_intro.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Introduction to Ensemble Learning</span></h1>
+<h1 class="title"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Introduction</span></h1>
 </div>
 
 
@@ -538,18 +557,18 @@ window.Quarto = {
 </header>
 
 
-<section id="what-is-an-ensemble" class="level2" data-number="16.1">
-<h2 data-number="16.1" class="anchored" data-anchor-id="what-is-an-ensemble"><span class="header-section-number">16.1</span> What is an Ensemble</h2>
+<section id="what-is-an-ensemble" class="level2" data-number="18.1">
+<h2 data-number="18.1" class="anchored" data-anchor-id="what-is-an-ensemble"><span class="header-section-number">18.1</span> What is an Ensemble</h2>
 <p>The idea of <strong>ensemble learning</strong> is to make a prediction, classification, cluster assignment, etc., by combining the strengths of a collection of simpler <strong>base models</strong> (base learners). The base learners are often <strong>weak learners</strong>, models with high variability that do not perform well on their own.</p>
 <p>Ensembles are called <strong>homogeneous</strong> if all base learners are of the same type. e.g., decision trees, or <strong>heterogeneous</strong> when models of different types are being combined.</p>
-<p><a href="#fig-ensemble-map" class="quarto-xref">Figure&nbsp;<span>16.1</span></a> displays the main approaches in ensemble learning. What they all have in common is a mechanism by which diversity is introduced into the system and that diversity is exploited to gain strength.</p>
+<p><a href="#fig-ensemble-map" class="quarto-xref">Figure&nbsp;<span>18.1</span></a> displays the main approaches in ensemble learning. What they all have in common is a mechanism by which diversity is introduced into the system and that diversity is exploited to gain strength.</p>
 <div id="fig-ensemble-map" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ensemble-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/EnsemblesMindMap.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/EnsemblesMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/EnsemblesMindMap.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/EnsemblesMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ensemble-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;16.1: An overview of approaches in ensemble learning
+Figure&nbsp;18.1: An overview of approaches in ensemble learning
 </figcaption>
 </figure>
 </div>
@@ -572,8 +591,8 @@ Figure&nbsp;16.1: An overview of approaches in ensemble learning
 </ul>
 <p>You can see how the concept of diversity plays into homogeneous ensembles. The more variable–the more diverse–the weak learners are, the more impact averaging has on their individual predictions or classifications.</p>
 </section>
-<section id="sec-ensemble-bootstrap" class="level2" data-number="16.2">
-<h2 data-number="16.2" class="anchored" data-anchor-id="sec-ensemble-bootstrap"><span class="header-section-number">16.2</span> The Bootstrap</h2>
+<section id="sec-ensemble-bootstrap" class="level2" data-number="18.2">
+<h2 data-number="18.2" class="anchored" data-anchor-id="sec-ensemble-bootstrap"><span class="header-section-number">18.2</span> The Bootstrap</h2>
 <p>The <strong>bootstrap</strong> is a powerful (re-)sampling procedure through which one can build up the empirical distribution of any quantity of interest. By taking a sufficiently large number of bootstrap samples, the empirical distribution can be made close to the real distribution of the quantity. Such a procedure has many applications, for example, to estimate the variability of a statistic or to average ensembles.</p>
 <p>Suppose you have a data set of size <span class="math inline">\(n\)</span>. A bootstrap sample is a sample from the data, of the same size <span class="math inline">\(n\)</span>, drawn <strong>with</strong> replacement. The bootstrap procedure is to draw <span class="math inline">\(B\)</span> bootstrap samples, repeat the analysis for each of them, and compute summary statistics (mean, standard deviation) across the <span class="math inline">\(B\)</span> results.</p>
 <section id="variance-estimation" class="level3">
@@ -651,7 +670,7 @@ t1* 0.687559 0.0007935389  0.02833526</code></pre>
 <p>Consider a single bootstrap sample from a dataframe with <span class="math inline">\(n\)</span> observations. The probability that the <span class="math inline">\(n\)</span><sup>th</sup> observation selected into the bootstrap sample is the <span class="math inline">\(j\)</span><sup>th</sup> observation in the data frame is <span class="math inline">\(1/n\)</span>, because sampling is with replacement. The complement, the probability that the <span class="math inline">\(n\)</span><sup>th</sup> bootstrap observation is <strong>not</strong> the <span class="math inline">\(j\)</span><sup>th</sup> obs is <span class="math inline">\(1-1/n\)</span>. It follows that in a bootstrap sample of size <span class="math inline">\(n\)</span>, the probability that a particular observation is <strong>not</strong> included is <span class="math display">\[
 (1 - 1/n)^n \approx 1/3
 \]</span></p>
-<p>As <span class="math inline">\(n\)</span> grows, this probability quickly approaches 1/3. <a href="#fig-bootstrap-prob" class="quarto-xref">Figure&nbsp;<span>16.2</span></a> displays <span class="math inline">\((1-1/n)^n\)</span> as a function of <span class="math inline">\(n\)</span>. The asymptote near 1/3 is reached for small data set sizes (&gt; 10).</p>
+<p>As <span class="math inline">\(n\)</span> grows, this probability quickly approaches 1/3. <a href="#fig-bootstrap-prob" class="quarto-xref">Figure&nbsp;<span>18.2</span></a> displays <span class="math inline">\((1-1/n)^n\)</span> as a function of <span class="math inline">\(n\)</span>. The asymptote near 1/3 is reached for small data set sizes (&gt; 10).</p>
 <div class="cell" data-fig_align="center">
 <div class="cell-output-display">
 <div id="fig-bootstrap-prob" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -660,7 +679,7 @@ t1* 0.687559 0.0007935389  0.02833526</code></pre>
 <img src="ensemble_intro_files/figure-html/fig-bootstrap-prob-1.png" class="img-fluid figure-img" style="width:85.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-prob-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;16.2: Probability of an observation to be included in a bootstrap sample.
+Figure&nbsp;18.2: Probability of an observation to be included in a bootstrap sample.
 </figcaption>
 </figure>
 </div>
@@ -737,7 +756,7 @@ $LOOCV
 
 
 <div class="hidden" aria-hidden="true">
-<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;16.1: An overview of approaches in ensemble learning</span>
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;18.1: An overview of approaches in ensemble learning</span>
 </div>
 </section>
 </section>
@@ -1298,13 +1317,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./supportvectors.html" class="pagination-link" aria-label="Support Vectors">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Support Vectors</span></span>
+      <a href="./treesinR.html" class="pagination-link" aria-label="Trees in `R`">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Trees in <code>R</code></span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./bagging.html" class="pagination-link" aria-label="Bagging">
-        <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Bagging</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Bagging</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1322,7 +1341,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","loop":false,"descPosition":"bottom","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"openEffect":"zoom","descPosition":"bottom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
