@@ -6,7 +6,13 @@
 The idea of **ensemble learning** is to make a prediction, classification, 
 cluster assignment, etc., by combining the strengths of a collection of simpler 
 **base models** (base learners). The base learners are often **weak learners**, 
-models with high variability that do not perform well on their own. 
+models with high variability that do not perform well on their own. A weak 
+classifier, for example, is barely better than randomly guessing the category.
+Not all ensemble methods rely on weak learners. Bagging, the aggregation across
+independent bootstrap samples, works best when estimators with low bias and high
+variance are combined. These are much more refined than random guesses. 
+Boosting, on the other hand, can be applied to weak learners, but can also be 
+effective for stronger learners.
 
 Ensembles are called **homogeneous** if all base learners are of the same type. 
 e.g., decision trees, or **heterogeneous** when models of different types are 

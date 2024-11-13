@@ -559,7 +559,7 @@ window.Quarto = {
 
 <section id="what-is-an-ensemble" class="level2" data-number="18.1">
 <h2 data-number="18.1" class="anchored" data-anchor-id="what-is-an-ensemble"><span class="header-section-number">18.1</span> What is an Ensemble</h2>
-<p>The idea of <strong>ensemble learning</strong> is to make a prediction, classification, cluster assignment, etc., by combining the strengths of a collection of simpler <strong>base models</strong> (base learners). The base learners are often <strong>weak learners</strong>, models with high variability that do not perform well on their own.</p>
+<p>The idea of <strong>ensemble learning</strong> is to make a prediction, classification, cluster assignment, etc., by combining the strengths of a collection of simpler <strong>base models</strong> (base learners). The base learners are often <strong>weak learners</strong>, models with high variability that do not perform well on their own. A weak classifier, for example, is barely better than randomly guessing the category. Not all ensemble methods rely on weak learners. Bagging, the aggregation across independent bootstrap samples, works best when estimators with low bias and high variance are combined. These are much more refined than random guesses. Boosting, on the other hand, can be applied to weak learners, but can also be effective for stronger learners.</p>
 <p>Ensembles are called <strong>homogeneous</strong> if all base learners are of the same type. e.g., decision trees, or <strong>heterogeneous</strong> when models of different types are being combined.</p>
 <p><a href="#fig-ensemble-map" class="quarto-xref">Figure&nbsp;<span>18.1</span></a> displays the main approaches in ensemble learning. What they all have in common is a mechanism by which diversity is introduced into the system and that diversity is exploited to gain strength.</p>
 <div id="fig-ensemble-map" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -1341,7 +1341,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"openEffect":"zoom","descPosition":"bottom","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","openEffect":"zoom","descPosition":"bottom","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

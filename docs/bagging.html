@@ -547,8 +547,9 @@ window.Quarto = {
    
   <ul>
   <li><a href="#relationship-to-bootstrap" id="toc-relationship-to-bootstrap" class="nav-link active" data-scroll-target="#relationship-to-bootstrap"><span class="header-section-number">19.1</span> Relationship to Bootstrap</a></li>
-  <li><a href="#sec-bagged-trees" id="toc-sec-bagged-trees" class="nav-link" data-scroll-target="#sec-bagged-trees"><span class="header-section-number">19.2</span> Bagged Trees</a></li>
-  <li><a href="#sec-random-forest" id="toc-sec-random-forest" class="nav-link" data-scroll-target="#sec-random-forest"><span class="header-section-number">19.3</span> Random Forests</a></li>
+  <li><a href="#why-and-when-does-bagging-work" id="toc-why-and-when-does-bagging-work" class="nav-link" data-scroll-target="#why-and-when-does-bagging-work"><span class="header-section-number">19.2</span> Why and When Does Bagging Work?</a></li>
+  <li><a href="#sec-bagged-trees" id="toc-sec-bagged-trees" class="nav-link" data-scroll-target="#sec-bagged-trees"><span class="header-section-number">19.3</span> Bagged Trees</a></li>
+  <li><a href="#sec-random-forest" id="toc-sec-random-forest" class="nav-link" data-scroll-target="#sec-random-forest"><span class="header-section-number">19.4</span> Random Forests</a></li>
   </ul>
 </nav>
     </div>
@@ -578,7 +579,7 @@ window.Quarto = {
 <h2 data-number="19.1" class="anchored" data-anchor-id="relationship-to-bootstrap"><span class="header-section-number">19.1</span> Relationship to Bootstrap</h2>
 <p>Bagging is a general technique–like cross-validation–that can be applied to any learning method. It is particularly effective in ensembles of base learners with high variability and low bias. The name is short for <strong>b</strong>ootstrap <strong>agg</strong>regat<strong>ing</strong> and describes its relationship to the bootstrap. Draw <span class="math inline">\(B\)</span> bootstrap samples from the dataframe with <span class="math inline">\(n\)</span> observations, fit a base learner to each of the <span class="math inline">\(B\)</span> samples, and combine the individual predictions or classifications.</p>
 <p>In the regression case, the <span class="math inline">\(B\)</span> predictions are averaged, in the classification case the majority vote is taken to assign the predicted category.</p>
-<p>Not surprisingly, bagging is popular with decision trees, unbiased regression or classification methods that tend to have high variability. A single decision tree might have a large classification or prediction error, an ensemble of 500 trees can be a very precise predictor. Random forests (<a href="#sec-random-forest" class="quarto-xref"><span>Section 19.3</span></a>) are a special version of bagged trees.</p>
+<p>Not surprisingly, bagging is popular with decision trees, unbiased regression or classification methods that tend to have high variability. A single decision tree might have a large classification or prediction error, an ensemble of 500 trees can be a very precise predictor. Random forests (<a href="#sec-random-forest" class="quarto-xref"><span>Section 19.4</span></a>) are a special version of bagged trees.</p>
 <p>Bagging can be useful with other estimators.</p>
 <div class="example">
 <div class="example-header">
@@ -648,14 +649,44 @@ Y^* = \frac{1}{3} \sum_{i=1}^3 Y_{(i)}
 </div>
 </div>
 </section>
-<section id="sec-bagged-trees" class="level2" data-number="19.2">
-<h2 data-number="19.2" class="anchored" data-anchor-id="sec-bagged-trees"><span class="header-section-number">19.2</span> Bagged Trees</h2>
+<section id="why-and-when-does-bagging-work" class="level2" data-number="19.2">
+<h2 data-number="19.2" class="anchored" data-anchor-id="why-and-when-does-bagging-work"><span class="header-section-number">19.2</span> Why and When Does Bagging Work?</h2>
+<p>It is intuitive that the average in a random sample varies less than the individual random variables being averaged. If <span class="math inline">\(Y_1, \cdots, Y_n\)</span> is a random sample from a distribution with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, then <span class="math inline">\(\text{Var}[Y_i] = \sigma^2\)</span>, while <span class="math inline">\(\text{Var}[\overline{Y}] = \sigma^2/n\)</span>.</p>
+<p>We can express this intuition more formally and gain some insight into why bagging works and when it is most effective. To motivate, we follow <span class="citation" data-cites="Sutton_2005">Sutton (<a href="references.html#ref-Sutton_2005" role="doc-biblioref">2005</a>)</span> and suppose we have a continuous response <span class="math inline">\(Y\)</span> and that <span class="math inline">\(\phi(\textbf{x})\)</span> is the prediction that results from applying any particular method. A prediction method could be a regression tree and <span class="math inline">\(\phi^{T}(\textbf{x})\)</span> is the average of the values in the terminal node for <span class="math inline">\(\textbf{x}\)</span>. A prediction method could be a multiple linear regression and <span class="math inline">\(\phi^{R}(\textbf{x})\)</span> is the predicted value <span class="math inline">\(\widehat{y} = \widehat{\boldsymbol{\beta}}\textbf{x}\)</span>.</p>
+<p>The point is that <span class="math inline">\(\phi(\textbf{x})\)</span> is a random variable because it depends on the particular sample (the training data) for <span class="math inline">\(Y\)</span> and its statistical properties are derive from the prediction method itself and the properties of <span class="math inline">\(Y\)</span>. <span class="math inline">\(\text{Var}[\phi^{R}(\textbf{x})]\)</span> and <span class="math inline">\(\text{Var}[\phi^{T}(\textbf{x})]\)</span> are not the same.</p>
+<p>Let <span class="math inline">\(\mu_\phi\)</span> denote the expected value of the predictor <span class="math inline">\(\phi(\textbf{x})\)</span> over the distribution of the training data. The mean-squared error decomposition into variance and squared-bias contribution is then is <span class="math display">\[
+\text{E}[(Y-\phi(\textbf{x}))^2] = \text{Var}[\phi(\textbf{x})] + \text{E}[(Y - \mu_\phi)^2]
+\]</span></p>
+<p>If we had the opportunity to use as the predictor the mean <span class="math inline">\(\mu_\phi\)</span> rather than the random variable <span class="math inline">\(\phi(\textbf{x})\)</span>, then we would have a smaller mean square error than using <span class="math inline">\(\phi(\textbf{x})\)</span> because the variance term drops out (<span class="math inline">\(\text{Var}[\mu_\phi]=0\)</span> because <span class="math inline">\(\mu_\phi\)</span> is a constant). This is true regardless of the prediction method. The replacement would be most effective in situations where <span class="math inline">\(\text{Var}[\phi(\textbf{x})]\)</span> is large. In other words, the larger the variance <span class="math inline">\(\text{Var}[\phi(\textbf{x})\)</span> is relative to the MSE of the predictor, the greater the percentage reduction if the predictor is replaced by its mean.</p>
+<p>In practice, we do not know <span class="math inline">\(\mu(\phi)\)</span>, but we can get an estimate of it, by simply averaging the individual predictors <span class="math inline">\(\phi(\textbf{x})_1, \cdots, \phi(\textbf{x})_B\)</span> in a bootstrap sample. Let’s denote this aggregate of the bootstrap predictor <span class="math inline">\(\phi_{B}(\textbf{x})\)</span> of our base method. To make notation even worse, we would denote the bootstrap predictor of the regression predictor <span class="math inline">\(\phi^{R}(\textbf{x})\)</span> as <span class="math inline">\(\phi_{B}^{R}(\textbf{x})\)</span>.</p>
+<p>The effectiveness of bagging is greatest when the prediction method is highly variable, possibly even unstable. Effectiveness is measured here by the relative reduction in variability that occurs when <span class="math inline">\(\text{Var}[\phi_B^{*}(\textbf{x})]\)</span> approaches zero with increasing number of bootstrap samples <span class="math inline">\(B\)</span>.</p>
+<p>In order for bagging to work well, we need to take enough bootstrap samples to reduce the variance and the training data has to be large enough for the bootstrap estimate of <span class="math inline">\(\mu_\phi\)</span> to be good.</p>
+<hr>
+<p>A regression model that uses the correct inputs and functional form is a low-variance estimation method, it is very stable. Bagging such a a regression estimator does not yield much. A decision tree is inherently unstable in that it can change under small perturbations or changes in the data. That inherent variability makes it a great candidate to be improved upon through bootstrap aggregation—through bagging.</p>
+<p>To measure the effect of bagging on a classifier, mean square prediction error is not the appropriate metric as the performance of the classifier is measured through misclassification rate, cross-entropy, or other metrics. An improvement through bagging is achieved when the misclassification rate of the bagged estimator is closer to the Bayes rate than the un-bagged classifier.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Bayes classifier">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Bayes classifier
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Recall that the Bayes classifier is an ideal classifier that always predicts the category that is most likely to occur for an input vector <span class="math inline">\(\textbf{x}\)</span>. The Bayes classifier will not always make the correct prediction, but it will have the smallest misclassification rate.</p>
+</div>
+</div>
+<p>Bagging classifiers tends to work well for classifiers that have low bias in the sense that they perform similar to the Bayes classifier for <span class="math inline">\(\textbf{x}\)</span> values where the classifier <span class="math inline">\(\phi(\textbf{x})\)</span> predicts a class different from the best possible one.</p>
+</section>
+<section id="sec-bagged-trees" class="level2" data-number="19.3">
+<h2 data-number="19.3" class="anchored" data-anchor-id="sec-bagged-trees"><span class="header-section-number">19.3</span> Bagged Trees</h2>
 <p><span class="citation" data-cites="Breiman1996">Breiman (<a href="references.html#ref-Breiman1996" role="doc-biblioref">1996</a>)</span> introduced bootstrap aggregating (bagging) as a means to increase the accuracy of a predictor by applying the predictor to a sequence of <strong>learning sets</strong>, data sets of size <span class="math inline">\(n\)</span>, and combining the results from the sets. In case of prediction the obvious choice is to average the predictions across the learning sets. In case of classification, Breiman recommends majority voting: classify an observation in each learning set and assign the most frequently chosen category as the overall classification.</p>
 <p>The learning sets are <span class="math inline">\(B\)</span> bootstrap samples drawn from the original data. Breiman notes</p>
 <blockquote class="blockquote">
 <p>“The vital element is the instability of the prediction method.”</p>
 </blockquote>
-<p>If the different learning sets do not lead to changes in the predictors the aggregation will not be effective. This is where weak learners are important because they have high variability. There is a second situation where bagging will not be effective: if the method being bagged is already near the limits of accuracy achievable for that data set no amount of bootstrapping and bagging will help.</p>
+<p>If the different learning sets do not lead to changes in the predictors the aggregation will not be effective. This is where base learners with high variability (and low bias) are important. There is a second situation where bagging will not be effective: if the method being bagged is already near the limits of accuracy achievable for that data set no amount of bootstrapping and bagging will help.</p>
 <p>The most frequent application of bagging is with decision trees for either regression or classification. In a non-ensemble situation one would build one tree, first by growing it deep and then pruning it back. During bagging trees are not pruned, the volatility of deep trees is desirable.</p>
 <div class="example">
 <div class="example-header">
@@ -890,7 +921,7 @@ Prediction  Bad Good
 <div id="fig-banana-singletree" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-banana-singletree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="bagging_files/figure-html/fig-banana-singletree-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="bagging_files/figure-html/fig-banana-singletree-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="bagging_files/figure-html/fig-banana-singletree-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="bagging_files/figure-html/fig-banana-singletree-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-banana-singletree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;19.2: Decision tree for banana quality
@@ -940,11 +971,11 @@ Figure&nbsp;19.3: Variable importance plots for bagged trees.
 <p>“Bagging goes a ways toward making a silk purse out of a sow’s ear, especially if the sow’s ear is twitchy. […] What one loses, with the trees, is a simple and interpretable structure. What one gains is increased accuracy.”</p>
 </blockquote>
 </section>
-<section id="sec-random-forest" class="level2" data-number="19.3">
-<h2 data-number="19.3" class="anchored" data-anchor-id="sec-random-forest"><span class="header-section-number">19.3</span> Random Forests</h2>
+<section id="sec-random-forest" class="level2" data-number="19.4">
+<h2 data-number="19.4" class="anchored" data-anchor-id="sec-random-forest"><span class="header-section-number">19.4</span> Random Forests</h2>
 <p>Are there any other downsides to bagging, besides a loss of interpretability and an increased computational burden? Not really, but another issue deserves consideration: bootstrap samples are highly correlated. Two thirds of the observations are in the bootstrap samples making the data frames similar to each other. An input variable that dominates the model will tend to be the first variable on which the tree is split, leading to similar trees. This reduces the variability of the trees and reduces the effectiveness of the ensemble.</p>
 <p>How can we make the trees more volatile? <span class="citation" data-cites="Breiman2001">Breiman (<a href="references.html#ref-Breiman2001" role="doc-biblioref">2001</a>)</span> advanced the concept of bagged trees through the introduction of <strong>random forests</strong>. The key innovation between bagged trees and random forests is that not all input variables are considered at each split of the tree. Instead, only a randomly selected set of predictors is considered, the set changes from split to split. The random split introduces more variability and allows non-dominant input variables to participate.</p>
-<p>In other aspects, random forests are constructed in the same way as bagged trees introduced in <a href="#sec-bagged-trees" class="quarto-xref"><span>Section 19.2</span></a>: <span class="math inline">\(B\)</span> trees are built based on <span class="math inline">\(B\)</span> bootstrap samples, the trees are built deep and not pruned.</p>
+<p>In other aspects, random forests are constructed in the same way as bagged trees introduced in <a href="#sec-bagged-trees" class="quarto-xref"><span>Section 19.3</span></a>: <span class="math inline">\(B\)</span> trees are built based on <span class="math inline">\(B\)</span> bootstrap samples, the trees are built deep and not pruned.</p>
 <div class="example">
 <div class="example-header">
 <p>Example: Banana Quality (Cont’d)</p>
@@ -998,6 +1029,9 @@ Breiman, Leo. 1996. <span>“Bagging Predictors.”</span> <em>Machine Learning<
 </div>
 <div id="ref-Breiman2001" class="csl-entry" role="listitem">
 ———. 2001. <span>“Random Forests.”</span> <em>Machine Learning</em> 45: 5–32.
+</div>
+<div id="ref-Sutton_2005" class="csl-entry" role="listitem">
+Sutton, Clifton D. 2005. <span>“Classification and Regression Trees, Bagging, and Boosting.”</span> <em>Handbook of Statistics</em> 24: 303–29.
 </div>
 </div>
 </section>
@@ -1582,7 +1616,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","descPosition":"bottom","loop":false,"closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"selector":".lightbox","descPosition":"bottom","openEffect":"zoom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

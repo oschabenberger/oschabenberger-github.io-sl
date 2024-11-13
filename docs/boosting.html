@@ -20,7 +20,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -72,6 +126,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -460,9 +543,19 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#sec-boost-ada" id="toc-sec-boost-ada" class="nav-link active" data-scroll-target="#sec-boost-ada"><span class="header-section-number">20.1</span> Adaptive Boosting (AdaBoost)</a></li>
-  <li><a href="#gradient-boosting" id="toc-gradient-boosting" class="nav-link" data-scroll-target="#gradient-boosting"><span class="header-section-number">20.2</span> Gradient Boosting</a></li>
-  <li><a href="#extreme-gradient-boosting-xgboost" id="toc-extreme-gradient-boosting-xgboost" class="nav-link" data-scroll-target="#extreme-gradient-boosting-xgboost"><span class="header-section-number">20.3</span> Extreme Gradient Boosting (XGboost)</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">20.1</span> Introduction</a></li>
+  <li><a href="#sec-boost-ada" id="toc-sec-boost-ada" class="nav-link" data-scroll-target="#sec-boost-ada"><span class="header-section-number">20.2</span> Adaptive Boosting (AdaBoost)</a>
+  <ul>
+  <li><a href="#discrete-adaboost" id="toc-discrete-adaboost" class="nav-link" data-scroll-target="#discrete-adaboost">Discrete AdaBoost</a></li>
+  <li><a href="#real-adaboost" id="toc-real-adaboost" class="nav-link" data-scroll-target="#real-adaboost">Real AdaBoost</a></li>
+  <li><a href="#adaboost-in-r" id="toc-adaboost-in-r" class="nav-link" data-scroll-target="#adaboost-in-r">AdaBoost in <code>R</code></a></li>
+  </ul></li>
+  <li><a href="#sec-gradient-boosting" id="toc-sec-gradient-boosting" class="nav-link" data-scroll-target="#sec-gradient-boosting"><span class="header-section-number">20.3</span> Gradient Boosting Machines</a>
+  <ul>
+  <li><a href="#the-algorithm" id="toc-the-algorithm" class="nav-link" data-scroll-target="#the-algorithm">The Algorithm</a></li>
+  <li><a href="#gradient-boosting-in-r" id="toc-gradient-boosting-in-r" class="nav-link" data-scroll-target="#gradient-boosting-in-r">Gradient Boosting in <code>R</code></a></li>
+  </ul></li>
+  <li><a href="#sec-xgboost" id="toc-sec-xgboost" class="nav-link" data-scroll-target="#sec-xgboost"><span class="header-section-number">20.4</span> Extreme Gradient Boosting (XGboost)</a></li>
   </ul>
 </nav>
     </div>
@@ -488,16 +581,572 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="sec-boost-ada" class="level2" data-number="20.1">
-<h2 data-number="20.1" class="anchored" data-anchor-id="sec-boost-ada"><span class="header-section-number">20.1</span> Adaptive Boosting (AdaBoost)</h2>
+<section id="introduction" class="level2" data-number="20.1">
+<h2 data-number="20.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">20.1</span> Introduction</h2>
+<p>Bagging relies on bootstrapping a low-bias, high-variance estimator to reduce the variability through averaging. The improvement over the non-ensemble estimator stems from the variance-reducing effect of averaging. When bagging trees, each tree is grown independently of the other trees on its version of the sample data.</p>
+<p><strong>Boosting</strong> is an ensemble method in which improvements are made sequentially, for example, by adjusting weights and focusing subsequent estimators on cases where previous estimators performed poorly. The final prediction or classification is based on all estimators in the sequence. Unlike bagging, the estimators are derived from the same data using modifications such as weighting.</p>
+<p>Although boosting is a generic method, in applications it is mostly based on trees. Initially proposed for classification problems, boosting can be applied in the regression setting. <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">2021, 347</a>)</span> describe boosting using trees with the following pseudo-algorithm:</p>
+<ol type="1">
+<li><p>Initially, set <span class="math inline">\(\widehat{f}(\textbf{x}_i) = 0\)</span>. Calculate the initial residuals <span class="math inline">\(r_i = y_i - \widehat{f}(\textbf{x}_i) = y_i\)</span>.</p></li>
+<li><p>Perform the following updates <span class="math inline">\(b=1, \cdots, B\)</span> times</p>
+<ul>
+<li>Fit a tree <span class="math inline">\(\widehat{f}^b(\textbf{x})\)</span> with <span class="math inline">\(d+1\)</span> leaves to the residuals <span class="math inline">\(r_i\)</span></li>
+<li>Update <span class="math inline">\(\widehat{f}(\textbf{x}) \leftarrow \widehat{f}(\textbf{x}) + \lambda \widehat{f}^b(\textbf{x})\)</span></li>
+<li>Update the residuals <span class="math inline">\(r_i \leftarrow r_i - \lambda\widehat{f}^b(\textbf{x}_i)\)</span></li>
+</ul></li>
+<li><p>Produce the final prediction/classification from the ensemble <span class="math display">\[
+\widehat{f}(\textbf{x}) = \sum_{b=1}^B \lambda\widehat{f}^b(\textbf{x})
+\]</span> The parameter <span class="math inline">\(\lambda\)</span> is a <strong>shrinkage</strong> parameter, it determines the learning rate. Boosting produces learners that learn slowly. Rather than a carefully crafted regression model that is fit once to the data, boosting approaches a good prediction or classification by repeatedly making small adjustments. The initial fit in the pseudo-algorithm is to the data <span class="math inline">\(y_i\)</span> as the classifier is set initially to <span class="math inline">\(\widehat{f}(\textbf{x}) = 0\)</span>. However, we are not accepting the initial predictions in full, shrinking them instead by the factor <span class="math inline">\(\lambda\)</span>. With the initial fit, the residuals can be updated and the data to train the next tree is <span class="math inline">\([\textbf{x}, r]\)</span>. Again, we add only a portion of that tree to the current estimator.</p></li>
+</ol>
+<hr>
+<p>It is often believed that boosting is used only with weak learners, those classifiers barely better than a random guess. That is not necessarily so. <span class="citation" data-cites="hastie_ESL">Hastie, Tibshirani, and Friedman (<a href="references.html#ref-hastie_ESL" role="doc-biblioref">2001</a>)</span> recommend boosting trees with four to eight nodes, while weak learners would be “stumps”, trees with a single split (two nodes). A stump is a low-variance, high-bias learner and would not perform well with bagging. The fact that boosting can perform well for weak learners and for strong learners suggests that the procedure is good at reducing variability and at reducing bias <span class="citation" data-cites="Friedman_et_al_2000">(<a href="references.html#ref-Friedman_et_al_2000" role="doc-biblioref">J. Friedman, Hastie, and Tibshirani 2000</a>)</span>.</p>
+<p>However, one can also find examples where boosting stumps does not outperform a single, carefully constructed, deep tree. The choice of the base learner can be important in boosting applications. <span class="citation" data-cites="Sutton_2005">Sutton (<a href="references.html#ref-Sutton_2005" role="doc-biblioref">2005</a>)</span> provides a hint on how to decide on the base tree: when input effects are additive, stumps work well. If interactions between the inputs are expected, increase the depth of the base tree. In the same vein, <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">2021, 347</a>)</span> recommend to set the number of splits equal to the largest expected interaction. For example, if three-way interactions exist between the inputs, set the number of splits to three.</p>
+<hr>
+<p>An often mentioned benefit of boosting is protection against overfitting. Some care seems warranted in making the claim that boosted models do not overfit. As Andreas Buja points out in the discussion of the paper by <span class="citation" data-cites="Friedman_et_al_2000">J. Friedman, Hastie, and Tibshirani (<a href="references.html#ref-Friedman_et_al_2000" role="doc-biblioref">2000</a>)</span>, the</p>
+<blockquote class="blockquote">
+<p><em>500 or so stumps and twigs that I have seen fitted in a single boosting fit would come crashing down if they were fitted jointly. Therefore, the essence of the protection against overfit is in the suboptimality of the fitting method.</em></p>
+</blockquote>
+<p>In other words, using stumps in boosting allows one to start small and get better. Boosting a strong learner does not provide the same protection against overfitting. Buja also concludes that this focus on using many suboptimal estimators explains why boosting was invented in computer science and machine learning rather than in statistics. The idea of taking suboptimal steps is foreign to statisticians who would rather find the grand optimal estimator.</p>
 </section>
-<section id="gradient-boosting" class="level2" data-number="20.2">
-<h2 data-number="20.2" class="anchored" data-anchor-id="gradient-boosting"><span class="header-section-number">20.2</span> Gradient Boosting</h2>
+<section id="sec-boost-ada" class="level2" data-number="20.2">
+<h2 data-number="20.2" class="anchored" data-anchor-id="sec-boost-ada"><span class="header-section-number">20.2</span> Adaptive Boosting (AdaBoost)</h2>
+<p>Prior to the discovery of gradient boosting, <strong>adaptive boosting</strong> was the most popular boosting algorithm. The basic algorithm is called <em>AdaBoost.M1</em>, also known as <em>Discrete AdaBoost</em>. <span class="citation" data-cites="Friedman_et_al_2000">J. Friedman, Hastie, and Tibshirani (<a href="references.html#ref-Friedman_et_al_2000" role="doc-biblioref">2000</a>)</span> describe it with the following algorithm:</p>
+<section id="discrete-adaboost" class="level3">
+<h3 class="anchored" data-anchor-id="discrete-adaboost">Discrete AdaBoost</h3>
+<ul>
+<li><ol start="0" type="1">
+<li>The data comprise <span class="math inline">\([\textbf{x}_1,y_1], \cdots, [\textbf{x}_n,y_n]\)</span>, where <span class="math inline">\(y \in \{-1,1\}\)</span> and the goal is to classify <span class="math inline">\(Y\)</span> based on the inputs <span class="math inline">\(X_1,\cdots,X_p\)</span>.</li>
+</ol></li>
+<li><ol type="1">
+<li>Create a weight vector <span class="math inline">\(\textbf{w}= [1/n, \cdots, 1/n]\)</span></li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>Repeat the following steps for <span class="math inline">\(m=1,\cdots, M\)</span>:</li>
+</ol>
+<ul>
+<li><ol type="a">
+<li>Fit the weighted classifier <span class="math inline">\(f_m(\textbf{x}) \in \{-1,1\}\)</span> using <span class="math inline">\(\textbf{w}\)</span> as weights</li>
+</ol></li>
+<li><ol start="2" type="a">
+<li>Compute the weighted misclassification rate <span class="math display">\[ \text{err}_m = \frac{\sum_{i=1}^n w_i I(y_i \ne f_m(\textbf{x}_i))}{\sum_{i=1}^n w_i}
+  \]</span> and <span class="math inline">\(\alpha_m = \log\{(1-\text{err}_m)/\text{err}_m\}\)</span></li>
+</ol></li>
+<li><ol start="3" type="a">
+<li>Recompute the weights <span class="math inline">\(w_i \leftarrow w_i\exp\{\alpha_m 1(y_i \ne f_m(\textbf{x}_i)\}\)</span></li>
+</ol></li>
+</ul></li>
+<li><ol start="3" type="1">
+<li>The final classifier is <span class="math display">\[
+f(\textbf{x}) = \text{sign}\left( \sum_{m=1}^m\alpha_m f_m(\textbf{x}) \right)
+\]</span></li>
+</ol></li>
+</ul>
+<p>The target variable for binary classification is coded <span class="math inline">\(\{-1,1\}\)</span> instead of <span class="math inline">\(\{0,1\}\)</span>. Consequently the classifier <span class="math inline">\(f(\textbf{x})\)</span> assigns categories based on its sign: if <span class="math inline">\(f(\textbf{x}) &lt; 0\)</span>, predict the event coded as <span class="math inline">\(y = -1\)</span>; if <span class="math inline">\(f(\textbf{x}) &gt; 0\)</span>, predict the event coded as <span class="math inline">\(y = 1\)</span>.</p>
+<p>The core of the algorithm is 2., a sequence of <span class="math inline">\(M\)</span> weighted classifiers <span class="math inline">\(f_1(\textbf{x}), \cdots, f_M(\textbf{x})\)</span> fit to the training data. The key is the weight vector <span class="math inline">\(\textbf{w}= [w_1,\cdots,w_n]^\prime\)</span>, re-calculated after each step. First, let’s evaluate the recomputed weights in 2(c): <span class="math display">\[
+w_i \leftarrow w_i\exp\{\alpha_m 1(y_i \ne f_m(\textbf{x}_i)\}
+\]</span></p>
+<p>If observation <span class="math inline">\(i\)</span> is correctly classified by the <span class="math inline">\(m\)</span><sup>th</sup> classifier, then <span class="math inline">\(y_i = f_m(\textbf{x}_i)\)</span> and the weight does not change. On the other hand, if observation <span class="math inline">\(i\)</span> is not correctly classified, then its weight is <strong>boosted</strong> by the amount <span class="math inline">\(\exp\{\alpha_m\}\)</span>. <span class="math inline">\(\alpha_m\)</span> in turn depends on the (weighted) misclassification rate of the classifier <span class="math inline">\(f_m(\textbf{x})\)</span>.</p>
+<p>If <span class="math inline">\(\text{err}_m = 0.5\)</span>, the classifier <span class="math inline">\(f_m(\textbf{x})\)</span> is as good as a random guess and <span class="math inline">\(\alpha_m = 0\)</span>. The weights of the misclassified observations will not change. If the classification error is lower—<span class="math inline">\(f_m(\textbf{x})\)</span> performs better than a random guess—, <span class="math inline">\(\alpha_m &gt; 1\)</span> and the weights of the misclassified observations receive a positive boost (<a href="#fig-adaboost-weights" class="quarto-xref">Figure&nbsp;<span>20.1</span></a>).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-adaboost-weights" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-adaboost-weights-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="boosting_files/figure-html/fig-adaboost-weights-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-adaboost-weights-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20.1: <span class="math inline">\(\alpha_m\)</span> and <span class="math inline">\(\exp\{\alpha_m\}\)</span> as a function of the weighted classification error.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Increasing the weights of the misclassified observations for the next classifier is often translated into “adaptive boosting focuses on the observations we previously got wrong.” As Leo Breiman points out in the discussion of <span class="citation" data-cites="Friedman_et_al_2000">J. Friedman, Hastie, and Tibshirani (<a href="references.html#ref-Friedman_et_al_2000" role="doc-biblioref">2000</a>)</span>, the interpretation that AdaBoost focuses more heavily on misclassified observations for the next iteration and “ignores” the correctly classified observations, is not correct. AdaBoost puts more emphasis on points recently misclassified, because it is trying to get them right next time around—the algorithm is not a divider of points into correctly and incorrectly classified ones, it is an equalizer.</p>
 </section>
-<section id="extreme-gradient-boosting-xgboost" class="level2" data-number="20.3">
-<h2 data-number="20.3" class="anchored" data-anchor-id="extreme-gradient-boosting-xgboost"><span class="header-section-number">20.3</span> Extreme Gradient Boosting (XGboost)</h2>
+<section id="real-adaboost" class="level3">
+<h3 class="anchored" data-anchor-id="real-adaboost">Real AdaBoost</h3>
+<p>A variation of the discrete algorithm, called Real AdaBoost is presented in <span class="citation" data-cites="Friedman_et_al_2000">J. Friedman, Hastie, and Tibshirani (<a href="references.html#ref-Friedman_et_al_2000" role="doc-biblioref">2000</a>)</span>. The base learner does not return the sign of the target but an estimate of the probability that <span class="math inline">\(Y=1\)</span>. Steps 2a–2c of the Discrete AdaBoost algorithm above are modified as follows:</p>
+<ul>
+<li><ol start="2" type="1">
+<li>Repeat the following steps for <span class="math inline">\(m=1,\cdots, M\)</span>:</li>
+</ol>
+<ul>
+<li><ol type="a">
+<li>Fit the weighted classifier <span class="math inline">\(f_m(\textbf{x}) \in \{-1,1\}\)</span> using <span class="math inline">\(\textbf{w}\)</span> as weights to obtain a class probability estomate <span class="math inline">\(p_m(\textbf{x}) = \widehat{\Pr}(Y=1|\textbf{x})\)</span>.</li>
+</ol></li>
+<li><ol start="2" type="a">
+<li>Set <span class="math display">\[
+  f_m(\textbf{x}) = \frac{1}{2} \log\left\{\frac{p_m(\textbf{x})}{1-p_m(\textbf{x})}\right\}
+  \]</span></li>
+</ol></li>
+<li><ol start="3" type="a">
+<li>Recompute the weights <span class="math inline">\(w_i \leftarrow w_i\exp\{-y_i f_m(\textbf{x}_i)\}\)</span> and renormalize the weigths so that $w_i =1 $.</li>
+</ol></li>
+</ul></li>
+</ul>
+<p>This formulation is helpful to show that adaptive boosting is equivalent to fitting an additive model in a forward-stagewise manner, where the loss function is exponential loss (rather than squared error or misclassification rate): <span class="math display">\[
+L(y,f(\textbf{x})) = \exp\{-y f(\textbf{x})\}
+\]</span> You recognize this loss in the computation of the weights in step 2c. This formulation is helpful to statisticians in expressing boosting in terms of a well-understood modeling procedure. It is also helpful to see that AdaBoost is not optimizing the misclassification rate. The exponential loss function can continue to decrease when the classification error in the training set reaches zero and the classification rate in the test data continues to decrease.</p>
+</section>
+<section id="adaboost-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="adaboost-in-r">AdaBoost in <code>R</code></h3>
+<p>Adaptive boosting with the Discrete or Real AdaBoost algorithm as described above and in <span class="citation" data-cites="Friedman_et_al_2000">J. Friedman, Hastie, and Tibshirani (<a href="references.html#ref-Friedman_et_al_2000" role="doc-biblioref">2000</a>)</span> is implemented in the <code>ada::ada</code> function in <code>R</code>. <code>ada</code> uses <code>rpart</code> to fit decision trees <span class="math inline">\(f_m(\textbf{x})\)</span> during boosting, see <a href="treesinR.html" class="quarto-xref"><span>Chapter 17</span></a>. By default, <code>ada</code> implements Discrete AdaBoost with <span class="math inline">\(M=50\)</span> boosting iterations (<span class="math inline">\(M=50\)</span> trees) and can estimate the test error based on out-of-bag sampling and a separate test data set.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Glaucoma Database</p>
+</div>
+<div class="example-container">
+<p>The data for this example is the Glaucoma Database in the <code>TH.data</code> package. The data frame has 196 observations with variables derived from a confocal laser scanning image of the optic nerve head. There are 62 input variables and a binary target variable that classifies eyes as <code>normal</code> or <code>glaucatomous</code>. Most of the variables describe either the area or volume in certain parts of the papilla and are measured in four sectors (temporal, superior, nasal and inferior) as well as for the whole papilla (global).</p>
+<p>The following statements read the data and split it into training and test sets of equal size.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"TH.data"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>( <span class="st">"GlaucomaM"</span>, <span class="at">package=</span><span class="st">"TH.data"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5333</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>trainindex <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(GlaucomaM),<span class="fu">nrow</span>(GlaucomaM)<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>glauc_train <span class="ot">&lt;-</span> GlaucomaM[trainindex,]</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>glauc_test <span class="ot">&lt;-</span> GlaucomaM[<span class="sc">-</span>trainindex,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The following statements fit a binary classification model for <code>Class</code> by discrete adaptive boosting with <span class="math inline">\(M=50\)</span> iterations. The <code>rpart.control</code> object requests that all splits are attempted (<code>cp=-1</code>), but trees are not split more than once (<code>maxdepth=1</code>). The <code>xval=0</code> option turns off cross-validation inside of <code>rpart</code>. In other words, we are fitting stumps.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ada)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>adab <span class="ot">&lt;-</span> <span class="fu">ada</span>(Class <span class="sc">~</span> ., </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>glauc_train,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">control=</span><span class="fu">rpart.control</span>(<span class="at">maxdepth=</span><span class="dv">1</span>, <span class="at">cp=</span><span class="sc">-</span><span class="dv">1</span>, <span class="at">minsplit=</span><span class="dv">0</span>, <span class="at">xval=</span><span class="dv">0</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>adab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+ada(Class ~ ., data = glauc_train, control = rpart.control(maxdepth = 1, 
+    cp = -1, minsplit = 0, xval = 0))
+
+Loss: exponential Method: discrete   Iteration: 50 
+
+Final Confusion Matrix for Data:
+          Final Prediction
+True value glaucoma normal
+  glaucoma       52      3
+  normal          4     39
+
+Train Error: 0.071 
+
+Out-Of-Bag Error:  0.102  iteration= 36 
+
+Additional Estimates of number of iterations:
+
+train.err1 train.kap1 
+        44         44 </code></pre>
+</div>
+</div>
+<p>The final confusion matrix for the training data after 50 boosting iterations shows 9 misclassifications for a training error of 0.071. Based on the out-of-bag sample, the error is slightly larger, 0.102.</p>
+<p>The trees fit during the iterations can be found on the <code>model</code> structure of the return object. Here are <span class="math inline">\(f_1(\textbf{x}), f_2(\textbf{x})\)</span>, and <span class="math inline">\(f_3(\textbf{x})\)</span>, confirming that boosting is based on stumps.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>adab<span class="sc">$</span>model<span class="sc">$</span>trees[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+n= 49 
+
+node), split, n, loss, yval, (yprob)
+      * denotes terminal node
+
+1) root 49 0.23469390 1 (0.43900415 0.56099585)  
+  2) vari&lt; 0.0805 21 0.01020408 -1 (0.94650206 0.05349794) *
+  3) vari&gt;=0.0805 28 0.03061224 1 (0.09596662 0.90403338) *
+
+[[2]]
+n= 49 
+
+node), split, n, loss, yval, (yprob)
+      * denotes terminal node
+
+1) root 49 0.19248630 -1 (0.71330537 0.28669463)  
+  2) vari&lt; 0.073 27 0.01187359 -1 (0.97165821 0.02834179) *
+  3) vari&gt;=0.073 22 0.04554660 1 (0.28457638 0.71542362) *
+
+[[3]]
+n= 49 
+
+node), split, n, loss, yval, (yprob)
+      * denotes terminal node
+
+1) root 49 0.2382598 1 (0.4599978 0.5400022)  
+  2) varg&lt; 0.2065 17 0.0000000 -1 (1.0000000 0.0000000) *
+  3) varg&gt;=0.2065 32 0.0743646 1 (0.2100319 0.7899681) *</code></pre>
+</div>
+</div>
+<p>The first and second trees are split on variable <code>vari</code>, the third tree is split on variable <code>varg</code>. This reinforces how stumps lead to an additive model where the contributions of inputs are ensembled in a weighted combination. Also, a variable can be reused at a later point of the boosting iterations.</p>
+<p>The confusion matrix for the training data set looks promising, but when applied to the test data set we see that the accuracy is only 75.5%, the model has low specificity, classifying too many healthy eyes as glaucatomous.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>adab.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(adab,<span class="at">newdata=</span>glauc_test)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>adab.cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(adab.pred,glauc_test<span class="sc">$</span>Class)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>adab.cm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction glaucoma normal
+  glaucoma       40     21
+  normal          3     34
+                                          
+               Accuracy : 0.7551          
+                 95% CI : (0.6579, 0.8364)
+    No Information Rate : 0.5612          
+    P-Value [Acc &gt; NIR] : 5.38e-05        
+                                          
+                  Kappa : 0.5245          
+                                          
+ Mcnemar's Test P-Value : 0.0005202       
+                                          
+            Sensitivity : 0.9302          
+            Specificity : 0.6182          
+         Pos Pred Value : 0.6557          
+         Neg Pred Value : 0.9189          
+             Prevalence : 0.4388          
+         Detection Rate : 0.4082          
+   Detection Prevalence : 0.6224          
+      Balanced Accuracy : 0.7742          
+                                          
+       'Positive' Class : glaucoma        
+                                          </code></pre>
+</div>
+</div>
+<p>To see the evolution of training and test error over the boosting iterations, we are adding a test data set with the <code>addtest</code> function and requesting a plot.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>adab <span class="ot">&lt;-</span> <span class="fu">addtest</span>(adab,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                glauc_test[,<span class="sc">-</span><span class="fu">ncol</span>(glauc_test)],</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                glauc_test[, <span class="st">"Class"</span>])</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(adab, <span class="at">test=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="boosting_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>While the training error decreased steadily, the test error does not improve after about 15 iterations.</p>
+<p>The <code>ada::varplot</code> function computes and displays a variable importance plot based on the boosting iterations. The “importance” of a variable is measured by how frequently it is selected in boosting (<a href="#fig-glauc-varimp" class="quarto-xref">Figure&nbsp;<span>20.2</span></a>). The majority of the stumps are based on <code>varn</code>, <code>varg</code>, <code>abrs</code>, and <code>vari</code>. Three of these variables are related to the volume of the optic nerve (nasal, inferior, and global), suggesting that the volume of the optic nerve is an important driver of glaucoma classification.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">varplot</span>(adab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-glauc-varimp" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-glauc-varimp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="boosting_files/figure-html/fig-glauc-varimp-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-glauc-varimp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20.2: Variable importance plot for Glaucoma data
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-gradient-boosting" class="level2" data-number="20.3">
+<h2 data-number="20.3" class="anchored" data-anchor-id="sec-gradient-boosting"><span class="header-section-number">20.3</span> Gradient Boosting Machines</h2>
+<section id="the-algorithm" class="level3">
+<h3 class="anchored" data-anchor-id="the-algorithm">The Algorithm</h3>
+<p>The adaptive boosting algorithm can be expressed as a sequence of forward-stagewise additive models that minimize an exponential loss function. This idea can be generalized to the following idea: is there a sequence of weak learning models that can be fit in order to minimize some overall objective (loss) function?</p>
+<p>This is the idea behind <strong>gradient boosting</strong>. Instead of changing the weights in the data between boosting iterations, models are sequentially trained in a greedy way to find a solution to an optimization problem by following the gradient of the objective function. Gradient boosting is often described in terms of fitting models to <strong>pseudo residuals</strong>, so let us first make the connection between gradients and residuals.</p>
+<p>Suppose we wish to minimize the objective (loss) function <span class="math display">\[
+\sum_{i=1}^n L(y_i, f(\textbf{x}_i))
+\]</span> One technique is to start from a current solution <span class="math inline">\(f_0(\textbf{x}_i)\)</span> and to step into the direction of the negative gradient <span id="eq-pseudo-resid"><span class="math display">\[
+-\sum_{i=1}^n \frac{\partial L(y_i,f(\textbf{x}_i))}{\partial f(\textbf{x}_i)}
+\tag{20.1}\]</span></span></p>
+<p>This is the basic idea behind, for example, finding least-squares estimators in nonlinear regression models (see <a href="regnlr.html" class="quarto-xref"><span>Chapter 9</span></a>).</p>
+<p>The terms being summed in <a href="#eq-pseudo-resid" class="quarto-xref">Equation&nbsp;<span>20.1</span></a> are called <strong>pseudo residuals</strong> since they measure the changed in loss at <span class="math inline">\(f(\textbf{x}_i)\)</span>. If we deal with squared error loss, <span class="math inline">\(L(y_i,f(\textbf{x}_i)) = (y_i - f(\textbf{x}_i))^2\)</span>, the pseudo residual is a scaled form of an actual residual, <span class="math display">\[
+\frac{\partial L(y_i,f(\textbf{x}_i))}{\partial f(\textbf{x}_i)} = -2(y_i - f(\textbf{x}_i))
+\]</span></p>
+<p>In adaptive boosting models are trained on sets of data with different weighting. In gradient boosting, models are trained on the pseudo residuals from previous iterations. The principle algorithm is as follows:</p>
+<ul>
+<li><ol start="0" type="1">
+<li>The data consist of <span class="math inline">\([y_1,\textbf{x}_1],\cdots, [y_n,\textbf{x}_n]\)</span>. A loss function <span class="math inline">\(L(y,f(\textbf{x}))\)</span> is chosen.</li>
+</ol></li>
+<li><ol type="1">
+<li>Initialize the model with a constant value by solving <span class="math display">\[
+f_0(\textbf{x}) = \mathop{\mathrm{arg\,min}}_{\gamma} \sum_{i=1}^n L(y_i,\gamma)
+\]</span></li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>Repeat the following steps for <span class="math inline">\(m=1,\cdots, M\)</span>:</li>
+</ol>
+<ul>
+<li><ol type="a">
+<li>Compute the pseudo residuals <span class="math display">\[
+  r_{im} = - \frac{\partial L(y_i,f(\textbf{x}_i))}{\partial f(\textbf{x}_i)}
+  \]</span> where the gradient is evaluated at <span class="math inline">\(f_{m-1}(\textbf{x})\)</span></li>
+</ol></li>
+<li><ol start="2" type="a">
+<li>Train a base learner <span class="math inline">\(b_m(\textbf{x})\)</span> to the data <span class="math inline">\([r_{1m},\textbf{x}_1],\cdots,[r_{nm},\textbf{x}_n]\)</span></li>
+</ol></li>
+<li><ol start="3" type="a">
+<li>Estimate the step size for the <span class="math inline">\(m\)</span><sup>th</sup> model by finding <span class="math inline">\(\delta_m\)</span> such that <span class="math display">\[
+  \delta_m = \mathop{\mathrm{arg\,min}}_{\delta} \sum_{i=1}^n L(y_i, f_{m-1}(\textbf{x}_i) + \delta b_m(\textbf{x}_i))
+  \]</span></li>
+</ol></li>
+<li><ol start="4" type="a">
+<li>Update the model for the next iteration: <span class="math inline">\(f_m(\textbf{x}) = f_{m-1}(\textbf{x}) + \delta_m b_m(\textbf{x})\)</span></li>
+</ol></li>
+</ul></li>
+<li><ol start="3" type="1">
+<li>The final predictor/classifier is <span class="math inline">\(F_M(\textbf{x})\)</span></li>
+</ol></li>
+</ul>
+<p>An advantage of gradient boosting over adaptive boosting is to provide a more general framework that accommodates different models and loss functions.</p>
+<p>It is worthwhile to draw parallels and distinctions of this algorithm and general nonlinear function optimization. In the latter, we are working with a known functional form of the relationship between <span class="math inline">\(y\)</span> and <span class="math inline">\(\textbf{x}\)</span> and we reach an iterative solution by starting from initial values of the parameters. The gradient is computed exactly on each pass through the data and the best step size <span class="math inline">\(\delta\)</span> is determined by a line search.</p>
+<p>In gradient boosting we do not calculate the overall gradient, instead we train a model to predict the gradient in step 2b. Because of the structure of the estimation problem, the step size <span class="math inline">\(\delta\)</span> can be determined through a second optimization in step 2d.</p>
+</section>
+<section id="gradient-boosting-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="gradient-boosting-in-r">Gradient Boosting in <code>R</code></h3>
+<p>You can fit gradient boosting machines with the <code>gbm</code> library in <code>R</code>. The package is flexible and includes gradient boosting for linear models, Logistic, Poisson, Cox proportional hazards, Multinomial, and AdaBoost models and supports a variety of loss functions..</p>
+<p>To build a gradient boosting machine with <code>gbm</code>, you select the following:</p>
+<ul>
+<li><p>the loss function, it is implied by the <code>distribution</code> argument</p></li>
+<li><p>the number of trees, <code>n.trees</code>, the default is 100</p></li>
+<li><p>the depth of each tree, <code>interaction.depth</code>. The default is 1 and corresponds to an additive model based on stumps.<code>interaction.depth=2</code> is a model with 2-way interactions</p></li>
+<li><p>the learning rate parameter., <code>shrinkage</code>, the default is 0.1. The learning rate determines the step size for the gradient.</p></li>
+<li><p>the subsampling rate. <code>bag.fraction</code>, the default is 0.5.</p></li>
+</ul>
+<p>So rather than determining the step size (learning rate) through a separate optimization, it chooses a fixed rate as specified by the <code>shrinkage</code> parameter. The subsampling comes into play after computing the pseudo residuals. The tree is fit on only a subsample of the training data. <span class="citation" data-cites="Friedman_2002">J. H. Friedman (<a href="references.html#ref-Friedman_2002" role="doc-biblioref">2002</a>)</span> foumnd that changing gradient descent to stochastic gradient descent improves the performance of the boosting algorithm.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Glaucoma Database (Cont’d)</p>
+</div>
+<div class="example-container">
+<p>The response variable is recoded to a (0,1) response since <code>gbm</code> expects a (0,1) valued variable for binary data (<code>distribution="bernoulli"</code>). Setting <code>cv.folds=5</code> requests a 5-fold cross-validation to compute the error of the model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gbm)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>Glaucoma <span class="ot">=</span> <span class="fu">ifelse</span>(GlaucomaM<span class="sc">$</span>Class<span class="sc">==</span><span class="st">"glaucoma"</span>,<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>Glauc_train_Y <span class="ot">&lt;-</span> Glaucoma[ trainindex]</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>Glauc_test_Y  <span class="ot">&lt;-</span> Glaucoma[<span class="sc">-</span>trainindex]</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4876</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>gbm_fit <span class="ot">&lt;-</span> <span class="fu">gbm</span>(Glauc_train_Y <span class="sc">~</span> . <span class="sc">-</span> Class, </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">data=</span>glauc_train,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">distribution=</span><span class="st">"bernoulli"</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">cv.folds=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><a href="#fig-gbm-error" class="quarto-xref">Figure&nbsp;<span>20.3</span></a> displays the training and cross-validation errors of the gradient boosting machine. The training error continues to decrease with the boosting iterations, while the cross-validation error achieves a minimum after 30 iterations. The cross-validation error stays pretty flat afterwards, suggesting that the model does not overfit for larger number of boosting iterations.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-gbm-error" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gbm-error-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="boosting_files/figure-html/fig-gbm-error-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gbm-error-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20.3: Train and cross-validation error as a function of boosting iterations.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The <code>summary</code> function of the <code>gbm</code> object computes the relative variable importance for the inputs as judged by the reduction in the loss function. Only the ten most important variables are shown here. Inputs <code>vari</code>, <code>tms</code>, and <code>vars</code> dominate the analysis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ss <span class="ot">&lt;-</span> <span class="fu">summary</span>(gbm_fit, <span class="at">cBars=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="boosting_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ss[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      var   rel.inf
+vari vari 23.077395
+tms   tms 20.008711
+vars vars 11.650118
+phci phci  7.733716
+hic   hic  6.117857
+phcg phcg  3.887402
+mhci mhci  3.851130
+phcn phcn  3.675900
+vasi vasi  2.372715
+vbrs vbrs  2.180921</code></pre>
+</div>
+</div>
+<p>The following statements compute the confusion matrix for the test data set. Since <code>gbm</code> with <code>distribution="bernoulli"</code> essentially is a boosted logistic regression model, the predictions on the scale of the response are predicted probabilities that are converted into predicted categories using the Bayes classifier.</p>
+<p><code>n.trees=100</code> requests that predictions are based on all 100 trees. Without this argument the predictions would be based on the first 30 trees, the value where the cross-validation error took on a minimum.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>gbm_fit.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(gbm_fit,<span class="at">newdata=</span>glauc_test,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">n.trees=</span><span class="dv">100</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>gbm_fit.predcats <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(gbm_fit.pred <span class="sc">&lt;</span> <span class="fl">0.5</span>, <span class="dv">0</span> , <span class="dv">1</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>gbm_fit.cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(gbm_fit.predcats),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">as.factor</span>(Glauc_test_Y),</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                              <span class="at">positive=</span><span class="st">"1"</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>gbm_fit.cm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction  0  1
+         0 34  3
+         1 21 40
+                                          
+               Accuracy : 0.7551          
+                 95% CI : (0.6579, 0.8364)
+    No Information Rate : 0.5612          
+    P-Value [Acc &gt; NIR] : 5.38e-05        
+                                          
+                  Kappa : 0.5245          
+                                          
+ Mcnemar's Test P-Value : 0.0005202       
+                                          
+            Sensitivity : 0.9302          
+            Specificity : 0.6182          
+         Pos Pred Value : 0.6557          
+         Neg Pred Value : 0.9189          
+             Prevalence : 0.4388          
+         Detection Rate : 0.4082          
+   Detection Prevalence : 0.6224          
+      Balanced Accuracy : 0.7742          
+                                          
+       'Positive' Class : 1               
+                                          </code></pre>
+</div>
+</div>
+<p>Like in the adaptive boosting model in the previous section, the gradient boosting model has a fairly low accuracy and predicts too many normal eyes as glaucatomous (low specificity).</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-xgboost" class="level2" data-number="20.4">
+<h2 data-number="20.4" class="anchored" data-anchor-id="sec-xgboost"><span class="header-section-number">20.4</span> Extreme Gradient Boosting (XGboost)</h2>
+<p>Extreme gradient boosting is not a different type of boosting, it is a particular implementation of gradient boosting that became popular in machine learning competitions because of its excellent performance. XGBoost is an algorithm.</p>
+<p>The aspects improved by XGBoost over gradient boosting machines are as follows:</p>
+<ol type="1">
+<li><p>Parallel execution. Although boosting is fundamentally a sequential operation, XGBoost takes advantage of opportunities to parallelize training, for example during tree splitting.</p></li>
+<li><p>Regularization. Gradient boosting does not include regularization to guard against overfitting. XGBoost does include several regularization approaches.</p></li>
+<li><p>XGBoost includes a method for handling missing values, known as sparsity-aware split finding.</p></li>
+<li><p>Built-in cross-validation</p></li>
+</ol>
+<p>Because of these features, XGBoost has become one of the most frequently used algorithms for regression and classification in data science and machine learning. For many data scientists, XGBoost has become the method of choice.</p>
+<p>XGBoost is available in <code>R</code> in the <code>xgboost</code> package. Before you can train an XGBoost model the data need to be arranged in a special form, a <code>xgb.DMatrix</code> object.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Glaucoma Database (Cont’d)</p>
+</div>
+<div class="example-container">
+<p>The following statements apply XGBoost to the Glaucoma data set after converting the training and test data frames into <code>xgb.DMatrix</code> objects.</p>
+<p><code>early_stopping_rounds=3</code> requests that training with a validation data set stops if the performance of the model does not improve for 3 boosting iterations. The <code>watchlist=</code> argument specifies a list of <code>xgb.DMatrix</code> data sets <code>xgboost</code> uses to monitor model performance. Test and validation data sets are specified here.</p>
+<p>By default, <code>xgboost</code> fits trees up to a depth of 6, we are changing this for comparison with adaptive and gradient boosting in the previous sections.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(xgboost)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>glauc_train<span class="sc">$</span>Glaucoma <span class="ot">&lt;-</span> Glauc_train_Y</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>glauc_test<span class="sc">$</span>Glaucoma <span class="ot">&lt;-</span> Glauc_test_Y</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>xgdata <span class="ot">&lt;-</span> <span class="fu">xgb.DMatrix</span>(<span class="at">data=</span><span class="fu">as.matrix</span>(glauc_train[,<span class="dv">1</span><span class="sc">:</span><span class="dv">62</span>]),</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">label=</span>glauc_train<span class="sc">$</span>Glaucoma)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>xgtest <span class="ot">&lt;-</span> <span class="fu">xgb.DMatrix</span>(<span class="at">data=</span><span class="fu">as.matrix</span>(glauc_test[,<span class="dv">1</span><span class="sc">:</span><span class="dv">62</span>]),</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>                      <span class="at">label=</span>glauc_test<span class="sc">$</span>Glaucoma)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">765</span>)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>xgb_fit <span class="ot">&lt;-</span> <span class="fu">xgb.train</span>(<span class="at">data=</span>xgdata,</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">watchlist=</span><span class="fu">list</span>(<span class="at">test=</span>xgtest),</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>                     <span class="at">max.depth=</span><span class="dv">2</span>, <span class="co"># maximum depth of a tree</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>                     <span class="at">eta=</span><span class="fl">0.1</span>,  <span class="co">#learning rate, 0 &lt; eta &lt; 1</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>                     <span class="at">early_stopping_rounds=</span><span class="dv">5</span>,</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>                     <span class="at">subsample=</span><span class="fl">0.5</span>,</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>                     <span class="at">objective=</span><span class="st">"binary:logistic"</span>,</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>                     <span class="at">nrounds=</span><span class="dv">100</span> <span class="co"># max number of boosting iterations</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>                     )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] test-logloss:0.672381 
+Will train until test_logloss hasn't improved in 5 rounds.
+
+[2] test-logloss:0.660826 
+[3] test-logloss:0.636727 
+[4] test-logloss:0.621548 
+[5] test-logloss:0.604597 
+[6] test-logloss:0.595914 
+[7] test-logloss:0.590066 
+[8] test-logloss:0.575405 
+[9] test-logloss:0.568329 
+[10]    test-logloss:0.557616 
+[11]    test-logloss:0.549551 
+[12]    test-logloss:0.553775 
+[13]    test-logloss:0.550009 
+[14]    test-logloss:0.551230 
+[15]    test-logloss:0.546562 
+[16]    test-logloss:0.545014 
+[17]    test-logloss:0.545235 
+[18]    test-logloss:0.530310 
+[19]    test-logloss:0.537485 
+[20]    test-logloss:0.530989 
+[21]    test-logloss:0.533402 
+[22]    test-logloss:0.541920 
+[23]    test-logloss:0.542144 
+Stopping. Best iteration:
+[18]    test-logloss:0.530310</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>xgb_fit.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(xgb_fit,<span class="at">newdata=</span>xgtest,<span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>xgb_fit.predcats <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(xgb_fit.pred <span class="sc">&lt;</span> <span class="fl">0.5</span>, <span class="dv">0</span> , <span class="dv">1</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>xgb_fit.cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(xgb_fit.predcats),</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">as.factor</span>(Glauc_test_Y),</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>                              <span class="at">positive=</span><span class="st">"1"</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>xgb_fit.cm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction  0  1
+         0 34  4
+         1 21 39
+                                          
+               Accuracy : 0.7449          
+                 95% CI : (0.6469, 0.8276)
+    No Information Rate : 0.5612          
+    P-Value [Acc &gt; NIR] : 0.000129        
+                                          
+                  Kappa : 0.5034          
+                                          
+ Mcnemar's Test P-Value : 0.001374        
+                                          
+            Sensitivity : 0.9070          
+            Specificity : 0.6182          
+         Pos Pred Value : 0.6500          
+         Neg Pred Value : 0.8947          
+             Prevalence : 0.4388          
+         Detection Rate : 0.3980          
+   Detection Prevalence : 0.6122          
+      Balanced Accuracy : 0.7626          
+                                          
+       'Positive' Class : 1               
+                                          </code></pre>
+</div>
+</div>
+</div>
+</div>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-Friedman_2002" class="csl-entry" role="listitem">
+Friedman, J. H. 2002. <span>“Stochastic Gradient Boosting.”</span> <em>Computational Statistics and Data Analysis</em> 38 (4): 367–78.
+</div>
+<div id="ref-Friedman_et_al_2000" class="csl-entry" role="listitem">
+Friedman, Jerome, Hastie Trevor, and Robert Tibshirani. 2000. <span>“Additive Logistic Regression: A Statistical View of Boosting.”</span> <em>The Annals of Statistics</em> 28 (2): 337–407.
+</div>
+<div id="ref-hastie_ESL" class="csl-entry" role="listitem">
+Hastie, Trevor, Robert Tibshirani, and Jerome Friedman. 2001. <em>The Elements of Statistical Learning</em>. Springer Series in Statistics. New York, NY, USA: Springer New York Inc.
+</div>
+<div id="ref-James2013_ISLR2" class="csl-entry" role="listitem">
+James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2021. <em>An Introduction to Statistical Learning: With Applications in r, 2nd Ed.</em> Springer. <a href="https://www.statlearning.com/">https://www.statlearning.com/</a>.
+</div>
+<div id="ref-Sutton_2005" class="csl-entry" role="listitem">
+Sutton, Clifton D. 2005. <span>“Classification and Regression Trees, Bagging, and Boosting.”</span> <em>Handbook of Statistics</em> 24: 303–29.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->

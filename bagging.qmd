@@ -1,3 +1,9 @@
+::: content-hidden
+$$
+{{< include latexmacros.tex >}}
+$$
+:::
+
 # Bagging {#sec-bagging}
 
 ## Relationship to Bootstrap
@@ -101,6 +107,85 @@ deviation of the estimator.
 ::::
 :::
 
+## Why and When Does Bagging Work?
+
+It is intuitive that the average in a random sample varies less than the 
+individual random variables being averaged. If $Y_1, \cdots, Y_n$ is a random
+sample from a distribution with mean $\mu$ and variance $\sigma^2$, then 
+$\Var[Y_i] = \sigma^2$, while $\Var[\overline{Y}] = \sigma^2/n$.
+
+We can express this intuition more formally and gain some insight into why 
+bagging works and when it is most effective. To motivate, we follow @Sutton_2005
+and suppose we have a continuous response $Y$ and that $\phi(\bx)$ is the prediction 
+that results from applying any particular method. A prediction method could be
+a regression tree and $\phi^{T}(\bx)$ is the average of the values in the terminal
+node for $\bx$. A prediction method could be a multiple linear regression and 
+$\phi^{R}(\bx)$ is the predicted value $\widehat{y} = \widehat{\bbeta}\bx$.
+
+The point is that $\phi(\bx)$ is a random variable because it depends on the 
+particular sample (the training data) for $Y$ and its statistical properties are
+derive from the prediction method itself and the properties of $Y$. $\Var[\phi^{R}(\bx)]$
+and $\Var[\phi^{T}(\bx)]$ are not the same.
+
+Let $\mu_\phi$ denote the expected value of the predictor $\phi(\bx)$ over the 
+distribution of the training data. The mean-squared error decomposition into 
+variance and squared-bias contribution is then
+is
+$$
+\Exp[(Y-\phi(\bx))^2] = \Var[\phi(\bx)] + \Exp[(Y - \mu_\phi)^2]
+$$
+
+If we had the opportunity to use as the predictor the mean $\mu_\phi$ rather than
+the random variable $\phi(\bx)$, then we would have a smaller mean square error
+than using $\phi(\bx)$ because the variance term drops out ($\Var[\mu_\phi]=0$ 
+because $\mu_\phi$ is a constant). This is true regardless of the prediction 
+method. The replacement would be most effective in situations where 
+$\Var[\phi(\bx)]$ is large. In other words, the larger the variance $\Var[\phi(\bx)$ 
+is relative to the MSE of the predictor, the greater the percentage reduction 
+if the predictor is replaced by its mean.
+
+In practice, we do not know $\mu(\phi)$, but we can get an estimate of it, 
+by simply averaging the individual predictors $\phi(\bx)_1, \cdots, \phi(\bx)_B$
+in a bootstrap sample. Let's denote this aggregate of the bootstrap predictor
+$\phi_{B}(\bx)$  of our base method. To make notation even worse, we would 
+denote the bootstrap predictor of the regression predictor $\phi^{R}(\bx)$ as
+$\phi_{B}^{R}(\bx)$.
+
+The effectiveness of bagging is greatest when the prediction method is highly
+variable, possibly even unstable. Effectiveness is measured here by the relative
+reduction in variability that occurs when $\Var[\phi_B^{*}(\bx)]$ approaches zero 
+with increasing number of bootstrap samples $B$.
+
+In order for bagging to work well, we need to take enough bootstrap samples to
+reduce the variance and the training data has to be large enough for the 
+bootstrap estimate of $\mu_\phi$ to be good.
+
+--- 
+
+A regression model that uses the correct inputs and functional form is a low-variance
+estimation method, it is very stable. Bagging such a a regression estimator does not
+yield much. A decision tree is inherently unstable in that it can change under
+small perturbations or changes in the data. That inherent variability makes it
+a great candidate to be improved upon through bootstrap aggregation---through
+bagging.
+
+To measure the effect of bagging on a classifier, mean square prediction error
+is not the appropriate metric as the performance of the classifier is measured
+through misclassification rate, cross-entropy, or other metrics. An improvement
+through bagging is achieved when the misclassification rate of the bagged 
+estimator is closer to the Bayes rate than the un-bagged classifier. 
+
+:::{.callout-note title="Bayes classifier"}
+Recall that the Bayes classifier is an ideal classifier that always predicts the
+category that is most likely to occur for an input vector $\bx$. The Bayes classifier
+will not always make the correct prediction, but it will have the smallest
+misclassification rate.
+:::
+
+Bagging classifiers tends to work well for classifiers that have low bias in the
+sense that they perform similar to the Bayes classifier for $\bx$ values where
+the classifier $\phi(\bx)$ predicts a class different from the best possible one.
+
 ## Bagged Trees {#sec-bagged-trees}
 
 @Breiman1996 introduced bootstrap aggregating (bagging) as a means to increase 
@@ -117,10 +202,11 @@ Breiman notes
 >  "The vital element is the instability of the prediction method."
 
 If the different learning sets do not lead to changes in the predictors the 
-aggregation will not be effective. This is where weak learners are important 
-because they have high variability. There is a second situation where bagging 
+aggregation will not be effective. This is where base learners with high variability
+(and low bias) are important. There is a second situation where bagging 
 will not be effective: if the method being bagged is already near the limits of 
-accuracy achievable for that data set no amount of bootstrapping and bagging will help. 
+accuracy achievable for that data set no amount of bootstrapping and bagging 
+will help. 
 
 The most frequent application of bagging is with decision trees for either 
 regression or classification. In a non-ensemble situation one would build one 

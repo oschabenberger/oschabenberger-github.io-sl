@@ -347,10 +347,6 @@ parameters that determine the **depth** of the tree are
 even attempted, default 20. Setting this to a small number will save computation
 time since nodes that have fewer than `minsplit` observations will not be 
 split and are likely chopped off during pruning. \
-\
-(Note: I have seen advice to use `minsplit=0` to fit "stumps", trees with a single split. That does not seem
-to work. I could not debug what was happening as the pertinent code is in C
-and not accessible with `R` debugging tools.)
 
 - `minbucket`: The minimum number of observations in terminal nodes (leaves).
 The default is `minsplit/3`.
@@ -402,7 +398,7 @@ variables. The use of stumps is common in adaptive boosting.
 The following code fits a stump to the `Hitters` data. `minsplit=2` specifies
 that a split will not be attempted unless at least two observations are present.
 This guarantees that at least one split occurs (setting `minsplit=0` as 
-recommended in some places does not seem to work in guaranteeing a single split).
+recommended in some places does not seem to always work in guaranteeing a single split).
 Setting the threshold for the complexity parameter to -1 essentially turns off
 checking whether the split improves the overall fit. `maxdepth=1` sets the 
 maximum depth of the tree to two nodes; zero depth refers to the root node.

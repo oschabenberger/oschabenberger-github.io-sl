@@ -956,8 +956,7 @@ Figure&nbsp;17.6: Final tree for Hitters data after pruning and cross-validation
 <p>In <code>rpart</code>, parameters that determine the tree construction are passed as a <code>rpart.control</code> structure to the <code>control=</code> parameter. The most important parameters that determine the <strong>depth</strong> of the tree are</p>
 <ul>
 <li><p><code>minsplit</code>: The minimum number of observations in a node for which a split is even attempted, default 20. Setting this to a small number will save computation time since nodes that have fewer than <code>minsplit</code> observations will not be split and are likely chopped off during pruning.<br>
-<br>
-(Note: I have seen advice to use <code>minsplit=0</code> to fit “stumps”, trees with a single split. That does not seem to work. I could not debug what was happening as the pertinent code is in C and not accessible with <code>R</code> debugging tools.)</p></li>
+</p></li>
 <li><p><code>minbucket</code>: The minimum number of observations in terminal nodes (leaves). The default is <code>minsplit/3</code>.</p></li>
 <li><p><code>cp</code>: Threshold for the complexity parameter. Recall from <a href="decisiontrees.html#sec-trees-pruning" class="quarto-xref"><span>Section 16.3.2</span></a> that the complexity of the tree is measured during pruning as <span class="math display">\[
 C_\alpha(T) = Q(T) + \alpha|T|
@@ -975,7 +974,7 @@ C_\alpha(T) = Q(T) + cp|T|\, Q(T_1)
 <section id="fitting-stumps" class="level4">
 <h4 class="anchored" data-anchor-id="fitting-stumps">Fitting stumps</h4>
 <p>A special application of controlling the construction of decision trees are trees with a single split, also called “stumps”. In most scenarios such trees will underfit the data. However, in <strong>adaptive boosting</strong>, we fit a large number of trees where subsequent trees are weighing observations according to the level of misclassification, those trees focus on observations poorly classified so far. The individual trees are not deep trees, relying only on the most important variables. The use of stumps is common in adaptive boosting.</p>
-<p>The following code fits a stump to the <code>Hitters</code> data. <code>minsplit=2</code> specifies that a split will not be attempted unless at least two observations are present. This guarantees that at least one split occurs (setting <code>minsplit=0</code> as recommended in some places does not seem to work in guaranteeing a single split). Setting the threshold for the complexity parameter to -1 essentially turns off checking whether the split improves the overall fit. <code>maxdepth=1</code> sets the maximum depth of the tree to two nodes; zero depth refers to the root node. Finally, <code>xval=0</code> turns off the cross-validation.</p>
+<p>The following code fits a stump to the <code>Hitters</code> data. <code>minsplit=2</code> specifies that a split will not be attempted unless at least two observations are present. This guarantees that at least one split occurs (setting <code>minsplit=0</code> as recommended in some places does not seem to always work in guaranteeing a single split). Setting the threshold for the complexity parameter to -1 essentially turns off checking whether the split improves the overall fit. <code>maxdepth=1</code> sets the maximum depth of the tree to two nodes; zero depth refers to the root node. Finally, <code>xval=0</code> turns off the cross-validation.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>stump <span class="ot">&lt;-</span> <span class="fu">rpart</span>(<span class="fu">log</span>(Salary) <span class="sc">~</span> Years <span class="sc">+</span> Hits <span class="sc">+</span> RBI <span class="sc">+</span> Walks <span class="sc">+</span> Runs <span class="sc">+</span> HmRun <span class="sc">+</span> </span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                PutOuts <span class="sc">+</span> AtBat <span class="sc">+</span> Errors, </span>
@@ -1795,7 +1794,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"selector":".lightbox","descPosition":"bottom","closeEffect":"zoom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"descPosition":"bottom","selector":".lightbox","closeEffect":"zoom","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

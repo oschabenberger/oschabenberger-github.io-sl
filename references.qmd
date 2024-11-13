@@ -158,6 +158,35 @@ doi = {10.1198/016214502760047131},
 URL = {https://doi.org/10.1198/016214502760047131}
 }
 
+@inproceedings{FreundSchapire_1996,
+author={Freund, Yoav and Schapire, Robert E.},
+title={Experiments with a New Boosting Algorithm},
+year={1996},
+publisher={Morgan Kauffman, San Francisco},
+pages={148--156},
+booktitle={Machine Learning: Proceedings of the Thirteenth International Conference}
+}
+
+@article{Friedman_2002,
+title={Stochastic gradient boosting},
+author={Friedman, J.H.},
+journal={Computational Statistics and Data Analysis},
+year={2002},
+volume={38},
+number={4},
+pages={367--378}
+}
+
+@article{Friedman_et_al_2000,
+title={Additive Logistic Regression: A Statistical View of Boosting},
+author={Friedman, Jerome and Hastie, Trevor, and Tibshirani, Robert},
+journal={The Annals of Statistics},
+year={2000},
+volume={28},
+number={2},
+pages={337--407}
+}
+
 @article{FurnivalWilson1974,
 title={Regression by Leaps and Bounds},
 author={Furnival, George M. and Wilson, Robert W.},
