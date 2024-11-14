@@ -11,7 +11,7 @@ $$
 
 Principal component analysis (PCA) is one of the most important methods of unsupervised learning with many applications:
 
-- **Summarization**: summarize a $p$-dimensional matrix $\bX_{(n\times p)}$ through a lower-dimensional matrix $\bZ_{(n\times m)}$. $m$ is usually much smaller than $p$, and in many cases $m=2$, especially if the results are to be presented grahically.
+- **Summarization**: summarize a $p$-dimensional matrix $\bX_{(n\times p)}$ through a lower-dimensional matrix $\bZ_{(n\times m)}$. $m$ is usually much smaller than $p$, and in many cases $m=2$, especially if the results are to be presented graphically.
 
 - **Visualization**: Instead of all ${p\choose 2}$ two-way scatterplots between $p$ variables, display a single scatterplot of the first two principal components.
 

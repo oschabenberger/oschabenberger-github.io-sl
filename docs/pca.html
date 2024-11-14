@@ -583,7 +583,7 @@ window.Quarto = {
 <h2 data-number="23.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">23.1</span> Introduction</h2>
 <p>Principal component analysis (PCA) is one of the most important methods of unsupervised learning with many applications:</p>
 <ul>
-<li><p><strong>Summarization</strong>: summarize a <span class="math inline">\(p\)</span>-dimensional matrix <span class="math inline">\(\textbf{X}_{(n\times p)}\)</span> through a lower-dimensional matrix <span class="math inline">\(\textbf{Z}_{(n\times m)}\)</span>. <span class="math inline">\(m\)</span> is usually much smaller than <span class="math inline">\(p\)</span>, and in many cases <span class="math inline">\(m=2\)</span>, especially if the results are to be presented grahically.</p></li>
+<li><p><strong>Summarization</strong>: summarize a <span class="math inline">\(p\)</span>-dimensional matrix <span class="math inline">\(\textbf{X}_{(n\times p)}\)</span> through a lower-dimensional matrix <span class="math inline">\(\textbf{Z}_{(n\times m)}\)</span>. <span class="math inline">\(m\)</span> is usually much smaller than <span class="math inline">\(p\)</span>, and in many cases <span class="math inline">\(m=2\)</span>, especially if the results are to be presented graphically.</p></li>
 <li><p><strong>Visualization</strong>: Instead of all <span class="math inline">\({p\choose 2}\)</span> two-way scatterplots between <span class="math inline">\(p\)</span> variables, display a single scatterplot of the first two principal components.</p></li>
 <li><p><strong>Dimension reduction</strong>: Use the first <span class="math inline">\(m\)</span> principal components as inputs to a regression model (see PCR, <a href="regfeature.html#sec-pcr" class="quarto-xref"><span>Section 8.3.2</span></a>). Apply a clustering algorithm such as <span class="math inline">\(k\)</span>-means clustering to the first <span class="math inline">\(m\)</span> principal components.</p></li>
 <li><p><strong>Imputation</strong>: Use principal components iteratively to complete a numerical matrix that contains missing values.</p></li>
@@ -934,7 +934,7 @@ Petal.Width   0.5648565 -0.06694199</code></pre>
 <div id="fig-iris-biplot" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-iris-biplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="pca_files/figure-html/fig-iris-biplot-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="pca_files/figure-html/fig-iris-biplot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="pca_files/figure-html/fig-iris-biplot-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="pca_files/figure-html/fig-iris-biplot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-iris-biplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;23.2: Biplot for first two principal components of Iris data.
@@ -1075,7 +1075,7 @@ Cumulative Proportion  0.6201 0.8675 0.95664 1.00000</code></pre>
 <div id="fig-pca-biplot-scaled-unscaled" class="quarto-figure quarto-figure-center quarto-float anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-pca-biplot-scaled-unscaled-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="pca_files/figure-html/fig-pca-biplot-scaled-unscaled-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="pca_files/figure-html/fig-pca-biplot-scaled-unscaled-1.png" class="img-fluid figure-img" style="width:75.0%"></a>
+<a href="pca_files/figure-html/fig-pca-biplot-scaled-unscaled-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="pca_files/figure-html/fig-pca-biplot-scaled-unscaled-1.png" class="img-fluid figure-img" style="width:75.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pca-biplot-scaled-unscaled-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;23.3: Biplots in unscaled (left) and scaled (right) analysis.
@@ -1808,7 +1808,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","descPosition":"bottom","closeEffect":"zoom","loop":false,"selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","openEffect":"zoom","loop":false,"descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

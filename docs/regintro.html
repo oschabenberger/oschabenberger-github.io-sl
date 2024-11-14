@@ -881,7 +881,7 @@ K(x_0,x_i) = I(||x_i-x_0|| \le ||x_{(k)} - x_0 ||)
 <li><p><span class="math inline">\(p=10\)</span> covers <span class="math inline">\(0.1^{1/10} = 0.79\)</span> of the range of <span class="math inline">\(X_1, \cdots, X_{10}\)</span></p></li>
 </ul>
 <p>As <span class="math inline">\(p\)</span> increases, you have to increase the “neighborhood” to capture a constant fraction of the observations. Eventually, there is nothing local about these neighborhoods and many points will be near the edge of the data space. If you place 50 observations in 20 dimensions no two observations are close to each other.</p>
-<div id="fig-curse-dimensionality" class="quarto-figure quarto-figure-center quarto-float anchored" width="80%" data-fig-align="center">
+<div id="fig-curse-dimensionality" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center" width="80%">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-curse-dimensionality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <a href="images/CurseOfDimensionality.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/CurseOfDimensionality.png" id="fig-curse-dimensionality" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:80.0%"></a>
@@ -1483,7 +1483,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","openEffect":"zoom","descPosition":"bottom","selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","descPosition":"bottom","loop":false,"selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

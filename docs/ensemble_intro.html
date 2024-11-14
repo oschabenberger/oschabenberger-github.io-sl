@@ -565,7 +565,7 @@ window.Quarto = {
 <div id="fig-ensemble-map" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ensemble-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/EnsemblesMindMap.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/EnsemblesMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/EnsemblesMindMap.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/EnsemblesMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ensemble-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;18.1: An overview of approaches in ensemble learning
@@ -573,7 +573,7 @@ Figure&nbsp;18.1: An overview of approaches in ensemble learning
 </figure>
 </div>
 <p>In <strong>stacking</strong> (also called stacked generalization), for example, base learners come from different model families. If the goal is classification of observations, base learners can be decision trees, logistic regression models, support vector machines, neural networks, naive Bayes classifiers, and so on. Each of these has its strengths and weaknesses. The diversity of classification methods, once combined into a single classifier, hopefully combines the strengths of the methods and allays their weaknesses.</p>
-<p>The base learners, whether homogeneous or heterogeneous, need to be combined into an overall output. In heterogeneous ensembles, another model, the so-called <strong>meta learner</strong> is built for that purpose. In homogeneous ensembles the combination is often a simple summing, averaging, or majority voting. This comes at the expense of interpretability–a single decision tree is intrinsically interpretable, a decision based on 500 trees built with different inputs and splits is much less interpretable. On the other hand, ensemble techniques can perform extremely well. So well that random forests or boosting methods such as GBM or XGBoost have become de-facto standard approaches for many data scientists and machine learners.</p>
+<p>The base learners, whether homogeneous or heterogeneous, need to be combined into an overall output. In heterogeneous ensembles, another model, the so-called <strong>meta learner</strong> is built for that purpose. In homogeneous ensembles the combination is often a simple summing, averaging, or majority voting. This comes at the expense of interpretability—a single decision tree is intrinsically interpretable, a decision based on 500 trees built with different inputs and splits is much less interpretable. On the other hand, ensemble techniques can perform extremely well. So well that random forests or boosting methods such as gradient boosting machines or XGBoost have become de-facto standard approaches for many data scientists and machine learners.</p>
 <p>To understand why ensembles are powerful, let’s take a look at a very simple situation: the sample mean in a random sample. Suppose we are drawing a random sample <span class="math inline">\(Y_1, \cdots, Y_n\)</span> from a population with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>. To estimate <span class="math inline">\(\mu\)</span>, we could use each of the <span class="math inline">\(Y_i\)</span> as an estimator; after all, they are unbiased estimators for <span class="math inline">\(\mu\)</span> <span class="math display">\[
 \text{E}[Y_i] = \mu,  \quad \forall i
 \]</span></p>
@@ -583,13 +583,13 @@ Figure&nbsp;18.1: An overview of approaches in ensemble learning
 <p>We prefer <span class="math inline">\(\overline{Y}\)</span> over <span class="math inline">\(Y_i\)</span> as an estimator of <span class="math inline">\(\mu\)</span> because <span class="math display">\[
 \text{Var}[Y_i] = \sigma^2 \quad \text{Var}[\overline{Y}] = \frac{\sigma^2}{n}
 \]</span></p>
-<p>The variance of the sample mean can be made arbitrarily small by drawing a larger sample. The effect of reducing variability is particularly strong when <span class="math inline">\(\sigma^2\)</span> is large. When <span class="math inline">\(\sigma^2 \rightarrow 0\)</span>, <span class="math inline">\(\overline{Y}\)</span> provides less of an advantage as an estimator of <span class="math inline">\(\mu\)</span> over <span class="math inline">\(Y_i\)</span>. And if <span class="math inline">\(\sigma^2 = 0\)</span>, then it makes no sense to draw more than a single observation. <span class="math inline">\(Y_1 = Y_2 = \cdots = Y_n = \mu\)</span>. After drawing one observation we know the mean.</p>
+<p>The variance of the sample mean can be made arbitrarily small by drawing a larger sample. The effect of reducing variability is particularly strong when <span class="math inline">\(\sigma^2\)</span> is large. When <span class="math inline">\(\sigma^2 \rightarrow 0\)</span>, <span class="math inline">\(\overline{Y}\)</span> provides less of an advantage as an estimator of <span class="math inline">\(\mu\)</span> over <span class="math inline">\(Y_i\)</span>. And if <span class="math inline">\(\sigma^2 = 0\)</span>, then it makes no sense to draw more than a single observation: <span class="math inline">\(Y_1 = Y_2 = \cdots = Y_n = \mu\)</span>. After drawing one observation we know the mean.</p>
 <p>Averaging has a very powerful effect on reducing variability. And that effect is greater if the things being averaged are highly variable. Averaging things that do not vary does not buy as much. From these considerations flow two approaches to create a statistical model with small prediction error or high accuracy:</p>
-<ul>
+<ol type="1">
 <li><p>Carefully craft a single model that captures the variability in the data very well</p></li>
 <li><p>Average a bunch of models that have high variability and small bias.</p></li>
-</ul>
-<p>You can see how the concept of diversity plays into homogeneous ensembles. The more variable–the more diverse–the weak learners are, the more impact averaging has on their individual predictions or classifications.</p>
+</ol>
+<p>You can see how the concept of diversity plays into homogeneous ensembles. The more variable–the more diverse–the base learners are, the more impact averaging has on their individual predictions or classifications.</p>
 </section>
 <section id="sec-ensemble-bootstrap" class="level2" data-number="18.2">
 <h2 data-number="18.2" class="anchored" data-anchor-id="sec-ensemble-bootstrap"><span class="header-section-number">18.2</span> The Bootstrap</h2>
@@ -679,7 +679,7 @@ t1* 0.687559 0.0007935389  0.02833526</code></pre>
 <img src="ensemble_intro_files/figure-html/fig-bootstrap-prob-1.png" class="img-fluid figure-img" style="width:85.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap-prob-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;18.2: Probability of an observation to be included in a bootstrap sample.
+Figure&nbsp;18.2: Probability that an observation is excluded from a bootstrap sample.
 </figcaption>
 </figure>
 </div>
@@ -1341,7 +1341,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","openEffect":"zoom","descPosition":"bottom","loop":false});
+<script>var lightboxQuarto = GLightbox({"loop":false,"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -95,6 +129,35 @@ div.csl-indent {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -479,7 +542,34 @@ div.csl-indent {
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">36.1</span> Introduction</a>
+  <ul>
+  <li><a href="#why-do-we-care" id="toc-why-do-we-care" class="nav-link" data-scroll-target="#why-do-we-care">Why Do we Care?</a></li>
+  <li><a href="#a-continuum" id="toc-a-continuum" class="nav-link" data-scroll-target="#a-continuum">A Continuum</a></li>
+  <li><a href="#the-mind-map" id="toc-the-mind-map" class="nav-link" data-scroll-target="#the-mind-map">The Mind Map</a></li>
+  <li><a href="#words-of-caution" id="toc-words-of-caution" class="nav-link" data-scroll-target="#words-of-caution">Words of Caution</a></li>
+  <li><a href="#good-explanations" id="toc-good-explanations" class="nav-link" data-scroll-target="#good-explanations">Good Explanations</a></li>
+  </ul></li>
+  <li><a href="#model-agnostic-explainability" id="toc-model-agnostic-explainability" class="nav-link" data-scroll-target="#model-agnostic-explainability"><span class="header-section-number">36.2</span> Model-agnostic Explainability</a>
+  <ul>
+  <li><a href="#partial-dependence-plots-pdp" id="toc-partial-dependence-plots-pdp" class="nav-link" data-scroll-target="#partial-dependence-plots-pdp">Partial Dependence Plots (PDP)</a>
+  <ul class="collapse">
+  <li><a href="#advantages" id="toc-advantages" class="nav-link" data-scroll-target="#advantages">Advantages</a></li>
+  <li><a href="#disadvantages" id="toc-disadvantages" class="nav-link" data-scroll-target="#disadvantages">Disadvantages</a></li>
+  </ul></li>
+  <li><a href="#individual-conditional-expectation-ice" id="toc-individual-conditional-expectation-ice" class="nav-link" data-scroll-target="#individual-conditional-expectation-ice">Individual Conditional Expectation (ICE)</a></li>
+  <li><a href="#variable-importance" id="toc-variable-importance" class="nav-link" data-scroll-target="#variable-importance">Variable Importance</a></li>
+  <li><a href="#surrogate-models" id="toc-surrogate-models" class="nav-link" data-scroll-target="#surrogate-models">Surrogate Models</a></li>
+  <li><a href="#local-interpretable-model-agnostic-explanation-lime" id="toc-local-interpretable-model-agnostic-explanation-lime" class="nav-link" data-scroll-target="#local-interpretable-model-agnostic-explanation-lime">Local Interpretable Model-Agnostic Explanation (LIME)</a></li>
+  <li><a href="#shapley-additive-explanation-shap" id="toc-shapley-additive-explanation-shap" class="nav-link" data-scroll-target="#shapley-additive-explanation-shap">Shapley Additive Explanation (SHAP)</a></li>
+  </ul></li>
+  <li><a href="#takeaways" id="toc-takeaways" class="nav-link" data-scroll-target="#takeaways"><span class="header-section-number">36.3</span> Takeaways</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -503,37 +593,398 @@ div.csl-indent {
 </header>
 
 
-<div id="fig-explain-map" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig.align="center">
+<section id="introduction" class="level2" data-number="36.1">
+<h2 data-number="36.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">36.1</span> Introduction</h2>
+<p>You do not have to look very hard these days to come across terms such as <strong>interpretable machine learning</strong>, <strong>explainable AI</strong> (xAI), <strong>responsible AI</strong>, <strong>ethical AI</strong> in the discourse about data analytics, machine learning, and artificial intelligence. This chapter deals with questions of interpreting and explaining models derived from data, not with the ethical aspects of the discipline. Although one could argue that working with models that we are unable to explain how they work is not a responsible thing to do.</p>
+<p>Interpretability and explainability are often used interchangeably. It is worthwhile making a distinction. We draw in this chapter on the excellent online book “Interpretable Machine Learning” <span class="citation" data-cites="Molnar2022">(<a href="references.html#ref-Molnar2022" role="doc-biblioref">Molnar 2022</a>)</span> although by the author’s definition, most of the book is concerned with explaining models.</p>
+<p>A system is <strong>interpretable</strong> if it is capable of being understood. In such a system the change that follows when a knob is turned is known. Someone trained in the arts can articulate how the system works, how input is transformed into output. The qualifier “trained in the arts” is added because some threshold of knowledge must be assumed. An internal combustion engine is interpretable, it is capable of being understood—but not by everyone.</p>
+<p>A system is <strong>explainable</strong> if we can understand how something happened, how it came up with its answers. The difference to interpretability is subtle. Intrepreting focuses on the engine of the system, how it transforms input into output. Explaining focuses on the output side of the system, trying to understand what makes the box work without understanding how the box works (<a href="#fig-inter-explain" class="quarto-xref">Figure&nbsp;<span>36.1</span></a>).</p>
+<div id="fig-inter-explain" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-explain-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/ExplainabilityMindMap.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/ExplainabilityMindMap.png" class="img-fluid figure-img" data-fig.align="center"></a>
+<div aria-describedby="fig-inter-explain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Inter_and_explain.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-explain-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;36.1: Model explainability mind map
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inter-explain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36.1: Interpretability and explainability.
 </figcaption>
 </figure>
 </div>
-<p>To answer the question “What makes a model interpretable?”, <span class="citation" data-cites="sankaran_2024">Sankaran (<a href="references.html#ref-sankaran_2024" role="doc-biblioref">2024</a>)</span> draw parallels between model interpretability and data visualization, asking “What makes a visualization effective?” A good visualization</p>
+<p>An internal combustion engine is interpretable: gas and air are mixed, compressed, and ignited. The force of the ignition moves one or more pistons which turns a crank shaft. In a car or motorcycle, this motion is translated into tire rotation. The internal combustion engine is also explainable: if I step on the gas pedal the engine revs higher and the car goes faster.</p>
+<p>A system that is interpretable is always explainable, but not the other way around. Clearly, we prefer interpretable systems over those that are just explainable.</p>
+<section id="why-do-we-care" class="level3">
+<h3 class="anchored" data-anchor-id="why-do-we-care">Why Do we Care?</h3>
+<p>Replace “systems” with “models based on data” in the previous paragraphs and you see how concepts of interpretability and explainability apply to statistical models and machine learning. We care about the topic and about the distinction for several reasons:</p>
 <ul>
-<li>streamlines a taxing cognitive operation into a perceptual one</li>
-<li>uses representations that are familiar or easily learnable</li>
-<li>uses graphical elements that are legible and well-annotated</li>
-<li>prevents oversummarization and highlights details for follow-up</li>
-<li>pushes readers past passive condsumption, inspiring deeper exploration</li>
-<li>shows data provenance and lineage</li>
+<li><p>Model interpretability is generally on the decline. The need for <strong>transparency</strong>, on the other hand, is on the rise. Decisions have consequences and someone or something has to be accountable for them.</p></li>
+<li><p>There is an inverse relationship between model complexity and interpretability. Simple, interpretable models often do not perform well. The measures we take to improve their performance tend to reduce their interpretability. A great example are decision trees. A single tree is highly interpretable, we say it is <strong>intrinsically interpretable</strong>, its very structure as a tree lends its interpretation. However, a single tree often does not perform well, it has high variance and is sensitive to changes in the data. An ensemble of decision trees, such as in a random forest or a gradient boosting machine, can perform extremely well, but now we have sacrificed interpretability. Instead of a single tree, a collection of 50, 100, or 500 trees are generating a predicted value. A single decision rule was replaced by 500 decision rules.</p></li>
+<li><p>Any model can be made less interpretable by adding features. A linear regression model is intrinsically interpretable, but add more inputs, their transformations and interactions, and the entire model becomes much less understandable.</p></li>
+<li><p>Models are increasingly seen as a source of risk. And like with all risks, that means we need to manage it (understand, contain, insure). A risk that is not understood is difficult to guard against. Ironically, the more complex models that perform well carry a larger risk by virtue of being difficult to understand.</p></li>
 </ul>
-<p>Similarly, an interpretable model can be broken down into relevant components, each of which can be assigned meaning. Instead of information density (showing more of the data), interpretability relies on faithfulness (showing more of the model). The parallels run deeper. As in a good visualization, the data provenance of a trustworthy model can be traced back to the original measurement mechanism — beautiful design and high-accuracy have little value otherwise. Moreover, like visualization, interpretability must be tailored to an audience and the problems they need solved (Lipton, 2018). There are different levels of data literacy, and visual representations may be familiar to some audiences but not others. Similarly, AI models are employed across a range of problem domains, necessitating validation in realistic settings (see Section 3). Finally, effective visualizations push readers beyond passive consumption — they inspire deeper exploration of complexity. Likewise, interpretability can support the transition from automated to augmented decision-making (Heer, 2019), enhancing rather than substituting human reason. Model interpretability can be approached</p>
-<p>Intrinsically interpretable models are also called <strong>glass boxes</strong> to distinguish them from <strong>black boxes</strong> that are inherently non-interpretable <span class="citation" data-cites="sankaran_2024">(<a href="references.html#ref-sankaran_2024" role="doc-biblioref">Sankaran 2024</a>)</span>.</p>
+</section>
+<section id="a-continuum" class="level3">
+<h3 class="anchored" data-anchor-id="a-continuum">A Continuum</h3>
+<p>Interpretability is not an all-or-nothing proposition. As mentioned in the previous bullet list, any model becomes less interpretable by adding features. An expert in artificial neural networks might find them to be more interpretable than an occasional user.</p>
+<p>It is best to think of a spectrum of interpretability and the methods we consider to model data are somewhere on the spectrum—with room for discussion and movement (<a href="#fig-inter-cont" class="quarto-xref">Figure&nbsp;<span>36.2</span></a>). It is clear from the figure that more contemporary and currently popular analytic methods tend to appear on the right hand side.</p>
+<div id="fig-inter-cont" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inter-cont-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/InterpretabilityContinuum.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/InterpretabilityContinuum.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inter-cont-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36.2: Continuum of model interpretability.
+</figcaption>
+</figure>
+</div>
+<p>On the left hand side of the figure are what we call <strong>intrinsically interpretable</strong> models. Interpretable models are transparent and can be understood. Intrinsically interpretable models can be understood by looking at the model <em>structure</em>. Single decision trees, simple linear regressions, and nonlinear models that are parameterized in terms of domain-specific quantities and relationships are intrinsically interpretable. <span class="citation" data-cites="sankaran_2024">Sankaran (<a href="references.html#ref-sankaran_2024" role="doc-biblioref">2024</a>)</span> call intrinsically interpretable models <strong>glass boxes</strong> to distinguish them from non-interpretable <strong>black boxes</strong>.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Mitscherlich Equation</p>
+</div>
+<div class="example-container">
+<p>In section <a href="regnlr.html#sec-nlr-starting-values" class="quarto-xref"><span>Section 9.3</span></a> we encountered the Mitscherlich equation, popular to model plant and crop yield.</p>
+<p><span class="math display">\[
+\text{E}[Y] = \lambda + (\xi-\lambda) \exp\left\{ -\kappa x\right\}
+\]</span></p>
+<p>The Mitscherlich yield equation is intrinsically interpretable. The parameters have a direct interpretation in terms of the subject matter (<a href="#fig-mitsch-data2" class="quarto-xref">Figure&nbsp;<span>36.3</span></a>):</p>
+<ul>
+<li><span class="math inline">\(\xi\)</span>: the crop yield at <span class="math inline">\(x=0\)</span></li>
+<li><span class="math inline">\(\lambda\)</span>: the upper yield asymptote as <span class="math inline">\(x\)</span> increases</li>
+<li><span class="math inline">\(\kappa\)</span>: is related to the rate of change, how quickly the yield increases from <span class="math inline">\(\xi\)</span> to <span class="math inline">\(\lambda\)</span></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">675</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="dv">0</span>, <span class="at">to=</span><span class="dv">400</span>, <span class="at">by=</span><span class="dv">20</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="dv">80</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>xi <span class="ot">&lt;-</span> <span class="dv">40</span>  </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>kappa <span class="ot">&lt;-</span> <span class="fl">0.01</span> </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> lambda <span class="sc">+</span> (xi<span class="sc">-</span>lambda) <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>kappa <span class="sc">*</span> x)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>Yield <span class="ot">&lt;-</span> M <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(M),<span class="at">mean=</span><span class="dv">0</span>,<span class="at">sd=</span><span class="dv">3</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>mitsch <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(Yield,M,x)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x,M, <span class="at">type=</span><span class="st">"l"</span>,<span class="at">las=</span><span class="dv">1</span>,<span class="at">bty=</span><span class="st">"l"</span>,<span class="at">ylab=</span><span class="st">"Yield"</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">40</span>,<span class="dv">80</span>))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(x,Yield)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-mitsch-data2" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mitsch-data2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="explainability_files/figure-html/fig-mitsch-data2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mitsch-data2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36.3: Simulated yield data and Mitscherlich model
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>It is also clear how “turning a knob” in the model changes the output. For example, raising or lowering <span class="math inline">\(\lambda\)</span> affects the asymptotic yield. Changing <span class="math inline">\(\kappa\)</span> affects the shape of the yield curve between <span class="math inline">\(\xi\)</span> and <span class="math inline">\(\lambda\)</span>.</p>
+</div>
+</div>
+<div class="example">
+<div class="example-header">
+<p>Example: First-order Compartmental Model</p>
+</div>
+<div class="example-container">
+<p>Figure <a href="#fig-explain-theoph" class="quarto-xref">Figure&nbsp;<span>36.4</span></a> shows a first-order compartmental model for the concentration of the drug theophylline in patients over time. The concentration <span class="math inline">\(C_t\)</span> at time <span class="math inline">\(t\)</span> is modeled as a function of dose <span class="math inline">\(D\)</span> as <span class="math display">\[
+    \text{E}[C_t] = \frac{D k_e k_a}{Cl(k_a - k_e)} \left \{ \exp(-k_e t) - \exp(-k_a t) \right \}
+\]</span> The model is intrinsically interpretable. The parameters represent</p>
+<ul>
+<li><span class="math inline">\(k_e\)</span>: the elimination rate of the drug</li>
+<li><span class="math inline">\(k_a\)</span>: the absorption rate of the drug</li>
+<li><span class="math inline">\(Cl\)</span>: the clearance of the drug</li>
+</ul>
+<div id="fig-explain-theoph" class="quarto-figure quarto-figure-center quarto-float anchored" data-wifth="90%" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-explain-theoph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Theophylline.png" class="img-fluid quarto-figure quarto-figure-center figure-img" data-wifth="90%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-explain-theoph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36.4: First-order compartmental model.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Linear regression models are intrinsically interpretable. In the simple linear model <span class="math display">\[
+\text{E}[Y] = \beta_0 + \beta_1 x
+\]</span> <span class="math inline">\(\beta_0\)</span> is the mean response when <span class="math inline">\(x=0\)</span>, <span class="math inline">\(\beta_1\)</span> represents the change in mean response when <span class="math inline">\(x\)</span> increases by one unit. The model is still intrinsically interpretable when more input variables are added, but the interpretation is more nuanced. In the model <span class="math display">\[
+\text{E}[Y] = \beta_0 + \beta_1 x_1 + \beta_2x_2 + \beta_3x_3
+\]</span> <span class="math inline">\(\beta_j\)</span> (<span class="math inline">\(j=1,2,3)\)</span> is no longer the change in mean response if <span class="math inline">\(x_j\)</span> increases by one unit. It is the change in mean response if <span class="math inline">\(x_j\)</span> increases by one unit <strong>and</strong> all other <span class="math inline">\(x\)</span>s are held fixed. Add more inputs, factors, feature transformations, and interaction terms and the interpretation becomes even more nuanced.</p>
+<p>Adding regularization can make a model more interpretable or less interpretable. Ridge (<span class="math inline">\(L_2\)</span>) regularization does not help with interpretability because it assigns non-zero weight to the model coefficient. A model with 1,000 inputs does not become more interpretable by shrinking 1,000 coefficients somewhat. Lasso (<span class="math inline">\(L_1\)</span>) regularization increases interpretability because it shrinks coefficients all the way to zero, combining regularization with feature selection.</p>
+<p>Ensemble methods are less interpretable than their non-ensembled counterparts such as a single decision tree (<a href="#fig-explain-tree" class="quarto-xref">Figure&nbsp;<span>36.5</span></a>).</p>
+<div id="fig-explain-tree" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-explain-tree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/DecisionTreeHealth.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/DecisionTreeHealth.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-explain-tree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36.5: A single decision tree is intrinsically interpretable.
+</figcaption>
+</figure>
+</div>
+<p>Highly over-parameterized nonlinear models such as artificial neural networks are completely uninterpretable. These are the proverbial <strong>black boxes</strong> and being able to explain the model output is the best one can hope for. <a href="#fig-inter-alexnet" class="quarto-xref">Figure&nbsp;<span>36.6</span></a> is a schema of AlexNet, a convolutional neural network that won the ImageNet competition in 2012. The schema tells us how AlexNet is constructed but it is impossible to say how exactly it works. We cannot articulate how an input is transformed into the output, we can only describe what happens to it: it is going through a 11 x 11 convolutional layer with 96 kernels, followed by a max pooling layer, and so on.</p>
+<div id="fig-inter-alexnet" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inter-alexnet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/AlexNet.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/AlexNet.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inter-alexnet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36.6: AlexNet, from <a href="https://learnopencv.com/number-of-parameters-and-tensor-sizes-in-convolutional-neural-network/">LearnOpenCV</a>
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="the-mind-map" class="level3">
+<h3 class="anchored" data-anchor-id="the-mind-map">The Mind Map</h3>
+<p><a href="#fig-explain-map" class="quarto-xref">Figure&nbsp;<span>36.7</span></a> is our mind map for model interpretability and explainability. We spend most of the time on the explainability side, trying to determine what drives a particular model. For non-interpretable model, trying to explain how a model arrives at an outcome is all that one can hope for.</p>
+<div id="fig-explain-map" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-explain-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/ExplainabilityMindMap.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4"><img src="images/ExplainabilityMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-explain-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36.7: Model explainability mind map
+</figcaption>
+</figure>
+</div>
+<p>Explainability tools are categorized in two dimensions:</p>
+<ul>
+<li><p><strong>Model-agnostic</strong> tools and <strong>model-specific</strong> tools. Model-agnostic tools can be applied to any model family, whether it is an artificial neural network, a support vector machine, <span class="math inline">\(k\)</span>-nearest neighbor, or a nonlinear regression. That makes them very popular because you can apply your favorite explainability tool to whatever statistical learning technique was used.<br>
+<br>
+As the name suggests, model-specific tools are developed for a specific type of model. For example, explainability tools that deal specifically with neural networks or gradient boosting machines. The specialization enables computational tricks and specialized algorithms. For example, TREESHap was developed to compute Shapley-based measures (see below) for random forests and gradient boosting. It takes care of the special structure when ensembling trees and is much faster than a model-agnostic Shapley tool. This is relevant because computing measures of explainability can be very time consuming.</p></li>
+<li><p><strong>Global</strong> and <strong>local</strong> methods. The distinction of global and local explainability tools is different from our distinction of global and local models in <a href="regintro.html#sec-local-global-models" class="quarto-xref"><span>Section 6.2</span></a>. A global explainability method focuses on the model behavior overall, across all observations. A local method explains the individual predictions or classifications, at the observation level. Some approaches, for example, Shapley values, can be used in a local and a global context. In most cases, however, aggregating a local measure across all observations does not yield a corresponding global measure.</p></li>
+</ul>
+</section>
+<section id="words-of-caution" class="level3">
+<h3 class="anchored" data-anchor-id="words-of-caution">Words of Caution</h3>
+<p>An important aspect of explainability is the focus on the outcome of the model and <strong>understanding the model’s drivers</strong>. This cannot be overemphasized. The tools cannot inform us about the true underlying mechanisms that act on the target. They can only inform us about the model we built. Applying explainability tools to a crappy model does not suddenly reveal some deep insight about the underlying process. It reveals insight into what makes the crappy model tick. We are not validating a model, we are simply finding out what the model can tell us about itself.</p>
+<p>Explainability <strong>tools are not free of assumptions</strong>. If these are not met the results can be misleading. A common assumption is that features are “uncorrelated”. We put this in quotes as the features in a model are usually not considered random variables, so they cannot have a correlation in the statistical sense. What is meant by uncorrelated features is that the inputs can take on values independently of each other. In most applications, that is an unrealistic assumption; inputs change with each other, they are collinear. The implications of not meeting the assumption are significant.</p>
+<p>Suppose you are predicting the value of homes based on two inputs: the living area in ft<sup>2</sup> and the number of bedrooms. In the data set, the first variable ranges from 1,200 to 7,000 ft<sup>2</sup> and the number of bedrooms varies from 1–10. The assumption of “uncorrelated features” implies that you can pair values of the variables independently. An explainability method such as partial dependence plots will evaluate the impact of the input variable number of bedrooms by averaging over living areas of 1,200–7,000 ft<sup>2</sup>. In evaluating the impact of living area, the procedure averages across houses with 1–10 bedrooms. A 7,000 ft<sup>2</sup> home with one bedroom is unlikely and a 1,200 ft<sup>2</sup> home with 10 bedrooms is also difficult to find. A method that assumes “uncorrelated features” will behave as if those combinations are valid. You probably would not start the human-friendly explanation to the CEO with</p>
+<blockquote class="blockquote">
+<p><em>we evaluated the importance of factors affecting home prices by considering mansions with a single bedroom and tiny houses with nothing but sleeping quarters…</em></p>
+</blockquote>
+<p>but that is exactly what the explainability tool might be giving you. Imagine a model developed for the lower 48 states of the U.S. that contains season (Winter, Spring, Summer, Fall) and average daily temperature as inputs and evaluating the impact of summer months for average daily temperature in the freezing range. It makes no sense.</p>
+<p>Explainability tools are not free of <strong>parameters and require choices</strong> that affect their performance. These tools use bandwidths, kernel functions, subsampling, surrogate model types, etc.. Software has default settings which might or might not apply to a particular model and data combination.</p>
+<p>Another issue to look out for is the <strong>data requirement</strong> of the explainability tool itself. Some methods are based on analyzing predictions of a model while others need access to the original training data. If you study a model by analyzing predictions returned from an API, you are limited to methods that can be carried out without access to the training data.</p>
+</section>
+<section id="good-explanations" class="level3">
+<h3 class="anchored" data-anchor-id="good-explanations">Good Explanations</h3>
+<p>Before we dive into the math and applications of the tools itself, let’s remind ourselves that running explainability tools is not the end goal. A business decision maker is not helped by a Shapley summary or ten partial dependence plots any more as they are helped by a list of regression coefficients. While explainability tools can generate nice summaries and visualizations, by themselves they do not provide an explanation.</p>
+<p>In the end the data scientist has to convert the output from the tools into a human-consumable form. <span class="citation" data-cites="Molnar2022">Molnar (<a href="references.html#ref-Molnar2022" role="doc-biblioref">2022</a>)</span> discusses the ingredients of human-friendly explanations. We summarize some of his excellent points. Good explanations</p>
+<ul>
+<li><p>are <strong>contrastive</strong>: they compare a prediction to another instance in the data, they use counterfactuals, what has <strong>not</strong> happened:<br>
+<em>Why did the drug not work for my patient?</em><br>
+<em>Why was the predicted home price higher than expected?</em></p></li>
+<li><p>are <strong>selective</strong> (sparse): focus on the main factors, not all factors. Keep explanations short, giving up to 3 reasons:<br>
+<em>The Washington Huskies lost to the Michigan Wolverines because they could not get their usually explosive offense going.</em></p></li>
+<li><p>are <strong>social</strong>: the explanation is appropriate for the social context in which it is given. Charlie Munger explained EBITDA (earnings before interest, taxes, depreciation, and amortization) at the 2003 Berkshire Hathaway annual meeting as follows:<br>
+<em>“You wold understand any presentation using the words EBITDA, if every time you saw that word you just substituted the phrase bullshit earnings.”</em></p></li>
+<li><p>focus on the <strong>abnormal</strong> in the explanation if abnormal features impact the outcome:<br>
+<em>The predicted price of the house was high because it has 16 balconies</em>.</p></li>
+<li><p>are <strong>general</strong>: in the absence of abnormal features that drive the explanation good explanations are probable:<br>
+<em>The credit score is low for individuals who carry a lot of debt.</em><br>
+<em>The house is expensive because it is big.</em></p></li>
+</ul>
+</section>
+</section>
+<section id="model-agnostic-explainability" class="level2" data-number="36.2">
+<h2 data-number="36.2" class="anchored" data-anchor-id="model-agnostic-explainability"><span class="header-section-number">36.2</span> Model-agnostic Explainability</h2>
+<section id="partial-dependence-plots-pdp" class="level3">
+<h3 class="anchored" data-anchor-id="partial-dependence-plots-pdp">Partial Dependence Plots (PDP)</h3>
+<p>Partial dependence plots (PDP) are a global method that summarizes the <strong>marginal</strong> effects of input variables across a data set. The plots are typically 1-D or 2-D plots, meaning that they show the marginal effect of one variable or of two variables together. 1-D plots are most common.</p>
+<p>Suppose a model contains <span class="math inline">\(p\)</span> features <span class="math inline">\(X_1, \cdots, X_p\)</span>. In the one-dimensional case we choose one of the features, <span class="math inline">\(X_j\)</span> say, and all other features form a complement set <span class="math inline">\(X_\mathcal{C}\)</span>. The partial dependence function for <span class="math inline">\(X_j\)</span> is defie as <span class="math display">\[
+f(X_j) = \text{E}_{X_\mathcal{C}}\left[f(X_j,X_\mathcal{C})\right]
+\]</span> where the expectation is taken with respect to the joint distribution of the input variables in <span class="math inline">\(X_\mathcal{C}\)</span> (assuming that the <span class="math inline">\(X\)</span>s are random). The partial dependence function is not observable but can be estimated as <span class="math display">\[
+\widehat{f}(X_j) = \frac{1}{n} \sum_{i=1}^n f(X_j,x_{i\mathcal{C}})
+\]</span> where <span class="math inline">\(x_{i\mathcal{C}}\)</span> are the values of the complement features in the training data. In practice you vary the values of the feature <span class="math inline">\(X_j\)</span> of interest over the observed range (or the observed values). For each value <span class="math inline">\(x_j\)</span> the average above is computed, substituting the observed values for all other inputs. The final result is presented as a plot of the <span class="math inline">\(\widehat{f}(x_j)\)</span> versus <span class="math inline">\(x_j\)</span> values.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Banana Quality</p>
+</div>
+<div class="example-container">
+<p>The data for this example can be found on <a href="https://www.kaggle.com/datasets/l3llff/banana">kaggle</a> and comprises observations on the quality of bananas (“Good”, “Bad”) and seven attributes. It was used previously in this material to demonstrate bagging and support vector machines.</p>
+<p>We classify the observations in the training data set here with a random forest with 500 trees.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>ban_train <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM banana_train"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>ban_test <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM banana_test"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>ban_train<span class="sc">$</span>Quality <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(ban_train<span class="sc">$</span>Quality)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>ban_test<span class="sc">$</span>Quality <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(ban_test<span class="sc">$</span>Quality)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">54</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>rf <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(Quality <span class="sc">~</span> . , </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data=</span>ban_train, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">importance=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><a href="#fig-varimp-banana" class="quarto-xref">Figure&nbsp;<span>36.8</span></a> shows that the most important features with respect to improving model accuracy are <code>Softness</code>, <code>Weight</code> and <code>HarvestTime</code>. Two of the three are also most effective in increasing tree node purity.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">varImpPlot</span>(rf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-varimp-banana" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-varimp-banana-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="explainability_files/figure-html/fig-varimp-banana-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-varimp-banana-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36.8: Variable importance from randomForest analysis for banana data.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret) </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>rf.predict <span class="ot">&lt;-</span> <span class="fu">predict</span>(rf,<span class="at">newdata=</span>ban_test)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>rf.predict.cm <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(rf.predict, ban_test<span class="sc">$</span>Quality)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>rf.predict.cm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction  Bad Good
+      Bad  1930   58
+      Good   64 1948
+                                          
+               Accuracy : 0.9695          
+                 95% CI : (0.9637, 0.9746)
+    No Information Rate : 0.5015          
+    P-Value [Acc &gt; NIR] : &lt;2e-16          
+                                          
+                  Kappa : 0.939           
+                                          
+ Mcnemar's Test P-Value : 0.6508          
+                                          
+            Sensitivity : 0.9679          
+            Specificity : 0.9711          
+         Pos Pred Value : 0.9708          
+         Neg Pred Value : 0.9682          
+             Prevalence : 0.4985          
+         Detection Rate : 0.4825          
+   Detection Prevalence : 0.4970          
+      Balanced Accuracy : 0.9695          
+                                          
+       'Positive' Class : Bad             
+                                          </code></pre>
+</div>
+</div>
+<p>The confusion matrix for the test data set shows excellent accuracy of 96.95 % and high sensitivity and specificity.</p>
+<p>How does the predicted probability of banana quality depend on the most important features? To answer this question we compute partial dependence plots for <code>Sweetness</code>, <code>Weight</code>, and <code>HarvestTime</code> with the <code>iml</code> package in <code>R</code>.</p>
+<p>The <code>iml</code> package is based on R6 classes which gives it an object-oriented flavor. The first step is to set up a prediction container. Once this object is in place we can pass it to various functions to compute explainability measures. For example, the <code>FeatureEffect</code> class implements accumulated local effect plots, partial dependence plots, and individual conditional expectation curves. The <code>FeatureImp</code> class computes permutation-based feature importance.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(iml)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> ban_train[,<span class="fu">which</span>(<span class="fu">names</span>(ban_train) <span class="sc">!=</span> <span class="st">"Quality"</span>)]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> Predictor<span class="sc">$</span><span class="fu">new</span>(rf,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data=</span>X,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">y=</span>ban_train<span class="sc">$</span>Quality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Partial dependence plot for the three continuous inputs are requested with the <code>FeatureEffects</code> class and <code>method="pdp"</code>. The plot methods of the result objects are based on <code>ggplot2</code> and can be customized by adding <code>ggplot2</code> functions.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pdp <span class="ot">&lt;-</span> FeatureEffects<span class="sc">$</span><span class="fu">new</span>(model,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">features =</span> <span class="fu">c</span>(<span class="st">"Softness"</span>, <span class="st">"Weight"</span>, <span class="st">"HarvestTime"</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">method=</span><span class="st">"pdp"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>pdp<span class="sc">$</span><span class="fu">plot</span>() <span class="sc">+</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Random Forest"</span>, <span class="at">subtitle=</span><span class="st">"Banana Quality"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-pdp-banana" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pdp-banana-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="explainability_files/figure-html/fig-pdp-banana-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pdp-banana-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36.9: Partial dependence plots for softness, weight, and harvest time features in banana quality prediction.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-pdp-banana" class="quarto-xref">Figure&nbsp;<span>36.9</span></a> shows the partial dependence plots for the three inputs. The vertical axis displays the predicted probabilities, the probabilities for <code>Good</code> and <code>Bad</code> outcomes are complements of each other. Focusing on the PDP for <code>Weight</code>, we can see that the predicted probability for good banana quality initially does not change much for small values of the (scaled) weight, then increases quickly with increasing banana weight.</p>
+<p>Each point on the PDP plots is calculated by averaging over the values of the other input variables for all 4,000 observations. The computational effort of the PDP plots is substantial.</p>
+</div>
+</div>
+<section id="advantages" class="level4">
+<h4 class="anchored" data-anchor-id="advantages">Advantages</h4>
+<p>Partial dependence plots are intuitive, the concept of an average prediction at an input value is easy to grasp. They are also easy to implement. The partial dependence analysis reveals the impact of a feature on the average predicted value.</p>
+</section>
+<section id="disadvantages" class="level4">
+<h4 class="anchored" data-anchor-id="disadvantages">Disadvantages</h4>
+<p>Studying the partial dependence mostly focuses on individual features, rather than the joint impact of features. More than two features of interest cannot be visualized.</p>
+<p>Care should be taken not to place too much emphasis on regions of the input space where data are sparse. The rug plot along the horizontal axis shows where data are dense and helps with interpretation of the PDP.</p>
+<p>Interactions between inputs can mask the marginal effect. It might appear in a PDP that a particular feature has little impact on the predictions, when in fact it interacts with another feature in such a way that the average effect across the features is nil. The feature is still an important driver of the model, although a marginal plot does not reveal it.</p>
+<p>The PDP is based on the assumption that the feature <span class="math inline">\(X_j\)</span> for which the plot is computed is uncorrelated with the other features. In the banana quality example, the PDP variables show only small to modest pairwise correlations with the other features</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(X[,<span class="st">"Softness"</span>]   , X)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Size     Weight  Sweetness Softness HarvestTime   Ripeness    Acidity
+[1,] 0.1656102 -0.1813912 -0.1035488        1   0.2086852 -0.2369523 -0.1532225</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(X[,<span class="st">"Weight"</span>]     , X)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           Size Weight Sweetness   Softness HarvestTime    Ripeness   Acidity
+[1,] -0.1838708      1 0.4126862 -0.1813912 -0.08353357 -0.04885635 0.4438685</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(X[,<span class="st">"HarvestTime"</span>], X)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Size      Weight  Sweetness  Softness HarvestTime  Ripeness
+[1,] 0.572504 -0.08353357 -0.2000304 0.2086852           1 0.1119004
+         Acidity
+[1,] -0.08431311</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="individual-conditional-expectation-ice" class="level3">
+<h3 class="anchored" data-anchor-id="individual-conditional-expectation-ice">Individual Conditional Expectation (ICE)</h3>
+</section>
+<section id="variable-importance" class="level3">
+<h3 class="anchored" data-anchor-id="variable-importance">Variable Importance</h3>
+</section>
+<section id="surrogate-models" class="level3">
+<h3 class="anchored" data-anchor-id="surrogate-models">Surrogate Models</h3>
+</section>
+<section id="local-interpretable-model-agnostic-explanation-lime" class="level3">
+<h3 class="anchored" data-anchor-id="local-interpretable-model-agnostic-explanation-lime">Local Interpretable Model-Agnostic Explanation (LIME)</h3>
+</section>
+<section id="shapley-additive-explanation-shap" class="level3">
+<h3 class="anchored" data-anchor-id="shapley-additive-explanation-shap">Shapley Additive Explanation (SHAP)</h3>
+</section>
+</section>
+<section id="takeaways" class="level2" data-number="36.3">
+<h2 data-number="36.3" class="anchored" data-anchor-id="takeaways"><span class="header-section-number">36.3</span> Takeaways</h2>
+<p>We summarize some of the main takeaways from this chapter.</p>
+<ul>
+<li><p>Explainability tools are a great asset to the data scientist. They can help us understand better how a model works, what drives it, and help formulate a human-friendly explanation.</p></li>
+<li><p>Explainability tools are not free of assumptions and not free of user choices that affect their performance.</p></li>
+<li><p>There is an ever increasing list of methods. Know their pros and cons. What is needed changes from application to application. Global explanations can be appropriate in one setting while observation wise (local) explanations can be called for in another setting.</p></li>
+<li><p>Methods based on Shapley values have several nice properties</p>
+<ul>
+<li>Grounded in (game) theory</li>
+<li>Feature contributions add up to deviations from the average</li>
+<li>Changes to a model that increase the marginal contribution of a feature also increase the features’ Shapley values</li>
+<li>Combines local and global information</li>
+<li>Addresses multiple aspects: dependence, variable importance, effect force</li>
+</ul></li>
+</ul>
 
 
 <div class="hidden" aria-hidden="true">
-<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;36.1: Model explainability mind map</span>
+<span class="glightbox-desc lightbox-desc-1">Figure&nbsp;36.2: Continuum of model interpretability.</span>
+<span class="glightbox-desc lightbox-desc-2">Figure&nbsp;36.5: A single decision tree is intrinsically interpretable.</span>
+<span class="glightbox-desc lightbox-desc-3">Figure&nbsp;36.6: AlexNet, from <a href="https://learnopencv.com/number-of-parameters-and-tensor-sizes-in-convolutional-neural-network/">LearnOpenCV</a></span>
+<span class="glightbox-desc lightbox-desc-4">Figure&nbsp;36.7: Model explainability mind map</span>
 </div>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-Molnar2022" class="csl-entry" role="listitem">
+Molnar, Christoph. 2022. <em>Interpretable Machine Learning: A Guide for Making Black Box Models Explainable</em>. 2nd ed. <a href="https://christophm.github.io/interpretable-ml-book">https://christophm.github.io/interpretable-ml-book</a>.
+</div>
 <div id="ref-sankaran_2024" class="csl-entry" role="listitem">
 Sankaran, Kris. 2024. <span>“Data Science Principles for Interpretable and Explainable AI.”</span> <em>Journal of Data Science</em>, 1–27. <a href="https://doi.org/10.6339/24-JDS1150">https://doi.org/10.6339/24-JDS1150</a>.
 </div>
 </div>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1115,7 +1566,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","loop":false,"openEffect":"zoom","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

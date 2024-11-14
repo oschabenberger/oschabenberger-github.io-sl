@@ -379,7 +379,6 @@ author={Mead, R. and Curnow, R.N. and Hasted, A.M.},
 publisher={CRC Press, New York and Boca Raton, FL},
 }
 
-
 @article{Miller1984,
 title={Selection of Subsets of Regression Variables},
 author={Miller, Alan J.},
@@ -389,6 +388,15 @@ volume={147},
 number={3},
 pages={389--425},
 publisher={Blackwell Publishing for the Royal Statistical Society}
+}
+
+@book{Molnar2022,
+  title      = {Interpretable Machine Learning},
+  author     = {Christoph Molnar},
+  year       = {2022},
+  subtitle   = {A Guide for Making Black Box Models Explainable},
+  edition    = {2},
+  url        = {https://christophm.github.io/interpretable-ml-book}
 }
 
 @article{PinheiroBates1995,

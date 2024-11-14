@@ -1,36 +1,533 @@
 
 # Interpretability and Explainability {#sec-explain}
 
+## Introduction
 
-![Model explainability mind map](images/ExplainabilityMindMap.png){#fig-explain-map .lightbox fig.align="center"}
+You do not have to look very hard these days to come across terms such as 
+**interpretable machine learning**, **explainable AI** (xAI), **responsible AI**, 
+**ethical AI** in the discourse 
+about data analytics, machine learning, and artificial intelligence. This chapter
+deals with questions of interpreting and explaining models derived from data, 
+not with the ethical aspects of the discipline. Although one could argue that 
+working with models that we are unable to explain how they work is not a responsible
+thing to do. 
+
+Interpretability and explainability are often used interchangeably. It is 
+worthwhile making a distinction. We draw in this chapter on the excellent online 
+book "Interpretable Machine Learning" [@Molnar2022] although by the author's 
+definition, most of the book is concerned with explaining models. 
+
+A system is **interpretable** if it is capable of being understood. In such a 
+system the change that follows when a knob is turned is known. Someone trained
+in the arts can articulate how the system works, how input is transformed into
+output. The qualifier "trained in the arts" is added because
+some threshold of knowledge must be assumed. An internal combustion engine is
+interpretable, it is capable of being understood---but not by everyone. 
+
+A system is **explainable** if we can understand how something happened, how it
+came up with its answers. The difference to interpretability is subtle. Intrepreting
+focuses on the engine of the system, how it transforms input into output. 
+Explaining focuses on the output side of the system, trying to understand what
+makes the box work without understanding how the box works (@fig-inter-explain).
+
+![Interpretability and explainability.](images/Inter_and_explain.png){#fig-inter-explain fig-align="center" width="80%"}
+
+An internal combustion engine is interpretable: gas and air are mixed, compressed,
+and ignited. The force of the ignition moves one or more pistons which turns a 
+crank shaft. In a car or motorcycle, this motion is translated into tire rotation.
+The internal combustion engine is also explainable: if I step on the gas pedal the 
+engine revs higher and the car goes faster.
+
+A system that is interpretable is always explainable, but not the other way around.
+Clearly, we prefer interpretable systems over those that are just explainable.
+
+### Why Do we Care?
+
+Replace "systems" with "models based on data" in the previous paragraphs and you
+see how concepts of interpretability and explainability apply to statistical models
+and machine learning. We care about the topic and about the distinction for several
+reasons:
+
+* Model interpretability is generally on the decline. The need for **transparency**, 
+on the other hand, is on the rise. Decisions have consequences and someone or 
+something has to be accountable for them.
+
+* There is an inverse relationship between model complexity and interpretability.
+Simple, interpretable models often do not perform well. The measures we take to
+improve their performance tend to reduce their interpretability. A great example 
+are decision trees. A single tree is highly interpretable, we say it is **intrinsically
+interpretable**, its very structure as a tree lends its interpretation. However, 
+a single tree often does not perform well, it has high variance and is sensitive
+to changes in the data. An ensemble of decision trees, such as in a random forest
+or a gradient boosting machine, can perform extremely well, but now we have sacrificed
+interpretability. Instead of a single tree, a collection of 50, 100, or 500 trees
+are generating a predicted value. A single decision rule was replaced by 500
+decision rules.
+
+* Any model can be made less interpretable by adding features. A linear regression
+model is intrinsically interpretable, but add more inputs, their transformations
+and interactions, and the entire model becomes much less understandable.
+
+* Models are increasingly seen as a source of risk. And like with all risks,
+that means we need to manage it (understand, contain, insure). A risk that is
+not understood is difficult to guard against. Ironically, the more complex models
+that perform well carry a larger risk by virtue of being difficult to understand.
+
+### A Continuum
+
+Interpretability is not an all-or-nothing proposition. As mentioned in the previous
+bullet list, any model becomes less interpretable by adding features. An expert
+in artificial neural networks might find them to be more interpretable than an
+occasional user.
+
+It is best to think of a spectrum of interpretability and the methods we consider
+to model data are somewhere on the spectrum---with room for discussion and movement
+(@fig-inter-cont). It is clear from the figure that more contemporary and currently 
+popular analytic methods tend to appear on the right hand side. 
 
 
-To answer the question "What makes a model interpretable?", @sankaran_2024 draw
-parallels between model interpretability and data visualization, asking
-"What makes a visualization effective?" A good visualization 
+![Continuum of model interpretability.](images/InterpretabilityContinuum.png){#fig-inter-cont fig-align="center" .lightbox}
 
-- streamlines a taxing cognitive operation into a perceptual one
-- uses representations that are  familiar or easily learnable
-- uses graphical elements that are legible and well-annotated
-- prevents oversummarization and highlights details for follow-up
-- pushes readers past passive condsumption, inspiring deeper exploration
-- shows data provenance and lineage
-
-Similarly, an interpretable model can be broken down into
-relevant components, each of which can be assigned meaning. Instead of information density
-(showing more of the data), interpretability relies on faithfulness (showing more of the model).
-The parallels run deeper. As in a good visualization, the data provenance of a trustworthy
-model can be traced back to the original measurement mechanism — beautiful design and
-high-accuracy have little value otherwise. Moreover, like visualization, interpretability must be
-tailored to an audience and the problems they need solved (Lipton, 2018). There are different levels
-of data literacy, and visual representations may be familiar to some audiences but not others.
-Similarly, AI models are employed across a range of problem domains, necessitating validation
-in realistic settings (see Section 3). Finally, effective visualizations push readers beyond passive
-consumption — they inspire deeper exploration of complexity. Likewise, interpretability can
-support the transition from automated to augmented decision-making (Heer, 2019), enhancing
-rather than substituting human reason.
-Model interpretability can be approached
+On the left hand side of the figure are what we call **intrinsically interpretable**
+models. Interpretable models are transparent and can be understood. Intrinsically
+interpretable models can be understood by looking at the model *structure*. 
+Single decision trees, simple linear regressions, and nonlinear models that are
+parameterized in terms of domain-specific quantities and relationships are 
+intrinsically interpretable. @sankaran_2024 call intrinsically interpretable models 
+**glass boxes** to distinguish them from non-interpretable **black boxes**.
 
 
-Intrinsically interpretable models are also called **glass boxes** to distinguish
-them from **black boxes** that are inherently non-interpretable [@sankaran_2024].
+:::{.example}
+::::{.example-header}
+Example: Mitscherlich Equation
+::::
+::::{.example-container}
+In section @sec-nlr-starting-values we encountered the Mitscherlich equation,
+popular to model plant and crop yield.
+
+$$
+\text{E}[Y] = \lambda + (\xi-\lambda) \exp\left\{ -\kappa x\right\}
+$$ 
+
+The Mitscherlich yield equation is intrinsically interpretable. The parameters
+have a direct interpretation in terms of the subject matter (@fig-mitsch-data2): 
+
+- $\xi$: the crop yield at $x=0$ 
+- $\lambda$: the upper yield asymptote as $x$ increases 
+- $\kappa$: is related to the rate of change, how quickly the yield increases from $\xi$ to $\lambda$
+
+```{r Mitscherlich_data, fig.align="center",out.width="90%"}
+#| fig.cap: Simulated yield data and Mitscherlich model
+#| label: fig-mitsch-data2
+set.seed(675)
+x <- seq(from=0, to=400, by=20)
+lambda <- 80
+xi <- 40  
+kappa <- 0.01 
+M <- lambda + (xi-lambda) * exp(-kappa * x)
+Yield <- M + rnorm(length(M),mean=0,sd=3)
+mitsch <- data.frame(Yield,M,x)
+plot(x,M, type="l",las=1,bty="l",ylab="Yield",ylim=c(40,80))
+points(x,Yield)
+```
+
+It is also clear how "turning a knob" in the model changes the output. For example,
+raising or lowering $\lambda$ affects the asymptotic yield. Changing $\kappa$
+affects the shape of the yield curve between $\xi$ and $\lambda$.
+::::
+:::
+
+
+:::{.example}
+::::{.example-header}
+Example: First-order Compartmental Model
+::::
+::::{.example-container}
+Figure @fig-explain-theoph shows a first-order compartmental model for the 
+concentration of the drug theophylline in patients over time. The concentration
+$C_t$ at time $t$ is modeled as a function of dose $D$ as
+$$
+	\text{E}[C_t] = \frac{D k_e k_a}{Cl(k_a - k_e)} \left \{ \exp(-k_e t) - \exp(-k_a t) \right \}
+$$
+The model is intrinsically interpretable. The parameters represent
+
+- $k_e$: the elimination rate of the drug
+- $k_a$: the absorption rate of the drug
+- $Cl$: the clearance of the drug
+
+![First-order compartmental model.](images/Theophylline.png){#fig-explain-theoph fig-align="center" wifth="90%"}
+::::
+:::
+
+Linear regression models are intrinsically interpretable. In the simple linear
+model
+$$
+\text{E}[Y] = \beta_0 + \beta_1 x
+$$
+$\beta_0$ is the mean response when $x=0$, $\beta_1$ represents the change in 
+mean response when $x$ increases by one unit. The model is still intrinsically 
+interpretable when more input variables are added, but the interpretation is more
+nuanced. In the model
+$$
+\text{E}[Y] = \beta_0 + \beta_1 x_1 + \beta_2x_2 + \beta_3x_3
+$$
+$\beta_j$ ($j=1,2,3)$ is no longer the change in mean response if $x_j$ increases
+by one unit. It is the change in mean response if $x_j$ increases by one unit 
+**and** all other $x$s are held fixed. Add more inputs, factors, feature transformations, 
+and interaction terms and the interpretation becomes even more nuanced.
+
+Adding regularization can make a model more interpretable or less interpretable.
+Ridge ($L_2$) regularization does not help with interpretability because it
+assigns non-zero weight to the model coefficient. A model with 1,000 inputs does not
+become more interpretable by shrinking 1,000 coefficients somewhat. Lasso ($L_1$)
+regularization increases interpretability because it shrinks coefficients all
+the way to zero, combining regularization with feature selection.
+
+Ensemble methods are less interpretable than their non-ensembled counterparts such
+as a single decision tree (@fig-explain-tree).
+
+![A single decision tree is intrinsically interpretable.](images/DecisionTreeHealth.png){#fig-explain-tree fig-align="center" width="80%" .lightbox}
+
+Highly over-parameterized nonlinear models such as artificial neural networks
+are completely uninterpretable. These are the proverbial **black boxes** and 
+being able to explain the model output is the best one can hope for. @fig-inter-alexnet
+is a schema of AlexNet, a convolutional neural network that won the ImageNet
+competition in 2012. The schema tells us how AlexNet is constructed but it is 
+impossible to say how exactly it works. We cannot articulate how an input is
+transformed into the output, we can only describe what happens to it: it is going
+through a 11 x 11 convolutional layer with 96 kernels, followed by a max pooling
+layer, and so on.
+
+
+![AlexNet, from [LearnOpenCV](https://learnopencv.com/number-of-parameters-and-tensor-sizes-in-convolutional-neural-network/)](images/AlexNet.png){#fig-inter-alexnet fig-align="center" width="80%" .lightbox}
+
+### The Mind Map
+
+@fig-explain-map is our mind map for model interpretability and explainability.
+We spend most of the time on the explainability side, trying to determine what
+drives a particular model. For non-interpretable model, trying to explain
+how a model arrives at an outcome is all that one can hope for.
+
+![Model explainability mind map](images/ExplainabilityMindMap.png){#fig-explain-map .lightbox fig-align="center"}
+
+Explainability tools are categorized in two dimensions:
+
+* **Model-agnostic** tools and **model-specific** tools. Model-agnostic tools can
+be applied to any model family, whether it is an artificial neural network, 
+a support vector machine, $k$-nearest neighbor, or a nonlinear regression. That
+makes them very popular because you can apply your favorite explainability 
+tool to whatever statistical learning technique was used.\
+\
+As the name suggests, model-specific tools are developed for a specific type of 
+model. For example, explainability tools that deal specifically with neural 
+networks or gradient boosting machines. The specialization enables computational
+tricks and specialized algorithms. For example, TREESHap was developed to compute
+Shapley-based measures (see below) for random forests and gradient boosting. It 
+takes care of the special structure when ensembling trees and is much faster than
+a model-agnostic Shapley tool. This is relevant because computing measures of 
+explainability can be very time consuming.
+
+* **Global** and **local** methods. The distinction of global and local explainability
+tools is different from our distinction of global and local models in @sec-local-global-models. 
+A global explainability method focuses on the model 
+behavior overall, across all observations. A local method explains the individual
+predictions or classifications, at the observation level. Some approaches,
+for example, Shapley values, can be used in a local and a global context. In most
+cases, however, aggregating a local measure across all observations does not 
+yield a corresponding global measure.
+
+### Words of Caution
+
+An important aspect of explainability is the focus on the outcome of the model
+and **understanding the model's drivers**. This cannot be overemphasized. The tools
+cannot inform us about the true underlying mechanisms that act on the target. 
+They can only inform us about the model we built. Applying explainability tools
+to a crappy model does not suddenly reveal some deep insight about the underlying
+process. It reveals insight into what makes the crappy model tick. We are not
+validating a model, we are simply finding out what the model can tell us about itself.
+
+Explainability **tools are not free of assumptions**. If these are not met the results
+can be misleading. A common assumption is that features are "uncorrelated". We 
+put this in quotes as the features in a model are usually not considered random 
+variables, so they cannot have a correlation in the statistical sense. 
+What is meant by uncorrelated features is that the inputs can take on values 
+independently of each other. In most applications, that is an unrealistic
+assumption; inputs change with each other, they are collinear. 
+The implications of not meeting the assumption are significant.
+
+Suppose you are predicting the value of homes based on two inputs: the living
+area in ft^2^ and the number of bedrooms. In the data set, the first variable
+ranges from 1,200 to 7,000 ft^2^ and the number of bedrooms varies from 1--10.
+The assumption of "uncorrelated features" implies that you can pair values of the
+variables independently. An explainability method such as partial dependence plots
+will evaluate the impact of the input variable number of bedrooms by averaging
+over living areas of 1,200--7,000 ft^2^. In evaluating the impact of living
+area, the procedure averages across houses with 1--10 bedrooms. A 7,000 ft^2^
+home with one bedroom is unlikely and a 1,200 ft^2^ home with 10 bedrooms is 
+also difficult to find. A method that assumes "uncorrelated features" will behave
+as if those combinations are valid. You probably would not start the human-friendly 
+explanation to the CEO with 
+
+>*we evaluated the importance of factors affecting home prices by considering
+mansions with a single bedroom and tiny houses with nothing but sleeping quarters...*
+
+but that is exactly what the explainability tool might be giving you. Imagine a model
+developed for the lower 48 states of the U.S. that contains season (Winter, Spring, 
+Summer, Fall) and average daily temperature as inputs and evaluating the impact of 
+summer months for average daily temperature in the freezing range. It makes no sense.
+
+Explainability tools are not free of **parameters and require choices** that affect
+their performance. These tools use bandwidths, kernel functions, subsampling,
+surrogate model types, etc.. Software has default settings which might or might
+not apply to a particular model and data combination. 
+
+Another issue to look out for is the **data requirement** of the explainability tool
+itself. Some methods are based on analyzing predictions of a model while others
+need access to the original training data. If you study a model by analyzing
+predictions returned from an API, you are limited to methods that can be carried
+out without access to the training data.
+
+
+### Good Explanations
+
+Before we dive into the math and applications of the tools itself, let's remind
+ourselves that running explainability tools is not the end goal. A business
+decision maker is not helped by a Shapley summary or ten partial dependence plots
+any more as they are helped by a list of regression coefficients. While 
+explainability tools can generate nice summaries and visualizations, by themselves
+they do not provide an explanation.
+
+In the end the data scientist has to convert the output from the tools into a 
+human-consumable form. @Molnar2022 discusses the ingredients of human-friendly
+explanations. We summarize some of his excellent points. Good explanations
+
+* are **contrastive**: they compare a prediction to another instance in the data,
+they use counterfactuals, what has **not** happened:\
+*Why did the drug not work for my patient?*\
+*Why was the predicted home price higher than expected?*
+
+* are **selective** (sparse): focus on the main factors, not all factors. Keep
+explanations short, giving up to 3 reasons:\
+*The Washington Huskies lost to the Michigan Wolverines because they could not
+get their usually explosive offense going.*
+
+* are **social**: the explanation is appropriate for the social context in 
+which it is given. Charlie Munger explained EBITDA (earnings before interest, taxes, 
+depreciation, and amortization) at the 2003 Berkshire Hathaway annual meeting as 
+follows: \
+*"You wold understand any presentation using the
+words EBITDA, if every time you saw that word you just substituted the phrase
+bullshit earnings."*
+
+* focus on the **abnormal** in the explanation if abnormal features impact the
+outcome:\
+*The predicted price of the house was high because it has 16 balconies*.
+
+* are **general**: in the absence of abnormal features that drive the explanation
+good explanations are probable:\
+*The credit score is low for individuals who carry a lot of debt.*\
+*The house is expensive because it is big.*
+
+
+## Model-agnostic Explainability
+
+### Partial Dependence Plots (PDP)
+
+Partial dependence plots (PDP) are a global method that summarizes the **marginal**
+effects of input variables across a data set. The plots are typically 1-D
+or 2-D plots, meaning that they show the marginal effect of one variable or
+of two variables together. 1-D plots are most common.
+
+Suppose a model contains $p$ features $X_1, \cdots, X_p$. In the one-dimensional
+case we choose one of the features, $X_j$ say, and all other features form 
+a complement set $X_\mathcal{C}$. The partial dependence function for $X_j$ is
+defie as 
+$$
+f(X_j) = \text{E}_{X_\mathcal{C}}\left[f(X_j,X_\mathcal{C})\right]
+$$
+where the expectation is taken with respect to the joint distribution of the 
+input variables in $X_\mathcal{C}$ (assuming that the $X$s are random). The partial
+dependence function is not observable but can be estimated as
+$$
+\widehat{f}(X_j) = \frac{1}{n} \sum_{i=1}^n f(X_j,x_{i\mathcal{C}})
+$$
+where $x_{i\mathcal{C}}$ are the values of the complement features in the training
+data. In practice you vary the values of the feature $X_j$ of interest over the
+observed range (or the observed values). For each value $x_j$ the average above
+is computed, substituting the observed values for all other inputs. The final
+result is presented as a plot of the $\widehat{f}(x_j)$ versus $x_j$ values.
+
+:::{.example}
+::::{.example-header}
+Example: Banana Quality
+::::
+::::{.example-container}
+The data for this example can be found on 
+[kaggle](https://www.kaggle.com/datasets/l3llff/banana) and comprises observations 
+on the quality of bananas ("Good", "Bad") and seven attributes. It was used 
+previously in this material to demonstrate bagging and support vector machines.
+
+We classify the observations in the training data set here with a random forest
+with 500 trees.
+
+```{r, warning=FALSE, message=FALSE}
+library("duckdb")
+con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
+ban_train <- dbGetQuery(con, "SELECT * FROM banana_train")
+ban_test <- dbGetQuery(con, "SELECT * FROM banana_test")
+
+ban_train$Quality <- as.factor(ban_train$Quality)
+ban_test$Quality <- as.factor(ban_test$Quality)
+
+dbDisconnect(con)
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(randomForest)
+set.seed(54)
+rf <- randomForest(Quality ~ . , 
+                   data=ban_train, 
+                   importance=TRUE)
+```
+
+@fig-varimp-banana shows that the most important features with respect to 
+improving model accuracy are `Softness`, `Weight` and `HarvestTime`. Two of 
+the three are also most effective in increasing tree node purity.
+
+```{r, fig.align="center", out.width="90%"}
+#| fig.cap: Variable importance from randomForest analysis for banana data.
+#| label: fig-varimp-banana
+varImpPlot(rf)
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(caret) 
+rf.predict <- predict(rf,newdata=ban_test)
+rf.predict.cm <- caret::confusionMatrix(rf.predict, ban_test$Quality)
+rf.predict.cm
+```
+
+The confusion matrix for the test data set shows excellent accuracy of 
+`{r} round(rf.predict.cm$overall[1]*100,2)` \% and high sensitivity and 
+specificity.
+
+How does the predicted probability of banana quality depend on the most important
+features? To answer this question we compute partial dependence plots for 
+`Sweetness`, `Weight`, and `HarvestTime` with the `iml` package in `R`. 
+
+The `iml` package is based on R6 classes which gives it an object-oriented 
+flavor. The first step is to set up a prediction container. Once this object is in 
+place we can pass it to various functions to compute explainability measures.
+For example, the `FeatureEffect` class implements accumulated local effect plots, 
+partial dependence plots, and individual conditional expectation curves. 
+The `FeatureImp` class computes permutation-based feature importance.
+
+```{r, warning=FALSE, message=FALSE}
+library(iml)
+X <- ban_train[,which(names(ban_train) != "Quality")]
+model <- Predictor$new(rf,
+                      data=X,
+                      y=ban_train$Quality)
+```
+
+
+Partial dependence plot for the three continuous inputs are requested with the
+`FeatureEffects` class and `method="pdp"`. The plot methods of the result
+objects are based on `ggplot2` and can be customized by adding `ggplot2` functions.
+
+
+```{r, fig.align='center', out.width="90%"}
+#| fig.cap: Partial dependence plots for softness, weight, and harvest time features in banana quality prediction.
+#| label: fig-pdp-banana
+pdp <- FeatureEffects$new(model,
+                          features = c("Softness", "Weight", "HarvestTime"),
+                          method="pdp")
+pdp$plot() + 
+    labs(title="Random Forest", subtitle="Banana Quality") 
+```
+
+@fig-pdp-banana shows the partial dependence plots for the three inputs. The 
+vertical axis displays the predicted probabilities, the probabilities for `Good`
+and `Bad` outcomes are complements of each other. Focusing on the PDP for `Weight`,
+we can see that the predicted probability for good banana quality initially does
+not change much for small values of the (scaled) weight, then increases quickly
+with increasing banana weight.
+
+Each point on the PDP plots is calculated by averaging over the values of the 
+other input variables for all 4,000 observations. The computational effort of the
+PDP plots is substantial.
+::::
+:::
+
+#### Advantages
+
+Partial dependence plots are intuitive, the concept of an average prediction at an
+input value is easy to grasp. They are also easy to implement. The partial 
+dependence analysis reveals the impact of a feature on the average predicted
+value.
+
+#### Disadvantages
+
+Studying the partial dependence mostly focuses on individual features, rather
+than the joint impact of features. More than two features of interest cannot be
+visualized.
+
+Care should be taken not to place too much emphasis on regions of the input 
+space where data are sparse. The rug plot along the horizontal axis shows where
+data are dense and helps with interpretation of the PDP. 
+
+Interactions between inputs can mask the marginal effect. It might appear in 
+a PDP that a particular feature has little impact on the predictions, when in
+fact it interacts with another feature in such a way that the average effect
+across the features is nil. The feature is still an important driver of the 
+model, although a marginal plot does not reveal it.
+
+The PDP is based on the assumption that the feature $X_j$ for which the plot
+is computed is uncorrelated with the other features. In the banana quality
+example, the PDP variables show only small to modest pairwise correlations with the
+other features
+
+```{r}
+cor(X[,"Softness"]   , X)
+cor(X[,"Weight"]     , X)
+cor(X[,"HarvestTime"], X)
+
+```
+
+### Individual Conditional Expectation (ICE)
+
+### Variable Importance
+
+### Surrogate Models
+
+### Local Interpretable Model-Agnostic Explanation (LIME)
+
+### Shapley Additive Explanation (SHAP)
+
+## Takeaways
+
+We summarize some of the main takeaways from this chapter.
+
+* Explainability tools are a great asset to the data scientist. They can help
+us understand better how a model works, what drives it, and help formulate a
+human-friendly explanation.
+
+* Explainability tools are not free of assumptions and not free of user choices
+that affect their performance.
+
+* There is an ever increasing list of methods. Know their pros and cons. What is
+needed changes from application to application. Global explanations can be 
+appropriate in one setting while observation wise (local) explanations can be
+called for in another setting.
+
+* Methods based on Shapley values have several nice properties
+    * Grounded in (game) theory
+    * Feature contributions add up to deviations from the average
+    * Changes to a model that increase the marginal contribution of a feature also
+    increase the features' Shapley values
+    * Combines local and global information
+    * Addresses multiple aspects: dependence, variable importance, effect force
+
+
+
+
