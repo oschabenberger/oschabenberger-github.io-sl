@@ -356,6 +356,16 @@ number={4},
 pages={661--675}
 }
 
+@article{Mazzanti_2020,
+author={Mazzanti, Samuele},
+title={SHAP Values Explained Exactly How You Wished Someone Explained to You.
+Making sense of the formula used for computing SHAP values},
+journal={Medium},
+issue-date={January 3, 2020},
+year={2020},
+url={https://towardsdatascience.com/shap-explained-the-way-i-wish-someone-explained-it-to-me-ab81cc69ef30}
+}
+
 @book{McCullaghNelder,
 title={Generalized Linear Models, 2nd ed.},
 author={McCullagh, P. and Nelder Frs, J.A.},
@@ -397,6 +407,14 @@ publisher={Blackwell Publishing for the Royal Statistical Society}
   subtitle   = {A Guide for Making Black Box Models Explainable},
   edition    = {2},
   url        = {https://christophm.github.io/interpretable-ml-book}
+}
+
+@article{Nash_et_al_1994,
+title={The Population Biology of Abalone (*Haliotis* species) in Tasmania. I. Blacklip Abalone
+(*H. rubra*) from the North Coast and Islands of Bass Strait}, 
+author={Warwick J. Nash and Tracy L. Sellers and Simon R. Talbot and Andrew J. Cawthorn and Wes B Ford},
+year={1994},
+publisher={Sea Fisheries Division, Technical Report No. 48 (ISSN 1034-3288)}
 }
 
 @article{PinheiroBates1995,
@@ -477,6 +495,16 @@ journal={The R Journal},
 year={2016},
 volume={21},
 url={https://journal.r-project.org/archive/2016/RJ-2016-021/RJ-2016-021.pdf}
+}
+
+@incollection{Shapley_1953,
+author={Shapley, L.},
+title={A Value for $n$-Peson Games},
+booktitle={Contributions to the Theory of Games II},
+editor={Kuhn, N. and Tucker, A.},
+publisher={Princeton University Press, Princeton},
+year={1953},
+pages={307--317}
 }
 
 @article{Sutton_2005,

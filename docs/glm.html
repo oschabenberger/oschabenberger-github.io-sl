@@ -1456,7 +1456,7 @@ Caution
 <div class="callout-body-container callout-body">
 <p>The <code>lrtest</code> function in the <code>lmtest</code> package constructs LRTs based on the result returned from calls to <code>logLik</code> for each model. If the result returned from <code>logLik</code> is not a true log likelihood, the results of <code>lrtest</code> are not meaningful. For example, you can request <code>logLik</code> for a model fit by <code>lm</code>, which performs least-squares estimation. There is no distributional assumption in <code>lm</code>, hence there is no likelihood or log likelihood function. The <code>logLik</code> function itself computes the log likelihood indirectly, for example, based on Akaike’s Information Criterion (AIC). For likelihood-based estimation, AIC is defined as <span class="math display">\[
 \text{AIC} = -2\log \ell + 2 k
-\]</span> where <span class="math inline">\(k\)</span> is the total number of model parameters, including scale and covariance parameters. Back-calculating <span class="math inline">\(\log ell\)</span> based on AIC is implicitly making the distributional assumption that underpins the computation of AIC for a particular class of models, even if the estimation is free of a distributional assumption.</p>
+\]</span> where <span class="math inline">\(k\)</span> is the total number of model parameters, including scale and covariance parameters. Back-calculating <span class="math inline">\(\log \ell\)</span> based on AIC is implicitly making the distributional assumption that underpins the computation of AIC for a particular class of models, even if the estimation is free of a distributional assumption.</p>
 </div>
 </div>
 </section>
@@ -1826,18 +1826,10 @@ p(y) = \Pr(Y=y) = \int_0^\infty p(y|\lambda) f(\lambda) \, d\lambda
 <div class="example-container">
 <p>You can fit a Negative Binomial model in <code>R</code> with the <code>glm.nb</code> function in the <code>MASS</code> library.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'MASS'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:dplyr':
-
-    select</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>nbreg <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(count <span class="sc">~</span> block <span class="sc">+</span> tx, <span class="at">data=</span>poppies,<span class="at">link=</span><span class="st">"log"</span>)</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(nbreg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>nbreg <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(count <span class="sc">~</span> block <span class="sc">+</span> tx, <span class="at">data=</span>poppies,<span class="at">link=</span><span class="st">"log"</span>)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(nbreg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1874,7 +1866,7 @@ Number of Fisher Scoring iterations: 1
 </div>
 <p>The ratio of the residual deviance to its degrees of freedom is about 1.6, much improved compared to any of the Poisson-based models.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>nbreg<span class="sc">$</span>deviance<span class="sc">/</span>nbreg<span class="sc">$</span>df.residual</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>nbreg<span class="sc">$</span>deviance<span class="sc">/</span>nbreg<span class="sc">$</span>df.residual</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.584948</code></pre>
 </div>
@@ -2503,7 +2495,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","closeEffect":"zoom","loop":false,"descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

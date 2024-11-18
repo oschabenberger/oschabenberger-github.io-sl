@@ -74,9 +74,19 @@ An extreme version of sharing is when the same entity is measured repeatedly. Su
 
 This type of correlation, of a random variable with itself, is called **autocorrelation**. 
 
-Hierarchical random processes and autocorrelated processes create **clustered** data structures. We need to distinguish the use of "cluster" in this context from the cluster analyses in @sec-clustering. What they have in common is that a cluster is a group of observations that have something in common. In cluster analysis the commonality is similarity of attribute values; the number and size of the clusters is not known a priori, finding the clusters is the goal of the analysis. 
+Hierarchical random processes and autocorrelated processes create **clustered** 
+data structures. We need to distinguish the use of "cluster" in this context from 
+the cluster analyses in @sec-clustering. In both situations a cluster is a 
+group of observations that have something in common. In cluster analysis the 
+commonality is similarity of attribute values; the number and size of the clusters 
+is not known a priori, finding the clusters is the goal of the analysis. 
 
-In the context of correlated data the clusters are defined through the process in which the data are collected; observations from the same cluster are correlated and observations from different clusters are (typically) uncorrelated (@fig-cluster-structure). A longitudinal study where $i=1,\cdots,k$ subjects are measured $j=1,\cdot n_i$ times, creates a clustered data structure with $k$ clusters of sizes $n_1,\cdots,n_k$. Cluster membership is known a priori and not subject to analysis.
+In the context of correlated data the clusters are defined through the process 
+in which the data are collected; observations from the same cluster are correlated 
+and observations from different clusters are (typically) uncorrelated (@fig-cluster-structure). 
+A longitudinal study where $i=1,\cdots,k$ subjects are measured $j=1,\cdots n_i$ times, 
+creates a clustered data structure with $k$ clusters of sizes $n_1,\cdots,n_k$. 
+Cluster membership is known a priori and not subject to analysis.
 
 
 ![Example of a clustered data structure. Observations from the same cluster are correlated, observations from different clusters are uncorrelated.](images/Clustering.png){#fig-cluster-structure .lightbox fig.align="center" width="80%"}
@@ -120,7 +130,7 @@ dbDisconnect(con)
 - longitudinal measurements are creating a temporal cluster for each apple.
 
 ``` {r appleplot, warning=FALSE, message=FALSE, fig.asp=1, fig.align='center', out.width="90%"}
-#| fig.cap: Trellis plot of the apple diameters for all ten trees.
+#| fig.cap: Trellis plot of apple diameters for all ten trees.
 #| label: fig-apple-data
 #| lightbox:
 library(lattice)

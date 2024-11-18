@@ -1,3 +1,7 @@
+```{r echo = FALSE, message = FALSE, warning=FALSE}
+source("_common.R")
+
+```
 
 # Interpretability and Explainability {#sec-explain}
 
@@ -5,8 +9,8 @@
 
 You do not have to look very hard these days to come across terms such as 
 **interpretable machine learning**, **explainable AI** (xAI), **responsible AI**, 
-**ethical AI** in the discourse 
-about data analytics, machine learning, and artificial intelligence. This chapter
+**ethical AI**, and others in the discourse about data analytics, machine learning, 
+and artificial intelligence. This chapter
 deals with questions of interpreting and explaining models derived from data, 
 not with the ethical aspects of the discipline. Although one could argue that 
 working with models that we are unable to explain how they work is not a responsible
@@ -17,6 +21,11 @@ worthwhile making a distinction. We draw in this chapter on the excellent online
 book "Interpretable Machine Learning" [@Molnar2022] although by the author's 
 definition, most of the book is concerned with explaining models. 
 
+:::{.definition}
+::::{.definition-header}
+Definition: Interpretability and Explainability
+::::
+::::{.definition-container}
 A system is **interpretable** if it is capable of being understood. In such a 
 system the change that follows when a knob is turned is known. Someone trained
 in the arts can articulate how the system works, how input is transformed into
@@ -25,12 +34,14 @@ some threshold of knowledge must be assumed. An internal combustion engine is
 interpretable, it is capable of being understood---but not by everyone. 
 
 A system is **explainable** if we can understand how something happened, how it
-came up with its answers. The difference to interpretability is subtle. Intrepreting
+came up with its answers. The difference to interpretability is subtle. Interpreting
 focuses on the engine of the system, how it transforms input into output. 
 Explaining focuses on the output side of the system, trying to understand what
 makes the box work without understanding how the box works (@fig-inter-explain).
 
 ![Interpretability and explainability.](images/Inter_and_explain.png){#fig-inter-explain fig-align="center" width="80%"}
+::::
+:::
 
 An internal combustion engine is interpretable: gas and air are mixed, compressed,
 and ignited. The force of the ignition moves one or more pistons which turns a 
@@ -68,22 +79,21 @@ decision rules.
 model is intrinsically interpretable, but add more inputs, their transformations
 and interactions, and the entire model becomes much less understandable.
 
-* Models are increasingly seen as a source of risk. And like with all risks,
-that means we need to manage it (understand, contain, insure). A risk that is
+* Models are increasingly seen as a source of risk. As with all risks, that
+means we need to manage it (understand, contain, insure). A risk that is
 not understood is difficult to guard against. Ironically, the more complex models
 that perform well carry a larger risk by virtue of being difficult to understand.
 
 ### A Continuum
 
-Interpretability is not an all-or-nothing proposition. As mentioned in the previous
-bullet list, any model becomes less interpretable by adding features. An expert
-in artificial neural networks might find them to be more interpretable than an
-occasional user.
+Interpretability is not an all-or-nothing proposition. As mentioned before,
+any model becomes less interpretable by adding features. 
 
 It is best to think of a spectrum of interpretability and the methods we consider
-to model data are somewhere on the spectrum---with room for discussion and movement
-(@fig-inter-cont). It is clear from the figure that more contemporary and currently 
-popular analytic methods tend to appear on the right hand side. 
+to model data fall somewhere on the spectrum---with room for discussion and movement
+(@fig-inter-cont). An expert in artificial neural networks might find them to be 
+more interpretable than an occasional user. It is clear from the figure that more 
+contemporary and currently popular analytic methods tend to appear on the right hand side. 
 
 
 ![Continuum of model interpretability.](images/InterpretabilityContinuum.png){#fig-inter-cont fig-align="center" .lightbox}
@@ -93,7 +103,7 @@ models. Interpretable models are transparent and can be understood. Intrinsicall
 interpretable models can be understood by looking at the model *structure*. 
 Single decision trees, simple linear regressions, and nonlinear models that are
 parameterized in terms of domain-specific quantities and relationships are 
-intrinsically interpretable. @sankaran_2024 call intrinsically interpretable models 
+intrinsically interpretable. @sankaran_2024 calls intrinsically interpretable models 
 **glass boxes** to distinguish them from non-interpretable **black boxes**.
 
 
@@ -103,7 +113,7 @@ Example: Mitscherlich Equation
 ::::
 ::::{.example-container}
 In section @sec-nlr-starting-values we encountered the Mitscherlich equation,
-popular to model plant and crop yield.
+popular in modeling plant and crop yield:
 
 $$
 \text{E}[Y] = \lambda + (\xi-\lambda) \exp\left\{ -\kappa x\right\}
@@ -116,7 +126,7 @@ have a direct interpretation in terms of the subject matter (@fig-mitsch-data2):
 - $\lambda$: the upper yield asymptote as $x$ increases 
 - $\kappa$: is related to the rate of change, how quickly the yield increases from $\xi$ to $\lambda$
 
-```{r Mitscherlich_data, fig.align="center",out.width="90%"}
+```{r Mitscherlich_data, echo=FALSE, fig.align="center",out.width="90%"}
 #| fig.cap: Simulated yield data and Mitscherlich model
 #| label: fig-mitsch-data2
 set.seed(675)
@@ -144,7 +154,7 @@ Example: First-order Compartmental Model
 ::::
 ::::{.example-container}
 Figure @fig-explain-theoph shows a first-order compartmental model for the 
-concentration of the drug theophylline in patients over time. The concentration
+concentration of a drug in patients over time. The concentration
 $C_t$ at time $t$ is modeled as a function of dose $D$ as
 $$
 	\text{E}[C_t] = \frac{D k_e k_a}{Cl(k_a - k_e)} \left \{ \exp(-k_e t) - \exp(-k_a t) \right \}
@@ -155,7 +165,7 @@ The model is intrinsically interpretable. The parameters represent
 - $k_a$: the absorption rate of the drug
 - $Cl$: the clearance of the drug
 
-![First-order compartmental model.](images/Theophylline.png){#fig-explain-theoph fig-align="center" wifth="90%"}
+![First-order compartmental model. The lines represent two doses of the drug.](images/Theophylline.png){#fig-explain-theoph fig-align="center" width="80%"}
 ::::
 :::
 
@@ -165,20 +175,20 @@ $$
 \text{E}[Y] = \beta_0 + \beta_1 x
 $$
 $\beta_0$ is the mean response when $x=0$, $\beta_1$ represents the change in 
-mean response when $x$ increases by one unit. The model is still intrinsically 
+mean response when $X$ increases by one unit. The model is still intrinsically 
 interpretable when more input variables are added, but the interpretation is more
 nuanced. In the model
 $$
 \text{E}[Y] = \beta_0 + \beta_1 x_1 + \beta_2x_2 + \beta_3x_3
 $$
 $\beta_j$ ($j=1,2,3)$ is no longer the change in mean response if $x_j$ increases
-by one unit. It is the change in mean response if $x_j$ increases by one unit 
-**and** all other $x$s are held fixed. Add more inputs, factors, feature transformations, 
+by one unit. It is the change in mean response if $X_j$ increases by one unit 
+**and** all other $X$s are held fixed. Add more inputs, factors, feature transformations, 
 and interaction terms and the interpretation becomes even more nuanced.
 
 Adding regularization can make a model more interpretable or less interpretable.
 Ridge ($L_2$) regularization does not help with interpretability because it
-assigns non-zero weight to the model coefficient. A model with 1,000 inputs does not
+assigns non-zero weight to the model coefficients. A model with 1,000 inputs does not
 become more interpretable by shrinking 1,000 coefficients somewhat. Lasso ($L_1$)
 regularization increases interpretability because it shrinks coefficients all
 the way to zero, combining regularization with feature selection.
@@ -199,7 +209,7 @@ through a 11 x 11 convolutional layer with 96 kernels, followed by a max pooling
 layer, and so on.
 
 
-![AlexNet, from [LearnOpenCV](https://learnopencv.com/number-of-parameters-and-tensor-sizes-in-convolutional-neural-network/)](images/AlexNet.png){#fig-inter-alexnet fig-align="center" width="80%" .lightbox}
+![AlexNet, from [LearnOpenCV](https://learnopencv.com/number-of-parameters-and-tensor-sizes-in-convolutional-neural-network/).](images/AlexNet.png){#fig-inter-alexnet fig-align="center" width="80%" .lightbox}
 
 ### The Mind Map
 
@@ -256,8 +266,8 @@ assumption; inputs change with each other, they are collinear.
 The implications of not meeting the assumption are significant.
 
 Suppose you are predicting the value of homes based on two inputs: the living
-area in ft^2^ and the number of bedrooms. In the data set, the first variable
-ranges from 1,200 to 7,000 ft^2^ and the number of bedrooms varies from 1--10.
+area in ft^2^ and the number of bedrooms. The first variable ranges in the data set 
+from 1,200 to 7,000 ft^2^ and the number of bedrooms varies from 1--10.
 The assumption of "uncorrelated features" implies that you can pair values of the
 variables independently. An explainability method such as partial dependence plots
 will evaluate the impact of the input variable number of bedrooms by averaging
@@ -271,20 +281,20 @@ explanation to the CEO with
 >*we evaluated the importance of factors affecting home prices by considering
 mansions with a single bedroom and tiny houses with nothing but sleeping quarters...*
 
-but that is exactly what the explainability tool might be giving you. Imagine a model
+but that is exactly what the explainability tool is giving you. Imagine a model
 developed for the lower 48 states of the U.S. that contains season (Winter, Spring, 
 Summer, Fall) and average daily temperature as inputs and evaluating the impact of 
 summer months for average daily temperature in the freezing range. It makes no sense.
 
 Explainability tools are not free of **parameters and require choices** that affect
 their performance. These tools use bandwidths, kernel functions, subsampling,
-surrogate model types, etc.. Software has default settings which might or might
+surrogate model types, etc. Software has default settings which might or might
 not apply to a particular model and data combination. 
 
 Another issue to look out for is the **data requirement** of the explainability tool
 itself. Some methods are based on analyzing predictions of a model while others
-need access to the original training data. If you study a model by analyzing
-predictions returned from an API, you are limited to methods that can be carried
+need access to the original training data. If the only way to study a model is by 
+analyzing predictions returned from an API, you are limited to methods that can be carried
 out without access to the training data.
 
 
@@ -301,17 +311,17 @@ In the end the data scientist has to convert the output from the tools into a
 human-consumable form. @Molnar2022 discusses the ingredients of human-friendly
 explanations. We summarize some of his excellent points. Good explanations
 
-* are **contrastive**: they compare a prediction to another instance in the data,
+* are **contrastive**; they compare a prediction to another instance in the data,
 they use counterfactuals, what has **not** happened:\
 *Why did the drug not work for my patient?*\
 *Why was the predicted home price higher than expected?*
 
-* are **selective** (sparse): focus on the main factors, not all factors. Keep
+* are **selective** (sparse); focus on the main factors, not all factors. Keep
 explanations short, giving up to 3 reasons:\
 *The Washington Huskies lost to the Michigan Wolverines because they could not
 get their usually explosive offense going.*
 
-* are **social**: the explanation is appropriate for the social context in 
+* are **social**; the explanation is appropriate for the social context in 
 which it is given. Charlie Munger explained EBITDA (earnings before interest, taxes, 
 depreciation, and amortization) at the 2003 Berkshire Hathaway annual meeting as 
 follows: \
@@ -323,25 +333,26 @@ bullshit earnings."*
 outcome:\
 *The predicted price of the house was high because it has 16 balconies*.
 
-* are **general**: in the absence of abnormal features that drive the explanation
+* are **general**; in the absence of abnormal features that drive the explanation
 good explanations are probable:\
 *The credit score is low for individuals who carry a lot of debt.*\
 *The house is expensive because it is big.*
 
 
-## Model-agnostic Explainability
+## Model-agnostic Explainability {#sec-expplain-modelagnostic}
 
-### Partial Dependence Plots (PDP)
+### Partial Dependence Plots (PDP) {#sec-explain-pdp}
 
 Partial dependence plots (PDP) are a global method that summarizes the **marginal**
 effects of input variables across a data set. The plots are typically 1-D
-or 2-D plots, meaning that they show the marginal effect of one variable or
-of two variables together. 1-D plots are most common.
+or 2-D dependence plots, meaning that they show the marginal effect of one variable or
+of two variables together. 1-D plots are most common; they display the average 
+response across the daa set as one input variable takes on different values.
 
 Suppose a model contains $p$ features $X_1, \cdots, X_p$. In the one-dimensional
 case we choose one of the features, $X_j$ say, and all other features form 
 a complement set $X_\mathcal{C}$. The partial dependence function for $X_j$ is
-defie as 
+defined as 
 $$
 f(X_j) = \text{E}_{X_\mathcal{C}}\left[f(X_j,X_\mathcal{C})\right]
 $$
@@ -352,10 +363,19 @@ $$
 \widehat{f}(X_j) = \frac{1}{n} \sum_{i=1}^n f(X_j,x_{i\mathcal{C}})
 $$
 where $x_{i\mathcal{C}}$ are the values of the complement features in the training
-data. In practice you vary the values of the feature $X_j$ of interest over the
+data. In practice you vary the values of the feature of interest ($X_j$) over the
 observed range (or the observed values). For each value $x_j$ the average above
 is computed, substituting the observed values for all other inputs. The final
 result is presented as a plot of the $\widehat{f}(x_j)$ versus $x_j$ values.
+
+In the two-dimensional case, the complement set $X_\mathcal{C}$ contains all 
+but two of the input variables, $X_j$ and $X_k$ are the features of interest
+for the PDP, and the averages are calculated as 
+$$
+\widehat{f}(X_j, X_k) = \frac{1}{n} \sum_{i=1}^n f(X_j,X_k,x_{i\mathcal{C}})
+$$
+The results are presented as a three-dimensional plot (image plot, contour, etc.)
+of $\widehat{f}_{X_j,X_k}$ against a grid of $X_j, X_k$ values.
 
 :::{.example}
 ::::{.example-header}
@@ -371,21 +391,14 @@ We classify the observations in the training data set here with a random forest
 with 500 trees.
 
 ```{r, warning=FALSE, message=FALSE}
-library("duckdb")
-con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
-ban_train <- dbGetQuery(con, "SELECT * FROM banana_train")
-ban_test <- dbGetQuery(con, "SELECT * FROM banana_test")
-
-ban_train$Quality <- as.factor(ban_train$Quality)
-ban_test$Quality <- as.factor(ban_test$Quality)
-
-dbDisconnect(con)
+ban_train <- duckload("banana_train")
+ban_test <- duckload("banana_test")
 ```
 
 ```{r, warning=FALSE, message=FALSE}
 library(randomForest)
 set.seed(54)
-rf <- randomForest(Quality ~ . , 
+rf <- randomForest(as.factor(Quality) ~ . , 
                    data=ban_train, 
                    importance=TRUE)
 ```
@@ -403,7 +416,8 @@ varImpPlot(rf)
 ```{r, warning=FALSE, message=FALSE}
 library(caret) 
 rf.predict <- predict(rf,newdata=ban_test)
-rf.predict.cm <- caret::confusionMatrix(rf.predict, ban_test$Quality)
+rf.predict.cm <- caret::confusionMatrix(rf.predict, 
+                                        as.factor(ban_test$Quality))
 rf.predict.cm
 ```
 
@@ -424,10 +438,10 @@ The `FeatureImp` class computes permutation-based feature importance.
 
 ```{r, warning=FALSE, message=FALSE}
 library(iml)
-X <- ban_train[,which(names(ban_train) != "Quality")]
+ban.X <- ban_train[,which(names(ban_train) != "Quality")]
 model <- Predictor$new(rf,
-                      data=X,
-                      y=ban_train$Quality)
+                       data=ban.X,
+                       y=ban_train$Quality)
 ```
 
 
@@ -459,12 +473,24 @@ PDP plots is substantial.
 ::::
 :::
 
+:::{.callout-note title="Question"}
+- What do PDP plots look like for a multiple linear regression model with only main effects?
+- How do interactions between the features change the PDP plot?
+:::
+
 #### Advantages
 
 Partial dependence plots are intuitive, the concept of an average prediction at an
 input value is easy to grasp. They are also easy to implement. The partial 
 dependence analysis reveals the impact of a feature on the average predicted
 value.
+
+The partial dependence plots show how model predictions behave for a set of 
+data. It does not matter whether this is training data or test data in the sense
+that the PDP shows what the model learned from the training data. The (average) 
+predictions change with the values of the inputs in a certain way. This is in 
+contrast to explainability tools that explicitly depend on a measure of model
+loss, such as feature importance summaries (see @sec-explain-vimp).
 
 #### Disadvantages
 
@@ -488,21 +514,839 @@ example, the PDP variables show only small to modest pairwise correlations with 
 other features
 
 ```{r}
-cor(X[,"Softness"]   , X)
-cor(X[,"Weight"]     , X)
-cor(X[,"HarvestTime"], X)
+round(cor(ban.X[,"Softness"]   , ban.X),3)
+round(cor(ban.X[,"Weight"]     , ban.X),3)
+round(cor(ban.X[,"HarvestTime"], ban.X),3)
 
 ```
 
-### Individual Conditional Expectation (ICE)
+### Individual Conditional Expectation (ICE) {#sec-explain-ice}
 
-### Variable Importance
+Individual Conditional Expectation (ICE) plots are a **local** version of the 
+partial dependence display. They show predictions of $f(X_j,X_\mathcal{S})$ on
+an observation basis. This is one local method that can be meaningfully aggregated
+to a global method: when averaged across all observations, ICE plots are 
+partial dependence plots. It is thus common to overlay the plots at the 
+observation level with the PDP.
+
+:::{.example}
+::::{.example-header}
+Example: Abalone Age
+::::
+::::{.example-container}
+Abalone is a common name for a group of marine snails (genus *Haliotis*), found worldwide
+in colder waters. The flesh of the abalone is widely considered a delicacy and their
+shells are used for jewelry. Per [Wikipedia](https://en.wikipedia.org/wiki/Abalone), the
+shell of abalone is particularly strong and made up of stacked tiles with a clingy
+substance between the tiles (@fig-abalone-shell). 
+When the shell is struck the tiles move rather than shatter.
+
+![Red Abalone shells.](images/abalone_red.jpeg){#fig-abalone-shell width="400px" fig-align="center"}
+
+The [abalone data](https://archive-beta.ics.uci.edu/dataset/1/abalone) we use is
+available from the UC Irvine Machine Learning Repository and was originally collected by
+@Nash_et_al_1994.
+
+The problem tackled here is to predict the age of abalone from physical measurements.
+Abalone are aged by the number of rings seen through a microscope. The process is time
+consuming, the shell needs to be cut through the cone, stained, and the rings
+are counted under a microscope. These rings appear in abalone shells after 1.5 years, so
+the age of the animal in years is 1.5 plus the number of rings.
+
+The data comprise the following measurements on 4,177 animals:
+
+-   Sex: M, F, and I (infant)
+-   Length: Longest shell measurement (in mm)
+-   Diameter: perpendicular to length (in mm)
+-   Height: with meat in shell (in mm)
+-   Whole_Weight: whole abalone (in grams)
+-   Shucked_Weight: weight of meat (in grams)
+-   Viscera_Weight: gut weight after bleeding (in grams)
+-   Shell_Weight: after being dried (in grams)
+-   Rings: +1.5 gives the age in years
+
+
+```{r}
+abalone <- duckload("abalone")
+abalone$Sex <- as.factor(abalone$Sex)
+head(abalone)
+```
+
+The following statements fit a model to predict the number of rings using
+a gradient boosting machine for Poisson data, using all input variables in the
+data frame. A Poisson distribution seems reasonable as we are dealing with
+count data and the average count is not large enough to justify a Gaussian
+approximation. Setting the interaction depth to 2 allows for two-way 
+interactions between the input variables.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', out.width="80%"}
+#| fig.cap: Training and cross-validation error for gradient boosting machine.
+#| label: fig-abalone-gbm
+library(gbm)
+
+set.seed(4876)
+gbm_fit <- gbm(Rings ~ ., 
+               data=abalone,
+               interaction.depth=2,
+               distribution="poisson",
+               cv.folds = 5)
+
+gbm.perf(gbm_fit)
+```
+
+5-fold cross-validation is used to produce an estimate of the test error. Both
+test and training error are decreasing up until 100 boosting iterations (@fig-abalone-gbm).
+Predictions will be based on all 100 trees.
+
+The following statements set up a prediction object for the gradient boosting
+machine in `iml` and request ICE plots with PDP overlay for three of the input
+variables.
+
+```{r, message=FALSE, fig.align='center', out.width="90%"}
+#| fig.cap: ICE plots for diameter, height, and whole animal weight, abalone data.
+#| label: fig-abalone-ice-pdp
+#| 
+X_data <- abalone[,1:8]
+aba_model <- Predictor$new(gbm_fit,
+                       data=X_data,
+                       y=abalone$Rings)
+
+ice_pdp <- FeatureEffects$new(aba_model,
+                          features = c("Diameter","Height","Whole_Weight"),
+                          method="pdp+ice")
+ice_pdp$plot() + 
+    labs(title="Gradient Boosting", subtitle="Abalone - ICE + PDP") 
+```
+
+@fig-abalone-ice-pdp shows one issue with ICE plots, they become very busy
+for large data sets. Each plot is showing 4,177 trends and the overlaid PDP plot.
+Notice that for `Height`, the majority of the observations are below 0 and
+0.3 mm, with a few very large values. The ICE and PDP plots cover the entire
+range of the observed data. One should limit the interpretation of these 
+plots to the dense areas of the observed data; the rug dot plots help with that.
+Since both ICE and PDP plots 
+assume uncorrelated features, this is especially important because observations
+are paired with observed values for the other inputs. Averaging predicted
+values for values that are rare over values for other variables that are extreme
+is dangerous.
+
+For categorical features, ICE and partial dependence plots are generated for 
+each level of the feature. @fig-abalone-ice-pdp1 shows the plots for the 
+three-level `Sex` variables. There is considerable variation in the predicted
+number of rings, with the average predicted number being slightly smaller for 
+infants (`Sex`="I") and about equal for male and female animals.
+
+```{r, message=FALSE, warning=FALSE, fig.align='center', out.width="90%"}
+#| fig.cap: ICE plots for factor variable `Sex`, with three levels.
+#| label: fig-abalone-ice-pdp1
+
+ice_pdp1 <- FeatureEffects$new(aba_model,
+                          features = c("Sex"),
+                          method="pdp+ice")
+ice_pdp1$plot() + 
+    labs(title="Gradient Boosting", subtitle="Abalone - ICE + PDP") 
+```    
+
+Another useful feature of the individual conditional expectation plot is centering
+the predicted responses at a particular value of the input variable. 
+@fig-abalone-ice-pdp2 shows the predictions for `Diameter` centered at a value
+of 0.25 mm. The vertical axis displays the deviation from $\widehat{f}(X_j=0.25)$.
+
+```{r, message=FALSE, warning=FALSE, fig.align='center', out.width="90%"}
+#| fig.cap: ICE plots for input variable `Diameter`, centered at diameter of 0.3 mm.
+#| label: fig-abalone-ice-pdp2
+
+FeatureEffects$new(aba_model,
+                   features = c("Diameter"),
+                   method="ice",
+                   center.at=0.25) %>% plot()
+
+```
+
+
+::::
+:::
+
+#### Advantages
+
+An advantage of ICE plots over partial dependence plots is the ability to 
+visualize interactions through the observation-level trends that might get
+washed out in the PDP. The ICE plots for the abalone data
+do not suggest interactions, the individual trends and the average trend have
+the same shape.
+
+A second advantage of the ICE plots is that they aggregate to a meaningful 
+summary, namely the partial dependence plot.
+
+Because they show individual predictions, ICE plots give you a sense of the 
+variability of the predicted values for a given value of a feature. For example, 
+the `Diameter` plot in @fig-abalone-ice-pdp shows that the number of rings for an
+animal with diameter 0.4 mm varies by almost 2x, from about 1.7 to 3.2 rings.
+
+#### Disadvantages
+
+Like the PDP, the ICE plots assume that inputs can vary independently of each
+other. For the abalone data, this is hardly the case. All of the inputs show
+large correlations above 0.7--0.8. You cannot pair arbitrary lengths with
+arbitrary heights or weights of the animals.
+
+For large data sets the ICE plots become very busy, and overlaying thousands
+of lines might not tell you much.
+
+### Variable (Feature) Importance {#sec-explain-vimp}
+
+Ensemble methods such as random forests, adaptive boosting, or gradient boosting 
+machines have their versions of measuring (and displaying) the importance of input 
+variables as drivers of the model. These are based on concepts such as reduction in 
+loss function, increase in purity, frequency of variable selection in trees, etc.
+
+A model-agnostic way of measuring variable importance is based on the simple 
+idea of data permutation. Suppose you have target $Y$ and used inputs $X_1, \cdots, X_p$
+to derive a model to predict or classify $Y$. If $X_j$ is an important variable
+in the model, then disrupting (destroying) its association with the target variable should
+lead to a less performant model. On the other hand, if $X_j$ is not important,
+then breaking its relationship to $Y$ should not be of great consequence.
+
+Permutation-based importance analysis of $X_j$ destroys the feature's information 
+on the target by randomly shuffling the values for the feature in the data. All
+other features remain the same. Compare a loss criterion based on the original
+data with the loss calculated after shuffling $X_j$. Important variables will
+show a large increase in loss when shuffled. Unimportant variables will not
+change the loss as much.
+
+:::{.example}
+::::{.example-header}
+Example: Abalone Age (Cont'd)
+::::
+::::{.example-container}
+
+The `summary` of a `gbm` object displays the relative variable importance as 
+measured by the effect attributable to each input variable in reducing the 
+loss function. For the abalone data, the `Shell_Weight` and the `Shucked_Weight`
+are the most important variables (@fig-abalone-vimp).
+
+```{r, fig.align='center', out.width="80%"}
+#| fig.cap: Relative variable importance in gradient boosting machine.
+#| label: fig-abalone-vimp
+summary(gbm_fit)
+```
+
+How does this compare to a permutation-based variable importance analysis?
+The `FeatureImp` class in the `iml` package computes feature importance based
+on a permutation analysis. The following code computes and displays the 
+feature importance based on shuffling each variable twenty times.
+
+```{r, warning=FALSE, message=FALSE, fig.align="center", out.width="80%"}
+#| fig.cap: Permutation-based variable importance for abalone gradient boosting machine.
+#| label: fig-abalone-vimp2
+#| 
+FeatureImp$new(aba_model, 
+               loss="mse",
+               n.repetitions=20) %>% plot()	
+```
+
+Interestingly, `Shell_Weight` is the most important driver of the predictions 
+in the permutation-based analysis as well. This is followed by several variables
+with equal--and large--importance (@fig-abalone-vimp2). `Shucked_Weight`, judged second-most
+important in the boosting model based on the reduction in MSE during training,
+is considered least important based on the permutation analysis.
+
+The horizontal bars around some of the data points in @fig-abalone-vimp2 show the
+variability of the results for the input variable across the 20 repetitions.
+::::
+:::
+
+#### Advantages
+
+Feature importance based on permutation is easy to understand: destroy the association
+between target and feature by shuffling the data and measure the change in loss.
+
+The plot provides a compressed, global insight into the model.
+
+#### Disadvantages
+
+The plot should be interpreted with caution when features are correlated. Breaking
+the relationship between $Y$ and $X_j$ does not reveal the relative importance
+of $X_j$ if its effect can be picked up by other variables with which it is 
+correlated. 
+
+Shuffling the data at random can produce unlikely combinations of inputs.
+
+To perform permutation-based variable importance you need access to the original
+$Y$ values in the training data. When a model is evaluated based on its predictions
+alone, that information is probably not available.
+
+The results depend on random processes and can vary greatly from run to run.
+
+Feature importance is based on changes in the loss function and thus depend on
+whether they are applied to training data or test data. When using it on the 
+training data, it tells us which features the model relies on in making predictions.
+Features are only "important" in this sense. An overfit model relies on certain
+features too much. 
 
 ### Surrogate Models
 
+Surrogate modeling applies an interpretable method to shed light on the predictions
+of an un-interpretable method. For example, you can train a decision tree on
+the predictions of an artificial neural network.
+
+This is a global method where the performance of the black-box model does not
+affect the training of the surrogate model. The steps in training a surrogate
+are as follows:
+
+1. Choose the data set for which predictions are desired, it can be the original
+training data set or a test data set.
+
+2. Compute the predictions from the black-box model.
+
+3. Train an interpretable model on those predictions and the data set from step 1.
+
+4. Measure how well the predictions of the surrogate model in 3. agree with the
+predictions of the black-box model in 2.
+
+5. If satisfied with the agreement, base interpretation of the black-box model
+on the interpretable surrogate.
+
+The agreement between black-box and surrogate model is calculated for a 
+qualitative target based on the confusion matrix. For quantitative targets the
+agreement is based on $R^2$-type measures that express how much of the variability 
+in the black-box prediction is explained by the surrogate predictions
+$$ 1 - \frac{\sum_{i=1}^n \left ( \widehat{y}_i^* - \widehat{y}_i\right )^2}
+	{\sum_{i=1}^n \left( \widehat{y}_i - \overline{\widehat{y}} \right )^2} 
+$${#eq-surrogate-agreement}
+
+In @eq-surrogate-agreement $\widehat{y}_i^*$ is the prediction for the $i$^th^
+observation in the surrogate model, $\widehat{y}_i$ is the prediction from the
+black-box model, and $\overline{\widehat{y}}$ is the average black-box prediction.
+
+:::{.example}
+::::{.example-header}
+Example: US Crime Data (MASS)
+::::
+::::{.example-container}
+We are fitting a model to the US crime data in the `MASS` library using Bayesian 
+Model Averaging (see @sec-bma). This creates an ensemble model where predicted 
+values are a weighted average of the models considered in BMA. 
+Can we find a surrogate model that explains which features are driving the predictions?
+
+Note that this data contains aggregate data on 47 U.S. states from 1960 and 
+that the variables have been scaled somehow. We are not going to overinterpret
+the results in a contemporary context. The example is meant to highlight the 
+steps in creating a surrogate model.
+
+The following statements fit a regression model by Bayesian Model Averaging
+to the log crime rate per population. With the exception of the second input
+variable, an indicator for a Southern state, all other inputs are also log-transformed.
+
+```{r, message=FALSE, warning=FALSE}
+library(MASS)
+library(BMA)
+
+data(UScrime)
+x <- UScrime[,-16]
+y <- log(UScrime[,16])
+x[,-2]<- log(x[,-2])
+
+crimeBMA <- bicreg(x,y,strict=FALSE,OR=20)
+predBMA <- predict(crimeBMA, newdata=x)$mean
+summary(crimeBMA)
+```
+
+The BMA ensemble comprise 115 individual regression models where the input 
+variables contribute to different degrees. Mean years of schooling (`Ed`) appears
+in all models whereas the labor force participation rate (`LF`) in only 6\% of 
+the models. Next we train a decision tree on the predictions to see if we can
+explain the overall predictions across the 115 models.
+
+Because the data frame has only 47 observations, we set the `minsplit` parameter
+of the recursive partitioning algorithm to 10 (the default is 20).
+
+```{r, message=FALSE, warning=FALSE, fig.align='center', out.width="90%"}
+#| fig.cap: Full decision tree trained on BMA predictions of U.S. Crime data.
+#| label: fig-surrogate-tree
+#| 
+library(rpart)
+library(rpart.plot)
+
+surrogate_data <- data.frame(predicted=predBMA,X=x)
+
+set.seed(87654)
+t1 <- rpart(predicted ~ . , 
+            data=surrogate_data,
+            control=rpart.control(minsplit=10,maxcompete=2),
+            method="anova")
+
+rpart.plot(t1,roundint=FALSE)
+```
+
+The tree in @fig-surrogate-tree is quite deep and is based on seven variables.
+How well do the predictions of the tree and the BMA regression agree? The following
+code chunk computes the $R^2$ between the two prediction vectors using the `lm`
+function.
+
+``` {r, fig.align="center", fig.asp=1.}
+summary(lm(predBMA ~ predict(t1)))
+
+plot(x=predBMA,y=predict(t1),type="p", 
+     xlab="BMA prediction",
+     ylab="Decision tree prediction",
+     las=1,bty="l")
+```
+
+The decision tree explains 88\% of the variability in the BMA predictions. The 
+relationship between the two prediction vectors appears linear. The big question
+is whether we should be satisfied with this level of agreement? And if so,
+does the surrogate decision tree provided a reasonable explanation of what
+drives the BMA model?
+
+For example, one could argue that `PO1` and `PO2`, the policing expenditures in
+two successive years are probably measuring the same thing. Also, `U1` and `U2`
+are both unemployment rates, just in two different age groups. Maybe the tree in 
+@fig-surrogate-tree can be simplified.
+
+The cross-validation analysis of `rpart` shows that a much smaller tree 
+minimizes the cross-validation error. 
+
+```{r}
+plotcp(t1)
+```
+
+@fig-surrogate-tree2 shows the trees with two and three terminal nodes.
+
+```{r, fig.align='center', out.width="90%"}
+#| fig.cap: Pruned decision trees.
+#| label: fig-surrogate-tree2
+t2 <- prune(t1,cp=0.1)
+t3 <- prune(t1,cp=0.23)
+
+summary(lm(predBMA ~ predict(t2)))$r.squared
+summary(lm(predBMA ~ predict(t3)))$r.squared
+
+par(mfrow=c(1,2))
+rpart.plot(t2,roundint=FALSE)
+rpart.plot(t3,roundint=FALSE)
+```
+
+The simpler trees explain only 50\% and 60\% of the variability in the BMA
+predictions, yet are much simpler to explain. The trees essentially convey that
+what drives the BMA predictions are the policing expenditures.
+::::
+:::
+
+#### Advantages
+
+The surrogate model approach is flexible, you can use any interpretable model type
+and apply it to any black-box model. The approach is intuitive, straightforward,
+and easy to implement.
+
+#### Disadvantages
+
+The disadvantages of the surrogate model approach outweigh its advantages:
+
+- You are replacing one model with another, it can overfit or underfit, and 
+needs to be trained appropriately.
+
+- It is not clear what level of agreement between surrogate and black-box
+predictions is adequate. Is an $R^2$ of 0.7 enough to rely on the surrogate 
+model for explanations?
+
+- You can introduce new input variables in the surrogate model on which the 
+black-box model does not depend. 
+
+- The surrogate model can work well on one subset of the data and perform 
+poorly on another subset.
+
+- The surrogate model never sees the target values in the training data; it is
+trained on predictions. 
+
+- There is potential for misuse by guiding the surrogate model toward explanations
+that fit a narrative.
+
+- The surrogate model can give the illusion of interpretability. Remember that 
+you are explaining the predictions of the model, not the underlying process that
+generated the data. Close agreement between surrogate and black-box predictions
+for a poorly fitting black-box model means you found a way to reproduce bad 
+predictions.
+
 ### Local Interpretable Model-Agnostic Explanation (LIME)
 
+Local interpretable model-agnostic explanations (LIME) is a specific local 
+approach to surrogate modeling. It is based on the idea of fitting locally
+to individual observations interpretable models. Rather than assuming a single
+global surrogate, a different surrogate is fit to each observation, the data for
+the local fit comprises small perturbations of the original data in the neighborhood
+of $\textbf{x}_i$.
+
+The idea is intuitive. It is as if a complex global model is approximated in
+the neighborhood of an input vector $\textbf{x}_i$ by a simple local model. The approach
+is reminiscent of fitting local models in @sec-local-global-models with the distinction
+that we are not using the original data in a neighborhood of $\textbf{x}_i$, but perturbed
+samples. @Molnar2022 explains:
+
+>*LIME tests what happens to the predictions when you give variations of your data 
+into the machine learning model. LIME generates a new dataset consisting of perturbed 
+samples and the corresponding predictions of the black box model. On this new 
+dataset LIME then trains an interpretable model, which is weighted by the proximity 
+of the sampled instances to the instance of interest.*
+
+In this sense LIME does not require the training data, as is the case for 
+global surrogate models. It just requires a mechanism to generate data locally
+near $\textbf{x}_i$ to which the surrogate model can be fit. For example, the surrogate
+model might be a multiple linear regression in just two of the inputs.
+
+The steps to train a local surrogate are as follows:
+
+1. Select the observation $\tetbf{x}_0$ for which you want to explain the prediction of the 
+black-box model.
+
+2. Perturb the data around $\textbf{x}_0$ and obtain the black-box prediction for the 
+perturbed data.
+
+3. Train a weighted, interpretable model to the local data, weighing data points
+by proximity to $\textbf{x}_0$.
+
+4. Explain the black-box prediction using the prediction from the local surrogate 
+model.
+
+In practice, the local models are frequently linear regression models and the
+perturbations are performed by adding random noise to the inputs. The neighborhood
+weights are determined by kernel functions with fixed bandwidth. The software
+requires to select a priori $p^*$ the number of inputs in the local surrogate
+model. Which $p^*$ inputs are chosen is then determined by a feature selection
+process (variable selection or Lasso with a penalty that leads to $p^*$ non-zero
+coefficients).
+
+#### Advantages 
+
+The same surrogate model approach can be used for explanations, regardless of the
+type of black-box model. 
+
+LIME can be applied to tabular data, text, and image data.
+
+It is possible to use different inputs or transformations of the inputs in the
+local model. For example, one could generate LIME models based on the original
+variables when interpreting components in a PCA.
+
+#### Disadvantages
+
+The practical implementation of LIME makes several important choices that have
+effect on the analysis: for example, the definition of the neighborhood in terms of 
+kernel functions and bandwidths and how to generate samples in the neighborhood. 
+
+Generating data sets for the local surrogate
+model should take into account the covariance structure of the inputs but that is
+typically ignored.
+
+The LIME explanations are somewhat unstable. Like the global surrogate models,
+the explanations can be manipulated to fit a narrative. For example, one can 
+choose the predictor variables for the local surrogate. This ensures that all
+explanations are given in terms of those variables.
+
+:::{.example}
+::::{.example-header}
+Example: Boston Housing Data
+::::
+::::{.example-container}
+The approach to local surrogate modeling taken in the `iml` package is similar 
+to the original LIME paper, with some differences:
+
+-   `iml` uses the Gower distance by default instead of a kernel based on Euclidean
+    distance. You can choose other distance metrics with `dist.fun=`.
+
+-   `iml` samples from the data rather than from a normal distribution
+
+We start by fitting a random forest to the Boston housing data and creating
+an `iml` predictor object.
+ 
+```{r}
+data("Boston", package = "MASS")
+X <- Boston[,which(names(Boston) != "medv")]
+set.seed(98)
+rf <- randomForest(medv ~ ., data=Boston, ntree=50)
+rf_mod <- Predictor$new(rf, data=X)
+```
+
+Explain the first instance of the data set with the `LocalModel` class using
+two predictors.
+
+```{r, message=FALSE, warning=FALSE}
+lemon <- LocalModel$new(rf_mod, x.interest=X[1,], k=2)
+lemon
+```
+
+The `beta` column shows the coefficients for the local model at the particular
+$\textbf{x}$ location, here we have a linear regression model with
+$medv = \beta_0 +$ 
+`{r} round(lemon$results[1,1],4)` $*6.575 +$
+`{r} round(lemon$results[2,1],4)` $*4.98$. The `effect` is the product
+of the coefficient with the $x$-value. So,
+$medv = \beta_0 +$
+`{r} round(lemon$results[1,3],4)` +
+`{r} round(lemon$results[2,3],4)`.
+Unfortunately, the intercept is not shown, but you can infer it by predicting 
+from the local model at $x$:
+
+```{r}
+predict(lemon)
+```
+The `plot` function shows the predictions in terms of effect sizes $\beta_jx_j$,
+see @fig-boston-lime. The local model predicts the median housing value for the
+first observation as 25.95, the black-box model predicted a value of 24.75. The
+local prediction is mostly driven by a positive effect from variable `rm` with a
+negative effect from `lstat`.
+
+```{r, fig.align='center', out.width="80%"}
+#| fig.cap: Results from local surrogate prediction for the first observation.
+#| label: fig-boston-lime
+#| 
+plot(lemon)
+```
+
+The `iml` package supports reuse of objects. After creating a new
+model, you can use it to explain other observations of interest. Here is a 
+local surrogate with $p^* = 3$ and explanations for the first three observations.
+
+```{r}
+lemon <- LocalModel$new(rf_mod, x.interest=X[1,], k=3)
+lemon$results
+
+lemon$explain(X[2,])
+lemon$results
+
+lemon$explain(X[3,])
+lemon$results
+```
+
+::::
+:::
+
 ### Shapley Additive Explanation (SHAP)
+
+SHAP is an approach to explainability that has gained much momentum. It is based
+on **Shapley values**, introduced in a game-theoretic consideration on how to fairly
+distribute the payout among players in a coalition based on their individual
+contributions [@Shapley_1953].
+
+Besides the grounding in theory, SHAP has other appealing properties: the 
+local Shapley values on which it is based can be aggregated into meaningful
+global values. Shapley values are the foundation for partial dependence, feature
+importance and other analyses. And because it can be applied locally and globally,
+SHAP provides many of the previously discussed explainability tools on a single
+foundation.
+
+Before we can understand how SHAP works, we need to understand what Shapley
+values are. Otherwise we would be explaining a black box model with black box
+measures---that would be ironic.
+
+#### Shapley Values
+
+@Shapley_1953 considered the following problem: a group (coalition) of players 
+are playing a game, and as part of the game play there is a gain for the group.
+How should the gain be paid out fairly among the players in accordance with their
+contributions toward the gain? 
+
+How does this consideration translate to predictions in statistical models?
+
+- The **game** is making a prediction using a statistical model.
+- The **players** in the game are the features (inputs) of the model.
+- The **coalition** is a particular collection of features, not all of which may
+be present.
+- The **gain** is the difference between the prediction and some baseline.
+- The **payout** is the distribution of the gain among the features according to
+their contribution toward the prediction.
+
+Shapley values quantify the contribution each feature makes to the model's prediction.
+
+:::{.definition}
+::::{.definition-header}
+Definition: Shapley Value of a Feature
+::::
+::::{.definition-container}
+The **Shapley value** of a feature is the (weighted) average of its marginal 
+contributions to all possible coalitions.
+
+- The **marginal contribution** of a feature is the difference between a 
+prediction in a model with and without the feature present.
+
+- A **coalition** is a combination of features. In a model with $p$ features 
+(inputs) there are $2^p$ possible coalitions (all possible subsets).
+	
+- The **weight** of the marginal contribution to a model with $m$ features is 
+the reciprocal of the number of possible marginal contributions to all models 
+with $m$ features.
+::::
+:::
+
+An example adapted from @Mazzanti_2020 will make these concepts tangible. 
+
+Suppose we want to predict a person's income based on their age, gender, and job.
+The eight possible models---the eight coalitions---are
+
+![The eight coalitions. Adapted from @Mazzanti_2020.](images/Shapley_Example1.png){#fig-shapley-ex1 fig-align="center" width=70% .lightbox}
+
+Imagine that we fit the eight different models to the training data and for some
+input vector $\textbf{x}_0$ we perform the predictions. The predicted values
+are shown in @fig-shapley-ex2.
+
+![Predicting under eight models. Adapted from @Mazzanti_2020.](images/Shapley_Example2.png){#fig-shapley-ex2 fig-align="center" width=70% .lightbox}
+
+Next we compute the marginal contributions of the features. The calculation is 
+detailed for Age in @fig-shapley-ex3.
+
+![Computing the  marginal contributions of the features. Adapted from @Mazzanti_2020.](images/Shapley_Example3.png){#fig-shapley-ex3 fig-align="center" width=70% .lightbox}
+
+To do this for feature Age, we consider the possible coalitions where age is 
+added to a model as you move from one stage of the hierarchy to the next. Starting from 
+the empty model (no inputs), there is one model of the single-input model that
+differs by the presence of Age. The difference in predicted value is $-\$10K$.
+
+Similarly, when moving from the single-predictor models to the two-predictor models
+there are two models that differ in the presence of the Age variable. The change
+in predicted value by adding Age as a predictor is $-\$9K$ and $-\$15K$. Finally,
+there is a single model that adds Age to the two-predictor model, with a change
+in predicted value of $-\$12K$.
+
+The weight assigned to the changes in predicted value is the reciprocal of the 
+number of green lines (dotted and solid) at each level of the hierarchy. 
+
+Putting it all together gives the Shapley value for Age:
+$$
+\text{Shap}(Age) =\frac13 (-\$10K) + \frac16 (-\$9K) + \frac16 (-\$15K) + \frac13 (-\$12K) = -\$11.33K
+$$
+Similar calculations for the other features yield
+$$
+\text{Shap}(Gender) = -\$2.33K
+$$
+$$
+\text{Shap}(Job) = \$46.66K
+$$
+These are the **payout** contributions to the features. If you add them up you
+obtain the **total payout** of
+$$
+\text{Shap}(Age) + \text{Shap}(Gender) + \text{Shap}(Job) = -\$11.33K - \$2.33K +  \$46.66K = \$33K
+$$
+This total payout is also the difference between the null model without inputs and 
+the full model with three inputs---the gain of the prediction.
+
+---
+
+In practice we do not fit all possible ($2^p$) models. Several modifications
+are necessary to make the Shapley values computationally feasible in our context:
+
+- The gain is calculated as the difference between $\widehat{y}(\bx_0)$ and the average of all
+predictions. 
+- Features not in the coalition are replaced by randomly selected
+values rather than considering all possible coalitions.
+
+Additional approximations and sampling are put in place to make the Shapley
+values computationally feasible (reasonable).
+
+#### Shapley Values with `iml`
+
+:::{.example}
+::::{.example-header}
+Example: Banana Quality (Cont'd)
+::::
+::::{.example-container}
+We return to the banana quality data to compute the Shapley values for a
+model trained with a support vector machine.
+
+The following statements compute a SVM with radial kernel based on all input 
+variables except `Weight` and generates a matrix of predicted probabilities.
+
+```{r, message=FALSE, warning=FALSE}
+library(caret)
+library(e1071)
+
+ban.svm <- svm(as.factor(Quality) ~ Size + Sweetness + Softness + 
+                                    HarvestTime + Ripeness + Acidity,
+               data=ban_train, 
+               kernel="radial",
+               probability=TRUE,
+               cost=3,
+               gamma=1/7,
+               scale=TRUE)
+
+ban.svm.pred <- predict(ban.svm,newdata=ban_test,probability=TRUE)  
+```
+
+The next code chunk sets up the `iml` predictor object and computes the 
+variable importance plot based on permutation. The loss criterion for the
+classification model is cross-entropy (`loss="ce"`). `Softness`, `Sweetness`,
+and `HarvestTime` emerge as the most important variables. Note, however, the 
+substantial variation in the importance measures.
+
+```{r, fig.align='center', out.width="80%"}
+#| fig.cap: Permutation-based variable importance for support vector machine.
+#| label: fig-banana-svm-vimp
+#| 
+ban.X = ban_train[,which(names(ban_train) != "Quality")]
+ban.X = ban.X[,which(names(ban.X) != "Weight")]
+
+ban.model = Predictor$new(model=ban.svm,
+                          data=ban.X,
+                          y=ban_train$Quality)
+set.seed(876)
+FeatureImp$new(ban.model,
+               loss="ce",
+               n.repetitions=25) %>% plot()
+```
+
+The following code computes the Shapley values of the SVM classification for
+the first observation:
+
+```{r}
+set.seed(6543)
+ban.shap <- Shapley$new(ban.model,x.interest=ban.X[1,])
+ban.shap$results
+```
+
+The `phi` column displays the difference in predicted probabilities from the 
+baseline, which is the average prediction across the data set.
+
+```{r}
+ban.shap$y.hat.average
+sum(ban.shap$results[1:7,3])
+```
+
+The predicted probabilities for the first observation are
+```{r}
+attr(ban.svm.pred,"probabilities")[1,]
+```
+
+The `phi` values for `class="Bad"` are the mirror image of those for `class="Good"`.
+`HarvestTime` has the largest contribution to the difference between the 
+predicted probability and the average prediction. Next is `Sweetness` which 
+increases the probability of good banana qualityl
+
+The `plot` method displays the Shapley values graphically (@figfig-banana-shap1).
+
+```{r, fig.align='center', out.width="80%"}
+#| fig.cap: Shapley values for first observation in SVM for banana quality.
+#| label: fig-banana-shap1
+plot(ban.shap)
+```
+
+For the second observation the predicted probability of Good banana quality is
+even higher than for the first observation. The Shapley values reveal that `Size`
+is the primary driver of the predicted probability for that instance, rather 
+than `HarvestTime` (@fig-banana-shap2)
+
+```{r, fig.align='center', out.width="80%"}
+#| fig.cap: Shapley values for the second observation in SVM for banana quality.
+#| label: fig-banana-shap2
+#| 
+attr(ban.svm.pred,"probabilities")[1:2,]
+
+ban.shap$explain(ban.X[2,])
+plot(ban.shap)
+```
+::::
+:::
+
+### SHAP
+
+
 
 ## Takeaways
 

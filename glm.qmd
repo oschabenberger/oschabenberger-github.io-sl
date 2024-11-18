@@ -756,7 +756,7 @@ The `lrtest` function in the `lmtest` package constructs LRTs based on the resul
 $$
 \text{AIC} = -2\log \ell + 2 k
 $$
-where $k$ is the total number of model parameters, including scale and covariance parameters. Back-calculating $\log ell$ based on AIC is implicitly making the distributional assumption that underpins the computation of AIC for a particular class of models, even if the estimation is free of a distributional assumption.
+where $k$ is the total number of model parameters, including scale and covariance parameters. Back-calculating $\log \ell$ based on AIC is implicitly making the distributional assumption that underpins the computation of AIC for a particular class of models, even if the estimation is free of a distributional assumption.
 :::
 
 ## Example: Beta Regression
@@ -871,7 +871,7 @@ In a randomized complete block design with $t$ treatments and $b$ blocks, there 
 
 ![Randomized Complete Block Design](images/RandomizedBlocks.png){fig-align="center" width="80%" .lightbox #fig-rcbd}
 
-```{r warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library("duckdb")
 con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
 poppies <- dbGetQuery(con, "SELECT * FROM poppies")
@@ -1018,7 +1018,7 @@ Example: Negative Binomial Analysis for Poppy Counts in RCBD
 ::::{.example-container}
 You can fit a Negative Binomial model in `R` with the `glm.nb` function in the `MASS` library.
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(MASS)
 
 nbreg <- glm.nb(count ~ block + tx, data=poppies,link="log")

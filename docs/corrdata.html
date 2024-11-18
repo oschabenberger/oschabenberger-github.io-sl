@@ -651,8 +651,8 @@ Figure&nbsp;29.2: Split-plot design.
 <p>A natural mechanism through which correlations occur is the observation of a stochastic process in time or space. In the subsampling example above, correlation is induced because two observations share something: they were sampled from the same city or county.</p>
 <p>An extreme version of sharing is when the same entity is measured repeatedly. Suppose you measure the length of an item at time <span class="math inline">\(t\)</span> and immediately afterwards. The two measurements will be very similar, due to measurement errors they might not be identical. If <span class="math inline">\(\epsilon\)</span> is the small time interval between the two measurements, then we expect <span class="math inline">\(Y(t)\)</span> and <span class="math inline">\(Y(t+\epsilon)\)</span> to be highly correlated. If <span class="math inline">\(Y\)</span> is the length of an inanimate object, an iron rod, say, then we actually expect the correlation to be very high over long time intervals, since <span class="math inline">\(Y\)</span> is essentially invariable. If <span class="math inline">\(Y\)</span> is an attribute subject to change, then we expect the correlation between <span class="math inline">\(Y(t)\)</span> and <span class="math inline">\(Y(t+\delta)\)</span> to somehow be a function of the time difference <span class="math inline">\(\delta\)</span>. The delay times of trains at the station are more highly correlated between now and ten minutes from now than between now and six months from now.</p>
 <p>This type of correlation, of a random variable with itself, is called <strong>autocorrelation</strong>.</p>
-<p>Hierarchical random processes and autocorrelated processes create <strong>clustered</strong> data structures. We need to distinguish the use of “cluster” in this context from the cluster analyses in <a href="clustering.html" class="quarto-xref"><span>Chapter 24</span></a>. What they have in common is that a cluster is a group of observations that have something in common. In cluster analysis the commonality is similarity of attribute values; the number and size of the clusters is not known a priori, finding the clusters is the goal of the analysis.</p>
-<p>In the context of correlated data the clusters are defined through the process in which the data are collected; observations from the same cluster are correlated and observations from different clusters are (typically) uncorrelated (<a href="#fig-cluster-structure" class="quarto-xref">Figure&nbsp;<span>29.3</span></a>). A longitudinal study where <span class="math inline">\(i=1,\cdots,k\)</span> subjects are measured <span class="math inline">\(j=1,\cdot n_i\)</span> times, creates a clustered data structure with <span class="math inline">\(k\)</span> clusters of sizes <span class="math inline">\(n_1,\cdots,n_k\)</span>. Cluster membership is known a priori and not subject to analysis.</p>
+<p>Hierarchical random processes and autocorrelated processes create <strong>clustered</strong> data structures. We need to distinguish the use of “cluster” in this context from the cluster analyses in <a href="clustering.html" class="quarto-xref"><span>Chapter 24</span></a>. In both situations a cluster is a group of observations that have something in common. In cluster analysis the commonality is similarity of attribute values; the number and size of the clusters is not known a priori, finding the clusters is the goal of the analysis.</p>
+<p>In the context of correlated data the clusters are defined through the process in which the data are collected; observations from the same cluster are correlated and observations from different clusters are (typically) uncorrelated (<a href="#fig-cluster-structure" class="quarto-xref">Figure&nbsp;<span>29.3</span></a>). A longitudinal study where <span class="math inline">\(i=1,\cdots,k\)</span> subjects are measured <span class="math inline">\(j=1,\cdots n_i\)</span> times, creates a clustered data structure with <span class="math inline">\(k\)</span> clusters of sizes <span class="math inline">\(n_1,\cdots,n_k\)</span>. Cluster membership is known a priori and not subject to analysis.</p>
 <div id="fig-cluster-structure" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig.align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cluster-structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -711,7 +711,7 @@ Figure&nbsp;29.3: Example of a clustered data structure. Observations from the s
 <a href="corrdata_files/figure-html/fig-apple-data-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4"><img src="corrdata_files/figure-html/fig-apple-data-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-apple-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;29.4: Trellis plot of the apple diameters for all ten trees.
+Figure&nbsp;29.4: Trellis plot of apple diameters for all ten trees.
 </figcaption>
 </figure>
 </div>
@@ -1350,7 +1350,7 @@ Figure&nbsp;29.9: Fitted trend from correlated error models.
 <span class="glightbox-desc lightbox-desc-1">Figure&nbsp;29.1: Correlated data mind map.</span>
 <span class="glightbox-desc lightbox-desc-2">Figure&nbsp;29.2: Split-plot design.</span>
 <span class="glightbox-desc lightbox-desc-3">Figure&nbsp;29.3: Example of a clustered data structure. Observations from the same cluster are correlated, observations from different clusters are uncorrelated.</span>
-<span class="glightbox-desc lightbox-desc-4">Figure&nbsp;29.4: Trellis plot of the apple diameters for all ten trees.</span>
+<span class="glightbox-desc lightbox-desc-4">Figure&nbsp;29.4: Trellis plot of apple diameters for all ten trees.</span>
 <span class="glightbox-desc lightbox-desc-5">Figure&nbsp;29.5: Weekly AAPL close share prices from January 2010 through December 2023.</span>
 <span class="glightbox-desc lightbox-desc-6">Figure&nbsp;29.6: Empirical autocorrelations for lags 1–20 of AAPL weekly close prices between 2010 and 2023.</span>
 <span class="glightbox-desc lightbox-desc-7">Figure&nbsp;29.8: Correlation functions with <span class="math inline">\(\phi = 20\)</span>. Vertical reference lines are drawn at the respective practical range for the exponential and the gaussian models. The range of the spherical model is <span class="math inline">\(\phi = 20\)</span>.</span>
@@ -1944,7 +1944,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","selector":".lightbox","loop":false,"openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","openEffect":"zoom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
