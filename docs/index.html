@@ -567,10 +567,10 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="mind-maps">Mind Maps</h3>
 <p>I believe that an important aspect of learning material is to organize it and structure it. How to best compartmentalize a topic is personal. Unfortunately, someone else’s treatment enforces their structure on the material.</p>
 <p>Many chapters contain mind maps that reflect my organization of a topic. For example, <a href="#fig-proj-dsmodels1" class="quarto-xref">Figure&nbsp;<span>1</span></a> categorizes statistical modeling approaches in data science and <a href="#fig-deep-mindmap1" class="quarto-xref">Figure&nbsp;<span>2</span></a> is my high-level mind map for deep learning. Clicking on those and other images in the text will zoom into them for a close-up view.</p>
-<div id="fig-proj-dsmodels1" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" alt="Structuring and categorizing input, algorithm, and output in data science models." data-fig-align="center">
+<div id="fig-proj-dsmodels1" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center" alt="Structuring and categorizing input, algorithm, and output in data science models.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-proj-dsmodels1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/DataScienceModels.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/DataScienceModels.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Structuring and categorizing input, algorithm, and output in data science models."></a>
+<a href="images/DataScienceModels.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/DataScienceModels.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Structuring and categorizing input, algorithm, and output in data science models."></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-proj-dsmodels1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Structuring and categorizing input, algorithm, and output in data science models.
@@ -580,7 +580,7 @@ Figure&nbsp;1: Structuring and categorizing input, algorithm, and output in data
 <div id="fig-deep-mindmap1" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-deep-mindmap1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/DeepLearningMindMap.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/DeepLearningMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/DeepLearningMindMap.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/DeepLearningMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-deep-mindmap1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2: Deep learning mind map.
@@ -1198,7 +1198,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","openEffect":"zoom","selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","descPosition":"bottom","loop":false,"selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

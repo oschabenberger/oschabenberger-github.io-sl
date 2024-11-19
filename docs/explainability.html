@@ -1427,7 +1427,7 @@ Figure&nbsp;36.18: Pruned decision trees.
 <p>In this sense LIME does not require the training data, as is the case for global surrogate models. It just requires a mechanism to generate data locally near <span class="math inline">\(\textbf{x}_i\)</span> to which the surrogate model can be fit. For example, the surrogate model might be a multiple linear regression in just two of the inputs.</p>
 <p>The steps to train a local surrogate are as follows:</p>
 <ol type="1">
-<li><p>Select the observation <span class="math inline">\(\tetbf{x}_0\)</span> for which you want to explain the prediction of the black-box model.</p></li>
+<li><p>Select the observation <span class="math inline">\(\textbf{x}_0\)</span> for which you want to explain the prediction of the black-box model.</p></li>
 <li><p>Perturb the data around <span class="math inline">\(\textbf{x}_0\)</span> and obtain the black-box prediction for the perturbed data.</p></li>
 <li><p>Train a weighted, interpretable model to the local data, weighing data points by proximity to <span class="math inline">\(\textbf{x}_0\)</span>.</p></li>
 <li><p>Explain the black-box prediction using the prediction from the local surrogate model.</p></li>
@@ -1618,7 +1618,7 @@ Figure&nbsp;36.22: Computing the marginal contributions of the features. Adapted
 <hr>
 <p>In practice we do not fit all possible (<span class="math inline">\(2^p\)</span>) models. Several modifications are necessary to make the Shapley values computationally feasible in our context:</p>
 <ul>
-<li>The gain is calculated as the difference between <span class="math inline">\(\widehat{y}(\bx_0)\)</span> and the average of all predictions.</li>
+<li>The gain is calculated as the difference between <span class="math inline">\(\widehat{y}(\textbf{x}_0)\)</span> and the average of all predictions.</li>
 <li>Features not in the coalition are replaced by randomly selected values rather than considering all possible coalitions.</li>
 </ul>
 <p>Additional approximations and sampling are put in place to make the Shapley values computationally feasible (reasonable).</p>
@@ -1759,6 +1759,196 @@ Figure&nbsp;36.25: Shapley values for the second observation in SVM for banana q
 </section>
 <section id="shap" class="level3">
 <h3 class="anchored" data-anchor-id="shap">SHAP</h3>
+<p><span class="citation" data-cites="LundbergLee_SHAP">Lundberg and Lee (<a href="references.html#ref-LundbergLee_SHAP" role="doc-biblioref">2017</a>)</span> introduced <strong>SH</strong>apley <strong>A</strong>dditive ex<strong>P</strong>lanation (SHAP) values as a unified approach to explaining model predictions and feature importance.</p>
+<p>SHAP is based on Shapley values and represents Shapley value explanation as an linear model of feature attributions, creating a connection to LIME models with local linear structure. Because of the computational demand to compute Shapley values, <span class="citation" data-cites="LundbergLee_SHAP">Lundberg and Lee (<a href="references.html#ref-LundbergLee_SHAP" role="doc-biblioref">2017</a>)</span> propose several approximations, some model-agnostic and some model-specific. The model-agnostic SHAP approximation combines LIME with Shapely values and is known as KernelSHAP. In a later paper <span class="citation" data-cites="LundbergErionLee">Lundberg, Erion, and Lee (<a href="references.html#ref-LundbergErionLee" role="doc-biblioref">2018</a>)</span> proposed the model-specific TreeSHAP for tree-based methods.</p>
+<p>Another feature of SHAP is a useful collection of tools to aggregate and visualize measures based on Shapley values, such as force plots, Shapley summaries, dependence plots, etc.</p>
+<p>An implementation of TreeSHAP for XGBoost in<code>R</code> is available in the <code>SHAPforxgboost</code> package.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: Glaucoma Database</p>
+</div>
+<div class="example-container">
+<p>We return to the Glaucoma data analyzed in the chapter on Boosting (<a href="boosting.html" class="quarto-xref"><span>Chapter 20</span></a>). The following code chunks recreate the training and test data from that chapter and fit an XGBoost model for binary classification.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"TH.data"</span>)</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>( <span class="st">"GlaucomaM"</span>, <span class="at">package=</span><span class="st">"TH.data"</span>)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5333</span>)</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>trainindex <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(GlaucomaM),<span class="fu">nrow</span>(GlaucomaM)<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>glauc_train <span class="ot">&lt;-</span> GlaucomaM[trainindex,]</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>glauc_test <span class="ot">&lt;-</span> GlaucomaM[<span class="sc">-</span>trainindex,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(xgboost)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>Glaucoma <span class="ot">=</span> <span class="fu">ifelse</span>(GlaucomaM<span class="sc">$</span>Class<span class="sc">==</span><span class="st">"glaucoma"</span>,<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>glauc_train<span class="sc">$</span>Glaucoma <span class="ot">&lt;-</span> Glaucoma[ trainindex]</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>glauc_test<span class="sc">$</span>Glaucoma <span class="ot">&lt;-</span> Glaucoma[<span class="sc">-</span>trainindex]</span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>dataX <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(glauc_train[,<span class="dv">1</span><span class="sc">:</span><span class="dv">62</span>])</span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a>xgdata <span class="ot">&lt;-</span> <span class="fu">xgb.DMatrix</span>(<span class="at">data=</span>dataX,</span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a>                      <span class="at">label=</span>glauc_train<span class="sc">$</span>Glaucoma)</span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a>xgtest <span class="ot">&lt;-</span> <span class="fu">xgb.DMatrix</span>(<span class="at">data=</span>dataX,</span>
+<span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a>                      <span class="at">label=</span>glauc_test<span class="sc">$</span>Glaucoma)</span>
+<span id="cb63-14"><a href="#cb63-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">765</span>)</span>
+<span id="cb63-15"><a href="#cb63-15" aria-hidden="true" tabindex="-1"></a>xgb_fit <span class="ot">&lt;-</span> <span class="fu">xgb.train</span>(<span class="at">data=</span>xgdata,</span>
+<span id="cb63-16"><a href="#cb63-16" aria-hidden="true" tabindex="-1"></a>                     <span class="at">watchlist=</span><span class="fu">list</span>(<span class="at">test=</span>xgtest),</span>
+<span id="cb63-17"><a href="#cb63-17" aria-hidden="true" tabindex="-1"></a>                     <span class="at">max.depth=</span><span class="dv">3</span>,</span>
+<span id="cb63-18"><a href="#cb63-18" aria-hidden="true" tabindex="-1"></a>                     <span class="at">eta=</span><span class="fl">0.05</span>,  </span>
+<span id="cb63-19"><a href="#cb63-19" aria-hidden="true" tabindex="-1"></a>                     <span class="at">early_stopping_rounds=</span><span class="dv">15</span>,</span>
+<span id="cb63-20"><a href="#cb63-20" aria-hidden="true" tabindex="-1"></a>                     <span class="at">subsample=</span><span class="fl">0.5</span>,</span>
+<span id="cb63-21"><a href="#cb63-21" aria-hidden="true" tabindex="-1"></a>                     <span class="at">objective=</span><span class="st">"binary:logistic"</span>,</span>
+<span id="cb63-22"><a href="#cb63-22" aria-hidden="true" tabindex="-1"></a>                     <span class="at">nrounds=</span><span class="dv">100</span></span>
+<span id="cb63-23"><a href="#cb63-23" aria-hidden="true" tabindex="-1"></a>                     )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] test-logloss:0.691143 
+Will train until test_logloss hasn't improved in 15 rounds.
+
+[2] test-logloss:0.691066 
+[3] test-logloss:0.690617 
+[4] test-logloss:0.690792 
+[5] test-logloss:0.690083 
+[6] test-logloss:0.690760 
+[7] test-logloss:0.692218 
+[8] test-logloss:0.694467 
+[9] test-logloss:0.696919 
+[10]    test-logloss:0.699999 
+[11]    test-logloss:0.701853 
+[12]    test-logloss:0.704680 
+[13]    test-logloss:0.709163 
+[14]    test-logloss:0.716283 
+[15]    test-logloss:0.717489 
+[16]    test-logloss:0.720253 
+[17]    test-logloss:0.722769 
+[18]    test-logloss:0.727558 
+[19]    test-logloss:0.735394 
+[20]    test-logloss:0.744886 
+Stopping. Best iteration:
+[5] test-logloss:0.690083</code></pre>
+</div>
+</div>
+<p><code>shap.values</code> extracts the SHAP values from the xgboost object. The <code>mean_shap_score</code> vector contains the averaged SHAP values for each feature, ranked from largest to smallest (absolute value). It also functions as a ranking of feature importance. Seven of the features have average SHAP values different from zero, many of the features in the Glaucoma database were not used in the XGBoost model.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SHAPforxgboost)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>shap_values <span class="ot">&lt;-</span> <span class="fu">shap.values</span>(<span class="at">xgb_model=</span>xgb_fit, <span class="at">X_train=</span>dataX)</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>shap_values<span class="sc">$</span>mean_shap_score</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       vari         tms        phci        phcg          mv        phcn 
+0.127955418 0.103766854 0.073036527 0.023943328 0.015380792 0.014420251 
+       mhcg          ag          at          as          an          ai 
+0.008273273 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+        eag         eat         eas         ean         eai        abrg 
+0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+       abrt        abrs        abrn        abri         hic        mhct 
+0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+       mhcs        mhcn        mhci        phct        phcs         hvc 
+0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+       vbsg        vbst        vbss        vbsn        vbsi        vasg 
+0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+       vast        vass        vasn        vasi        vbrg        vbrt 
+0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+       vbrs        vbrn        vbri        varg        vart        vars 
+0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+       varn         mdg         mdt         mds         mdn         mdi 
+0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+        tmg         tmt         tmn         tmi          mr         rnf 
+0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+       mdic         emd 
+0.000000000 0.000000000 </code></pre>
+</div>
+</div>
+<hr>
+<p>Before calling the visualization functions in the <code>SHAPforxgboost</code> package, the SHAP values are converted into a long-format data frame. Only the 10 most important features are being kept in this application, as we have already seen that most features did not contribute to the XGBoost model.</p>
+<p>The summary plot shows the SHAP values for these variables (<a href="#fig-shap-summary" class="quarto-xref">Figure&nbsp;<span>36.26</span></a>). The plot combines local information (the SHAP values for the individual observations) with global information (the ranking of features by importance based on the aggregated SHAP values.) The coloring of the points in the summary plot relates to the value of the specific feature. For example, low values of the <code>vari</code> input variable increase the SHAP value, and large values decrease the SHAP value. The opposite is true for the <code>tms</code> variable. These are the two most important drivers of predictions in the model, followed by <code>phci</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>shap_long <span class="ot">&lt;-</span> <span class="fu">shap.prep</span>(<span class="at">xgb_model=</span>xgb_fit, </span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">X_train =</span> dataX,</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">top_n=</span><span class="dv">10</span>)</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a><span class="fu">shap.plot.summary</span>(shap_long)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-shap-summary" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-shap-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="explainability_files/figure-html/fig-shap-summary-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-shap-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36.26: SHAP summary plot for xgboost model, Glaucoma data
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The next series of figures displays dependence plots for the four most important features. The feature values appear on the horizontal axis, the SHAP values on the vertical axis. These plots are the SHAP-based versions of the partial dependence plots discussed earlier. They show how the SHAP values change as a function of the feature values. The color of the points is varied by another feature, selected as the feature that minimizes the variance of the SHAP values given both features. The feature chosen for coloring suggests a strong interaction with the input featured in the dependence plot.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>     x <span class="ot">&lt;-</span> <span class="fu">shap.importance</span>(shap_long, <span class="at">names_only =</span> <span class="cn">TRUE</span>)[i]</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> <span class="fu">shap.plot.dependence</span>(</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>         shap_long, </span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">x =</span> x, </span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">color_feature =</span> <span class="st">"auto"</span>,</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">smooth =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">jitter_width =</span> <span class="fl">0.01</span>, </span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">alpha =</span> <span class="fl">0.7</span>) </span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a>     <span class="fu">print</span>(p)</span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="explainability_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="explainability_files/figure-html/unnamed-chunk-37-2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="explainability_files/figure-html/unnamed-chunk-37-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="explainability_files/figure-html/unnamed-chunk-37-4.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-shap-force" class="quarto-xref">Figure&nbsp;<span>36.27</span></a> displays a <strong>force plot</strong>; it shows how various features contribute to the overall SHAP value for an observation.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> <span class="fu">shap.prep.stack.data</span>(<span class="at">shap_contrib=</span>shap_values<span class="sc">$</span>shap_score,</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">top_n=</span><span class="dv">5</span>, </span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">n_groups=</span><span class="dv">10</span>)</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shap.plot.force_plot</span>(plot_data, </span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">zoom_in_group=</span><span class="dv">4</span>,</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">y_parent_limit =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.5</span>,<span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-shap-force" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-shap-force-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="explainability_files/figure-html/fig-shap-force-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-shap-force-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36.27: Force plot for xgboost model for Glaucoma data
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="takeaways" class="level2" data-number="36.3">
@@ -1767,7 +1957,7 @@ Figure&nbsp;36.25: Shapley values for the second observation in SVM for banana q
 <ul>
 <li><p>Explainability tools are a great asset to the data scientist. They can help us understand better how a model works, what drives it, and help formulate a human-friendly explanation.</p></li>
 <li><p>Explainability tools are not free of assumptions and not free of user choices that affect their performance.</p></li>
-<li><p>There is an ever increasing list of methods. Know their pros and cons. What is needed changes from application to application. Global explanations can be appropriate in one setting while observation wise (local) explanations can be called for in another setting.</p></li>
+<li><p>There is an ever increasing list of methods. Know their pros and cons. What is needed changes from application to application. Global explanations can be appropriate in one setting while observation-wise (local) explanations can be called for in another setting.</p></li>
 <li><p>Methods based on Shapley values have several nice properties</p>
 <ul>
 <li>Grounded in (game) theory</li>
@@ -1789,6 +1979,12 @@ Figure&nbsp;36.25: Shapley values for the second observation in SVM for banana q
 <span class="glightbox-desc lightbox-desc-7">Figure&nbsp;36.22: Computing the marginal contributions of the features. Adapted from <span class="citation" data-cites="Mazzanti_2020">Mazzanti (<a href="references.html#ref-Mazzanti_2020" role="doc-biblioref">2020</a>)</span>.</span>
 </div>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-LundbergErionLee" class="csl-entry" role="listitem">
+Lundberg, Scott M., Gabriel G. Erion, and Su-In Lee. 2018. <span>“Consistent Individualized Feature Attribution for Tree Ensembles.”</span> <a href="https://arxiv.org/abs/1802.03888">https://arxiv.org/abs/1802.03888</a>.
+</div>
+<div id="ref-LundbergLee_SHAP" class="csl-entry" role="listitem">
+Lundberg, Scott M., and Su-In Lee. 2017. <span>“A Unified Approach to Interpreting Model Predictions.”</span> <em>31st Conference on Neural Information Processing Systems (NIPS)</em>. <a href="https://arxiv.org/abs/1705.07874">https://arxiv.org/abs/1705.07874</a>.
+</div>
 <div id="ref-Mazzanti_2020" class="csl-entry" role="listitem">
 Mazzanti, Samuele. 2020. <span>“SHAP Values Explained Exactly How You Wished Someone Explained to You. Making Sense of the Formula Used for Computing SHAP Values.”</span> <em>Medium</em>. <a href="https://towardsdatascience.com/shap-explained-the-way-i-wish-someone-explained-it-to-me-ab81cc69ef30">https://towardsdatascience.com/shap-explained-the-way-i-wish-someone-explained-it-to-me-ab81cc69ef30</a>.
 </div>
@@ -2387,7 +2583,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

@@ -996,7 +996,7 @@ model might be a multiple linear regression in just two of the inputs.
 
 The steps to train a local surrogate are as follows:
 
-1. Select the observation $\tetbf{x}_0$ for which you want to explain the prediction of the 
+1. Select the observation $\textbf{x}_0$ for which you want to explain the prediction of the 
 black-box model.
 
 2. Perturb the data around $\textbf{x}_0$ and obtain the black-box prediction for the 
@@ -1233,7 +1233,7 @@ the full model with three inputs---the gain of the prediction.
 In practice we do not fit all possible ($2^p$) models. Several modifications
 are necessary to make the Shapley values computationally feasible in our context:
 
-- The gain is calculated as the difference between $\widehat{y}(\bx_0)$ and the average of all
+- The gain is calculated as the difference between $\widehat{y}(\textbf{x}_0)$ and the average of all
 predictions. 
 - Features not in the coalition are replaced by randomly selected
 values rather than considering all possible coalitions.
@@ -1346,7 +1346,154 @@ plot(ban.shap)
 
 ### SHAP
 
+@LundbergLee_SHAP introduced **SH**apley **A**dditive ex**P**lanation (SHAP) values
+as a unified approach to explaining model predictions and feature importance.
 
+SHAP is based on Shapley values and represents Shapley value explanation as an 
+linear model of feature attributions, creating a connection to LIME models with
+local linear structure. Because of the computational demand to compute Shapley
+values, @LundbergLee_SHAP propose several approximations, some model-agnostic
+and some model-specific. The model-agnostic SHAP approximation combines LIME with
+Shapely values and is known as KernelSHAP. In a later paper @LundbergErionLee
+proposed the model-specific TreeSHAP for tree-based methods.
+
+Another feature of SHAP is a useful collection of tools to aggregate and 
+visualize measures based on Shapley values, such as force plots, Shapley summaries,
+dependence plots, etc.
+
+An implementation of TreeSHAP for XGBoost in`R` is available in the `SHAPforxgboost`
+package. 
+
+:::{.example}
+::::{.example-header}
+Example: Glaucoma Database
+::::
+::::{.example-container}
+We return to the Glaucoma data analyzed in the chapter on Boosting (@sec-boosting).
+The following code chunks recreate the training and test data from that chapter
+and fit an XGBoost model for binary classification.
+
+```{r, warning=FALSE, message=FALSE}
+library("TH.data")
+data( "GlaucomaM", package="TH.data")
+
+set.seed(5333)
+trainindex <- sample(nrow(GlaucomaM),nrow(GlaucomaM)/2)
+glauc_train <- GlaucomaM[trainindex,]
+glauc_test <- GlaucomaM[-trainindex,]
+```
+
+```{r}
+library(xgboost)
+
+Glaucoma = ifelse(GlaucomaM$Class=="glaucoma",1,0)
+
+glauc_train$Glaucoma <- Glaucoma[ trainindex]
+glauc_test$Glaucoma <- Glaucoma[-trainindex]
+dataX <- as.matrix(glauc_train[,1:62])
+
+xgdata <- xgb.DMatrix(data=dataX,
+                      label=glauc_train$Glaucoma)
+
+xgtest <- xgb.DMatrix(data=dataX,
+                      label=glauc_test$Glaucoma)
+set.seed(765)
+xgb_fit <- xgb.train(data=xgdata,
+                     watchlist=list(test=xgtest),
+                     max.depth=3,
+                     eta=0.05,  
+                     early_stopping_rounds=15,
+                     subsample=0.5,
+                     objective="binary:logistic",
+                     nrounds=100
+                     )
+```
+
+`shap.values` extracts the SHAP values from the xgboost object. The `mean_shap_score`
+vector contains the averaged SHAP values for each feature, ranked from largest
+to smallest (absolute value). It also functions as a ranking of feature importance. Seven of the 
+features have average SHAP values different from zero, many of the features
+in the Glaucoma database were not used in the XGBoost model.
+
+```{r, warning=FALSE, message=FALSE}
+
+library(SHAPforxgboost)
+library(ggplot2)
+
+shap_values <- shap.values(xgb_model=xgb_fit, X_train=dataX)
+
+shap_values$mean_shap_score
+```
+
+--- 
+
+Before calling the visualization functions in the `SHAPforxgboost` package,
+the SHAP values are converted into a long-format data frame. Only the 
+10 most important features are being kept in this application, as we have 
+already seen that most features did not contribute to the XGBoost model.
+
+The summary plot shows the SHAP values for these variables (@fig-shap-summary).
+The plot combines local information (the SHAP values for the individual 
+observations) with global information (the ranking of features by importance
+based on the aggregated SHAP values.) The coloring of the points in the 
+summary plot relates to the value of the specific feature. For example, low 
+values of the `vari` input variable increase the SHAP value, and large values
+decrease the SHAP value. The opposite is true for the `tms` variable. These
+are the two most important drivers of predictions in the model, followed by
+`phci`.
+
+``` {r, fig.align="center", out.width="90%"}
+#| fig.cap: SHAP summary plot for xgboost model, Glaucoma data
+#| label: fig-shap-summary
+#| 
+
+shap_long <- shap.prep(xgb_model=xgb_fit, 
+                       X_train = dataX,
+                       top_n=10)
+
+shap.plot.summary(shap_long)
+```
+
+The next series of figures displays dependence plots for the four most
+important features. The feature values appear on the horizontal axis, the 
+SHAP values on the vertical axis. These plots are the SHAP-based versions of the
+partial dependence plots discussed earlier. They show how the SHAP values 
+change as a function of the feature values. The color of the points is varied
+by another feature, selected as the feature that minimizes the variance of the 
+SHAP values given both features. The feature chosen for coloring suggests a 
+strong interaction with the input featured in the dependence plot.
+
+``` {r, fig.align="center", out.width="90%"}
+for (i in 1:4) {
+     x <- shap.importance(shap_long, names_only = TRUE)[i]
+     p <- shap.plot.dependence(
+         shap_long, 
+         x = x, 
+         color_feature = "auto",
+         smooth = FALSE, 
+         jitter_width = 0.01, 
+         alpha = 0.7) 
+     print(p)
+}
+```
+
+@fig-shap-force displays a **force plot**; it shows how various features
+contribute to the overall SHAP value for an observation.
+
+```{r, fig.align="center", out.width="90%", message=FALSE}
+#| fig.cap: Force plot for xgboost model for Glaucoma data
+#| label: fig-shap-force
+#| 
+plot_data <- shap.prep.stack.data(shap_contrib=shap_values$shap_score,
+                                  top_n=5, 
+                                  n_groups=10)
+shap.plot.force_plot(plot_data, 
+                     zoom_in_group=4,
+                     y_parent_limit = c(-0.5,0.5))
+
+```
+::::
+:::
 
 ## Takeaways
 
@@ -1361,7 +1508,7 @@ that affect their performance.
 
 * There is an ever increasing list of methods. Know their pros and cons. What is
 needed changes from application to application. Global explanations can be 
-appropriate in one setting while observation wise (local) explanations can be
+appropriate in one setting while observation-wise (local) explanations can be
 called for in another setting.
 
 * Methods based on Shapley values have several nice properties
