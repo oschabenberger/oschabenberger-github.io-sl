@@ -8,32 +8,51 @@ $$
 
 ## Introduction
 
-Throughout much of the previous chapters we have encountered **correlation** in various forms and scenarios. For example,
+Throughout much of the previous chapters we have encountered **correlation** in 
+various forms and scenarios. For example,
 
-+ A common assumptions about the model errors is that they are not correlated. The homoscedastic (equi-variance) and uncorrelated situation, often called the *iid* case, is characterized by $\Var[\bepsilon] = \sigma^2 \bI$.
++ A common assumptions about the model errors is that they are not correlated. 
+The homoscedastic (equi-variance) and uncorrelated situation, often called the 
+*iid* case, is characterized by $\Var[\bepsilon] = \sigma^2 \bI$.
 
-+ The correlation between a target $Y$ and an input $X$ is a measure of their linear dependency.
++ The correlation between a target $Y$ and an input $X$ is a measure of their 
+linear dependency.
 
-+ The $R^2$ statistic in linear models is the square of the correlation coefficient between $Y$ and $\widehat{Y}$. 
++ The $R^2$ statistic in linear models is the square of the correlation coefficient
+between $Y$ and $\widehat{Y}$. 
 
-+ Principal component analysis (@sec-pca) constructs uncorrelated linear projections of the input variables.
++ Principal component analysis (@sec-pca) constructs uncorrelated linear projections
+of the input variables.
 
 + Correlation does not imply causation.
 
-+ Random variables that are independent are also uncorrelated. The reverse is not generally true, but it is true for Gaussian random variables (@sec-multi-gaussian).
++ Random variables that are independent are also uncorrelated. The reverse is 
+not generally true, but it is true for Gaussian random variables (@sec-multi-gaussian).
 
-+ The covariance/correlation structure between inputs is explicitly modeled in model-based clustering (@sec-mbc).
++ The covariance/correlation structure between inputs is explicitly modeled in 
+model-based clustering (@sec-mbc).
 
-+ Multicollinearity is a broader concept than pairwise correlations. In the presence of weak pairwise correlations you can have strong multicollinearity (@sec-collinearity-diag).
++ Multicollinearity is a broader concept than pairwise correlations. In the 
+presence of weak pairwise correlations you can have strong multicollinearity (@sec-collinearity-diag).
 
-Correlation is typically a good thing, it indicates relationships and patterns that we want to find. Correlations among the target values has so far been largely ignored or brushed aside by assuming that model errors are uncorrelated. We know that this assumption is not always correct.
+Correlation is typically a good thing, it indicates relationships and patterns that
+we want to find. Correlations among the target values has so far been largely 
+ignored or brushed aside by assuming that model errors are uncorrelated. 
+We know that this assumption is not always correct.
 
-Suppose we are to collect data from individuals in the state of Virginia. The sampling is carried out in two stages to make sure that counties and individuals within counties are represented. First, we draw at random twenty entities from the 95 counties and 39 independent cities in the state. Then, in each of the twenty selected cities or counties, we sample 100 residents. If $\tau_i$ denotes the effect of the $i$^th^ city/county and $e_{ij}$ the effect of the $j$^th^ resident sampled within the city/county $i$, then a model for the overall mean attribute is
+Suppose we are to collect data from individuals in the state of Virginia. The 
+sampling is carried out in two stages to make sure that counties and individuals 
+within counties are represented. First, we draw at random twenty entities from 
+the 95 counties and 39 independent cities in the state. Then, in each of the twenty 
+selected cities or counties, we sample 100 residents. If $\tau_i$ denotes the effect 
+of the $i$^th^ city/county and $e_{ij}$ the effect of the $j$^th^ resident sampled 
+within the city/county $i$, then a model for the overall mean attribute is
 $$
 Y_{ij} = \mu + \tau_i + e_{ij}
 $$
 
-Because we sampled at the stage of the city/county and at the stage of residents, the $\tau_i$ and the $e_{ij}$ are random variables. If there are no systematic effects, their basic stochastic properties are $\tau_i \sim (0,\sigma^2_\tau)$, $e_{ij} \sim (0,\sigma^2_e)$.
+Because we sampled at the stage of the city/county and at the stage of residents,
+the $\tau_i$ and the $e_{ij}$ are random variables. If there are no systematic effects, their basic stochastic properties are $\tau_i \sim (0,\sigma^2_\tau)$, $e_{ij} \sim (0,\sigma^2_e)$.
 
 This is an example of a **hierarchical sampling** scheme, we select one sample within the draws of another sample. What does this hierarchy of random variables have to do with correlated data? To answer this, consider two covariances:
 
