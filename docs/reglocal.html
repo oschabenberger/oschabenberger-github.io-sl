@@ -590,7 +590,7 @@ window.Quarto = {
 
 <p>In <a href="regintro.html" class="quarto-xref"><span>Chapter 6</span></a> we introduced different approaches to structure the problem of finding <span class="math display">\[
 \text{E}[Y_i | \textbf{x}_i] = f^*(\textbf{x}_i)
-\]</span> by constraining the model family or the approach to estimation. <a href="regintro.html#sec-local-global-models" class="quarto-xref"><span>Section 6.2</span></a> then introduced the concept of <strong>global</strong> and <strong>local</strong> models.</p>
+\]</span> by constraining the model family or the estimation approach. <a href="regintro.html#sec-local-global-models" class="quarto-xref"><span>Section 6.2</span></a> then introduced the concept of <strong>global</strong> and <strong>local</strong> models.</p>
 <p>The methods discussed in this part of the book so far are <strong>global models</strong> in the sense that they depend on parameters <span class="math inline">\(\boldsymbol{\beta}\)</span> that apply regardless of the position <span class="math inline">\(\textbf{x}_0\)</span> in the regression hull. Global models do not have a different set of parameters at <span class="math inline">\(\textbf{x}_i\)</span> and <span class="math inline">\(\textbf{x}_j\)</span>.</p>
 <p>In this chapter we discuss in greater detail models that capture local variations of the mean function. The two major approaches to give models greater flexibility is through the introduction of weight functions or through basis expansions. Kernel regression and local polynomials are examples of the weighting approach. Regressions and smoothing splines are examples of the basis expansion approach.</p>
 <p>Because these methods suffer from the curse of dimensionality (<a href="regintro.html#sec-curse-dimensionality" class="quarto-xref"><span>Section 6.4.1</span></a>), they are not applied in higher dimensions. For the remainder of this chapter we assume a single input variable, <span class="math inline">\(\textbf{x}= x\)</span>.</p>
@@ -940,12 +940,14 @@ Figure&nbsp;11.6: Local polynomials of degree 0, 1, and 2 with Gaussian kernels 
 </div>
 <div class="example-container">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">cbind</span>(Y,X))</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">train</span>(Y <span class="sc">~</span> X, </span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">data    =</span>df,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">method  =</span><span class="st">"gamLoess"</span>, </span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">tuneGrid=</span><span class="fu">expand.grid</span>(<span class="at">span =</span> <span class="fl">0.2</span>, <span class="at">degree=</span><span class="dv">1</span>), </span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">trContro=</span><span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">"none"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">cbind</span>(Y,X))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">train</span>(Y <span class="sc">~</span> X, </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">data    =</span>df,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">method  =</span><span class="st">"gamLoess"</span>, </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">tuneGrid=</span><span class="fu">expand.grid</span>(<span class="at">span =</span> <span class="fl">0.2</span>, <span class="at">degree=</span><span class="dv">1</span>), </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">trContro=</span><span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">"none"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
@@ -1058,7 +1060,7 @@ The final values used for the model were span = 0.1807692 and degree = 1.</code>
 <h2 data-number="11.3" class="anchored" data-anchor-id="sec-basis-functions"><span class="header-section-number">11.3</span> Basis Functions</h2>
 <section id="segments-knots-and-constraints" class="level3">
 <h3 class="anchored" data-anchor-id="segments-knots-and-constraints">Segments, Knots, and Constraints</h3>
-<p>Local models using weight functions provide a lot of flexibility to model smooth functions based on a simple idea: if a constant, linear, or quadratic model approximates the local behavior at <span class="math inline">\(x_0\)</span> well then we can estimate the parameters of that local model through a weighted analysis that downweighs observations based on their distance from <span class="math inline">\(x_0\)</span>. Data points that are far from <span class="math inline">\(x_0\)</span> will not have much impact on determining the local behavior if we choose the bandwidth of the kernel weight function properly.</p>
+<p>Local models using weight functions provide a lot of flexibility to model smooth functions based on a simple idea: if a constant, linear, or quadratic model approximates the local behavior at <span class="math inline">\(x_0\)</span>, then we can estimate the parameters of that local model through a weighted analysis that assigns weights to observations based on their distance from <span class="math inline">\(x_0\)</span>. Data points that are far from <span class="math inline">\(x_0\)</span> will not have much impact on determining the local behavior if we choose the bandwidth of the kernel weight function properly.</p>
 <p>Greater flexibility in the fitted model could also be achieved by adding higher-order polynomial terms and fitting a global model. Unfortunately, this does not work well. Adding a higher-order term such as a cubic (<span class="math inline">\(x^3\)</span>), quartic (<span class="math inline">\(x^4\)</span>), or quintic (<span class="math inline">\(x^5\)</span>) term to pick up curvature in one region can introduce strange behavior in another region. <a href="#fig-quintic-model" class="quarto-xref">Figure&nbsp;<span>11.8</span></a> shows the fit of global polynomial models with up to third, fourth, and fifth degree terms for the simulated data. The quartic model <span class="math display">\[
 Y = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4 x^4 + \epsilon
 \]</span> does a pretty good job in capturing the curvature in the center of the <span class="math inline">\(x\)</span> range. It could benefit from more flexibility in the upper region of <span class="math inline">\(x\)</span>, though. Adding a quintic term <span class="math inline">\(\beta_5 x^5\)</span> to the model improves the fit for larger values of <span class="math inline">\(x\)</span> but leads to poor behavior for small values of <span class="math inline">\(x\)</span>.</p>
@@ -1117,7 +1119,7 @@ Spline Table
 </div>
 <div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>And now for something completely different! Inspired by the idea of a spline as a strip of wood bent around anchors I built a table from Pauwlonia wood harvested and dried on my property in Blacksburg, VA. The splines are 3/8 inches thick strips of wood, the “ducks” are small pieces of walnut. The legs are also made from the same tree. The board milled from the center of the trunk was used for the curved piece in the middle of the table; its natural channel is filled with colored epoxy.</p>
+<p>And now for something completely different! Inspired by the idea of a spline as a strip of wood bent around anchors, I built a table from Pauwlonia wood harvested and dried on my property in Blacksburg, VA. The splines are 3/8 inches thick strips of wood, flexed around small pieces of walnut. The legs are made from the same tree. The board milled from the center of the trunk was used for the curved piece in the middle of the table; its natural pith channel is filled with colored epoxy.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <div class="quarto-figure quarto-figure-center">
@@ -1249,7 +1251,7 @@ Figure&nbsp;11.13: Cubic spline fit by linear least squares based on truncated p
 </div>
 </div>
 </div>
-<p>For a model with only seven parameters the cubic spline with knots at the 1st, 2nd, and 3rd quartile provides an excellent fit (<a href="#fig-simdata-cubspline" class="quarto-xref">Figure&nbsp;<span>11.13</span></a>)</p>
+<p>For a model with only seven parameters the cubic spline with knots at the 1st, 2nd, and 3rd quartile provides an excellent fit (<a href="#fig-simdata-cubspline" class="quarto-xref">Figure&nbsp;<span>11.13</span></a>).</p>
 </div>
 </div>
 </section>
@@ -1405,7 +1407,7 @@ The final value used for the model was df = 15.</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="reglocal_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+<p><img src="reglocal_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
 </figure>
 </div>
 </div>
@@ -1423,7 +1425,7 @@ The final value used for the model was df = 15.</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="reglocal_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p><img src="reglocal_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" style="width:80.0%"></p>
 <figcaption>Cross-validated cubic spline fit.</figcaption>
 </figure>
 </div>
@@ -1440,11 +1442,11 @@ The final value used for the model was df = 15.</code></pre>
    \lambda \int f^{\prime\prime}(v)\,dv  
 \]</span> where <span class="math inline">\(f^{\prime\prime}\)</span> denotes the second derivative of the mean function and <span class="math inline">\(\lambda\)</span> is the hyperparameter. The rationale for this penalty term is as follows: the second derivative <span class="math inline">\(f^{\prime\prime}(x)\)</span> measures the curvature of <span class="math inline">\(f\)</span> at <span class="math inline">\(x\)</span>. High absolute values indicate that <span class="math inline">\(f\)</span> changes quickly in the neighborhood of <span class="math inline">\(x\)</span>, the sign of a wiggly function. The integral of the second derivative can be interpreted as the degree of wiggliness across the range of <span class="math inline">\(x\)</span>.</p>
 <p>For a given value of <span class="math inline">\(\lambda\)</span> more wiggly functions result in a higher penalty. For <span class="math inline">\(\lambda = 0\)</span> no penalty is added. The basic model for a smoothing spline is a cubic spline with knots at all unique <span class="math inline">\(x\)</span>-values. The regularization penalty shrinks the coefficient estimates of the spline and reduces the variability of the fitted function this way.</p>
-<p>An interesting aspect are the <strong>effective</strong> or <strong>equivalent degrees of freedom</strong>. The smoothing spline has <span class="math inline">\(n\)</span> parameters but these are shrunk if the penalty term kicks in. The equivalent degrees of freedom are a measure of the flexibility of the fitted function. Mathematically, the fitted values of a smoothing spline is a linear function of the observed data. For each value <span class="math inline">\(\lambda\)</span>, the solution can be written as</p>
+<p>An interesting aspect are the <strong>effective</strong> or <strong>equivalent degrees of freedom</strong>. The smoothing spline has <span class="math inline">\(n\)</span> parameters but these are shrunk if the penalty term kicks in. The equivalent degrees of freedom measure the flexibility of the fitted function. Mathematically, the fitted values of a smoothing spline is a linear function of the observed data. For each value <span class="math inline">\(\lambda\)</span>, the solution can be written as</p>
 <p><span class="math display">\[
 \widehat{y}_\lambda = \textbf{S}_\lambda \textbf{y}
-\]</span> where <span class="math inline">\(\textbf{S}_\lambda\)</span> is the <strong>smoother matrix</strong>, akin to the Hat matrix in global regression models. Recall that the Hat matrix is an orthogonal projection matrix and its trace equals the number of parameters (the degrees of freedom) of the model. Similarly, the equivalent degrees of freedom of a smoother are obtained as the trace of the smoother matrix, <span class="math display">\[
-df_\lambda = tr(\textbf{S}_\lambda) = \sum_{i=1}^n S[ii]_\lambda
+\]</span> where <span class="math inline">\(\textbf{S}_\lambda\)</span> is the <strong>smoother matrix</strong>, akin to the “Hat” matrix in global regression models. Recall from <a href="linalg.html#sec-hat-matrix" class="quarto-xref"><span>Section 3.6.2</span></a> that the Hat matrix is an orthogonal projection matrix and its trace equals the number of parameters (the degrees of freedom) of the model. Similarly, the equivalent degrees of freedom of a smoother are obtained as the trace of the smoother matrix, <span class="math display">\[
+df_\lambda = tr(\textbf{S}_\lambda) = \sum_{i=1}^n [s_{ii}]_\lambda
 \]</span></p>
 <div class="example">
 <div class="example-header">
@@ -1454,25 +1456,14 @@ df_\lambda = tr(\textbf{S}_\lambda) = \sum_{i=1}^n S[ii]_\lambda
 <p>The data for this example are the weekly closing share prices of Apple (ticker symbol AAPL) between January 1996 and January 2024. <a href="#fig-aapl-share-price" class="quarto-xref">Figure&nbsp;<span>11.15</span></a> shows a time series of these prices along with the dates major Apple products were introduced.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(splines)</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'lubridate'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    date, intersect, setdiff, union</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: DBI</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>weekly <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM AAPLWeekly"</span>)</span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>weekly<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">make_date</span>(weekly<span class="sc">$</span>year,weekly<span class="sc">$</span>month,weekly<span class="sc">$</span>day)</span>
-<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>weekly <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM AAPLWeekly"</span>)</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>weekly<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">make_date</span>(weekly<span class="sc">$</span>year,weekly<span class="sc">$</span>month,weekly<span class="sc">$</span>day)</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
@@ -1491,24 +1482,24 @@ Figure&nbsp;11.15: Weekly AAPL close share prices from January 1996 until Januar
 <p>The <code>smooth.spline</code> function in <code>R</code> computes smoothing splines and selects the smoothing parameter (the penalty hyperparameter) by leave-one-out cross-validation. It should be noted that <code>smooth.spline</code> by default does <strong>not</strong> place knots at all unique <span class="math inline">\(x\)</span> values, but places evenly-spaced knots, their number is a function of the unique number of <span class="math inline">\(x\)</span>-values. You can change this behavior by setting <code>all.knots=TRUE</code>.</p>
 <p>In the AAPL example, there are 1,461 unique dates, and <code>smooth.spline</code> would choose 154 knots by default.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># general method for computing the number of unique values in a numeric vector</span></span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>nx <span class="ot">&lt;-</span> <span class="fu">length</span>(weekly<span class="sc">$</span>date) <span class="sc">-</span> </span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">sum</span>(<span class="fu">duplicated</span>(<span class="fu">round</span>((weekly<span class="sc">$</span>date <span class="sc">-</span> <span class="fu">mean</span>(weekly<span class="sc">$</span>date))<span class="sc">/</span><span class="fl">1e-6</span>)))</span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>nx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># general method for computing the number of unique values in a numeric vector</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>nx <span class="ot">&lt;-</span> <span class="fu">length</span>(weekly<span class="sc">$</span>date) <span class="sc">-</span> </span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">sum</span>(<span class="fu">duplicated</span>(<span class="fu">round</span>((weekly<span class="sc">$</span>date <span class="sc">-</span> <span class="fu">mean</span>(weekly<span class="sc">$</span>date))<span class="sc">/</span><span class="fl">1e-6</span>)))</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>nx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1461</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">.nknots.smspl</span>(nx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">.nknots.smspl</span>(nx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 154</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>smspl_a <span class="ot">&lt;-</span> <span class="fu">smooth.spline</span>(<span class="at">y=</span>weekly<span class="sc">$</span>Close,</span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">x=</span>weekly<span class="sc">$</span>date,</span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">all.knots=</span><span class="cn">TRUE</span>,</span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">cv=</span><span class="cn">TRUE</span>)</span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>smspl_a</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>smspl_a <span class="ot">&lt;-</span> <span class="fu">smooth.spline</span>(<span class="at">y=</span>weekly<span class="sc">$</span>Close,</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">x=</span>weekly<span class="sc">$</span>date,</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">all.knots=</span><span class="cn">TRUE</span>,</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">cv=</span><span class="cn">TRUE</span>)</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>smspl_a</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Call:
 smooth.spline(x = weekly$date, y = weekly$Close, cv = TRUE, all.knots = TRUE)
@@ -1522,11 +1513,11 @@ PRESS(l.o.o. CV): 2.544907</code></pre>
 <p>The cross-validation leads to a PRESS criterion of 2.5449 and equivalent degrees of freedom of 607.352. The regularization penalized the spline from 1461 interior knots to the equivalent of a spline with about 610 knots. The smoothing parameter <code>spar</code> has a substantial value of 0.3942.</p>
 <p>Setting <code>all.knots=FALSE</code> leads to the following analysis</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>smspl_s <span class="ot">&lt;-</span> <span class="fu">smooth.spline</span>(<span class="at">y=</span>weekly<span class="sc">$</span>Close,</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">x=</span>weekly<span class="sc">$</span>date,</span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">all.knots=</span><span class="cn">FALSE</span>,</span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">cv=</span><span class="cn">TRUE</span>)</span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>smspl_s</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>smspl_s <span class="ot">&lt;-</span> <span class="fu">smooth.spline</span>(<span class="at">y=</span>weekly<span class="sc">$</span>Close,</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">x=</span>weekly<span class="sc">$</span>date,</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">all.knots=</span><span class="cn">FALSE</span>,</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">cv=</span><span class="cn">TRUE</span>)</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>smspl_s</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Call:
 smooth.spline(x = weekly$date, y = weekly$Close, cv = TRUE, all.knots = FALSE)
@@ -2163,7 +2154,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","openEffect":"zoom","loop":false});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","loop":false,"openEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

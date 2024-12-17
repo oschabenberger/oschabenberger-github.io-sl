@@ -574,10 +574,11 @@ I(y_i \ne \widehat{f}_i(\textbf{x};\boldsymbol{\theta}))
 \]</span> and the loss for the entire data set is summed over all observations, for example <span class="math display">\[
 \ell(\textbf{y};\boldsymbol{\theta}) = \sum_{i=1}^n \left( y_i - \widehat{y}_i \right)^2
 \]</span></p>
-<p>The solution to the minimization problem <span class="math display">\[\mathop{\mathrm{arg\,min}}_\boldsymbol{\theta}\, \ell(\textbf{y};\boldsymbol{\theta})\]</span> is the estimator <span class="math inline">\(\widehat{\boldsymbol{\theta}}\)</span> of the parameters <span class="math inline">\(\boldsymbol{\theta}\)</span>.</p>
+<p>The solution to the minimization problem <span class="math display">\[
+\mathop{\mathrm{arg\,min}}_\boldsymbol{\theta}\, \ell(\textbf{y};\boldsymbol{\theta})
+\]</span> is the estimator <span class="math inline">\(\widehat{\boldsymbol{\theta}}\)</span> of the parameters <span class="math inline">\(\boldsymbol{\theta}\)</span>.</p>
 <p>In some situations, this minimization problem has a closed-form solution that can be computed directly. In other cases we have to rely on numerical procedures to find a solution iteratively or approximations to simplify a complex or intractable problem. The solution <span class="math inline">\(\widehat{\boldsymbol{\theta}}\)</span> is unique for some problems and might be one of many solutions, not all equally good.</p>
-<p>Expressing parameter estimation as a general minimization problem does not reveal the<br>
-foundations of important principles in parameter estimation, in particular, least squares and maximum likelihood estimation. We introduce these principles based on geometric and probabilistic considerations, the relationship to function minimization will be obvious.</p>
+<p>Expressing parameter estimation as a general minimization problem does not reveal the foundations of important principles in parameter estimation, in particular, least squares and maximum likelihood estimation. We introduce these principles based on geometric and probabilistic considerations, the relationship to function minimization will be obvious.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -598,14 +599,36 @@ Note
 <section id="sec-ols" class="level3">
 <h3 class="anchored" data-anchor-id="sec-ols">Ordinary Least Squares (OLS)</h3>
 <p>Consider the identity</p>
-<p><span class="math display">\[\textbf{Y}= \textbf{f}(\textbf{x};\tilde{\boldsymbol{\theta}}) + \left(\textbf{Y}- \textbf{f}(\textbf{x};\tilde{\boldsymbol{\theta}}) \right)\]</span></p>
-<p>which expresses the observed data <span class="math inline">\(\textbf{Y}\)</span> as the sum of fitted values and residuals.</p>
-<p>By the Pythagorean theorem, the solution <span class="math inline">\(\widehat{\boldsymbol{\theta}}\)</span> with the smallest vector of residuals is the orthogonal projection of <span class="math inline">\(\textbf{Y}\)</span> onto <span class="math inline">\(\textbf{f}\)</span>, which implies that <span class="math display">\[ \left(\textbf{Y}- \textbf{f}(\textbf{x};\widehat{\boldsymbol{\theta}}) \right)^\prime \textbf{f}(\textbf{x};\widehat{\boldsymbol{\theta}}) = \textbf{0}\]</span> When <span class="math inline">\(\textbf{f}(\textbf{x};\boldsymbol{\theta})\)</span> is linear in the parameters, it is common to denote the coefficients (parameters) as <span class="math inline">\(\boldsymbol{\beta}\)</span> instead of the more generic <span class="math inline">\(\boldsymbol{\theta}\)</span>. We thus write the standard linear (regression) as <span class="math display">\[\textbf{Y}= \textbf{X}\boldsymbol{\beta}+ \boldsymbol{\epsilon}\]</span> and the orthogonality criterion becomes <span class="math display">\[\left(\textbf{Y}- \textbf{X}\widehat{\boldsymbol{\beta}}\right)^\prime \textbf{X}\widehat{\boldsymbol{\beta}} = \textbf{0}\]</span> It is easy to show that this implies <span class="math display">\[\textbf{X}^\prime\textbf{X}\widehat{\boldsymbol{\beta}} = \textbf{X}^\prime\textbf{Y}\]</span> and if the <strong>cross-product matrix</strong> <span class="math inline">\(\textbf{X}^\prime\textbf{X}\)</span> is of full rank, the (ordinary) least squares estimator is <span class="math display">\[
+<p><span class="math display">\[
+\textbf{Y}= \textbf{f}(\textbf{x};\tilde{\boldsymbol{\theta}}) + \left(\textbf{Y}- \textbf{f}(\textbf{x};\tilde{\boldsymbol{\theta}}) \right)
+\]</span></p>
+<p>that expresses the observed data <span class="math inline">\(\textbf{Y}\)</span> as the sum of fitted values and residuals.</p>
+<p>By the Pythagorean theorem, the solution <span class="math inline">\(\widehat{\boldsymbol{\theta}}\)</span> with the smallest vector of residuals is the orthogonal projection of <span class="math inline">\(\textbf{Y}\)</span> onto <span class="math inline">\(\textbf{f}\)</span>, which implies that <span class="math display">\[
+\left(\textbf{Y}- \textbf{f}(\textbf{x};\widehat{\boldsymbol{\theta}}) \right)^\prime \textbf{f}(\textbf{x};\widehat{\boldsymbol{\theta}}) = \textbf{0}
+\]</span> When <span class="math inline">\(\textbf{f}(\textbf{x};\boldsymbol{\theta})\)</span> is linear in the parameters, it is common to denote the coefficients (parameters) as <span class="math inline">\(\boldsymbol{\beta}\)</span> instead of the more generic <span class="math inline">\(\boldsymbol{\theta}\)</span>. We thus write the standard linear (regression) as <span class="math display">\[
+\textbf{Y}= \textbf{X}\boldsymbol{\beta}+ \boldsymbol{\epsilon}
+\]</span> and the orthogonality criterion becomes <span class="math display">\[
+\left(\textbf{Y}- \textbf{X}\widehat{\boldsymbol{\beta}}\right)^\prime \textbf{X}\widehat{\boldsymbol{\beta}} = \textbf{0}
+\]</span> It is easy to show that this implies <span class="math display">\[
+\textbf{X}^\prime\textbf{X}\widehat{\boldsymbol{\beta}} = \textbf{X}^\prime\textbf{Y}
+\]</span> and if the <strong>cross-product matrix</strong> <span class="math inline">\(\textbf{X}^\prime\textbf{X}\)</span> is of full rank, the (ordinary) least squares estimator is <span class="math display">\[
 \widehat{\boldsymbol{\beta}} = (\textbf{X}^\prime\textbf{X})^{-1}\textbf{X}^\prime\textbf{Y}
-\]</span> Expressed as the problem of minimizing a loss function, <strong>ordinary least squares</strong> (OLS) is approached as follows. Suppose that we measure loss as squared-error loss <span class="math inline">\((y_i - \widehat{y}_i)^2\)</span>. In the linear model where <span class="math inline">\(\widehat{y}_i = \textbf{x}_i^\prime \widehat{\boldsymbol{\beta}}\)</span>, the loss function is the residual (error) sum of squares <span class="math display">\[\text{SSE}(\boldsymbol{\beta}) = \boldsymbol{\epsilon}^\prime\boldsymbol{\epsilon}= \left( \textbf{Y}-\textbf{X}^\prime\boldsymbol{\beta}\right)^\prime \left(\textbf{Y}-\textbf{X}^\prime\boldsymbol{\beta}\right)\]</span> and the minimization problem is <span class="math display">\[\mathop{\mathrm{arg\,min}}_\boldsymbol{\beta}\, \text{SSE}(\boldsymbol{\beta})\]</span></p>
-<p>To find the minimum we set to zero the derivative of <span class="math inline">\(\text{SSE}(\boldsymbol{\beta})\)</span> with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span>. Expanding the residual sum of squares yields <span class="math display">\[SSE(\boldsymbol{\beta}) = \textbf{Y}^\prime\textbf{Y}- 2\boldsymbol{\beta}^\prime\textbf{X}^\prime\textbf{Y}+ \boldsymbol{\beta}^\prime\textbf{X}^\prime\textbf{X}\boldsymbol{\beta}\]</span></p>
-<p>The derivative (<a href="linalg.html#sec-matrix-differentiation" class="quarto-xref"><span>Section 3.5</span></a>) with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span> is <span class="math display">\[\frac{\partial\,\text{SSE}(\boldsymbol{\beta})}{\partial\boldsymbol{\beta}} = -2\textbf{X}^\prime\textbf{Y}+ 2\textbf{X}^\prime\textbf{X}\boldsymbol{\beta}\]</span></p>
-<p>Setting the derivative to zero and solving yields the <strong>normal equations</strong> as above: <span class="math display">\[\textbf{X}^\prime\textbf{X}\widehat{\boldsymbol{\beta}} = \textbf{X}^\prime\textbf{Y}\]</span> and the OLS estimator <span class="math display">\[\widehat{\boldsymbol{\beta}} = (\textbf{X}^\prime\textbf{X})^{-1}\textbf{X}^\prime\textbf{Y}\]</span> The vector of fitted values, <span class="math inline">\(\widehat{\textbf{y}}\)</span> is obtained by pre-multiplying with the data matrix</p>
+\]</span> Expressed as the problem of minimizing a loss function, <strong>ordinary least squares</strong> (OLS) is approached as follows. Suppose that we measure loss as squared-error loss <span class="math inline">\((y_i - \widehat{y}_i)^2\)</span>. In the linear model where <span class="math inline">\(\widehat{y}_i = \textbf{x}_i^\prime \widehat{\boldsymbol{\beta}}\)</span>, the loss function is the residual (error) sum of squares <span class="math display">\[
+\text{SSE}(\boldsymbol{\beta}) = \boldsymbol{\epsilon}^\prime\boldsymbol{\epsilon}= \left( \textbf{Y}-\textbf{X}^\prime\boldsymbol{\beta}\right)^\prime \left(\textbf{Y}-\textbf{X}^\prime\boldsymbol{\beta}\right)
+\]</span> and the minimization problem is <span class="math display">\[
+\mathop{\mathrm{arg\,min}}_\boldsymbol{\beta}\, \text{SSE}(\boldsymbol{\beta})
+\]</span></p>
+<p>To find the minimum we set to zero the derivative of <span class="math inline">\(\text{SSE}(\boldsymbol{\beta})\)</span> with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span>. Expanding the residual sum of squares yields <span class="math display">\[
+SSE(\boldsymbol{\beta}) = \textbf{Y}^\prime\textbf{Y}- 2\boldsymbol{\beta}^\prime\textbf{X}^\prime\textbf{Y}+ \boldsymbol{\beta}^\prime\textbf{X}^\prime\textbf{X}\boldsymbol{\beta}
+\]</span></p>
+<p>The derivative (<a href="linalg.html#sec-matrix-differentiation" class="quarto-xref"><span>Section 3.5</span></a>) with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span> is <span class="math display">\[
+\frac{\partial\,\text{SSE}(\boldsymbol{\beta})}{\partial\boldsymbol{\beta}} = -2\textbf{X}^\prime\textbf{Y}+ 2\textbf{X}^\prime\textbf{X}\boldsymbol{\beta}
+\]</span></p>
+<p>Setting the derivative to zero and solving yields the <strong>normal equations</strong> as above: <span class="math display">\[
+\textbf{X}^\prime\textbf{X}\widehat{\boldsymbol{\beta}} = \textbf{X}^\prime\textbf{Y}
+\]</span> and the OLS estimator <span class="math display">\[
+\widehat{\boldsymbol{\beta}} = (\textbf{X}^\prime\textbf{X})^{-1}\textbf{X}^\prime\textbf{Y}
+\]</span> The vector of fitted values, <span class="math inline">\(\widehat{\textbf{y}}\)</span> is obtained by pre-multiplying with the data matrix</p>
 <p><span class="math display">\[\begin{align*}
     \widehat{\textbf{Y}} &amp;= \textbf{X}^\prime\widehat{\boldsymbol{\beta}} = (\textbf{X}^\prime\textbf{X})^{-1}\textbf{X}^\prime\textbf{Y}\\
                   &amp;= \textbf{H}\textbf{Y}
@@ -646,27 +669,24 @@ Note
 <p>Aerobic capacity is the ability of the heart and lungs to provide the body with oxygen. It is a measure of fitness and expressed as the oxygen intake in ml per kg body weight per minute. Measuring aerobic capacity is expensive and time consuming compared to attributes such as age, weight, and pulse. The question is whether aerobic capacity can be predicted from the easily measurable attributes. If so, a predictive equation can reduce time and effort to assess aerobic capacity.</p>
 <p>The variables are</p>
 <ul>
-<li><p><strong>Age</strong>: age in years</p></li>
-<li><p><strong>Weight</strong>: weight in kg</p></li>
-<li><p><strong>Oxygen</strong>: oxygen intake rate (ml per kg body weight per minute)</p></li>
-<li><p><strong>RunTime</strong>: time to run 1.5 miles (minutes)</p></li>
-<li><p><strong>RestPulse</strong>: heart rate while resting</p></li>
-<li><p><strong>RunPulse</strong>: heart rate while running (same time Oxygen rate measured)</p></li>
-<li><p><strong>MaxPulse</strong>: maximum heart rate recorded while running</p></li>
+<li><strong>Age</strong>: age in years</li>
+<li><strong>Weight</strong>: weight in kg</li>
+<li><strong>Oxygen</strong>: oxygen intake rate (ml per kg body weight per minute)</li>
+<li><strong>RunTime</strong>: time to run 1.5 miles (minutes)</li>
+<li><strong>RestPulse</strong>: heart rate while resting</li>
+<li><strong>RunPulse</strong>: heart rate while running (same time Oxygen rate measured)</li>
+<li><strong>MaxPulse</strong>: maximum heart rate recorded while running</li>
 </ul>
 <p>The linear model we have in mind is <span class="math display">\[
 \text{Oxygen}_i = \beta_0 + \beta_1\text{Age}_i + \beta_2\text{Weight}_i + \beta_3\text{RunTime}_i + \beta_4\text{RestPulse}_i + \beta_5\text{RunPulse}_i + \beta_6\text{MaxPulse}_i + \epsilon_i
 \]</span> and the <span class="math inline">\(\epsilon_i\)</span> are assumed zero-mean random variables with common variance <span class="math inline">\(\sigma^2\)</span>.</p>
 <p>The following code loads the data from the <code>ads</code> DuckDB database.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">library</span>(<span class="st">"duckdb"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: DBI</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM fitness"</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM fitness"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  Age Weight Oxygen RunTime RestPulse RunPulse MaxPulse
 1  44  89.47 44.609   11.37        62      178      182
@@ -679,10 +699,10 @@ Note
 </div>
 <p>The target variable for the linear model is <code>Oxygen</code>, the remaining variables are inputs to the regression. The next statements create the <span class="math inline">\(\textbf{y}\)</span> vector and the <span class="math inline">\(\textbf{X}\)</span> matrix for the model. Note that the first column of <span class="math inline">\(\textbf{X}\)</span> is a vector of ones, representing the “input” for the intercept <span class="math inline">\(\beta_0\)</span>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(fit[,<span class="fu">which</span>(<span class="fu">names</span>(fit)<span class="sc">==</span><span class="st">"Oxygen"</span>)])</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">cbind</span>(<span class="at">Intcpt=</span><span class="fu">rep</span>(<span class="dv">1</span>,<span class="fu">nrow</span>(fit)), </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                     fit[,<span class="fu">which</span>(<span class="fu">names</span>(fit)<span class="sc">!=</span><span class="st">"Oxygen"</span>)]))</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(X)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(fit[,<span class="fu">which</span>(<span class="fu">names</span>(fit)<span class="sc">==</span><span class="st">"Oxygen"</span>)])</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">cbind</span>(<span class="at">Intcpt=</span><span class="fu">rep</span>(<span class="dv">1</span>,<span class="fu">nrow</span>(fit)), </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                     fit[,<span class="fu">which</span>(<span class="fu">names</span>(fit)<span class="sc">!=</span><span class="st">"Oxygen"</span>)]))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(X)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     Intcpt Age Weight RunTime RestPulse RunPulse MaxPulse
 [1,]      1  44  89.47   11.37        62      178      182
@@ -695,12 +715,12 @@ Note
 </div>
 <p>Next we are building the <span class="math inline">\(\textbf{X}^\prime\textbf{X}\)</span> matrix and compute its inverse, <span class="math inline">\((\textbf{X}^\prime\textbf{X})^{-1}\)</span>, with the <code>solve()</code> function. <code>t()</code> transposes a matrix and <code>%*%</code> indicates that we are performing matrix multiplication rather than elementwise multiplication.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>XpX <span class="ot">&lt;-</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> X</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>XpXInv <span class="ot">&lt;-</span> <span class="fu">solve</span>(XpX)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>XpX <span class="ot">&lt;-</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> X</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>XpXInv <span class="ot">&lt;-</span> <span class="fu">solve</span>(XpX)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can verify that <code>XpxInv</code> is indeed the inverse of <code>XpX</code> by multiplying the two. This should yield the identity matrix</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(XpX <span class="sc">%*%</span> XpXInv,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(XpX <span class="sc">%*%</span> XpXInv,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>          Intcpt Age Weight RunTime RestPulse RunPulse MaxPulse
 Intcpt         1   0      0       0         0        0        0
@@ -714,8 +734,8 @@ MaxPulse       0   0      0       0         0        0        1</code></pre>
 </div>
 <p>Next we compute the OLS estimate of <span class="math inline">\(\boldsymbol{\beta}\)</span> and the predicted values <span class="math inline">\(\widehat{\textbf{y}} = \textbf{X}\widehat{\boldsymbol{\beta}}\)</span>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>beta_hat <span class="ot">&lt;-</span> XpXInv <span class="sc">%*%</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> y</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>beta_hat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>beta_hat <span class="ot">&lt;-</span> XpXInv <span class="sc">%*%</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> y</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>beta_hat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                  [,1]
 Intcpt    102.93447948
@@ -726,35 +746,41 @@ RestPulse  -0.02153364
 RunPulse   -0.36962776
 MaxPulse    0.30321713</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>y_hat <span class="ot">&lt;-</span> X <span class="sc">%*%</span> beta_hat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>y_hat <span class="ot">&lt;-</span> X <span class="sc">%*%</span> beta_hat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The estimate of the intercept is <span class="math inline">\(\widehat{\beta}_0\)</span> = 102.9344795, the estimate of the coefficient for <code>Age</code> is <span class="math inline">\(\widehat{\beta}_1\)</span> = -0.2269738 and so on.</p>
 <p>The residuals <span class="math inline">\(\widehat{\boldsymbol{\epsilon}} = \textbf{y}- \widehat{\textbf{y}}\)</span>, the error sum of squares</p>
-<p><span class="math display">\[\text{SSE} = (\textbf{y}- \widehat{\textbf{y}} )^\prime (\textbf{y}- \widehat{\textbf{y}}) = \sum_{i=1}^n \left(y_i - \widehat{y}_i\right)^2\]</span> and the estimate of the residual variance <span class="math display">\[\widehat{\sigma}^2 = \frac{1}{n-r(\textbf{X})} \, \text{SSE}\]</span></p>
+<p><span class="math display">\[
+\text{SSE} = (\textbf{y}- \widehat{\textbf{y}} )^\prime (\textbf{y}- \widehat{\textbf{y}}) = \sum_{i=1}^n \left(y_i - \widehat{y}_i\right)^2
+\]</span> and the estimate of the residual variance <span class="math display">\[
+\widehat{\sigma}^2 = \frac{1}{n-r(\textbf{X})} \, \text{SSE}
+\]</span></p>
 <p>are computed as</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"Matrix"</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>residuals <span class="ot">&lt;-</span> y <span class="sc">-</span> y_hat</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>SSE <span class="ot">&lt;-</span> <span class="fu">sum</span>(residuals<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(fit)</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>rankX <span class="ot">&lt;-</span> <span class="fu">rankMatrix</span>(XpX)[<span class="dv">1</span>]</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>sigma2_hat <span class="ot">&lt;-</span> SSE<span class="sc">/</span>(n <span class="sc">-</span> rankX)</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>SSE</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"Matrix"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>residuals <span class="ot">&lt;-</span> y <span class="sc">-</span> y_hat</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>SSE <span class="ot">&lt;-</span> <span class="fu">sum</span>(residuals<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(fit)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>rankX <span class="ot">&lt;-</span> <span class="fu">rankMatrix</span>(XpX)[<span class="dv">1</span>]</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>sigma2_hat <span class="ot">&lt;-</span> SSE<span class="sc">/</span>(n <span class="sc">-</span> rankX)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>SSE</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 128.8379</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>sigma2_hat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sigma2_hat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 5.368247</code></pre>
 </div>
 </div>
-<p>We used the <code>rankMatrix</code> function in the <code>Matrix</code> package to compute the rank of <span class="math inline">\(\textbf{X}\)</span>, which is identical to the rank of <span class="math inline">\(\textbf{X}^\prime\textbf{X}\)</span>. With these quantities available, the variance-covariance matrix of <span class="math inline">\(\widehat{\boldsymbol{\beta}}\)</span>, <span class="math display">\[\text{Var}[\widehat{\boldsymbol{\beta}}] = \sigma^2 (\textbf{X}^\prime\textbf{X})^{-1}\]</span> can be estimated by substituting <span class="math inline">\(\widehat{\sigma}^2\)</span>. The standard errors of the regression coefficient estimates are the square roots of the diagonal values of this matrix.</p>
+<p>We used the <code>rankMatrix</code> function in the <code>Matrix</code> package to compute the rank of <span class="math inline">\(\textbf{X}\)</span>, which is identical to the rank of <span class="math inline">\(\textbf{X}^\prime\textbf{X}\)</span>. With these quantities available, the variance-covariance matrix of <span class="math inline">\(\widehat{\boldsymbol{\beta}}\)</span>, <span class="math display">\[
+\text{Var}[\widehat{\boldsymbol{\beta}}] = \sigma^2 (\textbf{X}^\prime\textbf{X})^{-1}
+\]</span> can be estimated by substituting <span class="math inline">\(\widehat{\sigma}^2\)</span>. The standard errors of the regression coefficient estimates are the square roots of the diagonal values of this matrix.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>Var_beta_hat <span class="ot">&lt;-</span> sigma2_hat <span class="sc">*</span> XpXInv</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>se_beta_hat <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(Var_beta_hat))</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>se_beta_hat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Var_beta_hat <span class="ot">&lt;-</span> sigma2_hat <span class="sc">*</span> XpXInv</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>se_beta_hat <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(Var_beta_hat))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>se_beta_hat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     Intcpt         Age      Weight     RunTime   RestPulse    RunPulse 
 12.40325810  0.09983747  0.05459316  0.38456220  0.06605428  0.11985294 
@@ -764,8 +790,8 @@ MaxPulse    0.30321713</code></pre>
 </div>
 <p>Now let’s compare our results to the output from the <code>lm()</code> function in <code>R</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>linmod <span class="ot">&lt;-</span> <span class="fu">lm</span>(Oxygen <span class="sc">~</span> ., <span class="at">data=</span>fit)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(linmod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>linmod <span class="ot">&lt;-</span> <span class="fu">lm</span>(Oxygen <span class="sc">~</span> ., <span class="at">data=</span>fit)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(linmod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -794,11 +820,11 @@ F-statistic: 22.43 on 6 and 24 DF,  p-value: 9.715e-09</code></pre>
 </div>
 <p>Based on the quantities calculated earlier, the following code reproduces the <code>lm</code> summary.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tvals <span class="ot">&lt;-</span> beta_hat<span class="sc">/</span>se_beta_hat</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>pvals <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span><span class="fu">pt</span>(<span class="fu">abs</span>(tvals),n<span class="sc">-</span>rankX))</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cbind</span>(beta_hat, se_beta_hat, tvals, pvals)</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(result) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Estimate"</span>, <span class="st">"Std. Error"</span>, <span class="st">"t value"</span>, <span class="st">"Pr(&gt;|t|)"</span>)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(result,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>tvals <span class="ot">&lt;-</span> beta_hat<span class="sc">/</span>se_beta_hat</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>pvals <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span><span class="fu">pt</span>(<span class="fu">abs</span>(tvals),n<span class="sc">-</span>rankX))</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cbind</span>(beta_hat, se_beta_hat, tvals, pvals)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(result) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Estimate"</span>, <span class="st">"Std. Error"</span>, <span class="st">"t value"</span>, <span class="st">"Pr(&gt;|t|)"</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(result,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           Estimate Std. Error  t value Pr(&gt;|t|)
 Intcpt    102.93448   12.40326  8.29899  0.00000
@@ -809,20 +835,20 @@ RestPulse  -0.02153    0.06605 -0.32600  0.74725
 RunPulse   -0.36963    0.11985 -3.08401  0.00508
 MaxPulse    0.30322    0.13650  2.22145  0.03601</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Residual standard error: "</span>, <span class="fu">sqrt</span>(sigma2_hat),<span class="st">" on "</span>, n<span class="sc">-</span>rankX, <span class="st">"degrees of freedom</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Residual standard error: "</span>, <span class="fu">sqrt</span>(sigma2_hat),<span class="st">" on "</span>, n<span class="sc">-</span>rankX, <span class="st">"degrees of freedom</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Residual standard error:  2.316948  on  24 degrees of freedom</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>SST <span class="ot">&lt;-</span> <span class="fu">sum</span>( (y <span class="sc">-</span><span class="fu">mean</span>(y))<span class="sc">^</span><span class="dv">2</span> )</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Multiple R-squared: "</span>, <span class="dv">1</span><span class="sc">-</span>SSE<span class="sc">/</span>SST, </span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Adjusted R-squared: "</span>, <span class="dv">1</span> <span class="sc">-</span> (SSE<span class="sc">/</span>SST)<span class="sc">*</span>(n<span class="dv">-1</span>)<span class="sc">/</span>(n<span class="sc">-</span>rankX), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>SST <span class="ot">&lt;-</span> <span class="fu">sum</span>( (y <span class="sc">-</span><span class="fu">mean</span>(y))<span class="sc">^</span><span class="dv">2</span> )</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Multiple R-squared: "</span>, <span class="dv">1</span><span class="sc">-</span>SSE<span class="sc">/</span>SST, </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Adjusted R-squared: "</span>, <span class="dv">1</span> <span class="sc">-</span> (SSE<span class="sc">/</span>SST)<span class="sc">*</span>(n<span class="dv">-1</span>)<span class="sc">/</span>(n<span class="sc">-</span>rankX), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Multiple R-squared:  0.8486719 Adjusted R-squared:  0.8108399 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>Fstat <span class="ot">&lt;-</span> ((SST<span class="sc">-</span>SSE)<span class="sc">/</span>(rankX<span class="dv">-1</span>)) <span class="sc">/</span> (SSE<span class="sc">/</span>(n<span class="sc">-</span>rankX))</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"F-statistic: "</span>, Fstat, <span class="st">"on "</span>, </span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    rankX<span class="dv">-1</span>, <span class="st">"and"</span>, n<span class="sc">-</span>rankX, <span class="st">"DF, p-value:"</span>, <span class="dv">1</span><span class="sc">-</span><span class="fu">pf</span>(Fstat,rankX<span class="dv">-1</span>,n<span class="sc">-</span>rankX))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>Fstat <span class="ot">&lt;-</span> ((SST<span class="sc">-</span>SSE)<span class="sc">/</span>(rankX<span class="dv">-1</span>)) <span class="sc">/</span> (SSE<span class="sc">/</span>(n<span class="sc">-</span>rankX))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"F-statistic: "</span>, Fstat, <span class="st">"on "</span>, </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    rankX<span class="dv">-1</span>, <span class="st">"and"</span>, n<span class="sc">-</span>rankX, <span class="st">"DF, p-value:"</span>, <span class="dv">1</span><span class="sc">-</span><span class="fu">pf</span>(Fstat,rankX<span class="dv">-1</span>,n<span class="sc">-</span>rankX))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>F-statistic:  22.43263 on  6 and 24 DF, p-value: 9.715305e-09</code></pre>
 </div>
@@ -832,7 +858,7 @@ Residual standard error:  2.316948  on  24 degrees of freedom</code></pre>
 <section id="sec-wls-gls" class="level3">
 <h3 class="anchored" data-anchor-id="sec-wls-gls">Weighted and Generalized Least Squares</h3>
 <p>Another interesting feature of the OLS estimator is that it does not depend on the variability of the model errors. Whether <span class="math inline">\(\sigma^2\)</span> is large or small, the OLS estimator is only a function of <span class="math inline">\(\textbf{Y}\)</span> and <span class="math inline">\(\textbf{X}\)</span>. However, the error variance affects the variability of <span class="math inline">\(\widehat{\boldsymbol{\beta}}\)</span>.</p>
-<p>When the error distribution is more complex than the <em>iid</em> case, the variance and covariances of the errors must be taken into account for least squares estimators to retain their optimality. The first case is that of uncorrelated errors that have unequal variances, a situation known as <strong>heteroscedasticity</strong>. The variance-covariance matrix of the <span class="math inline">\(\boldsymbol{\epsilon}\)</span> is then a diagonal matrix. Let’s call the inverse of the variance-covariance matrix <span class="math inline">\(\textbf{W}\)</span>. <span class="math inline">\(\textbf{W}\)</span> is a <span class="math inline">\((n \times n)\)</span> diagonal matrix with <span class="math inline">\(1/\sigma^2_i\)</span>, the inverse of the variance of the <span class="math inline">\(i\)</span><sup>th</sup> observation, in the <span class="math inline">\(i\)</span><sup>th</sup> diagonal cell. The <strong>weighted least squares</strong> estimator <span class="math display">\[
+<p>When the error distribution is more complex than the <em>iid</em> case, the variance and covariances of the errors must be taken into account for least squares estimators to retain their optimality. The first case is that of uncorrelated errors that have unequal variances, a situation known as <strong>heteroscedasticity</strong>. The variance-covariance matrix of the <span class="math inline">\(\boldsymbol{\epsilon}\)</span> is then a diagonal matrix. Let’s call the inverse of the variance-covariance matrix <span class="math inline">\(\textbf{W}\)</span>. <span class="math inline">\(\textbf{W}\)</span> is a <span class="math inline">\((n \times n)\)</span> d iagonal matrix with <span class="math inline">\(1/\sigma^2_i\)</span>, the inverse of the variance of the <span class="math inline">\(i\)</span><sup>th</sup> observation, in the <span class="math inline">\(i\)</span><sup>th</sup> diagonal cell. The <strong>weighted least squares</strong> estimator <span class="math display">\[
 \widehat{\boldsymbol{\beta}}_{WLS} = (\textbf{X}^\prime\textbf{W}\textbf{X})^{-1}\textbf{X}^\prime\textbf{W}\textbf{Y}
 \]</span> is the optimal estimator in this situation.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -863,7 +889,9 @@ Tip
 </section>
 <section id="sec-nonlinear-least-squares" class="level3">
 <h3 class="anchored" data-anchor-id="sec-nonlinear-least-squares">Nonlinear Least Squares</h3>
-<p>The linear structure of the model <span class="math inline">\(\textbf{Y}= \textbf{X}\boldsymbol{\beta}+ \boldsymbol{\epsilon}\)</span> leads to a closed form solution of the least squares problem <span class="math display">\[\widehat{\boldsymbol{\beta}} = (\textbf{X}^\prime\textbf{X})^{-1}\textbf{X}^\prime\textbf{Y}\]</span></p>
+<p>The linear structure of the model <span class="math inline">\(\textbf{Y}= \textbf{X}\boldsymbol{\beta}+ \boldsymbol{\epsilon}\)</span> leads to a closed form solution of the least squares problem <span class="math display">\[
+\widehat{\boldsymbol{\beta}} = (\textbf{X}^\prime\textbf{X})^{-1}\textbf{X}^\prime\textbf{Y}
+\]</span></p>
 <p>When the model is nonlinear in the parameters, <span class="math inline">\(\textbf{Y}= \textbf{f}(\textbf{x};\boldsymbol{\theta}) + \boldsymbol{\epsilon}\)</span>, finding the solution that minimizes</p>
 <p><span id="eq-nonlin-sse"><span class="math display">\[
 \text{SSE} = \left(\textbf{Y}- \textbf{f}(\textbf{x};\boldsymbol{\theta})\right)^\prime \left(\textbf{Y}- \textbf{f}(\textbf{x};\boldsymbol{\theta})\right)
@@ -878,7 +906,8 @@ Tip
 <p><span class="math display">\[
 \text{SSE} \approx \textbf{r}(\boldsymbol{\theta}^{(0)})^\prime \textbf{r}(\boldsymbol{\theta}^{(0)}) - 2 \textbf{r}(\boldsymbol{\theta}^{(0)})\textbf{F}^{(0)}(\boldsymbol{\theta}- \boldsymbol{\theta}^{(0)}) +
 (\boldsymbol{\theta}- \boldsymbol{\theta}^{(0)})^\prime \textbf{F}^{(0)\prime}\textbf{F}^{(0)} (\boldsymbol{\theta}- \boldsymbol{\theta}^{(0)})
-\]</span> Taking derivatives with respect to <span class="math inline">\(\boldsymbol{\theta}\)</span> and setting to zero results in the following condition <span class="math display">\[
+\]</span></p>
+<p>Taking derivatives with respect to <span class="math inline">\(\boldsymbol{\theta}\)</span> and setting to zero results in the following condition <span class="math display">\[
 (\boldsymbol{\theta}- \boldsymbol{\theta}^{(0)}) = \left(\textbf{F}^{(0)\prime}\textbf{F}^{(0)}\right)^{-1}\textbf{F}^{(0)\prime}\textbf{r}(\boldsymbol{\theta}^{(0)})
 \]</span> This is a really interesting expression. Imagine replacing on the right hand side <span class="math inline">\(\textbf{F}^{(0)}\)</span> with <span class="math inline">\(\textbf{X}\)</span> and <span class="math inline">\(\textbf{r}(\boldsymbol{\theta}^{(0)})\)</span> with <span class="math inline">\(\textbf{y}\)</span>. The right hand side is an ordinary least squares solution in a linear model where the <span class="math inline">\(x\)</span>-matrix is given by the derivatives of the nonlinear model and the target variable is the difference between the actual <span class="math inline">\(y\)</span>-values and the approximated mean function. The left hand side of the equation is the difference between the parameter estimate and our current guess. This suggests the following iterative updates <span class="math display">\[
     \boldsymbol{\theta}^{(t+1)} = \boldsymbol{\theta}^{(t)} + \left(\textbf{F}^{(t)\prime}\textbf{F}^{(t)}\right)^{-1}\textbf{F}^{(t)\prime}\textbf{r}(\boldsymbol{\theta}^{(t)})
@@ -890,8 +919,8 @@ Tip
     f(x; \boldsymbol{\theta}) = 1 - \theta_1 \exp \{-x^{\theta_2}\}
 \]</span> We fit this model to a tiny data set with just five observations</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span>, <span class="fl">0.9</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.5</span>, <span class="fl">0.7</span>, <span class="fl">1.8</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span>, <span class="fl">0.9</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.5</span>, <span class="fl">0.7</span>, <span class="fl">1.8</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The derivatives of the mean function with respect to the parameters are given by</p>
 <p><span class="math display">\[\begin{align*}
@@ -900,45 +929,45 @@ Tip
 \end{align*}\]</span></p>
 <p>and we can write a simple <code>R</code> function to compute the derivative matrix <span class="math inline">\(\textbf{F}\)</span> based on a current estimate of <span class="math inline">\(\boldsymbol{\theta}\)</span>. The function <code>getres</code> computes <span class="math inline">\(\textbf{r}(\boldsymbol{\theta}^{(t)})\)</span>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>getF <span class="ot">&lt;-</span> <span class="cf">function</span>(x, theta) {</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    exterm <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span>x<span class="sc">^</span>theta[<span class="dv">2</span>])</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    der1 <span class="ot">&lt;-</span> <span class="sc">-</span>exterm</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    der2 <span class="ot">&lt;-</span> theta[<span class="dv">1</span>] <span class="sc">*</span> <span class="fu">log</span>(x) <span class="sc">*</span> (x<span class="sc">^</span>theta[<span class="dv">2</span>]) <span class="sc">*</span> exterm</span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">cbind</span>(der1,der2))</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>getres <span class="ot">&lt;-</span> <span class="cf">function</span>(y,x,theta) {</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    fx <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> theta[<span class="dv">1</span>] <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>x<span class="sc">^</span>theta[<span class="dv">2</span>])</span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(y <span class="sc">-</span> fx)</span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>getF <span class="ot">&lt;-</span> <span class="cf">function</span>(x, theta) {</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    exterm <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span>x<span class="sc">^</span>theta[<span class="dv">2</span>])</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    der1 <span class="ot">&lt;-</span> <span class="sc">-</span>exterm</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    der2 <span class="ot">&lt;-</span> theta[<span class="dv">1</span>] <span class="sc">*</span> <span class="fu">log</span>(x) <span class="sc">*</span> (x<span class="sc">^</span>theta[<span class="dv">2</span>]) <span class="sc">*</span> exterm</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">cbind</span>(der1,der2))</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>getres <span class="ot">&lt;-</span> <span class="cf">function</span>(y,x,theta) {</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    fx <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> theta[<span class="dv">1</span>] <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>x<span class="sc">^</span>theta[<span class="dv">2</span>])</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(y <span class="sc">-</span> fx)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now all we need is starting values <span class="math inline">\(\boldsymbol{\theta}^{(0)}\)</span> and a loop that iterates until the estimation routine has converged. It is a good idea to not take a full Gauss-Newton step in the updates since there is no guarantee that SSE is lower at iterate <span class="math inline">\(t+1\)</span> than at iterate <span class="math inline">\(t\)</span>. We thus multiply the update to the current value by the hyperparameter <span class="math inline">\(\alpha &lt; 1\)</span>. In machine learning, this step size is known as the <strong>learning rate</strong>. A full implementation of the Gauss-Newton algorithm could determine <span class="math inline">\(\alpha\)</span> dynamically at each iteration through a line search algorithm.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>maxiter <span class="ot">&lt;-</span> <span class="dv">50</span>          <span class="co"># the max number of iterations</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fl">0.5</span>           <span class="co"># the learning rate</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">1.3</span>)     <span class="co"># the starting values</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>tol <span class="ot">&lt;-</span> <span class="fl">1e-6</span>            <span class="co"># the convergence tolerance</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (iter <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>maxiter) {</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    X <span class="ot">&lt;-</span> <span class="fu">getF</span>(x,theta)</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    r <span class="ot">&lt;-</span> <span class="fu">getres</span>(y,x,theta)</span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The linear least squares update</span></span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    new_theta <span class="ot">&lt;-</span> theta <span class="sc">+</span> alpha <span class="sc">*</span> (<span class="fu">solve</span>(<span class="fu">t</span>(X) <span class="sc">%*%</span> X) <span class="sc">%*%</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> r)</span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Now we check a convergence criterion. We take the maximum relative</span></span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># change in the parameter estimates. If that is less than some tolerance</span></span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the algorithm is considered converged.</span></span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>    crit <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">abs</span>(new_theta<span class="sc">-</span>theta)<span class="sc">/</span><span class="fu">abs</span>(theta))</span>
-<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (crit <span class="sc">&lt;</span> tol) {</span>
-<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cat</span>( <span class="st">"Algorithm converged after"</span>, iter,<span class="st">" iterations! SSE ="</span>, <span class="fu">sum</span>(r<span class="sc">^</span><span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span> )</span>
-<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">print</span> (new_theta)</span>
-<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span></span>
-<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>        theta <span class="ot">&lt;-</span> new_theta</span>
-<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>        <span class="fu">print</span> (crit)</span>
-<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>maxiter <span class="ot">&lt;-</span> <span class="dv">50</span>          <span class="co"># the max number of iterations</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fl">0.5</span>           <span class="co"># the learning rate</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">1.3</span>)     <span class="co"># the starting values</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>tol <span class="ot">&lt;-</span> <span class="fl">1e-6</span>            <span class="co"># the convergence tolerance</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (iter <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>maxiter) {</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    X <span class="ot">&lt;-</span> <span class="fu">getF</span>(x,theta)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    r <span class="ot">&lt;-</span> <span class="fu">getres</span>(y,x,theta)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The linear least squares update</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    new_theta <span class="ot">&lt;-</span> theta <span class="sc">+</span> alpha <span class="sc">*</span> (<span class="fu">solve</span>(<span class="fu">t</span>(X) <span class="sc">%*%</span> X) <span class="sc">%*%</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> r)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Now we check a convergence criterion. We take the maximum relative</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># change in the parameter estimates. If that is less than some tolerance</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the algorithm is considered converged.</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>    crit <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">abs</span>(new_theta<span class="sc">-</span>theta)<span class="sc">/</span><span class="fu">abs</span>(theta))</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (crit <span class="sc">&lt;</span> tol) {</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cat</span>( <span class="st">"Algorithm converged after"</span>, iter,<span class="st">" iterations! SSE ="</span>, <span class="fu">sum</span>(r<span class="sc">^</span><span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span> )</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">print</span> (new_theta)</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span></span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>        theta <span class="ot">&lt;-</span> new_theta</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>        <span class="fu">print</span> (crit)</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.03047302
 [1] 0.01661031
@@ -965,15 +994,15 @@ der2 1.2791919</code></pre>
 <p>After 17 iterations with a learning rate (step size) of <span class="math inline">\(\alpha=0.5\)</span> the algorithm converged on parameter estimates <span class="math inline">\(\widehat{\theta}_1\)</span> = 0.9366 and <span class="math inline">\(\widehat{\theta}_2\)</span> = 1.2791.</p>
 <p>We can validate these results with the <code>nls</code> function from the <code>nls2</code> package.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nls2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nls2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Loading required package: proto</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>nonlin_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">cbind</span>(<span class="at">y=</span>y,<span class="at">x=</span>x))</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>f_x <span class="ot">&lt;-</span> y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">-</span> theta1 <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>x<span class="sc">^</span>theta2)</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">nls</span>(f_x, </span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">start=</span><span class="fu">list</span>(<span class="at">theta1=</span><span class="dv">1</span>, <span class="at">theta2=</span><span class="fl">1.3</span>), </span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>nonlin_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>nonlin_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">cbind</span>(<span class="at">y=</span>y,<span class="at">x=</span>x))</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>f_x <span class="ot">&lt;-</span> y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">-</span> theta1 <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>x<span class="sc">^</span>theta2)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">nls</span>(f_x, </span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">start=</span><span class="fu">list</span>(<span class="at">theta1=</span><span class="dv">1</span>, <span class="at">theta2=</span><span class="fl">1.3</span>), </span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>nonlin_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Nonlinear regression model
   model: y ~ 1 - theta1 * exp(-x^theta2)
@@ -1006,7 +1035,9 @@ Note
 <p>Whenever you calculate a maximum likelihood estimator, you are making assumptions about the distribution of the data. If software packages report MLEs, check the documentation regarding distributional assumptions.</p>
 </div>
 </div>
-<p>When the observations are independent, the joint density is the product of the individual densities, <span class="math display">\[f(\textbf{y}; \boldsymbol{\theta}) = \prod_{i=1}^n \, f(y_i; \boldsymbol{\theta})\]</span></p>
+<p>When the observations are independent, the joint density is the product of the individual densities, <span class="math display">\[
+f(\textbf{y}; \boldsymbol{\theta}) = \prod_{i=1}^n \, f(y_i; \boldsymbol{\theta})
+\]</span></p>
 <p>For example, the joint mass function of <span class="math inline">\(n\)</span> <em>iid</em> Bernoulli(<span class="math inline">\(\pi\)</span>) random variables is <span class="math display">\[
     f(\textbf{y}; \pi) = \prod_{i=1}^n \, \pi^{y_i} \, (1-\pi)^{1-y_i}
 \]</span></p>
@@ -1025,17 +1056,17 @@ Note
 \]</span> The MLE of <span class="math inline">\(\lambda\)</span> is <span class="math inline">\(\widehat{\lambda} = \overline{y}\)</span>, the sample mean.</p>
 <p>Suppose that <span class="math inline">\(n=4\)</span> and we observe <span class="math inline">\(\textbf{y}= [3, 4, 2, 2]\)</span>. The sample mean is <span class="math inline">\(\overline{y} = 2.75\)</span>. The following <code>R</code> code computes the log-likelihood function <span class="math inline">\(\mathcal{l}(\lambda; \textbf{y})\)</span> for different values of <span class="math inline">\(\lambda\)</span>. The log-likelihood function has a maximum at <span class="math inline">\(\overline{y} = 2.75\)</span>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">2</span>)</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(y)</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>sumy <span class="ot">&lt;-</span> <span class="fu">sum</span>(y)</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>sumlogfac <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">log</span>(<span class="fu">factorial</span>(y)))</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="dv">5</span>, <span class="fl">0.1</span>)</span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>loglike <span class="ot">&lt;-</span> <span class="fu">log</span>(lambda)<span class="sc">*</span>sumy <span class="sc">-</span> n<span class="sc">*</span>lambda <span class="sc">-</span> sumlogfac</span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lambda,loglike,<span class="at">type=</span><span class="st">"l"</span>,<span class="at">bty=</span><span class="st">"l"</span>,<span class="at">lwd=</span><span class="fl">1.5</span>,</span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="fu">expression</span>(lambda),</span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">"log likelihood"</span>)</span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">mean</span>(y),<span class="at">lty=</span><span class="st">"dotted"</span>,<span class="at">lwd=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(y)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>sumy <span class="ot">&lt;-</span> <span class="fu">sum</span>(y)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>sumlogfac <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">log</span>(<span class="fu">factorial</span>(y)))</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="dv">5</span>, <span class="fl">0.1</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>loglike <span class="ot">&lt;-</span> <span class="fu">log</span>(lambda)<span class="sc">*</span>sumy <span class="sc">-</span> n<span class="sc">*</span>lambda <span class="sc">-</span> sumlogfac</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lambda,loglike,<span class="at">type=</span><span class="st">"l"</span>,<span class="at">bty=</span><span class="st">"l"</span>,<span class="at">lwd=</span><span class="fl">1.5</span>,</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="fu">expression</span>(lambda),</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">"log likelihood"</span>)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">mean</span>(y),<span class="at">lty=</span><span class="st">"dotted"</span>,<span class="at">lwd=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1070,7 +1101,7 @@ Note
 <p>The MLE of <span class="math inline">\(\pi\)</span> is the sample mean.</p>
 </div>
 </div>
-<p>Maximum likelihood estimation is popular because it is an intuitive principle if we accept a random data-generating mechanism. MLEs have very appealing properties, for example, they are <strong>invariant</strong> estimators. If <span class="math inline">\(\widehat{\theta}\)</span> is the MLE of <span class="math inline">\(\theta\)</span>, then <span class="math inline">\(g(\widehat{\theta})\)</span> is the maximum likelihood estimator of <span class="math inline">\(g(\theta)\)</span></p>
+<p>Maximum likelihood estimation is popular because it is an intuitive principle if we accept a random data-generating mechanism. MLEs have very appealing properties, for example, they are <strong>invariant</strong> estimators. If <span class="math inline">\(\widehat{\theta}\)</span> is the MLE of <span class="math inline">\(\theta\)</span>, then <span class="math inline">\(g(\widehat{\theta})\)</span> is the maximum likelihood estimator of <span class="math inline">\(g(\theta)\)</span>.</p>
 <div class="example">
 <div class="example-header">
 <p>Example: MLEs of Confidence Intervals</p>
@@ -1086,17 +1117,23 @@ Note
 </div>
 <p>For a finite sample size, MLEs are not necessarily optimal estimators but they have appealing properties as the sample size grows. As <span class="math inline">\(n \rightarrow \infty\)</span>, maximum likelihood estimators</p>
 <ul>
-<li><p>are consistent, that means they converge in probability to the true value</p></li>
-<li><p>are normally distributed</p></li>
-<li><p>are efficient, that means no other estimator has asymptotically smaller mean squared error</p></li>
+<li>are consistent, that means they converge in probability to the true value</li>
+<li>are normally distributed</li>
+<li>are efficien in that no other estimator has an asymptotically smaller mean squared error</li>
 </ul>
 <section id="linear-model-with-gaussian-errors" class="level3">
 <h3 class="anchored" data-anchor-id="linear-model-with-gaussian-errors">Linear Model with Gaussian Errors</h3>
 <p>Suppose we want to find an estimator for <span class="math inline">\(\boldsymbol{\beta}\)</span> in the linear model <span class="math inline">\(\textbf{Y}= \textbf{X}\boldsymbol{\beta}+ \boldsymbol{\epsilon}\)</span> where the model errors follow a Gaussian distribution with mean <span class="math inline">\(\textbf{0}\)</span> and variance <span class="math inline">\(\textbf{V}\)</span>. <span class="math inline">\(\textbf{Y}\)</span> then follows a Gaussian distribution because it is a linear function of <span class="math inline">\(\boldsymbol{\epsilon}\)</span> (see <a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 3.7</span></a>). The probability density function of <span class="math inline">\(\textbf{Y}\)</span> is</p>
-<p><span class="math display">\[f\left( \textbf{Y}\right)=\frac{\left| \textbf{V}\right|^{- 1/2}}{(2\pi)^{\frac{n}{2}}}\exp\left\{ - \frac{1}{2}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{- 1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right) \right\}\]</span></p>
+<p><span class="math display">\[
+f\left( \textbf{Y}\right)=\frac{\left| \textbf{V}\right|^{- 1/2}}{(2\pi)^{\frac{n}{2}}}\exp\left\{ - \frac{1}{2}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{- 1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right) \right\}
+\]</span></p>
 <p>This joint distribution of the data can be used to derive the maximum likelihood estimator (MLE) of <span class="math inline">\(\boldsymbol{\beta}\)</span>. Maximum likelihood estimation considers this as a function of <span class="math inline">\(\boldsymbol{\beta}\)</span> rather than a function of <span class="math inline">\(\textbf{Y}.\)</span> Maximizing this likelihood function <span class="math inline">\(\mathcal{l}(\boldsymbol{\beta};\textbf{Y})\)</span> is equivalent to maximizing its logarithm and working on the log scale is much simpler. The log-likelihood function for this problem is given by</p>
-<p><span class="math inline">\(\log\mathcal{l}\left( \boldsymbol{\beta};\textbf{Y}\right\} = l\left( \boldsymbol{\beta};\textbf{Y}\right) = - \frac{1}{2}\log\left( \left| \textbf{V}\right| \right) - \frac{n}{2}\log(2\pi) - \frac{1}{2}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{- 1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)\)</span></p>
-<p>Finding the maximum of this function with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span> is equivalent to minimizing the quadratic form <span class="math display">\[\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{-1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)\]</span> with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span>. Applying the results about matrix differentiation from <a href="linalg.html#sec-matrix-differentiation" class="quarto-xref"><span>Section 3.5</span></a> leads to</p>
+<p><span class="math display">\[
+\log\mathcal{l}\left( \boldsymbol{\beta};\textbf{Y}\right\} = l\left( \boldsymbol{\beta};\textbf{Y}\right) = - \frac{1}{2}\log\left( \left| \textbf{V}\right| \right) - \frac{n}{2}\log(2\pi) - \frac{1}{2}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{- 1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)
+\]</span></p>
+<p>Finding the maximum of this function with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span> is equivalent to minimizing the quadratic form <span class="math display">\[
+\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{-1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)
+\]</span> with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span>. Applying the results about matrix differentiation from <a href="linalg.html#sec-matrix-differentiation" class="quarto-xref"><span>Section 3.5</span></a> leads to</p>
 <p><span class="math display">\[\begin{align*}
 \frac{\partial}{\partial\boldsymbol{\beta}}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{- 1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right) &amp;= \frac{\partial}{\partial\boldsymbol{\beta}}\left\{ \textbf{Y}^\prime\textbf{V}^{- 1}\textbf{Y}- 2\textbf{Y}^\prime\textbf{V}^{- 1}\textbf{X}\boldsymbol{\beta}+ \boldsymbol{\beta}^\prime\textbf{X}^\prime\textbf{V}^{- 1}\textbf{X}\boldsymbol{\beta}\right\} \\
 
@@ -1114,11 +1151,13 @@ Note
 <p>The maximum likelihood estimator of <span class="math inline">\(\boldsymbol{\beta}\)</span> is the <strong>generalized</strong> least squares estimator</p>
 <p><span class="math display">\[\widehat{\boldsymbol{\beta}}_{GLS} = \left( \textbf{X}^{\prime}\textbf{V}^{- 1}\textbf{X}\right)^{- 1}\textbf{X}^\prime\textbf{V}^{- 1}\textbf{Y}\]</span></p>
 <p>A special case arises when the model errors <span class="math inline">\(\boldsymbol{\epsilon}\)</span> are uncorrelated and the variance matrix <span class="math inline">\(\textbf{V}\)</span> is a diagonal matrix:</p>
-<p><span class="math display">\[\textbf{V}= \begin{bmatrix}
+<p><span class="math display">\[
+\textbf{V}= \begin{bmatrix}
 \sigma_{1}^{2} &amp; \cdots &amp; 0 \\
 \vdots &amp; \ddots &amp; \vdots \\
 0 &amp; \cdots &amp; \sigma_{n}^{2}
-\end{bmatrix}\]</span></p>
+\end{bmatrix}
+\]</span></p>
 <p>Since the errors are Gaussian distributed, we know that the errors are then independent. The MLE of <span class="math inline">\(\boldsymbol{\beta}\)</span> is the <strong>weighted</strong> least squares estimator</p>
 <p><span class="math display">\[
 \widehat{\boldsymbol{\beta}}_{WLS} = \left(\textbf{X}^\prime\textbf{W}\textbf{X}\right)^{-1}\textbf{X}^\prime\textbf{W}\textbf{Y}

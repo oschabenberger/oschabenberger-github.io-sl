@@ -1319,7 +1319,7 @@ The `phi` values for `class="Bad"` are the mirror image of those for `class="Goo
 predicted probability and the average prediction. Next is `Sweetness` which 
 increases the probability of good banana qualityl
 
-The `plot` method displays the Shapley values graphically (@figfig-banana-shap1).
+The `plot` method displays the Shapley values graphically (@fig-banana-shap1).
 
 ```{r, fig.align='center', out.width="80%"}
 #| fig.cap: Shapley values for first observation in SVM for banana quality.

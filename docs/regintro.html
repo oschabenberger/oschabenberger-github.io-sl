@@ -568,20 +568,20 @@ window.Quarto = {
 
 <section id="adding-structure" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="adding-structure"><span class="header-section-number">6.1</span> Adding Structure</h2>
-<p>The regression task can be described very generally as estimating the mean function of a target random variable as a function of input variables that are considered fixed (not random variables). Formally, suppose that we have <span class="math inline">\(n\)</span> pairs of observations <span class="math inline">\((y_i, \textbf{x}_i)\)</span>, <span class="math inline">\(i=1,\cdots, n\)</span>. <span class="math inline">\(y_i\)</span> is the observed value for the target variable of the <span class="math inline">\(i\)</span><sup>th</sup> observation and is considered a realization of the random variable <span class="math inline">\(Y_i\)</span>. <span class="math inline">\(\textbf{x}_i = [x_{i1}, \cdots, x_{ip}]\)</span> is the vector of input variables for that observation. The regression task then is to find the function <span class="math inline">\(f^*(\textbf{x}_i)\)</span> for which <span class="math display">\[
+<p>The regression task can be described generally as estimating the mean function of a target random variable as a function of fixed input variables (they are not random variables). Formally, suppose we have <span class="math inline">\(n\)</span> pairs of observations <span class="math inline">\((y_i, \textbf{x}_i)\)</span>, <span class="math inline">\(i=1,\cdots, n\)</span>. <span class="math inline">\(y_i\)</span> is the observed value for the target variable for the <span class="math inline">\(i\)</span><sup>th</sup> observation; it is the realization of the random variable <span class="math inline">\(Y_i\)</span>. <span class="math inline">\(\textbf{x}_i = [x_{i1}, \cdots, x_{ip}]\)</span> is the vector of input variables for that observation. The regression task then is to find the function <span class="math inline">\(f^*(\textbf{x}_i)\)</span> for which <span class="math display">\[
 \text{E}[Y_i | \textbf{x}_i] = f^*(\textbf{x}_i)
 \]</span></p>
-<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout callout-style-default callout-note callout-titled" title="Additive Error Models">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Note
+Additive Error Models
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>We did not write this model as a regression model with additive errors, that is, <span class="math inline">\(Y_i = f^*(\textbf{x}_i) + \epsilon_i\)</span>. This is a particular class of regression models useful when <span class="math inline">\(Y\)</span> is continuous. If you write the regression model in terms of an expected value, the model is more general and applies to categorical target variables as well.</p>
+<p>We did not write this model as a regression model with additive errors, that is, <span class="math inline">\(Y_i = f^*(\textbf{x}_i) + \epsilon_i\)</span>. Additive error models are a special class of regression models useful when <span class="math inline">\(Y\)</span> is continuous. If you write the regression model in terms of an expected value, the model is more general and applies to categorical target variables as well.</p>
 </div>
 </div>
 <p>The function on the right hand side is denoted with an asterisk because it is unknown. We also did not specify what <span class="math inline">\(f^*\)</span> looks like or how it relates to model parameters such as the regression coefficients in a linear regression model. The problem is not well defined yet, there are infinitely many solutions. Any function that interpolates the <span class="math inline">\(y_i\)</span> data points is a candidate for <span class="math inline">\(f^*\)</span>, but that is not a very interesting model.</p>
@@ -595,14 +595,14 @@ Figure&nbsp;6.1: Finding the appropriate degree of smoothness in regression.
 </figcaption>
 </figure>
 </div>
-<p>Since <span class="math inline">\(Y_i\)</span> is a random variable, and <span class="math inline">\(f^*(\textbf{x}_i)\)</span> expresses how it <strong>mean</strong> varies as a function of the input variables, we are not interested in models that reproduce the noisy version of the data. We are interested in finding the smooth signal in the noise (<a href="#fig-reg-smoothing" class="quarto-xref">Figure&nbsp;<span>6.1</span></a>). Finding the appropriate degree of smoothness in the mean function is an important part of regression analysis by balancing the bias-variance tradeoff (<a href="biasvariance.html" class="quarto-xref"><span>Chapter 2</span></a>).</p>
+<p>Since <span class="math inline">\(Y_i\)</span> is a random variable, and <span class="math inline">\(f^*(\textbf{x}_i)\)</span> expresses how its <strong>mean</strong> varies as a function of the input variables, we are not interested in models that reproduce the noisy version of the data. We are interested in finding the smooth signal in the noise (<a href="#fig-reg-smoothing" class="quarto-xref">Figure&nbsp;<span>6.1</span></a>). Finding the appropriate degree of smoothness in the mean function by balancing the bias-variance tradeoff is an important part of regression analysis (<a href="biasvariance.html" class="quarto-xref"><span>Chapter 2</span></a>).</p>
 <section id="constraints-on-model-structure" class="level3">
 <h3 class="anchored" data-anchor-id="constraints-on-model-structure">Constraints on Model Structure</h3>
-<p>But we cannot just consider bias and variance among all possible functions <span class="math inline">\(f^*\)</span>, we need to add further structure to make solutions tractable. Adding structure means imposing constraints on <span class="math inline">\(f^*\)</span> so that we can find a (hopefully unique) solution within the class of constraints. For example, we can structure the problem by insisting that only global functions with a linear predictor are considered.</p>
+<p>But we cannot just consider bias and variance among all possible functions <span class="math inline">\(f^*\)</span>, we need to add further structure to make solutions tractable. Adding structure is done by imposing constraints on <span class="math inline">\(f^*\)</span> so that we can find a (hopefully unique) solution within the class of constraints. For example, we can structure the problem by insisting that only global functions with a linear predictor are considered.</p>
 <p>Consider the case of predicting the mean of the target variable at some location <span class="math inline">\(\textbf{x}_0\)</span> in the input space. <span class="math inline">\(\textbf{x}_0\)</span> can be a one of the observed data points or a new value. A <strong>global</strong> model is one that applies regardless of the value of <span class="math inline">\(\textbf{x}_0\)</span>. A <strong>local</strong> model on the other hand applies a different model depending on the value of <span class="math inline">\(\textbf{x}_0\)</span>.</p>
 <p>In <a href="statmodels.html#sec-model-components" class="quarto-xref"><span>Section 1.2</span></a> the concept of the linear predictor was introduced:</p>
 <p><span class="math display">\[\eta = \beta_{0} + \beta_1 x_1 + \cdots + \beta_p x_p\]</span></p>
-<p>The constraints—global model with linear predictor—are adding a lot of structure to the regression problem. We are now looking for mean functions of the following form</p>
+<p>The constraint—global model with linear predictor—adds a lot of structure to the regression problem. We are now looking for mean functions of the following form</p>
 <p><span class="math display">\[
 \text{E}[Y_i | \textbf{x}_i] = g(\eta) = g(\beta_0 + \beta_1 x_{i1} + \cdots + \beta_p x_{ip})
 \]</span></p>
@@ -637,7 +637,7 @@ Figure&nbsp;6.2: Different approaches to structuring the regression problem.
 </section>
 <section id="constraints-on-estimation" class="level3">
 <h3 class="anchored" data-anchor-id="constraints-on-estimation">Constraints on Estimation</h3>
-<p>Imposing constraints on the solution to the regression problem can also be done through the estimation method itself. Take, for example, the linear regression model <span class="math inline">\(y_i = \textbf{x}_i^\prime\boldsymbol{\beta}+ \epsilon_i\)</span>. The ordinary least squares (OLS) estimator satisfies <span class="math display">\[
+<p>Imposing constraints on the solution of the regression problem can also be done through the method of parameter estimation. Take, for example, the linear regression model <span class="math inline">\(y_i = \textbf{x}_i^\prime\boldsymbol{\beta}+ \epsilon_i\)</span>. The ordinary least squares (OLS) estimator satisfies <span class="math display">\[
 \mathop{\mathrm{arg\,min}}_\boldsymbol{\beta}\sum_{i=1}^n \left(y_i - \textbf{x}_i^\prime\boldsymbol{\beta}\right)^2
 \]</span> The solution is constrained in the sense that it is the orthogonal projection of the data onto the space spanned by the columns of the <span class="math inline">\(\textbf{X}\)</span> matrix. While OLS estimators are easy to work with and have nice properties, for example they are unbiased if the model is correct, they suffer from large variability in high dimensional problems (large <span class="math inline">\(p\)</span>) and when the <span class="math inline">\(x\)</span>-s are highly interrelated. A solution to that problem lies in adding further constraints on the estimators.</p>
 <p><strong>Ridge regression</strong> minimizes instead of the OLS criterion the expression <span class="math display">\[
@@ -648,7 +648,7 @@ Figure&nbsp;6.2: Different approaches to structuring the regression problem.
 \]</span> and <strong>elastic net</strong> regularization combines the two types of penalties <span class="math display">\[
 \sum_{i=1}^n \left(y_i - \textbf{x}_i^\prime \boldsymbol{\beta}\right)^2 + \lambda \left(\frac{1-\alpha}{2}\sum_{j=1}^p\beta_j^2 + \alpha\sum_{j=1}^p |\beta_j|\right)
 \]</span> In addition to the shrinkage penalty parameter <span class="math inline">\(\lambda\)</span>, the elastic net has a mixing parameter <span class="math inline">\(\alpha\)</span> that determines the weighting between the Ridge-style and the Lasso-style penalty. <span class="math inline">\(\alpha=0\)</span> leads to Ridge regression, <span class="math inline">\(\alpha=1\)</span> leads to Lasso regression. Any value in between represents a mixture of the two.</p>
-<p>Lasso is popular because the absolute-value regularization has an interesting side effect: coefficients are shrunk not just toward zero, they can be shrunk to exactly zero. This has the effect of eliminating the associated input variable from the model. In Ridge regression, on the other hand, the shrunk coefficients do not attain exactly zero. Lasso is thus used to regularize the model <strong>and</strong> to select input variables at the same time. This has also immediate practical advantages. If you start with 100 inputs and apply Lasso regression, you might end up with 10 non-zero coefficient, whereas in Ridge regression you will have 100 non-zero (albeit shrunk) coefficient. To use the fitted model for prediction you need information on only the 10 input variables with non-zero coefficients in the Lasso case. To use the Ridge regression model for prediction you need complete information on all 100 input variables.</p>
+<p>Lasso is popular because the absolute-value regularization has an interesting side effect: coefficients are shrunk not just toward zero, they can be shrunk to exactly zero. This has the effect of eliminating the associated input variable from the model. In Ridge regression, on the other hand, the coefficients are shrunk toward zero but do not reach exactly zero. Lasso is thus used to regularize the model <strong>and</strong> to select input variables at the same time. This has also immediate practical advantages. If you start with 100 inputs and apply Lasso regression, you might end up with 10 non-zero coefficient, whereas in Ridge regression you will have 100 non-zero (albeit shrunk) coefficient. To use the fitted Lasso model for prediction you need information on only the 10 input variables with non-zero coefficients. To use the fitted Ridge regression model for prediction you need information on all 100 input variables.</p>
 <p>Constrained estimation can also be at work for local models on the right hand side of <a href="#fig-smoothing-mindmap" class="quarto-xref">Figure&nbsp;<span>6.2</span></a>. <strong>Kernel</strong> estimators apply kernel functions that weigh observations depending on their proximity to a target point of prediction. Suppose we have a single input variable <span class="math inline">\(x\)</span>. A kernel estimator minimizes <span class="math display">\[
 \sum_{i=1}^n \, K_\lambda(x_0,x_i) (y_i - f(x_i))^2
 \]</span> <span class="math inline">\(K_\lambda(x_0,x_i)\)</span> is the kernel function that depends on the target point of prediction (<span class="math inline">\(x_0\)</span>) and some hyperparameter <span class="math inline">\(\lambda\)</span>. Choosing the kernel function and the <strong>bandwidth</strong> parameter <span class="math inline">\(\lambda\)</span> affects the smoothness of the predictions.</p>
@@ -656,7 +656,9 @@ Figure&nbsp;6.2: Different approaches to structuring the regression problem.
 </section>
 <section id="sec-local-global-models" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="sec-local-global-models"><span class="header-section-number">6.2</span> Local and Global Models</h2>
-<p>Global models structure the estimation problem by adding explicit parameters to the regression function. SLR and MLR are linear regression models where <span class="math inline">\(f(\textbf{x}) = \eta = \textbf{x}^\prime \boldsymbol{\beta}\)</span>. Generalized linear models introduce an invertible link function to map between linear predictor and the mean function, <span class="math display">\[f(\textbf{x}) = g(\eta) = g(\textbf{x}^\prime\boldsymbol{\beta})\]</span></p>
+<p>Global models structure the estimation problem by adding explicit parameters to the regression function. SLR and MLR are linear regression models where <span class="math inline">\(f(\textbf{x}) = \eta = \textbf{x}^\prime \boldsymbol{\beta}\)</span>. Generalized linear models introduce an invertible link function to map between linear predictor and the mean function, <span class="math display">\[
+f(\textbf{x}) = g(\eta) = g(\textbf{x}^\prime\boldsymbol{\beta})
+\]</span></p>
 <p>In nonlinear regression models the mean function depends non-linearly on at least one of the parameters, <span class="math inline">\(f(\textbf{x}) = f(x_1,\cdots,x_k;\beta_1,\cdots,\beta_p)\)</span>. The number of input variables and the number of parameters can be different in nonlinear models. A model might have only one input but many nonlinear parameters.</p>
 <div class="example">
 <div class="example-header">
@@ -681,11 +683,11 @@ Figure&nbsp;6.2: Different approaches to structuring the regression problem.
 \]</span></p>
 <p>The quantities in the compartmental model represent</p>
 <ul>
-<li><p><span class="math inline">\(C\)</span>: the concentration of the drug at time <span class="math inline">\(t\)</span></p></li>
-<li><p><span class="math inline">\(D\)</span>: the administered dose of the drug</p></li>
-<li><p><span class="math inline">\(k_a\)</span>: the rate of absorption by the body</p></li>
-<li><p><span class="math inline">\(k_e\)</span>: the rate of elimination from the body</p></li>
-<li><p><span class="math inline">\(C\)</span>: the clearance (volume of blood or plasma cleared of the drug per time unit)</p></li>
+<li><span class="math inline">\(C\)</span>: the concentration of the drug at time <span class="math inline">\(t\)</span></li>
+<li><span class="math inline">\(D\)</span>: the administered dose of the drug</li>
+<li><span class="math inline">\(k_a\)</span>: the rate of absorption by the body</li>
+<li><span class="math inline">\(k_e\)</span>: the rate of elimination from the body</li>
+<li><span class="math inline">\(C\)</span>: the clearance (volume of blood or plasma cleared of the drug per time unit)</li>
 </ul>
 <p>This is a nonlinear regression model with two inputs (dose and time) and three parameters (<span class="math inline">\(C, k_e, k_a\)</span>).</p>
 </div>
@@ -812,11 +814,10 @@ Tip
 \widehat{f}(x_0) = \frac{1}{k}\sum_{i=1}^k f(x_{(i)})
 \]</span> The MSE of <span class="math inline">\(\widehat{f}(x_0)\)</span> as an estimator of <span class="math inline">\(f(x)\)</span> is <span class="math display">\[
 \text{E}\left[(Y-\widehat{f}(x_0))^2 \right] = \frac{\sigma^2}{k} + \left(f(x_0) - \widehat{f}(x_0) \right)^2 + \sigma^2
-\]</span> The first term, <span class="math inline">\(\sigma^2/k\)</span> is the variance of a sample mean of <span class="math inline">\(k\)</span> observations, the second term is the squared bias component, and the third term is the irreducible error. As <span class="math inline">\(k\)</span> increases the <span class="math inline">\(k\)</span>-NN estimator approaches the sample mean <span class="math inline">\(\overline{Y}\)</span> with variance <span class="math inline">\(\sigma^2\n\)</span>. While the variance term gets smaller, the squared bias term increases unless <span class="math inline">\(f(x)\)</span> does not depend on <span class="math inline">\(x\)</span>, in which case the sample mean is the optimal estimator. As <span class="math inline">\(k\)</span> decreases, squared bias component decreases but the variance component <span class="math inline">\(\sigma^2/k\)</span> is large. In the extreme case of <span class="math inline">\(k=1\)</span> the mean squared error becomes <span class="math display">\[
+\]</span> The first term, <span class="math inline">\(\sigma^2/k\)</span> is the variance of a sample mean of <span class="math inline">\(k\)</span> observations, the second term is the squared bias component, and the third term is the irreducible error. As <span class="math inline">\(k\)</span> increases the <span class="math inline">\(k\)</span>-NN estimator approaches the sample mean <span class="math inline">\(\overline{Y}\)</span> with variance <span class="math inline">\(\sigma^2/n\)</span>. While the variance term gets smaller, the squared bias term increases unless <span class="math inline">\(f(x)\)</span> does not depend on <span class="math inline">\(x\)</span>, in which case the sample mean is the optimal estimator. As <span class="math inline">\(k\)</span> decreases, squared bias component decreases but the variance component <span class="math inline">\(\sigma^2/k\)</span> is large. In the extreme case of <span class="math inline">\(k=1\)</span> the mean squared error becomes <span class="math display">\[
 \text{E}\left[(Y-\widehat{f}(x_0))^2 \right] = 2 \sigma^2 + (f(x_0) - f(x_{(1)})^2
-\]</span></p></li>
+\]</span> In summary: If <span class="math inline">\(k\)</span> is large, the estimator has low variability and large bias; if <span class="math inline">\(k\)</span> is small, the estimator has large variability and small bias. This is the classical bias-variance tradeoff.</p></li>
 </ul>
-<p>In summary: If <span class="math inline">\(k\)</span> is large, the estimator has low variability and large bias; if <span class="math inline">\(k\)</span> is small, the estimator has large variability and small bias. That is the classical bias-variance tradeoff.</p>
 <div class="example">
 <div class="example-header">
 <p>Example: Melanoma Incidences (Cont’d)</p>
@@ -841,16 +842,19 @@ Tip
 </div>
 <div class="example-container">
 <p>The following statements perform leave-one-out cross-validation by setting the number of cross-validation folds equal to the number of observations (<code>nfolds=nrow(melanoma)</code>) using the <code>knn.cv</code> function in the <code>Rfast</code> library.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Rfast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>kcv <span class="ot">&lt;-</span> Rfast<span class="sc">::</span><span class="fu">knn.cv</span>(<span class="at">nfolds=</span><span class="fu">nrow</span>(melanoma),</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">y=</span>melanoma<span class="sc">$</span>incidences,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">x=</span><span class="fu">as.matrix</span>(melanoma<span class="sc">$</span>year),</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">k=</span><span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">20</span>,<span class="dv">1</span>),</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">type=</span><span class="st">"R"</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(kcv<span class="sc">$</span>crit, <span class="at">ylab=</span><span class="st">"MSPE"</span>,<span class="at">xlab=</span><span class="st">"k"</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="fu">min</span>(kcv<span class="sc">$</span>crit),<span class="at">col=</span><span class="st">"red"</span>,<span class="at">lty=</span><span class="st">"dotted"</span>)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">which</span>(kcv<span class="sc">$</span>crit<span class="sc">==</span><span class="fu">min</span>(kcv<span class="sc">$</span>crit)),<span class="at">col=</span><span class="st">"red"</span>,<span class="at">lty=</span><span class="st">"dotted"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>kcv <span class="ot">&lt;-</span> Rfast<span class="sc">::</span><span class="fu">knn.cv</span>(<span class="at">nfolds=</span><span class="fu">nrow</span>(melanoma),</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">y=</span>melanoma<span class="sc">$</span>incidences,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">x=</span><span class="fu">as.matrix</span>(melanoma<span class="sc">$</span>year),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">k=</span><span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">20</span>,<span class="dv">1</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">type=</span><span class="st">"R"</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(kcv<span class="sc">$</span>crit, <span class="at">ylab=</span><span class="st">"MSPE"</span>,<span class="at">xlab=</span><span class="st">"k"</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="fu">min</span>(kcv<span class="sc">$</span>crit),<span class="at">col=</span><span class="st">"red"</span>,<span class="at">lty=</span><span class="st">"dotted"</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">which</span>(kcv<span class="sc">$</span>crit<span class="sc">==</span><span class="fu">min</span>(kcv<span class="sc">$</span>crit)),<span class="at">col=</span><span class="st">"red"</span>,<span class="at">lty=</span><span class="st">"dotted"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1483,7 +1487,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"descPosition":"bottom","closeEffect":"zoom","selector":".lightbox","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
