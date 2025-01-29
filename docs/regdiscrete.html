@@ -1144,7 +1144,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <div id="fig-insect-mortality" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-insect-mortality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="regdiscrete_files/figure-html/fig-insect-mortality-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="regdiscrete_files/figure-html/fig-insect-mortality-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="regdiscrete_files/figure-html/fig-insect-mortality-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="regdiscrete_files/figure-html/fig-insect-mortality-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-insect-mortality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;10.2: Predicted mortality function for insecticide and <span class="math inline">\(LD_{50}\)</span> value.
@@ -1767,7 +1767,7 @@ among 1,000 residents of Minneapolis 85 years is  4.155093 </code></pre>
 <div id="fig-zero-inflation" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-zero-inflation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="regdiscrete_files/figure-html/fig-zero-inflation-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="regdiscrete_files/figure-html/fig-zero-inflation-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="regdiscrete_files/figure-html/fig-zero-inflation-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="regdiscrete_files/figure-html/fig-zero-inflation-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zero-inflation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;10.4: Zero-inflated Poisson(5) process (left) and Poisson(5) process (right).
@@ -1801,18 +1801,18 @@ Figure&nbsp;10.4: Zero-inflated Poisson(5) process (left) and Poisson(5) process
 </div>
 </div>
 <p>A zero-inflated model is a special case of a <strong>finite mixture model</strong> (FMM). In a <span class="math inline">\(k\)</span>-component finite mixture the probability distribution of the target variable is expressed as a weighted combination of <span class="math inline">\(k\)</span> distributions <span class="math display">\[
-p(y) = \sum_{j=1}^k \pi_j p_j(y)
+p(y) = \sum_{j=1}^k w_j p_j(y)
 \]</span></p>
-<p>The <span class="math inline">\(\pi_j\)</span> are called the <strong>mixing probabilities</strong> of the FMM. In a <strong>homogeneous</strong> mixture model the component distributions <span class="math inline">\(p_j(y)\)</span> are from the same family, for example, they are all Gaussian distributions but with different parameters: <span class="math inline">\(p_j(y) = G(\mu_j,\sigma^2_j)\)</span>. A <strong>heterogeneous</strong> mixture model features component distributions from different families.</p>
+<p>The <span class="math inline">\(w_j\)</span> are called the <strong>mixing probabilities</strong> of the FMM. In a <strong>homogeneous</strong> mixture model the component distributions <span class="math inline">\(p_j(y)\)</span> are from the same family, for example, they are all Gaussian distributions but with different parameters: <span class="math inline">\(p_j(y) = G(\mu_j,\sigma^2_j)\)</span>. A <strong>heterogeneous</strong> mixture model features component distributions from different families.</p>
 <p>The zero-inflated Poisson model is a heterogeneous, two-component mixture in which one component distribution is concentrated at 0 and the other distribution is Poisson(<span class="math inline">\(\lambda\)</span>)</p>
 <p><span class="math display">\[
 p_1(y) = \left \{ \begin{array}{ll} 1 &amp; y = 0 \\ 0 &amp; \text{otherwise}\end{array}\right .
 \]</span> <span class="math display">\[
 p_2(y) = \frac{\lambda^y}{y!} e{-\lambda}
 \]</span> The overall model can be written as <span class="math display">\[
-\Pr(Y=y) = \pi p_1 + (1-\pi)p_2(y)
+\Pr(Y=y) = w \, p_1 + (1-w) \, p_2(y)
 \]</span></p>
-<p>Opportunities to introduce input variables are the mixing probability <span class="math inline">\(\pi\)</span> and the mean of the Poisson model. The mixing probability can be modeled as a lothe gistic-type model. The model for the mean of <span class="math inline">\(p_2(y)\)</span> is a Poisson regression with log link. The two models can depend on the same inputs or different inputs. For example, the likelihood of excess zeros might depend on age of an individual but the mean of the Poisson variable is not a function of age.</p>
+<p>Opportunities to introduce input variables are the mixing probability <span class="math inline">\(\pi\)</span> and the mean of the Poisson model. The mixing probability can be modeled as a logistic-type model. The model for the mean of <span class="math inline">\(p_2(y)\)</span> is a Poisson regression with log link. The two models can depend on the same inputs or different inputs. For example, the likelihood of excess zeros might depend on age of an individual but the mean of the Poisson variable is not a function of age.</p>
 <p>Using <span class="math inline">\(\textbf{z}\)</span> for the vector of inputs in the model for the mixing probability and <span class="math inline">\(\textbf{x}\)</span> for the vector of inputs in the Poisson model, the zero-inflated Poisson model in terms of estimable parameters is</p>
 <p><span class="math display">\[\begin{align*}
     \text{logit}(\pi) &amp;= \textbf{z}^\prime \boldsymbol{\alpha}\\
@@ -1844,7 +1844,7 @@ p_2(y) = \frac{\lambda^y}{y!} e{-\lambda}
 6      M  32     0</code></pre>
 </div>
 </div>
-<p>A Poisson generalized linear model with a common intercept and different age-slopes for the genders exhibits considerable overdispersion.</p>
+<p>A Poisson generalized linear model with a common intercept and different age slopes for the genders exhibits considerable overdispersion.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>poi_reg <span class="ot">&lt;-</span> <span class="fu">glm</span>(count <span class="sc">~</span> gender<span class="sc">:</span>age, <span class="at">data=</span>catch,<span class="at">family=</span><span class="st">"poisson"</span>)</span>
 <span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(poi_reg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1870,7 +1870,8 @@ AIC: 188.71
 Number of Fisher Scoring iterations: 5</code></pre>
 </div>
 </div>
-<p>A zero-inflated Poisson model can be fit in <code>R</code> with the <code>zeroinfl</code> function in the <code>pscl</code> package. The function specifies separate linear predictors for the count model and the zero-inflated part, separated by a vertical slash. <code>count ~ gender:age | 1</code> implies the same mean model for the count part as in the Poisson model above and an intercept-only model for the zero-inflation part. The <code>dist=</code> option specifies the distribution of the count variable, the <code>link=</code> option specifies the link function for the zero-inflation.</p>
+<p>A zero-inflated Poisson model can be fit in <code>R</code> with the <code>zeroinfl</code> function in the <code>pscl</code> package. The function specifies separate linear predictors for the count model and the zero-inflated part, separated by a vertical slash.</p>
+<p><code>count ~ gender:age | 1</code> implies the same mean model for the count part as in the Poisson model above and an intercept-only model for the zero-inflation part. The <code>dist=</code> option specifies the distribution of the count variable, the <code>link=</code> option specifies the link function for the zero-inflation.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pscl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -2611,7 +2612,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","descPosition":"bottom","selector":".lightbox","loop":false,"closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

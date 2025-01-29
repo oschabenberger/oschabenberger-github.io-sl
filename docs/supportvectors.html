@@ -924,12 +924,12 @@ f(\textbf{x}_0) = \beta_0 + \sum_{\mathcal{S}} \alpha_i K(\textbf{x}_0, \textbf{
 <li>Have been applied successfully in many fields</li>
 <li>Can be extended from classification to regression</li>
 </ul>
-<p>However, a support vector machine can be</p>
+<p>However, a support vector machine also has limitations:</p>
 <ul>
-<li>difficult to explain.</li>
-<li>sensitive to noise in data and to outliers.</li>
-<li>slow, especially when cross-validating hyperparameters.</li>
-<li>difficult to extend to more than two categories.</li>
+<li>Difficult to explain.</li>
+<li>Sensitive to noise in data and to outliers.</li>
+<li>Slow for large problems (large <span class="math inline">\(n\)</span>, large <span class="math inline">\(p\)</span>), exacerbated when cross-validating hyperparameters.</li>
+<li>Difficult to extend to more than two categories.</li>
 </ul>
 <p>Unlike boosting methods (<a href="boosting.html" class="quarto-xref"><span>Chapter 20</span></a>) that have a built-in mechanism to judge the importance of an input in training the model, support vector machines have no such metric. The equivalent of variable importance is obtained by applying model-agnostic tools such as permutation-based variable importance. Although these can be applied to any type of model, they come with their own set of problems (computational intensity, high variability).</p>
 <p>That leaves us in a bit of a quandary when it comes to support vector machines. While they frequently perform extremely well, they are also difficult to communicate. “It just works” is rarely a sufficient answer.</p>
@@ -1139,7 +1139,7 @@ AccuracyPValue  McnemarPValue
 James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2021. <em>An Introduction to Statistical Learning: With Applications in r, 2nd Ed.</em> Springer. <a href="https://www.statlearning.com/">https://www.statlearning.com/</a>.
 </div>
 <div id="ref-ZhangMedium" class="csl-entry" role="listitem">
-Zhang, Grace. 2018. <span>“What Is the Kernel Trick? Why Is It Important?”</span> <em>Medium</em>.
+Zhang, Grace. 2018. <span>“What Is the Kernel Trick? Why Is It Important?”</span> <em>Medium</em>. <a href="https://medium.com/@zxr.nju/what-is-the-kernel-trick-why-is-it-important-98a98db0961d">https://medium.com/@zxr.nju/what-is-the-kernel-trick-why-is-it-important-98a98db0961d</a>.
 </div>
 </div>
 </section>
@@ -1724,7 +1724,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","descPosition":"bottom","closeEffect":"zoom","selector":".lightbox","loop":false});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","openEffect":"zoom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

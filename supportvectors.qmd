@@ -426,12 +426,12 @@ Among the advantages are:
 - Have been applied successfully in many fields
 - Can be extended from classification to regression
 	
-However, a support vector machine can be
+However, a support vector machine also has limitations:
 
-- difficult to explain.
-- sensitive to noise in data and to outliers.
-- slow, especially when cross-validating hyperparameters.
-- difficult to extend to more than two categories.
+- Difficult to explain.
+- Sensitive to noise in data and to outliers.
+- Slow for large problems (large $n$, large $p$), exacerbated when cross-validating hyperparameters.
+- Difficult to extend to more than two categories.
 
 Unlike boosting methods (@sec-boosting) that have a built-in mechanism to judge the 
 importance of an input in training the model, support vector machines have no such 
@@ -469,6 +469,8 @@ and tomatoes, we fit 4 SMVS.
     
 We encountered the one-versus-all approach in previous chapters on classification
 when `caret::confusionMatrix` computes the confusion matrix statistics for $K > 2$.
+
+
 
 ## SVM in `R`
 

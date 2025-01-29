@@ -842,7 +842,7 @@ beta_glm2 <- glam(X, Y, model="linear", family="beta")
 
 Overdispersion is addressed by turning the appropriate knob. If overdispersion is not addressed, the precision of the fitted model is overstated: standard error estimates are too small, confidence and prediction intervals are too narrow, $p$-values are too small. 
 
-Generalized linear models are notorious for overdispersion issues, because the variability of the data is partially or completely controlled by the mean function. With Poisson data, for example, the variance equals the mean of the distribution. By specifying a GLM for the mean function, we explicitly specify a model for the variance. Two-parameter exponential family models such as the Gaussian, Gamma, and Beta distribution have a scale parameter but there is still a linkage between the mean and the variance. The only distribution where the mean of $Y$ is completely decoupled from the variance is the Gaussian distribution. Gaussian data can never be overdispersed because the reference model can combine any value for the mean with any value for the variance.
+Generalized linear models are notorious for overdispersion issues, because the variability of the data is partially or completely controlled by the mean function. With Poisson data, for example, the variance equals the mean of the distribution. By specifying a GLM for the mean function, we explicitly specify a model for the variance. Two-parameter exponential family models such as the Gamma, and Beta distribution have a scale parameter but there is still a linkage between the mean and the variance. The only distribution where the mean of $Y$ is completely decoupled from the variance is the Gaussian distribution. In other words, Gaussian data can never be overdispersed because the reference model can combine any value for the mean with any value for the variance.
 
 The following example shows how incorrectly modeling count data can induce overdispersion.
 
@@ -965,12 +965,95 @@ summary(poi_rcbd,dispersion=disp_factor)
 ::::
 :::
 
-The quasi-glm analysis is not the recommended approach for addressing overdispersion. It is a band-aid that covers over the real reasons behind the overdispersion mechanism. The estimates in the quasi-glm analysis are no longer maximum likelihood estimates. A more sophisticated and more appropriate approach to addressing overdispersion is to account for more variability in the system.
+The quasi-glm analysis is not the recommended approach for addressing overdispersion. It is a band-aid that covers over the real reasons behind the overdispersion mechanism. The estimates in the quasi-glm analysis are no longer maximum likelihood estimates. A more sophisticated and more appropriate approach to address overdispersion is to account for more variability in the system.
+
+### Mixture Models
+
+In @sec-zero-inflation we introduced one mechanism that can lead to overdispersion
+in count data: zero inflation. Zero-inflated models are a special case of a finite
+mixture model where the distribution of the data is a linear combination of 
+other distributions.
+
+Formally we can write a **finite mixture model** (FMM) with $k$ components as 
+$$
+p(y) = \sum_{j=1}^k w_j \,p_j(y)
+$$
+The $w_j$ are called the **mixing probabilities** of the FMM and they sum to 1.
+
+If the component distributions have means $\mu_1,\cdots,\mu_k$ and variances
+$\sigma^2_1, \cdots, \sigma^2_k$, then the mean and variance of $Y$ are 
+$$
+\begin{align}
+ \Exp[Y] &= \mu = \sum_{j=1}^k w_j \mu_j \\
+ \Var[Y] &= -\mu^2 + \sum_{j=1}^k w_j \left(\sigma^2_j + \mu^2_j \right)
+\end{align}
+$$
+
+:::{.callout-note}
+The mean of the mixture is the weighted combination of the component means, but 
+the variance of the mixture is **not** just the weighted combination of the component
+variances. 
+
+The variance of $Y$ would be the weighted sum of the component
+variances if we are dealing with a linear combination of independent random 
+variables. A finite mixture is different! We are dealing with a convex combination
+of **distributions**.
+:::
+
+The zero-inflated Poisson (ZIP) model in @sec-zero-inflation is a heterogeneous
+two-component mixture of the following distributions:
+$$
+\begin{align}
+p_1(y) &= \left \{ \begin{array}{ll} 1 & y = 0 \\ 0 & \text{otherwise}\end{array}\right . \\
+p_2(y) &= \frac{\lambda^y}{y!} e{-\lambda}
+\end{align}
+$$
+
+Since all probability mass of $p_1(y)$ is concentrated at $y=0$, it follows that
+$\mu_1 = 0$, $\sigma^2_1 = 0$. The mean and variance of the zero-inflated variable 
+$Y$ is now
+$$
+\begin{align}
+\mu &= (1-w)\lambda \\
+\Var[Y] &= (1-w)\lambda(1 + w\lambda)
+\end{align}
+$$
+@fig-zip-variance displays the variance of the ZIP model as a function of the mixing
+probability $w$ for different values of $\lambda$. As $w$ increases, the constant
+zero process gains more weight and the variance eventually reduces to 0 for $w=1$.
+The range of mixing weights for which the ZIP process is overdispersed relative
+to the Poisson distribution is larger for greater values of $\lambda$. At $w=0$,
+the 
+
+```{r, echo=FALSE, fig.align="center", out.width="75%"}
+#| fig.cap: Variance of a zero-inflated Poisson process as a function of the mixing probability $w$ and $\lambda$. Horizontal reference lines indicate the variance of the Poisson component.
+#| label: fig-zip-variance
+w <- seq(0,1,0.025)
+lambda <- 5
+varzip <- function(w,lambda) {
+    return ((1-w)*lambda*(1 + w*lambda))
+}
+plot(w,varzip(w,5),las=1,bty="l",type="l", lwd=2,
+     ylab="Variance of Zip Process")
+lines(w,varzip(w,4), type="l", col="red" , lty="dotted",lwd=2)
+lines(w,varzip(w,2), type="l", col="blue", lty="dashed",lwd=2)
+abline(h=5)
+abline(h=2,col="blue",lty="dashed")
+abline(h=4,col="red" ,lty="dotted")
+legend("topright",
+       legend=c(expression(paste(lambda," = 5")),
+                expression(paste(lambda," = 4")),
+                expression(paste(lambda," = 2"))),
+       col=c("black","red","blue"),
+       lty=c("solid","dotted","dashed"),
+       lwd=c(2,2,2))
+```
 
 
 ### Mixing Models
 
-If the Poisson distribution is not sufficiently dispersed for a count target, what other options are available?
+If the Poisson distribution is not sufficiently dispersed for a count target, 
+and zero inflation is not the root cause of overdispersion, what other options are available?
 
 The Negative Binomial distribution is also a model for count data and permits more variability than the Poisson distribution. It is a popular alternative for the Poisson model in the presence of overdispersion. The Negative Binomial is often derived from independent Bernoulli experiments, similar to the Binomial random variable. While the Binomial($n,\pi$) is the sum of $n$ independent Bernoulli($\pi$) experiments, the NegBin($k,\pi$) random variable is the number of Bernoulli($\pi$) trials until the $k$^th^ event occurs.
 
@@ -999,14 +1082,15 @@ If $\beta$ is a constant and $\alpha$ is a random variable the marginal mean and
 
 What does that mean? The marginal variance is larger than the average variance of the conditional distribution. By introducing a randomly varying parameter, and integrating over its distribution, we arrive at a more dispersed distribution.
 
-Now back to the Poisson--Gamma mixing problem. It can be shown that if $Y|\lambda \sim \text{Poisson}(\lambda)$, and $\lambda \sim \text{Gamma}(\alpha,\beta)$ that the marginal distribution of $Y$ is 
+Now back to the Poisson--Gamma mixing problem. It can be shown that if $Y|\lambda \sim \text{Poisson}(\lambda)$ and $\lambda \sim \text{Gamma}(\alpha,\beta)$, that the marginal distribution of $Y$ is 
 
 $$
 \Pr(Y=y)= {y+\alpha-1\choose\alpha-1} \left(\frac{\beta}{\beta+1}\right)^y \left(\frac{1}{\beta+1}\right)^\alpha
 $$
 
-This is a Negative Binomial distribution with mean $\Exp[Y] = \alpha\beta$ and variance $\Var[Y] = \alpha\beta(1+\beta)$.
-The Negative Binomial is overdispersed relative to the Poisson by the factor $(1+\beta)$.
+This is a Negative Binomial distribution with mean $\Exp[Y] = \alpha\beta$ and variance $\Var[Y] = \alpha\beta(1+\beta)$. Since $\lambda$ follows a Gamma distribution its mean is 
+$\Exp[\lambda] = \alpha\beta$. It follows that the Negative Binomial is overdispersed 
+relative to the Poisson by the factor $(1+\beta)$.
 
 Different parameterizations of the Gamma mixing distribution are in use. For example, the Gamma can be parameterized in terms of $\Exp[\lambda] = \alpha\beta = \mu$ and $\Var[\lambda] = \mu/\phi$. The resulting Negative Binomial model is then overdispersed by a factor $(1+\phi)/\phi$.
 

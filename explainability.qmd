@@ -112,7 +112,7 @@ intrinsically interpretable. @sankaran_2024 calls intrinsically interpretable mo
 Example: Mitscherlich Equation
 ::::
 ::::{.example-container}
-In section @sec-nlr-starting-values we encountered the Mitscherlich equation,
+In @sec-nlr-starting-values we encountered the Mitscherlich equation,
 popular in modeling plant and crop yield:
 
 $$

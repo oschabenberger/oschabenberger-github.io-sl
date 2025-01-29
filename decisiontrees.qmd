@@ -25,20 +25,25 @@ to explain to a non-technical audience. Trees are intrinsically interpretable,
 a tree diagram reveals completely how an input record is processed to arrive
 at a prediction or classification. This makes decision trees very popular.
 
-3. Decision trees can be applied to many problems---since they can predict and
+3. Decision trees are **non-parametric** in the sense that they do not require
+a distributional assumption. Whether the target variable is uniform, gamma, Poisson,
+or Gaussian distributed, a tree-building algorithm works the same way. No explicit
+assumptions about the nature of model errors, such as equal variance, are made
+either.
+
+4. Decision trees can be applied to many problems---since they can predict and
 classify---but their performance is often lacking. Trees have a number of 
 shortcomings such as high variability, sensitivity to small changes in the data,
 a tendency to overfit. You are trading these against advantages such as simplicity, 
 interpretability, and the ability to handle missing values (to some extent). 
 
-4. Many popular statistical learning techniques, which can perform extremely well,
+5. Many popular statistical learning techniques, which can perform extremely well,
 are based on decision trees and have been developed to overcome their shortcomings.
 Bagged trees, random forests, gradient boosted trees, and extreme gradient 
 boosting are examples of such methods. To understand and appreciate these 
 popular learning approaches, we need a basic understanding of how decision trees
-work. Trees are a prime example of a **weak learner**, a learning method with 
-low bias and high variance that benefits from averaging results---growing many
-trees instead of a single one.
+work. 
+
 
 The trees described in this chapter were introduced by @Breiman_etal_1984, and
 are known as CART (Classification and Regression Trees). @Sutton_2005 gives an

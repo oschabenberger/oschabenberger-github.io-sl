@@ -30,12 +30,12 @@ book:
 
     - part: "Part II. Supervised Learning I: Regression"
       chapters:
-         - regintro.qmd
-         - regglobal.qmd
-         - regfeature.qmd
-         - regnlr.qmd 
-         - regdiscrete.qmd
-         - reglocal.qmd
+        - regintro.qmd
+        - regglobal.qmd
+        - regfeature.qmd
+        - regnlr.qmd 
+        - regdiscrete.qmd
+        - reglocal.qmd
 
     - part: "Part III. Supervised Learning II: Classification"
       chapters:

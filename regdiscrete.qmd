@@ -791,10 +791,10 @@ summary(glm(zip ~ 1, family="poisson"))$deviance
 
 A zero-inflated model is a special case of a **finite mixture model** (FMM). In a $k$-component finite mixture the probability distribution of the target variable is expressed as a weighted combination of $k$ distributions
 $$
-p(y) = \sum_{j=1}^k \pi_j p_j(y)
+p(y) = \sum_{j=1}^k w_j p_j(y)
 $$
 
-The $\pi_j$ are called the **mixing probabilities** of the FMM. In a **homogeneous** mixture model the component distributions $p_j(y)$ are from the same family, for example, they are all Gaussian distributions but with different parameters: $p_j(y) = G(\mu_j,\sigma^2_j)$. A **heterogeneous** mixture model features component distributions from different families.
+The $w_j$ are called the **mixing probabilities** of the FMM. In a **homogeneous** mixture model the component distributions $p_j(y)$ are from the same family, for example, they are all Gaussian distributions but with different parameters: $p_j(y) = G(\mu_j,\sigma^2_j)$. A **heterogeneous** mixture model features component distributions from different families.
 
 The zero-inflated Poisson model is a heterogeneous, two-component mixture in which one component distribution is concentrated at 0 and the other distribution is Poisson($\lambda$)
 
@@ -806,10 +806,10 @@ p_2(y) = \frac{\lambda^y}{y!} e{-\lambda}
 $$
 The overall model can be written as
 $$
-\Pr(Y=y) = \pi p_1 + (1-\pi)p_2(y)
+\Pr(Y=y) = w \, p_1 + (1-w) \, p_2(y)
 $$
 
-Opportunities to introduce input variables are the mixing probability $\pi$ and the mean of the Poisson model. The mixing probability can be modeled as a lothe gistic-type model. The model for the mean of $p_2(y)$ is a Poisson regression with log link. The two models can depend on the same inputs or different inputs. For example, the likelihood of excess zeros might depend on age of an individual but the mean of the Poisson variable is not a function of age.
+Opportunities to introduce input variables are the mixing probability $\pi$ and the mean of the Poisson model. The mixing probability can be modeled as a logistic-type model. The model for the mean of $p_2(y)$ is a Poisson regression with log link. The two models can depend on the same inputs or different inputs. For example, the likelihood of excess zeros might depend on age of an individual but the mean of the Poisson variable is not a function of age.
 
 Using $\bz$ for the vector of inputs in the model for the mixing probability and $\bx$ for the vector of inputs in the Poisson model, the zero-inflated Poisson model in terms of estimable parameters is
 
@@ -823,7 +823,9 @@ Using $\bz$ for the vector of inputs in the model for the mixing probability and
 Example: Catching Fish
 ::::
 ::::{.example-container}
-The data for this example comes from the documentation of the FMM procedure in SAS/STAT software. The data represent gender, age, and the number of fish reportedly caught by visitors of a park.
+The data for this example comes from the documentation of the FMM procedure in 
+SAS/STAT software. The data represent gender, age, and the number of fish reportedly 
+caught by visitors of a park.
 
 ```{r}
 suppressWarnings(library("duckdb"))
@@ -834,16 +836,22 @@ dbDisconnect(con)
 head(catch)
 ```
 
-A Poisson generalized linear model with a common intercept and different age-slopes for the genders exhibits considerable overdispersion.
+A Poisson generalized linear model with a common intercept and different age 
+slopes for the genders exhibits considerable overdispersion.
 
 ```{r}
 poi_reg <- glm(count ~ gender:age, data=catch,family="poisson")
 summary(poi_reg)
 ```
 
-A zero-inflated Poisson model can be fit in `R` with the `zeroinfl` function in the `pscl` package.
-The function specifies separate linear predictors for the count model and the zero-inflated part, separated by a vertical slash.
-`count ~ gender:age | 1` implies the same mean model for the count part as in the Poisson model above and an intercept-only model for the zero-inflation part. The `dist=` option specifies the distribution of the count variable, the `link=` option specifies the link function for the zero-inflation.
+A zero-inflated Poisson model can be fit in `R` with the `zeroinfl` function in 
+the `pscl` package. The function specifies separate linear predictors for the 
+count model and the zero-inflated part, separated by a vertical slash.
+
+`count ~ gender:age | 1` implies the same mean model for the count part as in 
+the Poisson model above and an intercept-only model for the zero-inflation part.
+The `dist=` option specifies the distribution of the count variable, the `link=` 
+option specifies the link function for the zero-inflation.
 
 ```{r}
 library(pscl)
@@ -866,7 +874,8 @@ coef
 
 ```
 
-30.2\% of the observations come from the zero-inflated process. The complement, 69.8\% of the observations come from a Poisson process with estimated mean  
+30.2\% of the observations come from the zero-inflated process. The complement, 
+69.8\% of the observations come from a Poisson process with estimated mean  
 
 $$
 \exp\{\widehat{\beta}_0 + \widehat{\beta}_{1f} \,\text{age} \} = \exp\{-3.52149 + 0.12157\times \text{age}\}
@@ -878,7 +887,9 @@ $$
 $$
 for males.
 
-How do you calculate the predicted values in the zero-inflated Poisson model? The predictions of the two processes and the mixing probabilities need to be combined. For the first two observations, 
+How do you calculate the predicted values in the zero-inflated Poisson model? 
+The predictions of the two processes and the mixing probabilities need to be 
+combined. For the first two observations, 
 
 
 ```{r}
@@ -922,6 +933,8 @@ pvalue <- pchisq(lrt,df=1,lower.tail=FALSE)
 cat("p-value of LRT :", pvalue)
 ```
 
-The likelihood ratio test of a gender-specific mixing probability is not significant at the 5\% level ($p =$ `{r} round(pvalue,4)`, very similar to the Wald-type $p$-value of 0.0734 reported in the output.
+The likelihood ratio test of a gender-specific mixing probability is not significant 
+at the 5\% level ($p =$ `{r} round(pvalue,4)`, very similar to the Wald-type $p$-value 
+of 0.0734 reported in the output.
 ::::
 :::
