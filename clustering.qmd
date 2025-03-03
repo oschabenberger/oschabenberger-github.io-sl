@@ -180,17 +180,36 @@ $K$-means analysis is generally susceptible to outliers, as they contribute larg
 
 ### Clustering Metrics
 
-To choose the appropriate number of clusters in $K$-means clustering, we can apply various metrics that measure the tightness of the clusters and their separation. These metrics are plotted against the value of $k$ in a scree plot. We do not look for a minimum of the criteria, but the "knee" or "elbow" where the increase/decrease of the metric abruptly changes.
+To choose the appropriate number of clusters in $K$-means clustering, we can apply 
+various metrics that measure the tightness of the clusters and their separation. 
+These metrics are plotted against the value of $k$ in a scree plot. We do not 
+look for a minimum of the criteria, but the "knee" or "elbow" where the increase/decrease 
+of the metric abruptly changes.
 
 The following criteria are commonly computed and plotted.
 
-- **Inertia**: this is the within-cluster sum of squares and measures the tightness of the clusters. It does not necessarily mean that clusters are well separated, it just means that the data points within the clusters are close to their centroid. The within-cluster sum of squares decreases as $K$ increases, more clusters will lead to less variability within the clusters. That is why we do not look for minima with these criteria.
+- **Inertia**: this is the within-cluster sum of squares; it measures the tightness 
+of the clusters. It does not necessarily mean that clusters are well separated, 
+it just means that the data points within the clusters are close to their centroid. 
+The within-cluster sum of squares decreases as $K$ increases, more clusters will 
+lead to less variability within the clusters. In the extreme case when $k=n$, 
+each observation is a cluster and the within-cluster sum of squares is zero.
+That is why we do not look for a global minimum with these criteria.
 
-- **Distortion**: this is the average inertia within a cluster, obtained by dividing $\text{SSW}_k$ by the cluster cardinality.
+- **Distortion**: this is the average inertia within a cluster, obtained by 
+dividing $\text{SSW}_k$ by the cluster cardinality.
 
-- **Silhouette** score: measures how similar a data point is to its own cluster compared to other clusters. While inertia is based only on distances of data points from *their* cluster center, the silhouette takes into account the distances between points in one cluster and the nearest cluster center. The score ranges from $-1$ to $+1$; a high silhouette score means that we can easily tell the clusters apart--they are far from each other.
+- **Silhouette** score: measures how similar a data point is to its own cluster 
+compared to other clusters. While inertia is based on distances of data points from 
+*their* cluster center, the silhouette takes into account the distances between 
+points in one cluster and the nearest cluster center. The score ranges from $-1$ 
+to $+1$; a high silhouette score means that we can easily tell the clusters 
+apart--they are far from each other.
 
-Inertia and silhouette measure different things: the former captures the tightness of the clusters, the latter how far apart (distinguishable) the clusters are. You can have a good (low) inertia but a bad (low) silhouette score if the clusters overlap or sit on top of each other.
+Inertia and silhouette measure different things: the former captures the tightness 
+of the clusters, the latter how far apart (distinguishable) the clusters are. 
+You can have a good (low) inertia but a bad (low) silhouette score if the clusters 
+overlap or sit on top of each other.
 
 :::{.example}
 ::::{.example-header}
@@ -222,7 +241,7 @@ fviz_nbclust(iris_s, kmeans, method='silhouette')
 fviz_nbclust(iris_s, kmeans, method='wss')
 ```
 
-The silhouette scores suggest $k=2$ and the inertia scree plot $k=$3--5.
+The silhouette scores suggest $k=2$ and the inertia scree plot $k$ between 3 and 5.
 ::::
 :::
 
@@ -487,11 +506,21 @@ For quantitative variables, the following are most popular:
 
 + **Squared Euclidean distance**
 		$$d_j(x_{ij},x_{i^\prime j}) = (x_{ij} - x_{i^\prime j})^2$$
-Probably the most frequent choice, but it is sensitive to large distances due to squaring.
+A frequent choice, but it is sensitive to large distances due to squaring.
+
++ **Euclidean distance**
+$$
+D(\bx_i,\bx_{i^\prime}) = \sqrt{ \sum_{j=1}^p   (x_{ij} - x_{i^\prime j})^2}
+$$
+This is the usual distance ($L_2$-norm) between two vectors $\bx_i$ and $\bx_{i^\prime}$.
+Taking the square root expresses the distance in the same units as the $X$s.
 
 + **Absolute distance**, also called "Manhattan" or city-block distance
-		$$d_j(x_{ij},x_{i^\prime j}) = |x_{ij} - x_{i^\prime j}|$$
-Absolute distance is more robust to large differences compared to dissimilarity based on Euclidean distance.
+$$
+d_j(x_{ij},x_{i^\prime j}) = |x_{ij} - x_{i^\prime j}|
+$$
+Absolute distance is more robust to large differences compared to dissimilarity 
+based on (squared) Euclidean distance.
 
 + **Correlation-based distance**
 $$
@@ -603,7 +632,13 @@ For purposes of clustering, the dissimilarity measure based on Gower's distance 
 
 #### Linkage methods
 
-$D(\bx_i,\bx_{i^\prime})$ measures the dissimilarity between two data points. In order to move up (or down) the tree in hierarchical clustering we also need to determine how to measure the similarity/dissimilarity between groups of points. Suppose $G$ and $H$ present two clusters and $D(G,H)$ is the dissimilarity between the two, some function of the dissimilarity of the points in the clusters. The decision rule that determines how to merge (or split) clusters is called **linkage**. The three most common linkage methods are
+$D(\bx_i,\bx_{i^\prime})$ measures the dissimilarity between two data points. In 
+order to move up (or down) the tree in hierarchical clustering we also need to 
+determine how to measure the similarity/dissimilarity between groups of points. 
+Suppose $G$ and $H$ present two clusters and $D(G,H)$ is the dissimilarity between 
+the two, some function of the dissimilarity of the points in the clusters. The 
+decision rule that determines how to merge (or split) clusters is called **linkage**. 
+The three most common linkage methods are
 
 - **Single linkage**: $D(G,H) = \min D(\bx_i,\bx_{i^\prime}), i \in G, i^\prime \in H$
 
@@ -611,9 +646,16 @@ $D(\bx_i,\bx_{i^\prime})$ measures the dissimilarity between two data points. In
 
 - **Average linkage**: $D(G,H) = \text{ave} D(\bx_i,\bx_{i^\prime}), i \in G, i^\prime \in H$
 
-The agglomerative clustering algorithm merges the cluster with the smallest linkage value.
+The agglomerative clustering algorithm merges the clusters with the smallest linkage value.
 
-When clusters separate well, the choice of linkage is not that important. Otherwise, linkage can have substantial impact on the outcome of hierarchical clustering. Single linkage is know to cause *chaining*, combining observations that are linked by a series of close observations. Complete linkage tends to produce compact clusters, but observations can end up being closer to members of other clusters than to members of their own cluster. Average linkage is a compromise, but is not invariant to transformations of the dissimilarities. Centroid linkage uses distances between centroids of the clusters (@fig-linkage-types).
+When clusters separate well, the choice of linkage is not that important. Otherwise, 
+linkage can have substantial impact on the outcome of hierarchical clustering. Single
+linkage is known to cause *chaining*, combining observations that are linked by 
+a series of close observations. Complete linkage tends to produce compact clusters, 
+but observations can end up being closer to members of other clusters than to
+members of their own cluster. Average linkage is a compromise, but is not invariant 
+to transformations of the dissimilarities. Centroid linkage uses distances between 
+centroids of the clusters (@fig-linkage-types).
 
 ![Some linkage types in hierarchical clustering.](images/LinkageTypes.png){#fig-linkage-types .lightbox fig-align="center" width="90%"}
 
@@ -624,7 +666,10 @@ Example: Hierarchical Cluster Analysis for Glaucoma Data.
 ::::
 ::::{.example-container}
 
-What can we learn about the 98 subjects in the `Glaucoma` data set who had glaucomatous eyes by way of hierarchical cluster analysis? The following statements create a data frame from the DuckDB table, filter the glaucotamous cases, remove `Glaucoma` column and scale the remaining 62 variables.
+What can we learn about the 98 subjects in the `Glaucoma` data set who had 
+glaucomatous eyes by way of hierarchical cluster analysis? The following 
+statements create a data frame from the DuckDB table, filter the glaucotamous 
+cases, remove `Glaucoma` column and scale the remaining 62 variables.
 
 ``` {r, warning=FALSE, message=FALSE}
 library(duckdb)
@@ -653,16 +698,25 @@ observations, positive numbers refer to clusters formed at that stage.
 hc$merge[1:25,]
 ```
 
-The first merge combines observations \#34 and \#41 into a group of two. The next merge combines \#4 and \#73 into another group of two. At the seventh merge, observation \#76 is combined with the group created at the first merge. This cluster now contains observations [34, 41, 76]. The first time two groups are being merged is at step 23: the groups consisting of observations [58, 93] and [72, 90] are combined into a cluster of 4.
+The first merge combines observations \#34 and \#41 into a group of two. The next 
+merge combines \#4 and \#73 into another group of two. At the seventh merge, 
+observation \#76 is combined with the group created at the first merge. This 
+cluster now contains observations [34, 41, 76]. The first time two groups are 
+being merged is at step 23: the groups consisting of observations [58, 93] and 
+[72, 90] are combined into a cluster of 4.
 
-The `height` vector is a vector of $n-1$ values of the height criterion; the actual values depend on the linkage method. For this analysis, the first 25 heights at which merges occurred are as follows:
+The `height` vector is a vector of $n-1$ values of the height criterion; the actual 
+values depend on the linkage method. For this analysis, the first 25 heights at 
+which merges occurred are as follows:
 
 ```{r}
 hc$height[1:25]
 ```
 
 
-The dendrogram for this analysis is plotted in @fig-glaucoma-dendro1 along with the bounding boxes for 4 and 8 clusters. The cut for the larger number of clusters occurs lower at the tree.
+The dendrogram for this analysis is plotted in @fig-glaucoma-dendro1 along with 
+the bounding boxes for 4 and 8 clusters. The cut for the larger number of clusters
+occurs lower at the tree.
 
 ```{r fig.align="center", out.with="90%"}
 #| fig.cap: Dendrogram for partial glaucoma data with correlation-based dissimilarity and complete linkage.
@@ -678,7 +732,9 @@ The sizes of the four clusters are as follows:
 table(cutree(hc,k=4))
 ```
 
-Changing the linkage method to single demonstrates the *chaining* effect on the dendrogram (@fig-glaucoma-dendro2). Identifying a reasonable number of clusters is more difficult.
+Changing the linkage method to single demonstrates the *chaining* effect on the 
+dendrogram (@fig-glaucoma-dendro2). Identifying a reasonable number of clusters 
+is more difficult.
 
 ```{r, fig.align='center', out.width="90%"}
 #| fig.cap: Dendrogram for partial glaucoma data, single linkage.
@@ -690,7 +746,9 @@ plot(hc_s, cex=0.5,main="")
 rect.hclust(hc_s,k=4)
 ```
 
-If you create a dendrogram object from the `hclust` results, a number of plotting functions are available to visualize the dendrogram in interesting ways. For example:
+If you create a dendrogram object from the `hclust` results, a number of plotting 
+functions are available to visualize the dendrogram in interesting ways. For 
+example:
 
 ```{r, fig.align='center', out.width="90%", warning=FALSE, message=FALSE}
 hc.dend <- as.dendrogram(hc) # create dendrogram object

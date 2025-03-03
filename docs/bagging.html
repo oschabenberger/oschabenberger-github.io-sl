@@ -652,17 +652,17 @@ Y^* = \frac{1}{3} \sum_{i=1}^3 Y_{(i)}
 <section id="why-and-when-does-bagging-work" class="level2" data-number="19.2">
 <h2 data-number="19.2" class="anchored" data-anchor-id="why-and-when-does-bagging-work"><span class="header-section-number">19.2</span> Why and When Does Bagging Work?</h2>
 <p>It is intuitive that the average in a random sample varies less than the individual random variables being averaged. If <span class="math inline">\(Y_1, \cdots, Y_n\)</span> is a random sample from a distribution with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, then <span class="math inline">\(\text{Var}[Y_i] = \sigma^2\)</span>, while <span class="math inline">\(\text{Var}[\overline{Y}] = \sigma^2/n\)</span>.</p>
-<p>We can express this intuition more formally and gain some insight into why bagging works and when it is most effective. To motivate, we follow <span class="citation" data-cites="Sutton_2005">Sutton (<a href="references.html#ref-Sutton_2005" role="doc-biblioref">2005</a>)</span> and suppose we have a continuous response <span class="math inline">\(Y\)</span> and that <span class="math inline">\(\phi(\textbf{x})\)</span> is the prediction that results from applying any particular method. A prediction method could be a regression tree and <span class="math inline">\(\phi^{T}(\textbf{x})\)</span> is the average of the values in the terminal node for <span class="math inline">\(\textbf{x}\)</span>. A prediction method could be a multiple linear regression and <span class="math inline">\(\phi^{R}(\textbf{x})\)</span> is the predicted value <span class="math inline">\(\widehat{y} = \widehat{\boldsymbol{\beta}}\textbf{x}\)</span>.</p>
-<p>The point is that <span class="math inline">\(\phi(\textbf{x})\)</span> is a random variable because it depends on the particular sample (the training data) for <span class="math inline">\(Y\)</span> and its statistical properties are derive from the prediction method itself and the properties of <span class="math inline">\(Y\)</span>. <span class="math inline">\(\text{Var}[\phi^{R}(\textbf{x})]\)</span> and <span class="math inline">\(\text{Var}[\phi^{T}(\textbf{x})]\)</span> are not the same.</p>
+<p>We can express this intuition more formally and gain some insight into why bagging works and when it is most effective. To motivate, we follow <span class="citation" data-cites="Sutton_2005">Sutton (<a href="references.html#ref-Sutton_2005" role="doc-biblioref">2005</a>)</span> and suppose we have a continuous response <span class="math inline">\(Y\)</span> and that <span class="math inline">\(\phi(\textbf{x})\)</span> is the prediction that results from applying any particular method. A prediction method could be a regression tree and <span class="math inline">\(\phi^{T}(\textbf{x})\)</span> is the average of the values in the terminal node for <span class="math inline">\(\textbf{x}\)</span>. A prediction method could be a multiple linear regression and <span class="math inline">\(\phi^{R}(\textbf{x})\)</span> is the predicted value <span class="math inline">\(\widehat{y} = \textbf{x}^\prime\widehat{\boldsymbol{\beta}}\)</span>.</p>
+<p>The point is that <span class="math inline">\(\phi(\textbf{x})\)</span> is a random variable because it depends on the particular sample (the training data) and its statistical properties derive from the prediction method itself and the properties of <span class="math inline">\(Y\)</span>. <span class="math inline">\(\text{Var}[\phi^{R}(\textbf{x})]\)</span> and <span class="math inline">\(\text{Var}[\phi^{T}(\textbf{x})]\)</span> are not the same.</p>
 <p>Let <span class="math inline">\(\mu_\phi\)</span> denote the expected value of the predictor <span class="math inline">\(\phi(\textbf{x})\)</span> over the distribution of the training data. The mean-squared error decomposition into variance and squared-bias contribution is then is <span class="math display">\[
 \text{E}[(Y-\phi(\textbf{x}))^2] = \text{Var}[\phi(\textbf{x})] + \text{E}[(Y - \mu_\phi)^2]
 \]</span></p>
-<p>If we had the opportunity to use as the predictor the mean <span class="math inline">\(\mu_\phi\)</span> rather than the random variable <span class="math inline">\(\phi(\textbf{x})\)</span>, then we would have a smaller mean square error than using <span class="math inline">\(\phi(\textbf{x})\)</span> because the variance term drops out (<span class="math inline">\(\text{Var}[\mu_\phi]=0\)</span> because <span class="math inline">\(\mu_\phi\)</span> is a constant). This is true regardless of the prediction method. The replacement would be most effective in situations where <span class="math inline">\(\text{Var}[\phi(\textbf{x})]\)</span> is large. In other words, the larger the variance <span class="math inline">\(\text{Var}[\phi(\textbf{x})\)</span> is relative to the MSE of the predictor, the greater the percentage reduction if the predictor is replaced by its mean.</p>
+<p>If we had the opportunity to use as the predictor the mean <span class="math inline">\(\mu_\phi\)</span> rather than the random variable <span class="math inline">\(\phi(\textbf{x})\)</span>, then we would have a smaller mean square error than using <span class="math inline">\(\phi(\textbf{x})\)</span> because the variance term drops out (<span class="math inline">\(\text{Var}[\mu_\phi]=0\)</span> because <span class="math inline">\(\mu_\phi\)</span> is a constant). This is true regardless of the prediction method. The replacement would be most effective in situations where <span class="math inline">\(\text{Var}[\phi(\textbf{x})]\)</span> is large. In other words, the larger the variance <span class="math inline">\(\text{Var}[\phi(\textbf{x})]\)</span> is relative to the MSE of the predictor, the greater the percentage reduction if the predictor is replaced by its mean.</p>
 <p>In practice, we do not know <span class="math inline">\(\mu(\phi)\)</span>, but we can get an estimate of it, by simply averaging the individual predictors <span class="math inline">\(\phi(\textbf{x})_1, \cdots, \phi(\textbf{x})_B\)</span> in a bootstrap sample. Let’s denote this aggregate of the bootstrap predictor <span class="math inline">\(\phi_{B}(\textbf{x})\)</span> of our base method. To make notation even worse, we would denote the bootstrap predictor of the regression predictor <span class="math inline">\(\phi^{R}(\textbf{x})\)</span> as <span class="math inline">\(\phi_{B}^{R}(\textbf{x})\)</span>.</p>
 <p>The effectiveness of bagging is greatest when the prediction method is highly variable, possibly even unstable. Effectiveness is measured here by the relative reduction in variability that occurs when <span class="math inline">\(\text{Var}[\phi_B^{*}(\textbf{x})]\)</span> approaches zero with increasing number of bootstrap samples <span class="math inline">\(B\)</span>.</p>
 <p>In order for bagging to work well, we need to take enough bootstrap samples to reduce the variance and the training data has to be large enough for the bootstrap estimate of <span class="math inline">\(\mu_\phi\)</span> to be good.</p>
 <hr>
-<p>A regression model that uses the correct inputs and functional form is a low-variance estimation method, it is very stable. Bagging such a a regression estimator does not yield much. A decision tree is inherently unstable in that it can change under small perturbations or changes in the data. That inherent variability makes it a great candidate to be improved upon through bootstrap aggregation—through bagging.</p>
+<p>A regression model that uses the correct inputs and functional form is a low-variance estimation method, it is very stable. Bagging such an estimator does not yield much. A decision tree is inherently unstable in that it can change under small perturbations or changes in the data. That inherent variability makes it a great candidate to be improved upon through bootstrap aggregation—through bagging.</p>
 <p>To measure the effect of bagging on a classifier, mean square prediction error is not the appropriate metric as the performance of the classifier is measured through misclassification rate, cross-entropy, or other metrics. An improvement through bagging is achieved when the misclassification rate of the bagged estimator is closer to the Bayes rate than the un-bagged classifier.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Bayes classifier">
 <div class="callout-header d-flex align-content-center">
@@ -683,10 +683,10 @@ Bayes classifier
 <h2 data-number="19.3" class="anchored" data-anchor-id="sec-bagged-trees"><span class="header-section-number">19.3</span> Bagged Trees</h2>
 <p><span class="citation" data-cites="Breiman1996">Breiman (<a href="references.html#ref-Breiman1996" role="doc-biblioref">1996</a>)</span> introduced bootstrap aggregating (bagging) as a means to increase the accuracy of a predictor by applying the predictor to a sequence of <strong>learning sets</strong>, data sets of size <span class="math inline">\(n\)</span>, and combining the results from the sets. In case of prediction the obvious choice is to average the predictions across the learning sets. In case of classification, Breiman recommends majority voting: classify an observation in each learning set and assign the most frequently chosen category as the overall classification.</p>
 <p>The learning sets are <span class="math inline">\(B\)</span> bootstrap samples drawn from the original data. Breiman notes</p>
-<blockquote class="blockquote">
-<p>“The vital element is the instability of the prediction method.”</p>
-</blockquote>
-<p>If the different learning sets do not lead to changes in the predictors the aggregation will not be effective. This is where base learners with high variability (and low bias) are important. There is a second situation where bagging will not be effective: if the method being bagged is already near the limits of accuracy achievable for that data set no amount of bootstrapping and bagging will help.</p>
+<div class="quote">
+<p>The vital element is the instability of the prediction method.</p>
+</div>
+<p>If the different learning sets do not lead to changes in the predictors, the aggregation will not be effective. This is where base learners with high variability (and low bias) are important. There is a second situation where bagging will not be effective: if the method being bagged is already near the limits of accuracy achievable for that data set no amount of bootstrapping and bagging will help.</p>
 <p>The most frequent application of bagging is with decision trees for either regression or classification. In a non-ensemble situation one would build one tree, first by growing it deep and then pruning it back. During bagging trees are not pruned, the volatility of deep trees is desirable.</p>
 <div class="example">
 <div class="example-header">
@@ -695,27 +695,24 @@ Bayes classifier
 <div class="example-container">
 <p>The data for this example can be found on <a href="https://www.kaggle.com/datasets/l3llff/banana">kaggle</a> and comprises observations on the quality of bananas (“Good”, “Bad”) and seven attributes (<a href="#fig-banana-data" class="quarto-xref">Figure&nbsp;<span>19.1</span></a>). The attributes are normalized although it is not clear how this was done. There are 4,000 training observations and 4,000 testing observations in separate data sets.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: DBI</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ban_train <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM banana_train"</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>ban_test <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM banana_test"</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>ban_train<span class="sc">$</span>Quality <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(ban_train<span class="sc">$</span>Quality)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>ban_test<span class="sc">$</span>Quality <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(ban_test<span class="sc">$</span>Quality)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>ban_train <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM banana_train"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>ban_test <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM banana_test"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>ban_train<span class="sc">$</span>Quality <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(ban_train<span class="sc">$</span>Quality)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>ban_test<span class="sc">$</span>Quality <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(ban_test<span class="sc">$</span>Quality)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(<span class="sc">~</span> Size <span class="sc">+</span> Weight <span class="sc">+</span> Sweetness <span class="sc">+</span> Softness <span class="sc">+</span> HarvestTime</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                   <span class="sc">+</span> Ripeness <span class="sc">+</span> Acidity , </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">cex     =</span><span class="fl">0.5</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">as.table=</span><span class="cn">TRUE</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">par.strip.text=</span><span class="fu">list</span>(<span class="at">cex=</span><span class="fl">0.75</span>),</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">xlab    =</span><span class="st">""</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data    =</span>ban_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(<span class="sc">~</span> Size <span class="sc">+</span> Weight <span class="sc">+</span> Sweetness <span class="sc">+</span> Softness <span class="sc">+</span> HarvestTime</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                   <span class="sc">+</span> Ripeness <span class="sc">+</span> Acidity , </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">cex     =</span><span class="fl">0.5</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">as.table=</span><span class="cn">TRUE</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">par.strip.text=</span><span class="fu">list</span>(<span class="at">cex=</span><span class="fl">0.75</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">xlab    =</span><span class="st">""</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data    =</span>ban_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-banana-data" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -731,9 +728,9 @@ Figure&nbsp;19.1: Histograms of banana quality attributes (training data)
 </div>
 <p>We first build a regular classification tree for the training data and compute its confusion matrix for the test data. The tree is grown with the <code>tree::tree</code> function and its complexity is cross-validated (10-fold) based on the misclassification rate.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tree)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tree.ban <span class="ot">&lt;-</span> <span class="fu">tree</span>(Quality <span class="sc">~</span> ., <span class="at">data=</span>ban_train)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(tree.ban)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tree)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>tree.ban <span class="ot">&lt;-</span> <span class="fu">tree</span>(Quality <span class="sc">~</span> ., <span class="at">data=</span>ban_train)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(tree.ban)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Classification tree:
@@ -745,27 +742,22 @@ Number of terminal nodes:  15
 Residual mean deviance:  0.5658 = 2255 / 3985 
 Misclassification error rate: 0.09525 = 381 / 4000 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>cv.ban <span class="ot">&lt;-</span> <span class="fu">cv.tree</span>(tree.ban, <span class="at">FUN=</span>prune.misclass)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Optimial tree size after pruning: "</span>,cv.ban<span class="sc">$</span>size[<span class="fu">which.min</span>(cv.ban<span class="sc">$</span>dev)],<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>cv.ban <span class="ot">&lt;-</span> <span class="fu">cv.tree</span>(tree.ban, <span class="at">FUN=</span>prune.misclass)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Optimial tree size after pruning: "</span>,cv.ban<span class="sc">$</span>size[<span class="fu">which.min</span>(cv.ban<span class="sc">$</span>dev)],<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Optimial tree size after pruning:  15 </code></pre>
 </div>
 </div>
 <p>It turns out that the size of the deep tree with 15 nodes is also the best size per cross-validation, so no further pruning is necessary and the tree can be used to predict the test data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: ggplot2</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: lattice</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>tree.ban.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(tree.ban, <span class="at">newdata=</span>ban_test, <span class="at">type=</span><span class="st">"class"</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>tree.ban.cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(tree.ban.pred,ban_test<span class="sc">$</span>Quality)</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>tree.ban.cm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>tree.ban.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(tree.ban, <span class="at">newdata=</span>ban_test, <span class="at">type=</span><span class="st">"class"</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>tree.ban.cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(tree.ban.pred,ban_test<span class="sc">$</span>Quality)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>tree.ban.cm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Confusion Matrix and Statistics
 
@@ -799,31 +791,16 @@ Prediction  Bad Good
 <p>The decision tree achieves an accuracy of 89.5% on the test data.</p>
 <p>To apply bagging we use the <code>randomForest</code> function in the package by the same name. As we will see shortly, bagging is a special case of a random forest where the <code>mtry</code> parameter is set to the number of input variables, here 7. By default, <code>randomForest</code> performs <span class="math inline">\(B=500\)</span> bootstrap samples, that is, it builds <span class="math inline">\(500\)</span> trees.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>randomForest 4.7-1.2</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Type rfNews() to see new features/changes/bug fixes.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'randomForest'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:ggplot2':
-
-    margin</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">6543</span>)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>bag.ban <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(Quality <span class="sc">~</span> . , </span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data      =</span>ban_train, </span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">xtest     =</span>ban_test[,<span class="sc">-</span><span class="dv">8</span>],</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">ytest     =</span>ban_test[, <span class="dv">8</span>],</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">mtry      =</span><span class="dv">7</span>,</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">importance=</span><span class="cn">TRUE</span>)</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>bag.ban</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">6543</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>bag.ban <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(Quality <span class="sc">~</span> . , </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data      =</span>ban_train, </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">xtest     =</span>ban_test[,<span class="sc">-</span><span class="dv">8</span>],</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">ytest     =</span>ban_test[, <span class="dv">8</span>],</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">mtry      =</span><span class="dv">7</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">importance=</span><span class="cn">TRUE</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>bag.ban</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -844,10 +821,10 @@ Bad  1929   65  0.03259779
 Good   69 1937  0.03439681</code></pre>
 </div>
 </div>
-<p>When a test set is specified, <code>randomForest</code> returns two types of predicted values. <code>bag.ban$predicted</code> are the out-of-bag predictions. Each observation is out-of-bag in about 1/3 of the trees built. The majority vote across the <span class="math inline">\(B/3\)</span> classifications is the out-of-bag prediction for that observation. The predicted values based on the test data set are stored in <code>bag.ban$test$predicted</code>. Each observation in the test data set is passed through the 500 trees–the majority vote of the predicted quality is the overall prediction for that observation.</p>
+<p>When a test set is specified, <code>randomForest</code> returns two types of predicted values. <code>bag.ban$predicted</code> are the out-of-bag predictions. Each observation is out-of-bag in about 1/3 of the trees built. The majority vote across the <span class="math inline">\(B/3\)</span> classifications is the out-of-bag prediction for that observation. The predicted values based on the test data set are stored in <code>bag.ban$test$predicted</code>. Each observation in the test data set is passed through the 500 trees—the majority vote of the predicted quality is the overall prediction for that observation.</p>
 <p>The confusion matrices shown by <code>randomForest</code> can be reconstructed as follows:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(bag.ban<span class="sc">$</span>predicted,ban_train<span class="sc">$</span>Quality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(bag.ban<span class="sc">$</span>predicted,ban_train<span class="sc">$</span>Quality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Confusion Matrix and Statistics
 
@@ -877,8 +854,8 @@ Prediction  Bad Good
        'Positive' Class : Bad            
                                          </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>bag.ban.cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(bag.ban<span class="sc">$</span>test<span class="sc">$</span>predicted,ban_test<span class="sc">$</span>Quality)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>bag.ban.cm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>bag.ban.cm <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(bag.ban<span class="sc">$</span>test<span class="sc">$</span>predicted,ban_test<span class="sc">$</span>Quality)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>bag.ban.cm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Confusion Matrix and Statistics
 
@@ -914,9 +891,9 @@ Prediction  Bad Good
 </div>
 <p>As with all ensemble methods, interpretability of the results suffers when methods are combined. Decision trees are intrinsically interpretable and among the most easily understood algorithms. The visual of a tree describes how data flows through the algorithm and how it arrives at a prediction or classification (<a href="#fig-banana-singletree" class="quarto-xref">Figure&nbsp;<span>19.2</span></a>).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree.ban)</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(tree.ban,<span class="at">cex=</span><span class="fl">0.7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tree.ban)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(tree.ban,<span class="at">cex=</span><span class="fl">0.7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-banana-singletree" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -938,7 +915,7 @@ Figure&nbsp;19.2: Decision tree for banana quality
 <div class="example-container">
 <p>The variable importance for the banana quality based on bagging 500 trees is shown in <a href="#fig-banana-varimp-bagged" class="quarto-xref">Figure&nbsp;<span>19.3</span></a>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">importance</span>(bag.ban)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">importance</span>(bag.ban)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                  Bad      Good MeanDecreaseAccuracy MeanDecreaseGini
 Size         89.29303  89.07396            127.62487         318.5278
@@ -949,8 +926,8 @@ HarvestTime  96.58981 108.22739            143.83798         337.7313
 Ripeness    101.76511  93.76190            133.84679         294.0230
 Acidity      57.39471  57.35883             77.66721         123.9741</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>))</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">varImpPlot</span>(bag.ban,<span class="at">main=</span><span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>))</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">varImpPlot</span>(bag.ban,<span class="at">main=</span><span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-banana-varimp-bagged" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -967,14 +944,15 @@ Figure&nbsp;19.3: Variable importance plots for bagged trees.
 </div>
 </div>
 <p>Bagging is a powerful method to improve accuracy. In Breiman’s words:</p>
-<blockquote class="blockquote">
-<p>“Bagging goes a ways toward making a silk purse out of a sow’s ear, especially if the sow’s ear is twitchy. […] What one loses, with the trees, is a simple and interpretable structure. What one gains is increased accuracy.”</p>
-</blockquote>
+<div class="quote">
+<p>Bagging goes a ways toward making a silk purse out of a sow’s ear, especially if the sow’s ear is twitchy. […] What one loses, with the trees, is a simple and interpretable structure.<br>
+What one gains is increased accuracy.</p>
+</div>
 </section>
 <section id="sec-random-forest" class="level2" data-number="19.4">
 <h2 data-number="19.4" class="anchored" data-anchor-id="sec-random-forest"><span class="header-section-number">19.4</span> Random Forests</h2>
-<p>Are there any other downsides to bagging, besides a loss of interpretability and an increased computational burden? Not really, but another issue deserves consideration: bootstrap samples are highly correlated. Two thirds of the observations are in the bootstrap samples making the data frames similar to each other. An input variable that dominates the model will tend to be the first variable on which the tree is split, leading to similar trees. This reduces the variability of the trees and reduces the effectiveness of the ensemble.</p>
-<p>How can we make the trees more volatile? <span class="citation" data-cites="Breiman2001">Breiman (<a href="references.html#ref-Breiman2001" role="doc-biblioref">2001</a>)</span> advanced the concept of bagged trees through the introduction of <strong>random forests</strong>. The key innovation between bagged trees and random forests is that not all input variables are considered at each split of the tree. Instead, only a randomly selected set of predictors is considered, the set changes from split to split. The random split introduces more variability and allows non-dominant input variables to participate.</p>
+<p>Are there any other downsides to bagging, besides a loss of interpretability and increased computational burden? Not really, but another issue deserves consideration: bootstrap samples are highly correlated. Two thirds of the observations are in the bootstrap samples, making the data sets similar to each other. An input variable that dominates the model will tend to be the first variable on which the tree is split, leading to similar trees. This reduces the variability of the trees and reduces the effectiveness of the ensemble.</p>
+<p>How can we make the trees more volatile? <span class="citation" data-cites="Breiman2001">Breiman (<a href="references.html#ref-Breiman2001" role="doc-biblioref">2001</a>)</span> advanced the concept of bagged trees through the introduction of <strong>random forests</strong>. The key innovation that leads from bagged trees to random forests is that not all input variables are considered at each split of the tree. Instead, only a randomly selected set of predictors is considered, the set changes from split to split. The random split introduces more variability and allows non-dominant input variables to participate.</p>
 <p>In other aspects, random forests are constructed in the same way as bagged trees introduced in <a href="#sec-bagged-trees" class="quarto-xref"><span>Section 19.3</span></a>: <span class="math inline">\(B\)</span> trees are built based on <span class="math inline">\(B\)</span> bootstrap samples, the trees are built deep and not pruned.</p>
 <div class="example">
 <div class="example-header">
@@ -983,12 +961,12 @@ Figure&nbsp;19.3: Variable importance plots for bagged trees.
 <div class="example-container">
 <p>Fitting a random forest instead of bagging trees is simple based on the previous <code>R</code> code. Simply specify a value for the <code>mtry</code> parameter that is smaller than the number of input variables. By default, <code>randomForest</code> chooses <span class="math inline">\(p/3\)</span> candidate inputs at each split in regression trees and <span class="math inline">\(\sqrt{p}\)</span> candidate inputs in classification trees.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">6543</span>)</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>rf.ban <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(Quality <span class="sc">~</span> . , </span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data =</span>ban_train, </span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">xtest=</span>ban_test[,<span class="sc">-</span><span class="dv">8</span>],</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">ytest=</span>ban_test[, <span class="dv">8</span>])</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>rf.ban</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">6543</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>rf.ban <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(Quality <span class="sc">~</span> . , </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data =</span>ban_train, </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">xtest=</span>ban_test[,<span class="sc">-</span><span class="dv">8</span>],</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">ytest=</span>ban_test[, <span class="dv">8</span>])</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>rf.ban</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1616,7 +1594,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","loop":false,"openEffect":"zoom","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"openEffect":"zoom","descPosition":"bottom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

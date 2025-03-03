@@ -1041,7 +1041,7 @@ f(\textbf{y}; \boldsymbol{\theta}) = \prod_{i=1}^n \, f(y_i; \boldsymbol{\theta}
 <p>For example, the joint mass function of <span class="math inline">\(n\)</span> <em>iid</em> Bernoulli(<span class="math inline">\(\pi\)</span>) random variables is <span class="math display">\[
     f(\textbf{y}; \pi) = \prod_{i=1}^n \, \pi^{y_i} \, (1-\pi)^{1-y_i}
 \]</span></p>
-<p>The <strong>likelihood function</strong> is the joint density or mass function of the data, but we interpret it as a function of the parameters evaluated at the data, whereas the density (mass) function is a function of the data evaluated at the parameter values. The <strong>log-likelihood</strong> function is the natural log of the likelihood function, denoted <span class="math inline">\(\mathcal{l}(\boldsymbol{\theta}; \textbf{y})\)</span>. The parameters that maximize the likelihood function also maximize the log of the function. Logarithms are much easier to work with since they turn products into summations and exponents into multipliers.</p>
+<p>The <strong>likelihood function</strong> is the joint density or mass function of the data, but we interpret it as a function of the parameters evaluated at the data, whereas the density (mass) function is a function of the data evaluated at the parameter values. The <strong>log-likelihood</strong> function is the natural log of the likelihood function, denoted <span class="math inline">\(\mathcal{l}(\boldsymbol{\theta}; \textbf{y})\)</span>. The parameters that maximize the likelihood function also maximize the log of the function. Logarithms are much easier to work with since they turn products into sums and exponents into multipliers.</p>
 <div class="example">
 <div class="example-header">
 <p>Example: Likelihood Function for Poisson Data</p>
@@ -1119,7 +1119,7 @@ f(\textbf{y}; \boldsymbol{\theta}) = \prod_{i=1}^n \, f(y_i; \boldsymbol{\theta}
 <ul>
 <li>are consistent, that means they converge in probability to the true value</li>
 <li>are normally distributed</li>
-<li>are efficien in that no other estimator has an asymptotically smaller mean squared error</li>
+<li>are efficient in that no other estimator has an asymptotically smaller mean squared error</li>
 </ul>
 <section id="linear-model-with-gaussian-errors" class="level3">
 <h3 class="anchored" data-anchor-id="linear-model-with-gaussian-errors">Linear Model with Gaussian Errors</h3>
@@ -1127,13 +1127,13 @@ f(\textbf{y}; \boldsymbol{\theta}) = \prod_{i=1}^n \, f(y_i; \boldsymbol{\theta}
 <p><span class="math display">\[
 f\left( \textbf{Y}\right)=\frac{\left| \textbf{V}\right|^{- 1/2}}{(2\pi)^{\frac{n}{2}}}\exp\left\{ - \frac{1}{2}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{- 1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right) \right\}
 \]</span></p>
-<p>This joint distribution of the data can be used to derive the maximum likelihood estimator (MLE) of <span class="math inline">\(\boldsymbol{\beta}\)</span>. Maximum likelihood estimation considers this as a function of <span class="math inline">\(\boldsymbol{\beta}\)</span> rather than a function of <span class="math inline">\(\textbf{Y}.\)</span> Maximizing this likelihood function <span class="math inline">\(\mathcal{l}(\boldsymbol{\beta};\textbf{Y})\)</span> is equivalent to maximizing its logarithm and working on the log scale is much simpler. The log-likelihood function for this problem is given by</p>
+<p>This joint distribution of the data can be used to derive the maximum likelihood estimator (MLE) of <span class="math inline">\(\boldsymbol{\beta}\)</span>. Maximum likelihood estimation considers this as a function of <span class="math inline">\(\boldsymbol{\beta}\)</span> rather than a function of <span class="math inline">\(\textbf{Y}.\)</span> Maximizing this likelihood function <span class="math inline">\(\mathcal{l}(\boldsymbol{\beta};\textbf{Y})\)</span> is equivalent to maximizing its logarithm. The log-likelihood function for this problem is given by</p>
 <p><span class="math display">\[
 \log\mathcal{l}\left( \boldsymbol{\beta};\textbf{Y}\right\} = l\left( \boldsymbol{\beta};\textbf{Y}\right) = - \frac{1}{2}\log\left( \left| \textbf{V}\right| \right) - \frac{n}{2}\log(2\pi) - \frac{1}{2}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{- 1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)
 \]</span></p>
 <p>Finding the maximum of this function with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span> is equivalent to minimizing the quadratic form <span class="math display">\[
 \left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{-1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)
-\]</span> with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span>. Applying the results about matrix differentiation from <a href="linalg.html#sec-matrix-differentiation" class="quarto-xref"><span>Section 3.5</span></a> leads to</p>
+\]</span> with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span>. Applying the results about matrix differentiation in <a href="linalg.html#sec-matrix-differentiation" class="quarto-xref"><span>Section 3.5</span></a> leads to</p>
 <p><span class="math display">\[\begin{align*}
 \frac{\partial}{\partial\boldsymbol{\beta}}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{- 1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right) &amp;= \frac{\partial}{\partial\boldsymbol{\beta}}\left\{ \textbf{Y}^\prime\textbf{V}^{- 1}\textbf{Y}- 2\textbf{Y}^\prime\textbf{V}^{- 1}\textbf{X}\boldsymbol{\beta}+ \boldsymbol{\beta}^\prime\textbf{X}^\prime\textbf{V}^{- 1}\textbf{X}\boldsymbol{\beta}\right\} \\
 
@@ -1171,18 +1171,18 @@ f\left( \textbf{Y}\right)=\frac{\left| \textbf{V}\right|^{- 1/2}}{(2\pi)^{\frac{
 <p>We can write the error distribution in this case as <span class="math inline">\(\boldsymbol{\epsilon}\sim G\left(\textbf{0},\sigma^{2}\textbf{I}\right)\)</span> and the model for <span class="math inline">\(\textbf{Y}\)</span> as <span class="math inline">\(\textbf{Y}\sim G\left( \textbf{X}\boldsymbol{\beta},\sigma^{2}\textbf{I}\right)\)</span>.</p>
 <p>Under this <em>iid</em> assumption for the Gaussian linear model we can substitute <span class="math inline">\(\sigma^{2}\textbf{I}\)</span> for <span class="math inline">\(\textbf{V}\)</span> in the formula for <span class="math inline">\(\widehat{\boldsymbol{\beta}}\)</span>. The maximum likelihood estimator for <span class="math inline">\(\boldsymbol{\beta}\)</span> is the ordinary least squares estimator:</p>
 <p><span class="math display">\[\widehat{\boldsymbol{\beta}}_{OLS} = \left( \textbf{X}^{\prime}\textbf{X}\right)^{- 1}\textbf{X}^\prime\textbf{Y}\]</span></p>
-<p>Notice that <span class="math inline">\(\sigma^{2}\)</span> cancels out of the formula; the value of the OLS estimator does not depend on the intrinsic variability of the data. However, the variability of the OLS estimator does depend on <span class="math inline">\(\sigma^{2}\)</span> (and on <span class="math inline">\(\textbf{X}\)</span>).</p>
+<p>Notice that <span class="math inline">\(\sigma^{2}\)</span> cancels out of the formula; the value of the OLS estimator does not depend on the inherent variability of the data. However, the variability of the OLS estimator does depend on <span class="math inline">\(\sigma^{2}\)</span> (and on <span class="math inline">\(\textbf{X}\)</span>).</p>
 <p>Now that we have found the MLE of <span class="math inline">\(\boldsymbol{\beta}\)</span>, the parameters in the mean function, we can also derive the MLE of the parameters in the variance-covariance structure of the multi-variate Gaussian. Let’s do this for the <em>iid</em> case, <span class="math inline">\(\boldsymbol{\epsilon}\sim G(\textbf{0},\sigma^2\textbf{I})\)</span>. The joint density of the data can then be written as <span class="math display">\[
     f(\textbf{Y}) = \prod_{i=1}^n (2 \pi\sigma^2)^{-1/2} \exp\left\{-\frac{1}{2\sigma^2} (y_i - \textbf{x}_i^\prime\boldsymbol{\beta})^2\right\}
 \]</span> Taking logs and arranging terms, the log-likelihood function for <span class="math inline">\(\sigma^2\)</span> is <span class="math display">\[
 \mathcal{l}(\sigma^2; \textbf{y}) = -\frac{n}{2}\log(2\pi\sigma^2) -\frac{1}{2\sigma^2}\sum_{i=1}^n(y_i - \textbf{x}_i\prime\boldsymbol{\beta})^2
 \]</span></p>
 <p>Taking the derivative of <span class="math inline">\(\mathcal{l}(\sigma^2; \textbf{y})\)</span> with respect to <span class="math inline">\(\sigma^2\)</span>, setting it to zero and arranging terms results in <span class="math display">\[
-    \frac{1}{\sigma^4}\sum_{i=1}^n(y_i - \textbf{x}_i\prime\boldsymbol{\beta})^2 = \frac{n}{\sigma^2}
+    \frac{1}{\sigma^4}\sum_{i=1}^n(y_i - \textbf{x}_i^\prime\boldsymbol{\beta})^2 = \frac{n}{\sigma^2}
 \]</span> The MLE of <span class="math inline">\(\sigma^2\)</span> in this case is <span class="math display">\[
-    \widehat{\sigma}^2 = \frac{1}{n}\sum_{i=1}^n(y_i - \textbf{x}_i\prime\boldsymbol{\beta})^2
+    \widehat{\sigma}^2 = \frac{1}{n}\sum_{i=1}^n(y_i - \textbf{x}_i^\prime\boldsymbol{\beta})^2
 \]</span> The MLE of <span class="math inline">\(\sigma^2\)</span> looks similar to the estimator we used in the OLS case, <span class="math display">\[
-    \frac{1}{n-r(\textbf{X})} \sum_{i=1}^n(y_i - \textbf{x}_i\prime \widehat{\boldsymbol{\beta}})^2 = \frac{1}{n-r(\textbf{X})} \, \text{SSE}
+    \frac{1}{n-r(\textbf{X})} \sum_{i=1}^n(y_i - \textbf{x}_i^\prime \widehat{\boldsymbol{\beta}})^2 = \frac{1}{n-r(\textbf{X})} \, \text{SSE}
 \]</span> with two important differences. The divisor in the MLE is <span class="math inline">\(n\)</span> instead of <span class="math inline">\(n-r(\textbf{X})\)</span> and the MLE uses <span class="math inline">\(\boldsymbol{\beta}\)</span> rather than the OLS estimator <span class="math inline">\(\widehat{\boldsymbol{\beta}}\)</span> in the sum-of-squares term. In practice, we would substitute the MLE for <span class="math inline">\(\boldsymbol{\beta}\)</span> to compute <span class="math inline">\(\widehat{\sigma}^2\)</span>, so that the least squares-based estimator and the maximum likelihood estimator differ only in the divisor. Consequently, they cannot be both unbiased estimators of <span class="math inline">\(\sigma^2\)</span>. Which should we choose?</p>
 <p>We can think of the divisor <span class="math inline">\(n-r(\textbf{X})\)</span> as accounting for the actual degrees of freedom, the amount of information if you will, in the estimator. Since we are using an estimate of <span class="math inline">\(\boldsymbol{\beta}\)</span> to compute SSE, we have “used up” information in the amount of the rank of <span class="math inline">\(\textbf{X}\)</span>. This is the same rationale that computes the estimate of the sample variance as <span class="math display">\[
     s^2 = \frac{1}{n-1} \sum_{i=1}^n \left(y_i - \overline{y}\right)^2

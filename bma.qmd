@@ -32,44 +32,73 @@ To get from $p(\bY|\btheta)$ to $p(\btheta | \bY)$ we have to reverse the condit
 $$
 p(\btheta|\bY) = \frac{p(\bY,\btheta)}{p(\bY)} = \frac{p(\bY|\btheta) p(\btheta)}{\int p(\bY | \btheta) p(\btheta) d\btheta}
 $$
-The first fraction is simply the definition of a **conditional probability**, the ratio of the joint probability divided by the marginal probability of the conditioning event (here, the data). The second fraction expresses the joint probability in the numerator as the product of a conditional and a marginal probability, this time using the reverse condition and the prior distribution. The integral in the denominator computes the marginal distribution of $\bY$ by integrating over the distribution of $\btheta$; this term can be thought of as a normalizing constant to ensure we get a proper probability. The magic is in the numerator, we can write
+The first fraction is simply the definition of a **conditional probability**, the 
+ratio of the joint probability divided by the marginal probability of the conditioning 
+event (here, the data). The second fraction expresses the joint probability in the 
+numerator as the product of a conditional and a marginal probability, this time 
+using the reverse condition and the prior distribution. The integral in the denominator 
+computes the marginal distribution of $\bY$ by integrating over the distribution 
+of $\btheta$; this term can be thought of as a normalizing constant to ensure we 
+get a proper probability density. The magic is in the numerator, we can write
 $$
 p(\btheta|\bY) \propto p(\bY|\btheta) p(\btheta)
 $$
 
 The posterior distribution is proportional to the likelihood times the prior distribution.
 
-Our prior beliefs about the world, before seeing any data, are represented by $p(\btheta)$. After we collected data about the world that follows the distribution $p(\bY|\btheta)$ we update our beliefs. This makes a lot of sense and reflects how most of us make decisions and draw conclusions. We have a notion and based on evidence we update our belief--at least that is how it is supposed to work. 
+Our prior beliefs about the world, before seeing any data, are represented by $p(\btheta)$. 
+After we collected data about the world that follows the distribution $p(\bY|\btheta)$ 
+we update our beliefs. This makes a lot of sense and reflects how most of us make 
+decisions and draw conclusions. We have a notion and based on evidence we update 
+our belief---at least that is how it is supposed to work. 
 
 :::{.example}
 ::::{.example-header}
 Example: Are trains on time?
 ::::
 ::::{.example-container}
-Suppose you need to catch a train at the station. Your prior belief that the train is late is $p(\theta) = 0.25$: a quarter of the time the train you need to catch will be late. When you arrive at the train station you see that all the other trains are running late today. Based on this new information, $p(Y|\theta)$, you update your belief; the posterior probability of your train running late is now $p(\theta) > 0.25$.
+Suppose you need to catch a train at the station. Your prior belief that the train 
+is late is $p(\theta) = 0.25$: a quarter of the time the train you need to catch 
+will be late. When you arrive at the train station you see that all the other 
+trains are running late today. Based on this new information, $p(Y|\theta)$, you 
+update your belief; the posterior probability of your train running late is now 
+$p(\theta) > 0.25$.
 ::::
 :::
 
 To paraphrase L. J. Savage, 
 
-> *You are either Bayesian or irrational.*
+:::{.quote}
+You are either Bayesian or irrational.
+:::
 
 ### Inference about $\btheta$
 
-The posterior distribution $p(\btheta | \bY)$ contains all information we need to make statements about the parameters. For example, to compute the Bayesian equivalent of a point estimate, standard error, and confidence interval for one of the parameters, $\theta_1$ say, we first derive the posterior of $\theta_1$ by integrating out the other parameters:
+The posterior distribution $p(\btheta | \bY)$ contains all information we need to 
+make statements about the parameters. For example, to compute the Bayesian equivalent 
+of a point estimate, standard error, and confidence interval for one of the 
+parameters, $\theta_1$ say, we first derive the posterior of $\theta_1$ by 
+integrating out the other parameters:
 $$
-p(\theta_1 | \bY) = \int \cdots \int p(\btheta | \by) d\theta_2 d\theta_3 \cdots d\theta_p
+p(\theta_1 | \bY) = \int \cdots \int p(\btheta | \by) d\theta_2 \, d\theta_3 \cdots d\theta_p
 $$
-The square root of the variance of $p(\theta_1|\bY)$ is the standard error, the 0.25 and 0.975 quantiles are the 95\% confidence bounds, and the mode or mean of the posterior serves as the point estimate. 
+The square root of the variance of $p(\theta_1|\bY)$ is the standard error, the 
+0.25 and 0.975 quantiles are the 95\% confidence bounds, and the mode or mean of 
+the posterior serves as the point estimate. 
 
 
 ## Introducing Model Uncertainty
 
-How do we bring uncertainty about models, not just about parameters, into this picture? Suppose we have $K$ candidate models, $f_1, \cdots, f_K$ and can quantify our prior belief in the models. Without any additional information the prior belief might be "uninformative", all models have the same prior probability. The posterior probability of the parameters, $p(\btheta|\bY)$ can now be written as
+How do we bring uncertainty about models, not just about parameters, into this picture? 
+Suppose we have $K$ candidate models, $f_1, \cdots, f_K$ and can quantify our 
+prior belief in the models. Without any additional information the prior belief
+might be "uninformative", all models have the same prior probability. The posterior 
+probability of the parameters, $p(\btheta|\bY)$ can now be written as
 $$
 p(\btheta | \bY) = \sum_{k=1}^K p(\btheta, f_k | \bY) = \sum_{k=1}^K p(\btheta | \bY, f_k) p(f_k|\bY)
 $$
-integrating over the distribution of the models. The posterior is updated after evaluating the models against data.
+integrating over the distribution of the models. The posterior is updated after 
+evaluating the models against data.
 
 :::{.example}
 ::::{.example-header}
@@ -77,7 +106,8 @@ Example: Are trains on time?
 ::::
 ::::{.example-container}
 This example draws on @Hinneetal2020. 
-Suppose you are at the train station and the train is running late. Should you continue to wait or consider an alternative mode of transportation? 
+Suppose you are at the train station and the train is running late. Should you 
+continue to wait or consider an alternative mode of transportation? 
 
 There are different models about the world, with different consequences for the length of delay $t$:
 
@@ -87,21 +117,33 @@ There are different models about the world, with different consequences for the 
 - $f_4$: bad weather slowed down the train; $t$ is short, minutes.
 - $f_5$: loading and unloading passengers at the previous station took longer than anticipated; $t$ is very short, seconds to minutes.
 
-The decision about choosing alternative transportation or waiting for the train to arrive depends on the probability of $f_j$ and the distribution of the delays, $p(t|f_j)$. We are interested in the overall distribution of the delay time, weighted by the likelihoods of the different models $f_1, \cdots, f_4$. 
+The decision about choosing alternative transportation or waiting for the train 
+to arrive depends on the probabilities of the models $f_j$ and the distribution 
+of the delays, $p(t|f_j)$. We are interested in the overall distribution of the 
+delay time, weighted by the likelihoods of the different models $f_1, \cdots, f_4$. 
 
 - $p(t|f_j)$ is the distribution of delay times if $f_j$ is the reason for the delay.
 - $p(f_j)$ is our prior belief that $f_j$ occurs in the absence of additional information (when we leave the house in the morning).
 - $p(f_j|\bY)$ is the posterior belief that $f_j$ occurs after receiving information, for example, listening to a station announcement or a weather report.
 - $p(t|\bY)$ is the distribution of the delay after receiving information and averaging across the possible reasons for the delay. 
 
-Incorporating model uncertainty means taking into account all possible states of the world, weighted by the likelihood of their occurrence. The prior belief about $f_j$ will differ from one person to another and that will affect the ultimate decision about choosing alternate transportation. If you wake up in the morning convinced that there will be either a strike or a railroad accident, you will feel differently about traveling by train
-than the optimist who believes nothing can slow them down.
+Incorporating model uncertainty means taking into account all possible states of 
+the world, weighted by the likelihood of their occurrence. The prior belief about 
+$f_j$ will differ from one person to another and that will affect the ultimate 
+decision about choosing alternate transportation. If you wake up in the morning 
+convinced that there will be either a strike or a railroad accident, you will 
+feel differently about traveling by train than the optimist who believes nothing 
+can slow them down.
 ::::
 :::
 
 ### Bayes Factors and BIC {#sec-bayes-factors-bic}
 
-The posterior distributions of the models, $p(f_k|\bY)$ are updated versions of our beliefs once we have seen data. You might not give the possibility of a railroad strike much credence one you learner that the morning did not mention any strike. The extent to which the data support one model over the other is expressed by the ratio of posterior probabilities
+The posterior distributions of the models, $p(f_k|\bY)$, are updated versions of 
+our beliefs once we have seen data. You might not give the possibility of a 
+railroad strike much credence one you find out the morning news did not mention 
+a strike. The extent to which the data support one model over the other is 
+expressed by the ratio of posterior probabilities
 $$
 \frac{p(f_j|\bY)}{p(f_k|\bY)}
 $$
@@ -109,7 +151,11 @@ This ratio is called the **posterior odds** for $f_j$ versus $f_k$. But $p(f_j|\
 $$
 \frac{p(f_j|\bY)}{p(f_k|\bY)} = \frac{p(\bY|f_j)}{p(\bY|f_k)} \, \frac{p(f_j)}{p(f_k)}
 $$
-The first term on the right hand side is called a **Bayes factor**; a measure of the strength of evidence for $f_j$ over $f_k$: how much more likely is the observed data under the model $f_j$ versus the model $f_k$. In the situation where all models are equally likely a priori, $p(f_j) = 1/K$, the Bayes factor $B_{jk}$ is equal to the posterior odds:
+The first term on the right hand side is called a **Bayes factor**; a measure of 
+the strength of evidence for $f_j$ over $f_k$: how much more likely is the observed 
+data under the model $f_j$ versus the model $f_k$. In the situation where all models 
+are equally likely a priori, $p(f_j) = 1/K$, the Bayes factor $B_{jk}$ is equal 
+to the posterior odds:
 $$
 B_{jk} = \frac{p(f_j|\bY)}{p(f_k|\bY)}
 $$
@@ -121,18 +167,27 @@ To judge the strength of evidence of one model against another, thresholds like 
 - $10 \le B_{jk} \le 100$: there is strong evidence for $f_j$ over $f_k$.
 - $B_{jk} > 100$: $f_j$ is decisively better than $f_k$.
 
-The calculation of the distribution of the data for a particular model, $p(\bY|f_j)$ is tricky, we have to integrate over the distribution of the parameters under the model. Fortunately, this can be approximated as 
+The calculation of the distribution of the data for a particular model, $p(\bY|f_j)$ 
+is tricky, we have to integrate over the distribution of the parameters under 
+the model. Fortunately, this can be approximated as 
 $$
 \log p(\bY|f_j) \approx \log p(\bY|\btheta_j) - \frac{p_j}{2}\log n
 $$
-The first term on the right hand side is simply the likelihood under model $f_j$ and $p_j$ denotes the number of parameters in the model. Minus twice the value of that approximation is known as the **Bayesian Information Criterion** (BIC).
+The first term on the right hand side is simply the likelihood under model $f_j$ 
+and $p_j$ denotes the number of parameters in the model. Minus twice the value 
+of that approximation is known as the **Bayesian Information Criterion** (BIC).
 $$
 \text{BIC}_j = -2\log p(\bY | \btheta_j) + p_j \log n
 $$
-It is used to select among competing models based on the maximized likelihood with a penalty term $(p/2 \log n)$ that protects against overfitting. When comparing models, those with smaller BIC values are preferred.
+It is used to select among competing models based on the maximized likelihood with 
+a penalty term $(p \log n)$ that protects against overfitting. When comparing models, 
+those with smaller BIC values are preferred.
 
 :::{.callout-note}
-BIC can also be defined as the negative, $\text{BIC}^*_j = 2\log p(\bY|\btheta_j) - p_j\log n$. $\text{BIC}_j$ is interpreted in a **smaller-is-better** sense. $\text{BIC}^*_j$ is interpreted in a **larger-is-better** sense. Always check which version of BIC is reported by software to ensure correct interpretation.
+BIC can also be defined as the negative, $\text{BIC}^*_j = 2\log p(\bY|\btheta_j) - p_j\log n$. 
+$\text{BIC}_j$ is interpreted in a **smaller-is-better** sense. $\text{BIC}^*_j$ is 
+interpreted in a **larger-is-better** sense. Always check which version of BIC 
+is reported by software to ensure correct interpretation.
 :::
 
 BIC is easy to calculate and helpful to approximate Bayes factors and posterior odds
@@ -140,48 +195,74 @@ $$
 2 \log B_{jk} = \log p(\bY | f_j) - \log p(\bY | f_k) \approx \text{BIC}_k - \text{BIC}_j
 $$
 
-[@Raftery1995, p. 139] gives ranges for strength of evidence for one model over another based on the BIC difference:
+[@Raftery1995, p. 139] gives ranges for strength of evidence for one model over 
+another based on the BIC difference:
 
 - $0 \le \Delta\text{BIC} \le 2$: weak evidence for $f_j$ over $f_k$.
 - $2 \le \Delta\text{BIC} \le 6$: positive evidence for $f_j$ over $f_k$.
 - $6 \le \Delta\text{BIC} \le 10$: strong evidence for $f_j$ over $f_k$.
 - $\Delta\text{BIC} > 10$: very strong evidence for $f_j$ over $f_k$.
 
-In the case of a uniform prior for the models, $p(f_j) = 1/K$, the posterior probabilities can be approximated as
+Finally, in the case of a uniform prior for the models, $p(f_j) = 1/K$, the 
+posterior probabilities can be approximated as
 $$
 p(f_j | \bY) \approx \frac{\exp\left\{ -\frac{1}{2} \text{BIC}_j\right\}} {\sum_{k=1}^K \exp \left\{-\frac{1}{2}\text{BIC}_k\right\}}
 $$
 
-We now have the ingredients to define the Bayesian Model Averaging procedure for regression models.
+We now have the ingredients to define the Bayesian Model Averaging procedure for 
+regression models.
 
 ## BMA for Regression Models
 
-Suppose we have $p$ candidate input variables in a linear model family $\bY = \bX\bbeta + \bepsilon$. $2^p$ possible models that can be formed based on the presence and absence of the $p$ inputs. (This does not count interactions and transformations of the $p$ variables.)
+Suppose we have $p$ candidate input variables in a linear model family 
+$\bY = \bX\bbeta + \bepsilon$. You can create $2^p$ possible models based on 
+the presence and absence of the $p$ inputs. (This does not count interactions and 
+transformations of the $p$ variables.)
 
-If the model errors are Gaussian distributed, we can calculate the BIC for each model and approximate posterior probabilities and Bayes factors. Instead of selecting one model as best, a larger number of models is evaluated and the models are ranked according to BIC. However, $2^p$ is often larger than what we can and should accommodate, so the following selection rules apply: a reduced set of good candidate models is selected according to the leaps-and-bound algorithm. Within the set of models returned by the leaps-and-bound algorithm only those models are considered whose posterior probability is within a certain neighborhood of the model with the best BIC value. This neighborhood is called **Occam's window** and is expressed as a ratio. For example, an **Occam's ratio** of 20 means that models whose posterior probability is less than 1/20 of the posterior probability of the model with the best BIC are excluded.
+If the model errors are Gaussian distributed, we can calculate the BIC for each 
+model and approximate posterior probabilities and Bayes factors. Instead of 
+selecting one model as best, a larger number of models is evaluated and the models 
+are ranked according to BIC. However, $2^p$ is often larger than what we can and 
+should accommodate, so the following selection rules apply: a reduced set of good 
+candidate models is selected according to the leaps-and-bound algorithm. Within 
+the set of models returned by the leaps all-subset algorithm only those models 
+are considered whose posterior probability is within a certain neighborhood of 
+the model with the best BIC value. This neighborhood is called **Occam's window**
+and is expressed as a ratio. For example, an **Occam's ratio** of 20 means that 
+models whose posterior probability is less than 1/20 of the posterior probability 
+of the model with the best BIC are excluded.
 
-The models within Occam's window are the set of models over which predictions are averaged, weighted by their posterior probabilities. This shows us that BMA is an ensemble procedure. If there are $K$ models within Occam's window, the predicted value at $\bx_0$ is 
+The models within Occam's window are the set of models over which predictions are 
+averaged, weighted by their posterior probabilities. This shows us that BMA is an 
+ensemble procedure. If there are $K$ models within Occam's window, the predicted 
+value at $\bx_0$ is 
 $$
 \widehat{y}(\bx_0) = \sum_{k=1}^K \widehat{p}(f_k | \bY) \, \bx_{0k}^\prime\widehat{\bbeta}_k
 $$
-and $\bx_{0k}$ is the set of inputs in the $k$^th^ model, $\widehat{\bbeta}_k$ is the vector of coefficient estimates in the $k$^th^ model.
+and $\bx_{0k}$ is the set of inputs in the $k$^th^ model, $\widehat{\bbeta}_k$ is 
+the vector of coefficient estimates in the $k$^th^ model.
 
 :::{.example}
 ::::{.example-header}
 Example: Crime Rates Data
 ::::
 ::::{.example-container}
-This example uses the `UScrime` data from the `MASS` library in `R`. The data set represents aggregate data on 47 states in the U.S. for 1960. In addition to the target variable, the rate of crimes per person in a particularly category, the data set contains information about income equality, GDP, population, education, unemployment, prison population, police expenditures, and demographics.
+This example uses the `UScrime` data from the `MASS` library in `R`. The data set 
+represents aggregate data on 47 states in the U.S. for 1960. In addition to the 
+target variable, the rate of crimes per person in a particularly category, the 
+data set contains information about income equality, GDP, population, education, 
+unemployment, prison population, police expenditures, and demographics.
 
-Bayesian model averaging for linear regression models can be performed with the `bicreg` function in the `BMA` library.
+Bayesian model averaging for linear regression models can be performed with the 
+`bicreg` function in the `BMA` library.
 `bicreg` uses the leaps all-subset algorithm to select variables into the models.
-By default, up to `nbest=150` models of each size are being considered.
+By default, up to `nbest=150` models of each size are considered.
 `nbest` is not the total number of models being averaged, but the max number
 of models of any size returned by leaps.
 
-The `OR` parameter specifies the maximum ratio for excluding models in Occam's window. A model
-that is not at least within 1/OR of the BIC of the best model is excluded from
-consideration.
+The `OR` parameter specifies the maximum ratio for excluding models in Occam's 
+window. A model that is not at least within 1/OR of the BIC of the best model is
+excluded from consideration.
 
 `bicreg` uses the smaller-is-better formulation for BIC.
 
@@ -198,20 +279,37 @@ crimeBMA <- bicreg(x,y, OR=20)
 summary(crimeBMA)
 ```
 
-Of the 150 models returned by the leaps algorithm, 115 were selected within Occam's ratio of 1/20.
-The best model has a BIC of `{r} round(crimeBMA$bic[1],4)` and a posterior probability of 
-`{r} round(crimeBMA$postprob[1],4)`. The posterior probability of the final model within Occam's window is
+Only five of the 115 models are shown on the output, information on all models 
+can be retrieved from the return object of `bicreg`.
+
+Of the 150 models returned by the leaps algorithm, 115 were selected within Occam's 
+ratio of 1/20. The best model has a BIC of `{r} round(crimeBMA$bic[1],4)` and a 
+posterior probability of `{r} round(crimeBMA$postprob[1],4)`. The posterior probability 
+of the final model within Occam's window is
 `crimeBMA$postprob[115]` = `{r} round(crimeBMA$postprob[115],4)`.
 
-The column `EV` displays the posterior means (expected values) of the model coefficients, averaged across the 115 models. The `p!=0` column displays the proportion of models that include the particular input. For example, the intercept is included in all models, `{r} round(crimeBMA$probne0[3],4*100)`\% of the models include the `So` variable.
+The column `EV` displays the posterior means (expected values) of the model 
+coefficients, averaged across the 115 models. The `p!=0` column displays the 
+proportion of models that include the particular input. For example, the intercept 
+is included in all models, `{r} round(crimeBMA$probne0[2],4*100)`\% of the 
+models include the `So` variable, `{r} round(crimeBMA$probne0[3],4*100)`\% of the models 
+include the `Ed` variable.
 
-Only five of the 115 models are shown on the output, information on all models can be retrieved from the return object of `bicreg`.
+The $R^2$ values of the models are also shown in the third row from the bottom 
+of the output. Notice that the best model according to BIC does not have the 
+highest $R^2$ and the model with a higher $R^2$ does not necessarily have a higher 
+posterior probability.
 
-The $R^2$ values of the models are also shown in the third row from the bottom of the output. Notice that the best model according to BIC does not have the highest $R^2$ and the model with a higher $R^2$ does not necessarily have a higher posterior probability.
+---
 
-The `predict` function computes statistics based on the posterior distribution of the model. The predicted values are calculated as the means of the posterior distribution, averaging all 115 models. Because we are computing summary statistics of the posterior distribution, standard deviation and quantiles are also immediately accessible.
+The `predict` function computes statistics based on the posterior distribution 
+of the model. The predicted values are calculated as the means of the posterior 
+distribution, averaging all 115 models. Because we are computing summary statistics 
+of the posterior distribution, standard deviation and quantiles are also immediately 
+accessible.
 
-Here are the means, standard deviations, and 0.1, 0.5, 0.9 quantiles for the first 10 observations.
+Here are the means, standard deviations, and 0.1, 0.5, 0.9 quantiles for the 
+first 10 observations.
 
 ``` {r}
 predict(crimeBMA,x[1:10,])

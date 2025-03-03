@@ -775,9 +775,9 @@ Caution
 <p>To choose the appropriate number of clusters in <span class="math inline">\(K\)</span>-means clustering, we can apply various metrics that measure the tightness of the clusters and their separation. These metrics are plotted against the value of <span class="math inline">\(k\)</span> in a scree plot. We do not look for a minimum of the criteria, but the “knee” or “elbow” where the increase/decrease of the metric abruptly changes.</p>
 <p>The following criteria are commonly computed and plotted.</p>
 <ul>
-<li><p><strong>Inertia</strong>: this is the within-cluster sum of squares and measures the tightness of the clusters. It does not necessarily mean that clusters are well separated, it just means that the data points within the clusters are close to their centroid. The within-cluster sum of squares decreases as <span class="math inline">\(K\)</span> increases, more clusters will lead to less variability within the clusters. That is why we do not look for minima with these criteria.</p></li>
+<li><p><strong>Inertia</strong>: this is the within-cluster sum of squares; it measures the tightness of the clusters. It does not necessarily mean that clusters are well separated, it just means that the data points within the clusters are close to their centroid. The within-cluster sum of squares decreases as <span class="math inline">\(K\)</span> increases, more clusters will lead to less variability within the clusters. In the extreme case when <span class="math inline">\(k=n\)</span>, each observation is a cluster and the within-cluster sum of squares is zero. That is why we do not look for a global minimum with these criteria.</p></li>
 <li><p><strong>Distortion</strong>: this is the average inertia within a cluster, obtained by dividing <span class="math inline">\(\text{SSW}_k\)</span> by the cluster cardinality.</p></li>
-<li><p><strong>Silhouette</strong> score: measures how similar a data point is to its own cluster compared to other clusters. While inertia is based only on distances of data points from <em>their</em> cluster center, the silhouette takes into account the distances between points in one cluster and the nearest cluster center. The score ranges from <span class="math inline">\(-1\)</span> to <span class="math inline">\(+1\)</span>; a high silhouette score means that we can easily tell the clusters apart–they are far from each other.</p></li>
+<li><p><strong>Silhouette</strong> score: measures how similar a data point is to its own cluster compared to other clusters. While inertia is based on distances of data points from <em>their</em> cluster center, the silhouette takes into account the distances between points in one cluster and the nearest cluster center. The score ranges from <span class="math inline">\(-1\)</span> to <span class="math inline">\(+1\)</span>; a high silhouette score means that we can easily tell the clusters apart–they are far from each other.</p></li>
 </ul>
 <p>Inertia and silhouette measure different things: the former captures the tightness of the clusters, the latter how far apart (distinguishable) the clusters are. You can have a good (low) inertia but a bad (low) silhouette score if the clusters overlap or sit on top of each other.</p>
 <div class="example">
@@ -827,7 +827,7 @@ Caution
 </div>
 </div>
 </div>
-<p>The silhouette scores suggest <span class="math inline">\(k=2\)</span> and the inertia scree plot $k=$3–5.</p>
+<p>The silhouette scores suggest <span class="math inline">\(k=2\)</span> and the inertia scree plot <span class="math inline">\(k\)</span> between 3 and 5.</p>
 </div>
 </div>
 </section>
@@ -1128,8 +1128,13 @@ Figure&nbsp;24.7: Dendrogram cut at different heights
 \]</span> The <span class="math inline">\(w_j\)</span> are weights associated with the <span class="math inline">\(j\)</span><sup>th</sup> attribute, <span class="math inline">\(\sum_{j=1}^p w_j = 1\)</span>. <span class="math inline">\(d_j(x_{ij},x_{i^\prime j})\)</span> measures the dissimilarity between any two observations for the <span class="math inline">\(j\)</span><sup>th</sup> attribute.</p>
 <p>A number of dissimilarity measures are used, depending on the type of variable and the application. For quantitative variables, the following are most popular:</p>
 <ul>
-<li><p><strong>Squared Euclidean distance</strong> <span class="math display">\[d_j(x_{ij},x_{i^\prime j}) = (x_{ij} - x_{i^\prime j})^2\]</span> Probably the most frequent choice, but it is sensitive to large distances due to squaring.</p></li>
-<li><p><strong>Absolute distance</strong>, also called “Manhattan” or city-block distance <span class="math display">\[d_j(x_{ij},x_{i^\prime j}) = |x_{ij} - x_{i^\prime j}|\]</span> Absolute distance is more robust to large differences compared to dissimilarity based on Euclidean distance.</p></li>
+<li><p><strong>Squared Euclidean distance</strong> <span class="math display">\[d_j(x_{ij},x_{i^\prime j}) = (x_{ij} - x_{i^\prime j})^2\]</span> A frequent choice, but it is sensitive to large distances due to squaring.</p></li>
+<li><p><strong>Euclidean distance</strong> <span class="math display">\[
+D(\textbf{x}_i,\textbf{x}_{i^\prime}) = \sqrt{ \sum_{j=1}^p   (x_{ij} - x_{i^\prime j})^2}
+\]</span> This is the usual distance (<span class="math inline">\(L_2\)</span>-norm) between two vectors <span class="math inline">\(\textbf{x}_i\)</span> and <span class="math inline">\(\textbf{x}_{i^\prime}\)</span>. Taking the square root expresses the distance in the same units as the <span class="math inline">\(X\)</span>s.</p></li>
+<li><p><strong>Absolute distance</strong>, also called “Manhattan” or city-block distance <span class="math display">\[
+d_j(x_{ij},x_{i^\prime j}) = |x_{ij} - x_{i^\prime j}|
+\]</span> Absolute distance is more robust to large differences compared to dissimilarity based on (squared) Euclidean distance.</p></li>
 <li><p><strong>Correlation-based distance</strong> <span class="math display">\[
       d_j(x_{ij},x_{i^\prime j}) = 1- \rho(\textbf{x}_i,\textbf{x}_{i^\prime})  = 1- \frac{\sum_j (x_{ij}-\overline{x}_i) (x_{i^\prime j} - \overline{x}_{i^\prime})}
       {\sqrt{\sum_j (x_{ij}-\overline{x}_i)^2 \, (x_{i^\prime j} - \overline{x}_{i^\prime})^2 }}
@@ -1281,8 +1286,8 @@ s_{i i^\prime j} = 1 - \frac{x_{ij} - x_{i^\prime j}}{R_j}
 <li><p><strong>Complete linkage</strong>: <span class="math inline">\(D(G,H) = \max D(\textbf{x}_i,\textbf{x}_{i^\prime}), i \in G, i^\prime \in H\)</span></p></li>
 <li><p><strong>Average linkage</strong>: <span class="math inline">\(D(G,H) = \text{ave} D(\textbf{x}_i,\textbf{x}_{i^\prime}), i \in G, i^\prime \in H\)</span></p></li>
 </ul>
-<p>The agglomerative clustering algorithm merges the cluster with the smallest linkage value.</p>
-<p>When clusters separate well, the choice of linkage is not that important. Otherwise, linkage can have substantial impact on the outcome of hierarchical clustering. Single linkage is know to cause <em>chaining</em>, combining observations that are linked by a series of close observations. Complete linkage tends to produce compact clusters, but observations can end up being closer to members of other clusters than to members of their own cluster. Average linkage is a compromise, but is not invariant to transformations of the dissimilarities. Centroid linkage uses distances between centroids of the clusters (<a href="#fig-linkage-types" class="quarto-xref">Figure&nbsp;<span>24.8</span></a>).</p>
+<p>The agglomerative clustering algorithm merges the clusters with the smallest linkage value.</p>
+<p>When clusters separate well, the choice of linkage is not that important. Otherwise, linkage can have substantial impact on the outcome of hierarchical clustering. Single linkage is known to cause <em>chaining</em>, combining observations that are linked by a series of close observations. Complete linkage tends to produce compact clusters, but observations can end up being closer to members of other clusters than to members of their own cluster. Average linkage is a compromise, but is not invariant to transformations of the dissimilarities. Centroid linkage uses distances between centroids of the clusters (<a href="#fig-linkage-types" class="quarto-xref">Figure&nbsp;<span>24.8</span></a>).</p>
 <div id="fig-linkage-types" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-linkage-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -2047,7 +2052,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom","selector":".lightbox","loop":false});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","loop":false,"openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

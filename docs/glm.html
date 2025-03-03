@@ -574,7 +574,13 @@ window.Quarto = {
   <ul>
   <li><a href="#scaled-analysis" id="toc-scaled-analysis" class="nav-link" data-scroll-target="#scaled-analysis">Scaled Analysis</a></li>
   <li><a href="#mixture-models" id="toc-mixture-models" class="nav-link" data-scroll-target="#mixture-models">Mixture Models</a></li>
-  <li><a href="#mixing-models" id="toc-mixing-models" class="nav-link" data-scroll-target="#mixing-models">Mixing Models</a></li>
+  <li><a href="#mixing-models" id="toc-mixing-models" class="nav-link" data-scroll-target="#mixing-models">Mixing Models</a>
+  <ul class="collapse">
+  <li><a href="#poissongamma-mixing" id="toc-poissongamma-mixing" class="nav-link" data-scroll-target="#poissongamma-mixing">Poisson–Gamma mixing</a></li>
+  <li><a href="#binomialpoisson-mixing" id="toc-binomialpoisson-mixing" class="nav-link" data-scroll-target="#binomialpoisson-mixing">Binomial–Poisson mixing</a></li>
+  <li><a href="#betabinomial-mixing" id="toc-betabinomial-mixing" class="nav-link" data-scroll-target="#betabinomial-mixing">Beta–Binomial mixing</a></li>
+  <li><a href="#binomialpoissongamma-mixing" id="toc-binomialpoissongamma-mixing" class="nav-link" data-scroll-target="#binomialpoissongamma-mixing">Binomial–Poisson–Gamma mixing</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -1828,12 +1834,13 @@ p_1(y) &amp;= \left \{ \begin{array}{ll} 1 &amp; y = 0 \\ 0 &amp; \text{otherwis
 p_2(y) &amp;= \frac{\lambda^y}{y!} e{-\lambda}
 \end{align}
 \]</span></p>
-<p>Since all probability mass of <span class="math inline">\(p_1(y)\)</span> is concentrated at <span class="math inline">\(y=0\)</span>, it follows that <span class="math inline">\(\mu_1 = 0\)</span>, <span class="math inline">\(\sigma^2_1 = 0\)</span>. The mean and variance of the zero-inflated variable <span class="math inline">\(Y\)</span> is now <span class="math display">\[
+<p>Since all probability mass of <span class="math inline">\(p_1(y)\)</span> is concentrated at <span class="math inline">\(y=0\)</span>, it follows that <span class="math inline">\(\mu_1 = 0\)</span>, <span class="math inline">\(\sigma^2_1 = 0\)</span>. The mean and variance of the zero-inflated variable <span class="math inline">\(Y\)</span> is now <span id="eq-zip-mean-var"><span class="math display">\[
 \begin{align}
 \mu &amp;= (1-w)\lambda \\
 \text{Var}[Y] &amp;= (1-w)\lambda(1 + w\lambda)
 \end{align}
-\]</span> <a href="#fig-zip-variance" class="quarto-xref">Figure&nbsp;<span>27.16</span></a> displays the variance of the ZIP model as a function of the mixing probability <span class="math inline">\(w\)</span> for different values of <span class="math inline">\(\lambda\)</span>. As <span class="math inline">\(w\)</span> increases, the constant zero process gains more weight and the variance eventually reduces to 0 for <span class="math inline">\(w=1\)</span>. The range of mixing weights for which the ZIP process is overdispersed relative to the Poisson distribution is larger for greater values of <span class="math inline">\(\lambda\)</span>. At <span class="math inline">\(w=0\)</span>, the</p>
+\tag{27.3}\]</span></span></p>
+<p><a href="#fig-zip-variance" class="quarto-xref">Figure&nbsp;<span>27.16</span></a> displays the variance of the ZIP model as a function of the mixing probability <span class="math inline">\(w\)</span> for different values of <span class="math inline">\(\lambda\)</span>. As <span class="math inline">\(w\)</span> increases, the constant zero process gains more weight and the variance eventually reduces to 0 for <span class="math inline">\(w=1\)</span>. The range of mixing weights for which the ZIP process is overdispersed relative to the Poisson distribution is larger for greater values of <span class="math inline">\(\lambda\)</span>. At <span class="math inline">\(w=0\)</span>, the variance equals <span class="math inline">\(\lambda\)</span>, the variance of the Poisson component.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-zip-variance" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -1848,13 +1855,17 @@ Figure&nbsp;27.16: Variance of a zero-inflated Poisson process as a function of 
 </div>
 </div>
 </div>
+<p>While the variance of the ZIP process can fall below the variance of its Poisson component, when enough weight is placed on the zero component, it is instructive to compare the mean and variance of the ZIP process in <a href="#eq-zip-mean-var" class="quarto-xref">Equation&nbsp;<span>27.3</span></a>. The variance can be written as <span class="math inline">\(\text{Var}[Y] = \mu(1+w\lambda)\)</span>. Compared to a Poisson process with mean <span class="math inline">\(\mu\)</span>, the ZIP process is overdispersed by the factor <span class="math inline">\(1+w\lambda\)</span>.</p>
 </section>
 <section id="mixing-models" class="level3">
 <h3 class="anchored" data-anchor-id="mixing-models">Mixing Models</h3>
 <p>If the Poisson distribution is not sufficiently dispersed for a count target, and zero inflation is not the root cause of overdispersion, what other options are available?</p>
 <p>The Negative Binomial distribution is also a model for count data and permits more variability than the Poisson distribution. It is a popular alternative for the Poisson model in the presence of overdispersion. The Negative Binomial is often derived from independent Bernoulli experiments, similar to the Binomial random variable. While the Binomial(<span class="math inline">\(n,\pi\)</span>) is the sum of <span class="math inline">\(n\)</span> independent Bernoulli(<span class="math inline">\(\pi\)</span>) experiments, the NegBin(<span class="math inline">\(k,\pi\)</span>) random variable is the number of Bernoulli(<span class="math inline">\(\pi\)</span>) trials until the <span class="math inline">\(k\)</span><sup>th</sup> event occurs.</p>
 <p>Another way of motivating the Negative Binomial is through a <strong>mixing process</strong> and this way is particularly insightful in the context of modeling overdispersion.</p>
-<p>In a mixing process one or more parameters are assumed random. The base distribution is considered conditional on the mixing parameter and the mixing distribution is derived as the marginal distribution, integrating (or summing) over the distribution of the mixing parameter. An example will make that easier to understand. Suppose that <span class="math inline">\(Y|\lambda\)</span> has a Poisson(<span class="math inline">\(\lambda\)</span>) distribution and that <span class="math inline">\(\lambda\)</span> is a Gamma(<span class="math inline">\(\alpha,\beta\)</span>) random variable. The mixing distribution, the marginal distribution, is obtained by integrating the conditional distribution over the distribution of the random parameter:</p>
+<p>In a mixing process one or more parameters are assumed random. The base distribution is considered conditional on the mixing parameter and the mixing distribution is derived as the marginal distribution, integrating (or summing) over the distribution of the mixing parameter. An example will make that easier to understand.</p>
+<section id="poissongamma-mixing" class="level4">
+<h4 class="anchored" data-anchor-id="poissongamma-mixing">Poisson–Gamma mixing</h4>
+<p>Suppose that <span class="math inline">\(Y|\lambda\)</span> has a Poisson(<span class="math inline">\(\lambda\)</span>) distribution and that <span class="math inline">\(\lambda\)</span> is a Gamma(<span class="math inline">\(\alpha,\beta\)</span>) random variable. The mixing distribution, the marginal distribution, is obtained by integrating the conditional distribution over the distribution of the random parameter:</p>
 <p><span class="math display">\[
 p(y) = \Pr(Y=y) = \int_0^\infty p(y|\lambda) f(\lambda) \, d\lambda
 \]</span> The conditional distribution in this integral, <span class="math inline">\(p(y|\lambda)\)</span>, is a Poisson and <span class="math inline">\(f(\lambda)\)</span> is a Gamma distribution. Before looking at the marginal distribution of <span class="math inline">\(Y\)</span> in this <strong>Poisson–Gamma mixing</strong> scheme, is there something we can learn about the mean and variance of <span class="math inline">\(Y\)</span>?</p>
@@ -1928,12 +1939,21 @@ Number of Fisher Scoring iterations: 1
 <p>Both the coefficient estimates and the standard errors change compared to the Poisson analysis. Recall that the quasi-Poisson analysis affected only the standard errors of the coefficients.</p>
 </div>
 </div>
+</section>
+<section id="binomialpoisson-mixing" class="level4">
+<h4 class="anchored" data-anchor-id="binomialpoisson-mixing">Binomial–Poisson mixing</h4>
 <p>Other forms of parameter mixing are popular. The <strong>Binomial–Poisson</strong> mixing scheme assumes that the number of trials <span class="math inline">\(n\)</span> of a Binomial(<span class="math inline">\(n,\pi\)</span>) random variable follows a Poisson(<span class="math inline">\(\lambda\)</span>) distribution. If <span class="math inline">\(Y|n \sim \text{Binomial}(n,\pi)\)</span> and <span class="math inline">\(n \sim \text{Poisson}(\lambda)\)</span>, then <span class="math inline">\(Y\)</span> has a Poisson distribution with mean <span class="math inline">\(\lambda\pi\)</span>. This Poisson is overdispersed relative to the Binomial(<span class="math inline">\(n,\pi\)</span>) evaluated at the average sample size <span class="math inline">\(\lambda\)</span> because <span class="math display">\[
 \lambda\pi &gt; \lambda\pi(1-\pi)
 \]</span></p>
+</section>
+<section id="betabinomial-mixing" class="level4">
+<h4 class="anchored" data-anchor-id="betabinomial-mixing">Beta–Binomial mixing</h4>
 <p>The <strong>Beta-Binomial</strong> mixing model assumes that <span class="math inline">\(Y|n \sim \text{Binomial}(n,\pi)\)</span>, <span class="math inline">\(n\)</span> is fixed, and <span class="math inline">\(\pi\)</span> is a random variable with a Beta(<span class="math inline">\(\alpha,\beta\)</span>) distribution. The resulting marginal distribution of <span class="math inline">\(Y\)</span> is known as the beta-binomial distribution and has mean and variance <span class="math display">\[
 \text{E}[Y] = \frac{n\alpha}{\alpha+\beta} \quad \text{Var}[Y] = \frac{n\alpha\beta(n+\alpha+\beta)}{(\alpha+\beta)^2(\alpha+\beta+1)}
 \]</span></p>
+</section>
+<section id="binomialpoissongamma-mixing" class="level4">
+<h4 class="anchored" data-anchor-id="binomialpoissongamma-mixing">Binomial–Poisson–Gamma mixing</h4>
 <p>A <strong>double mixing</strong> scheme assumes that multiple parameters are random. For example, starting with a Binomial(<span class="math inline">\(n,\pi)\)</span> random variable, we can define a <strong>Binomial–Poisson–Gamma</strong> mixing model as follows</p>
 <p><span class="math display">\[\begin{align*}
     Y | n &amp;\sim \text{Binomial}(n,\pi) \\
@@ -1966,6 +1986,7 @@ Mead, R., R. N. Curnow, and A. M. Hasted. 1993. <em>Statistical Methods in Agric
 Prater, N. H. 1956. <span>“Estimate Gasoline Yields from Crudes.”</span> <em>Petroleum Refiner</em> 35 (3).
 </div>
 </div>
+</section>
 </section>
 </section>
 
@@ -2549,7 +2570,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","descPosition":"bottom","loop":false,"closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"loop":false,"openEffect":"zoom","selector":".lightbox","descPosition":"bottom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

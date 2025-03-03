@@ -592,7 +592,7 @@ density (mass) function is a function of the data evaluated at the parameter val
 The **log-likelihood** function is the natural log of the likelihood function, 
 denoted $\mathcal{l}(\btheta; \by)$. The parameters that maximize the likelihood 
 function also maximize the log of the function. Logarithms are much easier to work 
-with since they turn products into summations and exponents into multipliers.
+with since they turn products into sums and exponents into multipliers.
 
 ::::: example
 ::: example-header
@@ -702,7 +702,7 @@ likelihood estimators
 
 -   are consistent, that means they converge in probability to the true value
 -   are normally distributed
--   are efficien in that no other estimator has an asymptotically smaller mean squared error
+-   are efficient in that no other estimator has an asymptotically smaller mean squared error
 
 ### Linear Model with Gaussian Errors
 
@@ -719,9 +719,8 @@ $$
 This joint distribution of the data can be used to derive the maximum likelihood 
 estimator (MLE) of $\bbeta$. Maximum likelihood estimation considers this as a 
 function of $\bbeta$ rather than a function of $\bY.$ Maximizing this likelihood 
-function $\mathcal{l}(\bbeta;\bY)$ is equivalent to maximizing its logarithm and 
-working on the log scale is much simpler. The log-likelihood function for this 
-problem is given by
+function $\mathcal{l}(\bbeta;\bY)$ is equivalent to maximizing its logarithm. 
+The log-likelihood function for this problem is given by
 
 $$
 \log\mathcal{l}\left( \bbeta;\bY \right\} = l\left( \bbeta;\bY \right) = - \frac{1}{2}\log\left( \left| \bV \right| \right) - \frac{n}{2}\log(2\pi) - \frac{1}{2}\left( \bY - \bX\bbeta \right)^\prime\bV^{- 1}\left( \bY - \bX\bbeta \right)
@@ -732,7 +731,7 @@ minimizing the quadratic form
 $$
 \left( \bY - \bX\bbeta \right)^\prime\bV^{-1}\left( \bY - \bX\bbeta \right)
 $$ 
-with respect to $\bbeta$. Applying the results about matrix differentiation from
+with respect to $\bbeta$. Applying the results about matrix differentiation in
 @sec-matrix-differentiation leads to
 
 \begin{align*}
@@ -796,7 +795,7 @@ likelihood estimator for $\bbeta$ is the ordinary least squares estimator:
 $$\widehat{\bbeta}_{OLS} = \left( \bX^{\prime}\bX \right)^{- 1}\bX^\prime\bY$$
 
 Notice that $\sigma^{2}$ cancels out of the formula; the value of the OLS estimator 
-does not depend on the intrinsic variability of the data. However, the variability 
+does not depend on the inherent variability of the data. However, the variability 
 of the OLS estimator does depend on $\sigma^{2}$ (and on $\bX$).
 
 Now that we have found the MLE of $\bbeta$, the parameters in the mean function, 
@@ -813,15 +812,15 @@ $$
 Taking the derivative of $\mathcal{l}(\sigma^2; \by)$ with respect to $\sigma^2$, 
 setting it to zero and arranging terms results in 
 $$
-    \frac{1}{\sigma^4}\sum_{i=1}^n(y_i - \bx_i\prime\bbeta)^2 = \frac{n}{\sigma^2}
+    \frac{1}{\sigma^4}\sum_{i=1}^n(y_i - \bx_i^\prime\bbeta)^2 = \frac{n}{\sigma^2}
 $$ 
 The MLE of $\sigma^2$ in this case is 
 $$
-    \widehat{\sigma}^2 = \frac{1}{n}\sum_{i=1}^n(y_i - \bx_i\prime\bbeta)^2 
+    \widehat{\sigma}^2 = \frac{1}{n}\sum_{i=1}^n(y_i - \bx_i^\prime\bbeta)^2 
 $$ 
 The MLE of $\sigma^2$ looks similar to the estimator we used in the OLS case, 
 $$
-    \frac{1}{n-r(\bX)} \sum_{i=1}^n(y_i - \bx_i\prime \widehat{\bbeta})^2 = \frac{1}{n-r(\bX)} \, \text{SSE}
+    \frac{1}{n-r(\bX)} \sum_{i=1}^n(y_i - \bx_i^\prime \widehat{\bbeta})^2 = \frac{1}{n-r(\bX)} \, \text{SSE}
 $$ 
 with two important differences. The divisor in the MLE is $n$ instead of $n-r(\bX)$ 
 and the MLE uses $\bbeta$ rather than the OLS estimator $\widehat{\bbeta}$ in the 

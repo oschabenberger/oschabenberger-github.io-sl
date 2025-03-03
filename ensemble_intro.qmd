@@ -27,7 +27,7 @@ system and that diversity is exploited to gain strength.
 In **stacking** (also called stacked generalization), for example, base learners 
 come from different model families. If the goal is classification of observations, 
 base learners can be decision trees, logistic regression models, support vector 
-machines, neural networks, naive Bayes classifiers, and so on. Each of these has 
+machines, neural networks, naïve Bayes classifiers, and so on. Each of these has 
 its strengths and weaknesses. The diversity of classification methods, once 
 combined into a single classifier, hopefully combines the strengths of the 
 methods and allays their weaknesses.
@@ -42,6 +42,8 @@ splits is much less interpretable. On the other hand, ensemble techniques can
 perform extremely well. So well that random forests or boosting methods such as 
 gradient boosting machines or XGBoost have become de-facto standard approaches 
 for many data scientists and machine learners.
+
+---
 
 To understand why ensembles are powerful, let's take a look at a very simple 
 situation: the sample mean in a random sample. Suppose we are drawing a random 
@@ -70,11 +72,11 @@ makes no sense to draw more than a single observation: $Y_1 = Y_2 = \cdots = Y_n
 After drawing one observation we know the mean.
 
 Averaging has a very powerful effect on reducing variability. And that effect is 
-greater if the things being averaged are highly variable. Averaging things that 
+stronger if the things being averaged are highly variable. Averaging things that 
 do not vary does not buy as much. From these considerations flow two approaches 
 to create a statistical model with small prediction error or high accuracy:
 
-1. Carefully craft a single model that captures the variability in the data very well
+1. Carefully craft a single model that captures the variability in the data very well.
 
 2. Average a bunch of models that have high variability and small bias.
 

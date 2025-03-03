@@ -593,11 +593,11 @@ window.Quarto = {
 <p>If <span class="math inline">\(\boldsymbol{\theta}\)</span> is a random variable then we need to consider its distribution rather than trying to find a point estimator. But which distribution should we consider? We can look at <span class="math inline">\(p(\boldsymbol{\theta})\)</span> and at <span class="math inline">\(p(\boldsymbol{\theta}| \textbf{Y})\)</span>. The former is known as the <strong>prior</strong> distribution, reflecting our belief about <span class="math inline">\(\boldsymbol{\theta}\)</span> <strong>before</strong> we have seen any data. The latter, <span class="math inline">\(p(\boldsymbol{\theta}| \textbf{Y})\)</span> is known as the <strong>posterior</strong> distribution, reflecting our belief in <span class="math inline">\(\boldsymbol{\theta}\)</span> <strong>after</strong> having seen the data.</p>
 <p>To get from <span class="math inline">\(p(\textbf{Y}|\boldsymbol{\theta})\)</span> to <span class="math inline">\(p(\boldsymbol{\theta}| \textbf{Y})\)</span> we have to reverse the conditioning. This can be done with <strong>Bayes’ Rule</strong>: <span class="math display">\[
 p(\boldsymbol{\theta}|\textbf{Y}) = \frac{p(\textbf{Y},\boldsymbol{\theta})}{p(\textbf{Y})} = \frac{p(\textbf{Y}|\boldsymbol{\theta}) p(\boldsymbol{\theta})}{\int p(\textbf{Y}| \boldsymbol{\theta}) p(\boldsymbol{\theta}) d\boldsymbol{\theta}}
-\]</span> The first fraction is simply the definition of a <strong>conditional probability</strong>, the ratio of the joint probability divided by the marginal probability of the conditioning event (here, the data). The second fraction expresses the joint probability in the numerator as the product of a conditional and a marginal probability, this time using the reverse condition and the prior distribution. The integral in the denominator computes the marginal distribution of <span class="math inline">\(\textbf{Y}\)</span> by integrating over the distribution of <span class="math inline">\(\boldsymbol{\theta}\)</span>; this term can be thought of as a normalizing constant to ensure we get a proper probability. The magic is in the numerator, we can write <span class="math display">\[
+\]</span> The first fraction is simply the definition of a <strong>conditional probability</strong>, the ratio of the joint probability divided by the marginal probability of the conditioning event (here, the data). The second fraction expresses the joint probability in the numerator as the product of a conditional and a marginal probability, this time using the reverse condition and the prior distribution. The integral in the denominator computes the marginal distribution of <span class="math inline">\(\textbf{Y}\)</span> by integrating over the distribution of <span class="math inline">\(\boldsymbol{\theta}\)</span>; this term can be thought of as a normalizing constant to ensure we get a proper probability density. The magic is in the numerator, we can write <span class="math display">\[
 p(\boldsymbol{\theta}|\textbf{Y}) \propto p(\textbf{Y}|\boldsymbol{\theta}) p(\boldsymbol{\theta})
 \]</span></p>
 <p>The posterior distribution is proportional to the likelihood times the prior distribution.</p>
-<p>Our prior beliefs about the world, before seeing any data, are represented by <span class="math inline">\(p(\boldsymbol{\theta})\)</span>. After we collected data about the world that follows the distribution <span class="math inline">\(p(\textbf{Y}|\boldsymbol{\theta})\)</span> we update our beliefs. This makes a lot of sense and reflects how most of us make decisions and draw conclusions. We have a notion and based on evidence we update our belief–at least that is how it is supposed to work.</p>
+<p>Our prior beliefs about the world, before seeing any data, are represented by <span class="math inline">\(p(\boldsymbol{\theta})\)</span>. After we collected data about the world that follows the distribution <span class="math inline">\(p(\textbf{Y}|\boldsymbol{\theta})\)</span> we update our beliefs. This makes a lot of sense and reflects how most of us make decisions and draw conclusions. We have a notion and based on evidence we update our belief—at least that is how it is supposed to work.</p>
 <div class="example">
 <div class="example-header">
 <p>Example: Are trains on time?</p>
@@ -607,14 +607,14 @@ p(\boldsymbol{\theta}|\textbf{Y}) \propto p(\textbf{Y}|\boldsymbol{\theta}) p(\b
 </div>
 </div>
 <p>To paraphrase L. J. Savage,</p>
-<blockquote class="blockquote">
-<p><em>You are either Bayesian or irrational.</em></p>
-</blockquote>
+<div class="quote">
+<p>You are either Bayesian or irrational.</p>
+</div>
 </section>
 <section id="inference-about-boldsymboltheta" class="level3">
 <h3 class="anchored" data-anchor-id="inference-about-boldsymboltheta">Inference about <span class="math inline">\(\boldsymbol{\theta}\)</span></h3>
 <p>The posterior distribution <span class="math inline">\(p(\boldsymbol{\theta}| \textbf{Y})\)</span> contains all information we need to make statements about the parameters. For example, to compute the Bayesian equivalent of a point estimate, standard error, and confidence interval for one of the parameters, <span class="math inline">\(\theta_1\)</span> say, we first derive the posterior of <span class="math inline">\(\theta_1\)</span> by integrating out the other parameters: <span class="math display">\[
-p(\theta_1 | \textbf{Y}) = \int \cdots \int p(\boldsymbol{\theta}| \textbf{y}) d\theta_2 d\theta_3 \cdots d\theta_p
+p(\theta_1 | \textbf{Y}) = \int \cdots \int p(\boldsymbol{\theta}| \textbf{y}) d\theta_2 \, d\theta_3 \cdots d\theta_p
 \]</span> The square root of the variance of <span class="math inline">\(p(\theta_1|\textbf{Y})\)</span> is the standard error, the 0.25 and 0.975 quantiles are the 95% confidence bounds, and the mode or mean of the posterior serves as the point estimate.</p>
 </section>
 </section>
@@ -637,7 +637,7 @@ p(\boldsymbol{\theta}| \textbf{Y}) = \sum_{k=1}^K p(\boldsymbol{\theta}, f_k | \
 <li><span class="math inline">\(f_4\)</span>: bad weather slowed down the train; <span class="math inline">\(t\)</span> is short, minutes.</li>
 <li><span class="math inline">\(f_5\)</span>: loading and unloading passengers at the previous station took longer than anticipated; <span class="math inline">\(t\)</span> is very short, seconds to minutes.</li>
 </ul>
-<p>The decision about choosing alternative transportation or waiting for the train to arrive depends on the probability of <span class="math inline">\(f_j\)</span> and the distribution of the delays, <span class="math inline">\(p(t|f_j)\)</span>. We are interested in the overall distribution of the delay time, weighted by the likelihoods of the different models <span class="math inline">\(f_1, \cdots, f_4\)</span>.</p>
+<p>The decision about choosing alternative transportation or waiting for the train to arrive depends on the probabilities of the models <span class="math inline">\(f_j\)</span> and the distribution of the delays, <span class="math inline">\(p(t|f_j)\)</span>. We are interested in the overall distribution of the delay time, weighted by the likelihoods of the different models <span class="math inline">\(f_1, \cdots, f_4\)</span>.</p>
 <ul>
 <li><span class="math inline">\(p(t|f_j)\)</span> is the distribution of delay times if <span class="math inline">\(f_j\)</span> is the reason for the delay.</li>
 <li><span class="math inline">\(p(f_j)\)</span> is our prior belief that <span class="math inline">\(f_j\)</span> occurs in the absence of additional information (when we leave the house in the morning).</li>
@@ -649,7 +649,7 @@ p(\boldsymbol{\theta}| \textbf{Y}) = \sum_{k=1}^K p(\boldsymbol{\theta}, f_k | \
 </div>
 <section id="sec-bayes-factors-bic" class="level3">
 <h3 class="anchored" data-anchor-id="sec-bayes-factors-bic">Bayes Factors and BIC</h3>
-<p>The posterior distributions of the models, <span class="math inline">\(p(f_k|\textbf{Y})\)</span> are updated versions of our beliefs once we have seen data. You might not give the possibility of a railroad strike much credence one you learner that the morning did not mention any strike. The extent to which the data support one model over the other is expressed by the ratio of posterior probabilities <span class="math display">\[
+<p>The posterior distributions of the models, <span class="math inline">\(p(f_k|\textbf{Y})\)</span>, are updated versions of our beliefs once we have seen data. You might not give the possibility of a railroad strike much credence one you find out the morning news did not mention a strike. The extent to which the data support one model over the other is expressed by the ratio of posterior probabilities <span class="math display">\[
 \frac{p(f_j|\textbf{Y})}{p(f_k|\textbf{Y})}
 \]</span> This ratio is called the <strong>posterior odds</strong> for <span class="math inline">\(f_j\)</span> versus <span class="math inline">\(f_k\)</span>. But <span class="math inline">\(p(f_j|\textbf{Y}) = p(\textbf{Y}|f_j)p(f_j)/p(\textbf{Y})\)</span> and the posterior odds expand to <span class="math display">\[
 \frac{p(f_j|\textbf{Y})}{p(f_k|\textbf{Y})} = \frac{p(\textbf{Y}|f_j)}{p(\textbf{Y}|f_k)} \, \frac{p(f_j)}{p(f_k)}
@@ -667,7 +667,7 @@ B_{jk} = \frac{p(f_j|\textbf{Y})}{p(f_k|\textbf{Y})}
 \log p(\textbf{Y}|f_j) \approx \log p(\textbf{Y}|\boldsymbol{\theta}_j) - \frac{p_j}{2}\log n
 \]</span> The first term on the right hand side is simply the likelihood under model <span class="math inline">\(f_j\)</span> and <span class="math inline">\(p_j\)</span> denotes the number of parameters in the model. Minus twice the value of that approximation is known as the <strong>Bayesian Information Criterion</strong> (BIC). <span class="math display">\[
 \text{BIC}_j = -2\log p(\textbf{Y}| \boldsymbol{\theta}_j) + p_j \log n
-\]</span> It is used to select among competing models based on the maximized likelihood with a penalty term <span class="math inline">\((p/2 \log n)\)</span> that protects against overfitting. When comparing models, those with smaller BIC values are preferred.</p>
+\]</span> It is used to select among competing models based on the maximized likelihood with a penalty term <span class="math inline">\((p \log n)\)</span> that protects against overfitting. When comparing models, those with smaller BIC values are preferred.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -691,7 +691,7 @@ Note
 <li><span class="math inline">\(6 \le \Delta\text{BIC} \le 10\)</span>: strong evidence for <span class="math inline">\(f_j\)</span> over <span class="math inline">\(f_k\)</span>.</li>
 <li><span class="math inline">\(\Delta\text{BIC} &gt; 10\)</span>: very strong evidence for <span class="math inline">\(f_j\)</span> over <span class="math inline">\(f_k\)</span>.</li>
 </ul>
-<p>In the case of a uniform prior for the models, <span class="math inline">\(p(f_j) = 1/K\)</span>, the posterior probabilities can be approximated as <span class="math display">\[
+<p>Finally, in the case of a uniform prior for the models, <span class="math inline">\(p(f_j) = 1/K\)</span>, the posterior probabilities can be approximated as <span class="math display">\[
 p(f_j | \textbf{Y}) \approx \frac{\exp\left\{ -\frac{1}{2} \text{BIC}_j\right\}} {\sum_{k=1}^K \exp \left\{-\frac{1}{2}\text{BIC}_k\right\}}
 \]</span></p>
 <p>We now have the ingredients to define the Bayesian Model Averaging procedure for regression models.</p>
@@ -699,8 +699,8 @@ p(f_j | \textbf{Y}) \approx \frac{\exp\left\{ -\frac{1}{2} \text{BIC}_j\right\}}
 </section>
 <section id="bma-for-regression-models" class="level2" data-number="21.3">
 <h2 data-number="21.3" class="anchored" data-anchor-id="bma-for-regression-models"><span class="header-section-number">21.3</span> BMA for Regression Models</h2>
-<p>Suppose we have <span class="math inline">\(p\)</span> candidate input variables in a linear model family <span class="math inline">\(\textbf{Y}= \textbf{X}\boldsymbol{\beta}+ \boldsymbol{\epsilon}\)</span>. <span class="math inline">\(2^p\)</span> possible models that can be formed based on the presence and absence of the <span class="math inline">\(p\)</span> inputs. (This does not count interactions and transformations of the <span class="math inline">\(p\)</span> variables.)</p>
-<p>If the model errors are Gaussian distributed, we can calculate the BIC for each model and approximate posterior probabilities and Bayes factors. Instead of selecting one model as best, a larger number of models is evaluated and the models are ranked according to BIC. However, <span class="math inline">\(2^p\)</span> is often larger than what we can and should accommodate, so the following selection rules apply: a reduced set of good candidate models is selected according to the leaps-and-bound algorithm. Within the set of models returned by the leaps-and-bound algorithm only those models are considered whose posterior probability is within a certain neighborhood of the model with the best BIC value. This neighborhood is called <strong>Occam’s window</strong> and is expressed as a ratio. For example, an <strong>Occam’s ratio</strong> of 20 means that models whose posterior probability is less than 1/20 of the posterior probability of the model with the best BIC are excluded.</p>
+<p>Suppose we have <span class="math inline">\(p\)</span> candidate input variables in a linear model family <span class="math inline">\(\textbf{Y}= \textbf{X}\boldsymbol{\beta}+ \boldsymbol{\epsilon}\)</span>. You can create <span class="math inline">\(2^p\)</span> possible models based on the presence and absence of the <span class="math inline">\(p\)</span> inputs. (This does not count interactions and transformations of the <span class="math inline">\(p\)</span> variables.)</p>
+<p>If the model errors are Gaussian distributed, we can calculate the BIC for each model and approximate posterior probabilities and Bayes factors. Instead of selecting one model as best, a larger number of models is evaluated and the models are ranked according to BIC. However, <span class="math inline">\(2^p\)</span> is often larger than what we can and should accommodate, so the following selection rules apply: a reduced set of good candidate models is selected according to the leaps-and-bound algorithm. Within the set of models returned by the leaps all-subset algorithm only those models are considered whose posterior probability is within a certain neighborhood of the model with the best BIC value. This neighborhood is called <strong>Occam’s window</strong> and is expressed as a ratio. For example, an <strong>Occam’s ratio</strong> of 20 means that models whose posterior probability is less than 1/20 of the posterior probability of the model with the best BIC are excluded.</p>
 <p>The models within Occam’s window are the set of models over which predictions are averaged, weighted by their posterior probabilities. This shows us that BMA is an ensemble procedure. If there are <span class="math inline">\(K\)</span> models within Occam’s window, the predicted value at <span class="math inline">\(\textbf{x}_0\)</span> is <span class="math display">\[
 \widehat{y}(\textbf{x}_0) = \sum_{k=1}^K \widehat{p}(f_k | \textbf{Y}) \, \textbf{x}_{0k}^\prime\widehat{\boldsymbol{\beta}}_k
 \]</span> and <span class="math inline">\(\textbf{x}_{0k}\)</span> is the set of inputs in the <span class="math inline">\(k\)</span><sup>th</sup> model, <span class="math inline">\(\widehat{\boldsymbol{\beta}}_k\)</span> is the vector of coefficient estimates in the <span class="math inline">\(k\)</span><sup>th</sup> model.</p>
@@ -710,7 +710,7 @@ p(f_j | \textbf{Y}) \approx \frac{\exp\left\{ -\frac{1}{2} \text{BIC}_j\right\}}
 </div>
 <div class="example-container">
 <p>This example uses the <code>UScrime</code> data from the <code>MASS</code> library in <code>R</code>. The data set represents aggregate data on 47 states in the U.S. for 1960. In addition to the target variable, the rate of crimes per person in a particularly category, the data set contains information about income equality, GDP, population, education, unemployment, prison population, police expenditures, and demographics.</p>
-<p>Bayesian model averaging for linear regression models can be performed with the <code>bicreg</code> function in the <code>BMA</code> library. <code>bicreg</code> uses the leaps all-subset algorithm to select variables into the models. By default, up to <code>nbest=150</code> models of each size are being considered. <code>nbest</code> is not the total number of models being averaged, but the max number of models of any size returned by leaps.</p>
+<p>Bayesian model averaging for linear regression models can be performed with the <code>bicreg</code> function in the <code>BMA</code> library. <code>bicreg</code> uses the leaps all-subset algorithm to select variables into the models. By default, up to <code>nbest=150</code> models of each size are considered. <code>nbest</code> is not the total number of models being averaged, but the max number of models of any size returned by leaps.</p>
 <p>The <code>OR</code> parameter specifies the maximum ratio for excluding models in Occam’s window. A model that is not at least within 1/OR of the BIC of the best model is excluded from consideration.</p>
 <p><code>bicreg</code> uses the smaller-is-better formulation for BIC.</p>
 <div class="cell">
@@ -779,10 +779,11 @@ BIC        -54.60434  -54.40788
 post prob    0.032      0.029  </code></pre>
 </div>
 </div>
-<p>Of the 150 models returned by the leaps algorithm, 115 were selected within Occam’s ratio of 1/20. The best model has a BIC of -55.9124 and a posterior probability of 0.0619. The posterior probability of the final model within Occam’s window is <code>crimeBMA$postprob[115]</code> = 0.0031.</p>
-<p>The column <code>EV</code> displays the posterior means (expected values) of the model coefficients, averaged across the 115 models. The <code>p!=0</code> column displays the proportion of models that include the particular input. For example, the intercept is included in all models, 100% of the models include the <code>So</code> variable.</p>
 <p>Only five of the 115 models are shown on the output, information on all models can be retrieved from the return object of <code>bicreg</code>.</p>
+<p>Of the 150 models returned by the leaps algorithm, 115 were selected within Occam’s ratio of 1/20. The best model has a BIC of -55.9124 and a posterior probability of 0.0619. The posterior probability of the final model within Occam’s window is <code>crimeBMA$postprob[115]</code> = 0.0031.</p>
+<p>The column <code>EV</code> displays the posterior means (expected values) of the model coefficients, averaged across the 115 models. The <code>p!=0</code> column displays the proportion of models that include the particular input. For example, the intercept is included in all models, 11.7% of the models include the <code>So</code> variable, 100% of the models include the <code>Ed</code> variable.</p>
 <p>The <span class="math inline">\(R^2\)</span> values of the models are also shown in the third row from the bottom of the output. Notice that the best model according to BIC does not have the highest <span class="math inline">\(R^2\)</span> and the model with a higher <span class="math inline">\(R^2\)</span> does not necessarily have a higher posterior probability.</p>
+<hr>
 <p>The <code>predict</code> function computes statistics based on the posterior distribution of the model. The predicted values are calculated as the means of the posterior distribution, averaging all 115 models. Because we are computing summary statistics of the posterior distribution, standard deviation and quantiles are also immediately accessible.</p>
 <p>Here are the means, standard deviations, and 0.1, 0.5, 0.9 quantiles for the first 10 observations.</p>
 <div class="cell">

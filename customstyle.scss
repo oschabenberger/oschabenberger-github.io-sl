@@ -1,8 +1,82 @@
 
 /*-- scss:defaults-- */
 
+/* ------------------------------------------------------ */
+/* The Virginia Tech primary and secondary color palettes */
+$col-vt-maroon: #861F41;       /* Chicago Maroon */
+$col-vt-orange: #E5751F;       /* Burnt Orange */
+$col-vt-white: #FFFFFF;        /* Yardline White */
+$col-vt-hokieStone: #75787b;   /* Hokie Stone */
+$col-vt-purple: #642667;       /* Pylon Purple */
+$col-vt-pink: #CE0058;         /* Boundless Pink */
+$col-vt-yellow: #F7EA48;       /* Triumphant Yellow */
+$col-vt-peal: #508590;         /* Sustainable Teal */
+$col-vt-turquoise: #2CD5C4;    /* Vibrant Turquoise */
+$col-vt-grey: #D7D2CB;         /* Land Grant Grey */
+$col-vt-smoke: #E5E1E6;        /* Skipper Smoke */
+$col-vt-impactOrange: #CA4F00; /* Impact Orange */
+$col-vt-black: black;
+/* ------------------------------------------------------ */
+
 /*-- scss:rules --*/
 
+flushright {
+    text-align: right;
+    color: $col-vt-maroon;
+    font-size: 0.9em;
+    font-weight: 600;
+    font-style: italic;
+}
+
+.quoteauthor {
+    color: $col-vt-orange;
+    font-size: 0.9em;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.quote {
+    color: $col-vt-maroon;
+    font-size: 1em;
+    text-align: center;
+    font-weight: 600;
+    font-style: italic;
+    
+}
+
+.assignment {
+  margin: 1em 0;
+  border: 2px solid gray;
+  border-left: 10px solid indigo; 
+  border-bottom: 10px solid indigo; 
+  border-radius: 10px;
+}
+
+.assignment-header {
+  margin-left: 0em;
+  padding-left: 10px;
+  padding-top:  5px;
+  padding-bottom: 0.1em;
+  color: GhostWhite;
+  background-color: indigo;
+  border-top-right-radius: 10px;
+  font-size: 1em;
+  font-weight: bold;
+  background-size: 40px;
+  background-repeat: no-repeat;
+  background-position: 15px center;
+  // background-image: url("icons/clip-line-icon.png");
+}
+
+.assignment-container {
+  padding-top: 5px;
+  padding-left: 10px;
+  padding-bottom: 5px;
+  color: black;
+  font-size: 0.9em;
+  background-color: lavender;
+  border-bottom-right-radius: 10px;
+}
 
 .example {
   margin: 1em 0;
@@ -20,7 +94,7 @@
   color: black;
   background-color: rgb(123, 173, 173);
   border-top-right-radius: 10px;
-  font-size: 1.1em;
+  font-size: 1em;
   font-weight: bold;
   background-size: 40px;
   background-repeat: no-repeat;
@@ -53,7 +127,7 @@
   color: rgb(175, 44, 6); //black;
   background-color: rgb(88, 212, 187);
   border-top-right-radius: 10px;
-  font-size: 1.1em;
+  font-size: 1em;
   font-weight: bold;
   background-size: 40px;
   background-repeat: no-repeat;

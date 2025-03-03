@@ -1017,13 +1017,14 @@ $$
 \mu &= (1-w)\lambda \\
 \Var[Y] &= (1-w)\lambda(1 + w\lambda)
 \end{align}
-$$
+$${#eq-zip-mean-var}
+
 @fig-zip-variance displays the variance of the ZIP model as a function of the mixing
 probability $w$ for different values of $\lambda$. As $w$ increases, the constant
 zero process gains more weight and the variance eventually reduces to 0 for $w=1$.
 The range of mixing weights for which the ZIP process is overdispersed relative
 to the Poisson distribution is larger for greater values of $\lambda$. At $w=0$,
-the 
+the variance equals $\lambda$, the variance of the Poisson component. 
 
 ```{r, echo=FALSE, fig.align="center", out.width="75%"}
 #| fig.cap: Variance of a zero-inflated Poisson process as a function of the mixing probability $w$ and $\lambda$. Horizontal reference lines indicate the variance of the Poisson component.
@@ -1034,7 +1035,7 @@ varzip <- function(w,lambda) {
     return ((1-w)*lambda*(1 + w*lambda))
 }
 plot(w,varzip(w,5),las=1,bty="l",type="l", lwd=2,
-     ylab="Variance of Zip Process")
+     ylab="Variance of ZIP Process")
 lines(w,varzip(w,4), type="l", col="red" , lty="dotted",lwd=2)
 lines(w,varzip(w,2), type="l", col="blue", lty="dashed",lwd=2)
 abline(h=5)
@@ -1049,30 +1050,56 @@ legend("topright",
        lwd=c(2,2,2))
 ```
 
+While the variance of the ZIP process can fall below the variance of its Poisson
+component, when enough weight is placed on the zero component, it is instructive
+to compare the mean and variance of the ZIP process in @eq-zip-mean-var. 
+The variance can be written as $\Var[Y] = \mu(1+w\lambda)$. Compared to a Poisson
+process with mean $\mu$, the ZIP process is overdispersed by the factor $1+w\lambda$.
+
 
 ### Mixing Models
 
 If the Poisson distribution is not sufficiently dispersed for a count target, 
 and zero inflation is not the root cause of overdispersion, what other options are available?
 
-The Negative Binomial distribution is also a model for count data and permits more variability than the Poisson distribution. It is a popular alternative for the Poisson model in the presence of overdispersion. The Negative Binomial is often derived from independent Bernoulli experiments, similar to the Binomial random variable. While the Binomial($n,\pi$) is the sum of $n$ independent Bernoulli($\pi$) experiments, the NegBin($k,\pi$) random variable is the number of Bernoulli($\pi$) trials until the $k$^th^ event occurs.
+The Negative Binomial distribution is also a model for count data and permits more 
+variability than the Poisson distribution. It is a popular alternative for the 
+Poisson model in the presence of overdispersion. The Negative Binomial is often 
+derived from independent Bernoulli experiments, similar to the Binomial random 
+variable. While the Binomial($n,\pi$) is the sum of $n$ independent Bernoulli($\pi$) 
+experiments, the NegBin($k,\pi$) random variable is the number of Bernoulli($\pi$) 
+trials until the $k$^th^ event occurs.
 
-Another way of motivating the Negative Binomial is through a **mixing process** and this way is particularly insightful in the context of modeling overdispersion.
+Another way of motivating the Negative Binomial is through a **mixing process** 
+and this way is particularly insightful in the context of modeling overdispersion.
 
+In a mixing process one or more parameters are assumed random. The base distribution 
+is considered conditional on the mixing parameter and the mixing distribution is 
+derived as the marginal distribution, integrating (or summing) over the distribution 
+of the mixing parameter. An example will make that easier to understand. 
 
-In a mixing process one or more parameters are assumed random. The base distribution is considered conditional on the mixing parameter and the mixing distribution is derived as the marginal distribution, integrating (or summing) over the distribution of the mixing parameter. An example will make that easier to understand. Suppose that $Y|\lambda$ has a Poisson($\lambda$) distribution and that $\lambda$ is a Gamma($\alpha,\beta$) random variable. 
-The mixing distribution, the marginal distribution, is obtained by integrating the conditional distribution over the distribution of the random parameter:
+#### Poisson--Gamma mixing
+
+Suppose that $Y|\lambda$ has a Poisson($\lambda$) distribution and that $\lambda$ is a 
+Gamma($\alpha,\beta$) random variable. 
+The mixing distribution, the marginal distribution, is obtained by integrating 
+the conditional distribution over the distribution of the random parameter:
 
 $$
 p(y) = \Pr(Y=y) = \int_0^\infty p(y|\lambda) f(\lambda) \, d\lambda
 $$
-The conditional distribution in this integral, $p(y|\lambda)$, is a Poisson and $f(\lambda)$ is a Gamma distribution. Before looking at the marginal distribution of $Y$ in this **Poisson--Gamma mixing** scheme, is there something we can learn about the mean and variance of $Y$?
+The conditional distribution in this integral, $p(y|\lambda)$, is a Poisson and 
+$f(\lambda)$ is a Gamma distribution. Before looking at the marginal distribution
+of $Y$ in this **Poisson--Gamma mixing** scheme, is there something we can learn 
+about the mean and variance of $Y$?
 
-Suppose $Y$ has a distribution that depends on parameters $[\alpha, \beta]$ and has conditional expectation and variance
+Suppose $Y$ has a distribution that depends on parameters $[\alpha, \beta]$ and 
+has conditional expectation and variance
 $$
 \Exp[Y|\alpha] = \mu(\alpha,\beta) \quad \Var[Y|\alpha] = \sigma^2(\alpha,\beta)
 $$
-If $\beta$ is a constant and $\alpha$ is a random variable the marginal mean and variance of $Y$ are
+If $\beta$ is a constant and $\alpha$ is a random variable the marginal mean and 
+variance of $Y$ are
 
 \begin{align*}
   \Exp[Y] &= \Exp_\alpha[\Exp[Y|\alpha]] = \Exp_\alpha[\mu(\alpha,\beta)] \\
@@ -1080,19 +1107,28 @@ If $\beta$ is a constant and $\alpha$ is a random variable the marginal mean and
   &= \Var_\alpha[\mu(\alpha,\beta)] + \Exp_\alpha\left[\sigma^2(\alpha,\beta)\right]
 \end{align*}
 
-What does that mean? The marginal variance is larger than the average variance of the conditional distribution. By introducing a randomly varying parameter, and integrating over its distribution, we arrive at a more dispersed distribution.
+What does that mean? The marginal variance is larger than the average variance 
+of the conditional distribution. By introducing a randomly varying parameter, 
+and integrating over its distribution, we arrive at a more dispersed distribution.
 
-Now back to the Poisson--Gamma mixing problem. It can be shown that if $Y|\lambda \sim \text{Poisson}(\lambda)$ and $\lambda \sim \text{Gamma}(\alpha,\beta)$, that the marginal distribution of $Y$ is 
+Now back to the Poisson--Gamma mixing problem. It can be shown that if 
+$Y|\lambda \sim \text{Poisson}(\lambda)$ and $\lambda \sim \text{Gamma}(\alpha,\beta)$, 
+that the marginal distribution of $Y$ is 
 
 $$
 \Pr(Y=y)= {y+\alpha-1\choose\alpha-1} \left(\frac{\beta}{\beta+1}\right)^y \left(\frac{1}{\beta+1}\right)^\alpha
 $$
 
-This is a Negative Binomial distribution with mean $\Exp[Y] = \alpha\beta$ and variance $\Var[Y] = \alpha\beta(1+\beta)$. Since $\lambda$ follows a Gamma distribution its mean is 
-$\Exp[\lambda] = \alpha\beta$. It follows that the Negative Binomial is overdispersed 
+This is a Negative Binomial distribution with mean $\Exp[Y] = \alpha\beta$ and 
+variance $\Var[Y] = \alpha\beta(1+\beta)$. Since $\lambda$ follows a Gamma 
+distribution its mean is $\Exp[\lambda] = \alpha\beta$. It follows that the 
+Negative Binomial is overdispersed 
 relative to the Poisson by the factor $(1+\beta)$.
 
-Different parameterizations of the Gamma mixing distribution are in use. For example, the Gamma can be parameterized in terms of $\Exp[\lambda] = \alpha\beta = \mu$ and $\Var[\lambda] = \mu/\phi$. The resulting Negative Binomial model is then overdispersed by a factor $(1+\phi)/\phi$.
+Different parameterizations of the Gamma mixing distribution are in use. For example, 
+the Gamma can be parameterized in terms of $\Exp[\lambda] = \alpha\beta = \mu$ 
+and $\Var[\lambda] = \mu/\phi$. The resulting Negative Binomial model is then 
+overdispersed by a factor $(1+\phi)/\phi$.
 
 
 :::{.example}
@@ -1100,7 +1136,8 @@ Different parameterizations of the Gamma mixing distribution are in use. For exa
 Example: Negative Binomial Analysis for Poppy Counts in RCBD
 ::::
 ::::{.example-container}
-You can fit a Negative Binomial model in `R` with the `glm.nb` function in the `MASS` library.
+You can fit a Negative Binomial model in `R` with the `glm.nb` function in the 
+`MASS` library.
 
 ```{r, warning=FALSE, message=FALSE}
 library(MASS)
@@ -1109,27 +1146,46 @@ nbreg <- glm.nb(count ~ block + tx, data=poppies,link="log")
 summary(nbreg)
 ```
 
-The ratio of the residual deviance to its degrees of freedom is about 1.6, much improved compared to any of the Poisson-based models. 
+The ratio of the residual deviance to its degrees of freedom is about 1.6, much 
+improved compared to any of the Poisson-based models. 
 
 ```{r}
 nbreg$deviance/nbreg$df.residual
 ```
 
-Both the coefficient estimates and the standard errors change compared to the Poisson analysis. Recall that the quasi-Poisson analysis affected only the standard errors of the coefficients.
+Both the coefficient estimates and the standard errors change compared to the 
+Poisson analysis. Recall that the quasi-Poisson analysis affected only the standard 
+errors of the coefficients.
 ::::
 :::
 
-Other forms of parameter mixing are popular. The **Binomial--Poisson** mixing scheme assumes that the number of trials $n$ of a Binomial($n,\pi$) random variable follows a Poisson($\lambda$) distribution. If $Y|n \sim \text{Binomial}(n,\pi)$ and $n \sim \text{Poisson}(\lambda)$, then $Y$ has a Poisson distribution with mean $\lambda\pi$. This Poisson is overdispersed relative to the Binomial($n,\pi$) evaluated at the average sample size $\lambda$ because
+#### Binomial--Poisson mixing
+
+Other forms of parameter mixing are popular. The **Binomial--Poisson** mixing 
+scheme assumes that the number of trials $n$ of a Binomial($n,\pi$) random variable 
+follows a Poisson($\lambda$) distribution. If $Y|n \sim \text{Binomial}(n,\pi)$ 
+and $n \sim \text{Poisson}(\lambda)$, then $Y$ has a Poisson distribution with 
+mean $\lambda\pi$. This Poisson is overdispersed relative to the Binomial($n,\pi$) 
+evaluated at the average sample size $\lambda$ because
 $$
 \lambda\pi > \lambda\pi(1-\pi)
 $$
 
-The **Beta-Binomial** mixing model assumes that $Y|n \sim \text{Binomial}(n,\pi)$, $n$ is fixed, and $\pi$ is a random variable with a Beta($\alpha,\beta$) distribution. The resulting marginal distribution of $Y$ is known as the beta-binomial distribution and has mean and variance
+#### Beta--Binomial mixing
+
+The **Beta-Binomial** mixing model assumes that $Y|n \sim \text{Binomial}(n,\pi)$, 
+$n$ is fixed, and $\pi$ is a random variable with a Beta($\alpha,\beta$) distribution. 
+The resulting marginal distribution of $Y$ is known as the beta-binomial distribution
+and has mean and variance
 $$
 \Exp[Y] = \frac{n\alpha}{\alpha+\beta} \quad \Var[Y] = \frac{n\alpha\beta(n+\alpha+\beta)}{(\alpha+\beta)^2(\alpha+\beta+1)}
 $$
 
-A **double mixing** scheme assumes that multiple parameters are random. For example, starting with a Binomial($n,\pi)$ random variable, we can define a **Binomial--Poisson--Gamma** mixing model as follows
+#### Binomial--Poisson--Gamma mixing
+
+A **double mixing** scheme assumes that multiple parameters are random. For example, 
+starting with a Binomial($n,\pi)$ random variable, we can define a **Binomial--Poisson--Gamma** 
+mixing model as follows
 
 \begin{align*}
     Y | n &\sim \text{Binomial}(n,\pi) \\
@@ -1137,5 +1193,6 @@ A **double mixing** scheme assumes that multiple parameters are random. For exam
     \lambda &\sim \text{Gamma}(\alpha,\beta)
 \end{align*}
 
-The marginal distribution of $Y$ is again Negative Binomial with mean $\Exp[Y] = \alpha\beta\pi$ and variance $\Var[Y] = \alpha\beta\pi(1+\beta\pi)$.
+The marginal distribution of $Y$ is again Negative Binomial with mean 
+$\Exp[Y] = \alpha\beta\pi$ and variance $\Var[Y] = \alpha\beta\pi(1+\beta\pi)$.
 
