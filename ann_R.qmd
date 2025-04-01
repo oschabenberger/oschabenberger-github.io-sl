@@ -3,12 +3,15 @@
 
 ## Introduction
 
-Working with neural networks in `R` can be a bit challenging. For one, there are many packages available that can train ANNs, see @tbl-ann-R-packages for some examples. The packages vary greatly in capabilities and syntax. 
+Working with neural networks in `R` can be a bit challenging. For one, there are 
+many packages available that can train ANNs, see @tbl-ann-R-packages for some examples. 
+The packages vary greatly in capabilities and syntax. 
 
 Several frameworks for ANNs and deep learning exist. 
 [TensorFlow](https://www.tensorflow.org/), 
 [Microsoft CNTK](https://learn.microsoft.com/en-us/archive/msdn-magazine/2017/july/machine-learning-introduction-to-the-microsoft-cntk-v2-0-library), 
-[PyTorch](https://pytorch.org/), and [Theano](https://pypi.org/project/Theano/) are among the most important ones. 
+[PyTorch](https://pytorch.org/), and [Theano](https://pypi.org/project/Theano/) 
+are among the most important ones. 
 
 | Package | Notes |
 | --------|---------------|
@@ -25,25 +28,49 @@ Several frameworks for ANNs and deep learning exist.
 
 : Some `R` packages for neural network analysis. {#tbl-ann-R-packages .striped}
 
-[Keras](https://keras.io/) has emerged as an important API (Application Programming Interface) for deep learning. It provides a consistent interface on top of JAX, TensorFlow, or PyTorch. While TensorFlow is very powerful, the learning curve can be steep and you tend to write a lot of code. On the other hand, you have complete control over the types of models you build and train with TensorFlow. That makes Keras so relevant: you can tap into the capabilities of TensorFlow with a simpler API.
+[Keras](https://keras.io/) has emerged as an important API (Application Programming 
+Interface) for deep learning. It provides a consistent interface on top of JAX, 
+TensorFlow, or PyTorch. While TensorFlow is very powerful, the learning curve can 
+be steep and you tend to write a lot of code. On the other hand, you have complete 
+control over the types of models you build and train with TensorFlow. That makes 
+Keras so relevant: you can tap into the capabilities of TensorFlow with a simpler API.
 
-The drawback of using Keras and other deep learning frameworks in `R` is that they are written in Python. Tools from the modern machine learning toolbox tend to be written in Python. The `keras` package in `R` is not an implementation of Keras in `R`, it is an R-based API that calls into the Keras Python code. And that code calls into Tensorflow, or whatever deep learning framework Keras is running on.
+The drawback of using Keras and other deep learning frameworks in `R` is that they 
+are written in Python. Tools from the modern machine learning toolbox tend to be 
+written in Python. The `keras` package in `R` is not an implementation of Keras in 
+`R`, it is an R-based API that calls into the Keras Python code. And that code calls into Tensorflow, or whatever deep learning framework Keras is running on.
 
-To use `keras` in `R`, you thus need to manage a Python distribution, manage Python packages, and deal with the idiosyncrasies of function interfaces between programming languages. For example, you will have to deal with Python error messages bubbling up to the `R` session. Fortunately, some of the headaches of running Python from `R` are mitigated by the `reticulate` package which provides the `R` interface to Python. 
+To use `keras` in `R`, you thus need to manage a Python distribution, manage Python 
+packages, and deal with the idiosyncrasies of function interfaces between programming 
+languages. For example, you will have to deal with Python error messages bubbling 
+up to the `R` session. Fortunately, some of the headaches of running Python from 
+`R` are mitigated by the `reticulate` package which provides the `R` interface to Python. 
 
 :::{.callout-tip}
-The `KerasR` package is not the same as the `keras` package in `R`. Both packages provide an API for Keras and the API of `KerasR` is closer to the Python syntax. That makes switching between `R` and Python for deep learning easier. However, the `keras` package supports piping of operations similar to the `dplyr` package. I find working with `keras` simple because neural networks can be build by piping layer definitions. After all, that is how neural networks work: the output of one layer is input to the next layer.
+The `KerasR` package is not the same as the `keras` package in `R`. Both packages 
+provide an API for Keras and the API of `KerasR` is closer to the Python syntax. 
+That makes switching between `R` and Python for deep learning easier. However, the 
+`keras` package supports piping of operations similar to the `dplyr` package. I 
+find working with `keras` simple because neural networks can be build by piping 
+layer definitions. After all, that is how neural networks work: the output of one 
+layer is input to the next layer.
 :::
 
-We will be using the `keras` package in `R`. It uses the TensorFlow framework under the cover by default.
+We will be using the `keras` package in `R`. It uses the TensorFlow framework 
+under the cover by default.
 
 ## Running Keras in `R`
 
 ### Installation
 
-As mentioned earlier, running `keras` requires a Python distribution. In addition, you need to install the Keras and TensorFlow Python libraries. The preferred Python installation in this case is conda-based. Good instructions for installing TensorFlow, Keras, and the Python runtime at once---depending on whether you have a prior conda installation---can be found [here](https://hastie.su.domains/ISLR2/keras-instructions.html).
+As mentioned earlier, running `keras` requires a Python distribution. In addition, 
+you need to install the Keras and TensorFlow Python libraries. The preferred Python 
+installation in this case is conda-based. Good instructions for installing TensorFlow, 
+Keras, and the Python runtime at once---depending on whether you have a prior conda 
+installation---can be found [here](https://hastie.su.domains/ISLR2/keras-instructions.html).
 
-In the situation without prior conda installation, these commands will install everything you need (do this once in your environment):
+In the situation without prior conda installation, these commands will install 
+everything you need (do this once in your environment):
 
 ```{r, eval=FALSE}
 install.packages("keras")
@@ -71,11 +98,17 @@ Training a neural network with `keras` involves three steps:
 
 3. Fitting the model 
 
-Not until the third step does the algorithm get in contact with actual data. However, we need to know some things about the data in order to define the network in step 1: the dimensions of the input and output.
+Not until the third step does the algorithm get in contact with actual data. However, 
+we need to know some things about the data in order to define the network in step 1: 
+the dimensions of the input and output.
 
 #### Defining the network
 
-The most convenient way of specifying a multi layer neural network is by adding layers sequentially, from the input layer to the output layer. These starts with a call to `keras_model_sequential()`. Suppose we want to predict a continuous response (regression application) based on inputs $x_1, \cdots, x_{20}$ with one hidden layer and dropout regularization.
+The most convenient way of specifying a multi layer neural network is by adding 
+layers sequentially, from the input layer to the output layer. These starts with 
+a call to `keras_model_sequential()`. Suppose we want to predict a continuous 
+response (regression application) based on inputs $x_1, \cdots, x_{20}$ with one 
+hidden layer and dropout regularization.
 
 The following statements define the model sequentially:
 
@@ -90,11 +123,28 @@ firstANN <- keras_model_sequential() %>%
                 name ="Output")             
 ```
 
-`layer_dense()` adds a fully connected layer to the networks, the `units=` option specifies the number of neurons in the layer. The `input_shape=` option is specified only for the first layer in the network. In summary, the hidden layer receives 20 inputs and has 50 output units (neurons) and ReLU activation. The output from the hidden layer is passed on (piped) to a dropout layer with a dropout rate of $\phi = 0.4$. The result of the dropout layer is passed on to another fully connected layer with a single neuron. This is the output layer of the network. In other words, the last layer in the sequence is automatically the output layer. Since we are in a regression context to predict a numeric target variable, there is only one output unit in the final layer. If this was a classification problem with $5$ categories, the last layer would have 5 units.
+`layer_dense()` adds a fully connected layer to the networks, the `units=` option 
+specifies the number of neurons in the layer. The `input_shape=` option is specified 
+only for the first layer in the network. In summary, the hidden layer receives 20 
+inputs and has 50 output units (neurons) and ReLU activation. The output from the
+hidden layer is passed on (piped) to a dropout layer with a dropout rate of $\phi = 0.4$. 
+The result of the dropout layer is passed on to another fully connected layer with 
+a single neuron. This is the output layer of the network. In other words, the last
+layer in the sequence is automatically the output layer. Since we are in a regression 
+context to predict a numeric target variable, there is only one output unit in the 
+final layer. If this was a classification problem with $5$ categories, the last 
+layer would have 5 units.
 
-You can assign a name to each layer with the `name=` option, this makes it easier to identify the layers in output. If you do not specify a name, Keras will assign a name that combines a description of the layer type with a numerical index (not always). The numeric indices can be confusing because they depend on counters internal to the Python code. Assigning an explicit name is recommended practice.
+You can assign a name to each layer with the `name=` option, this makes it easier 
+to identify the layers in output. If you do not specify a name, Keras will assign 
+a name that combines a description of the layer type with a numerical index (not 
+always). The numeric indices can be confusing because they depend on counters 
+internal to the Python code. Assigning an explicit name is recommended practice.
 
-The `activation=` option specifies the activation function $\sigma()$ for the hidden layers and the output function $g()$ for the output layer. The default is the identity ("linear") activation, $\sigma(x) = x$. This default is appropriate for the output layer in a regression application. For the hidden layer we choose the ReLU activation.
+The `activation=` option specifies the activation function $\sigma()$ for the hidden 
+layers and the output function $g()$ for the output layer. The default is the identity 
+("linear") activation, $\sigma(x) = x$. This default is appropriate for the output 
+layer in a regression application. For the hidden layer we choose the ReLU activation.
 
 To see the list of activation functions supported by `keras` (Keras), type
 
@@ -110,13 +160,25 @@ The basic neural network is now defined and we can find out how many parameters 
 summary(firstANN)
 ```
 
-With 20 inputs and 50 neurons, the first layer has 50 x 21 = 1050 parameters (20 slopes and an intercept for each output neuron). The dropout layer does not add any parameters to the estimation, it chooses output neurons of the previous layer at random and sets their activation to zero. The 50 neurons (some with activation set randomly to zero) are the input to the final layer, adding fifty weights (slopes) and one bias (intercept). The total number of parameters of this neural network is 1,101.
+With 20 inputs and 50 neurons, the first layer has 50 x 21 = 1050 parameters (20 
+slopes and an intercept for each output neuron). The dropout layer does not add 
+any parameters to the estimation, it chooses output neurons of the previous layer 
+at random and sets their activation to zero. The 50 neurons (some with activation 
+set randomly to zero) are the input to the final layer, adding fifty weights (slopes) 
+and one bias (intercept). The total number of parameters of this neural network 
+is 1,101.
 
 #### Setting up the optimization
 
-The second step in training a model in Keras is to specify the particulars of the optimization with the `keras::compile()` function (which actually calls `keras::compile.keras.engine.training.Model`). Typical specifications include the loss functions, the type of optimization algorithm, and the metrics evaluated by the model during training.
+The second step in training a model in Keras is to specify the particulars of the 
+optimization with the `keras::compile()` function (which actually calls 
+`keras::compile.keras.engine.training.Model`). Typical specifications include the 
+loss functions, the type of optimization algorithm, and the metrics evaluated by 
+the model during training.
 
-The following function call uses the RMSProp algorithm with mean-squared error loss function to estimate the parameters of the network. During training, the mean absolute error is also monitored in addition to the mean squared error.
+The following function call uses the RMSProp algorithm with mean-squared error 
+loss function to estimate the parameters of the network. During training, the mean 
+absolute error is also monitored in addition to the mean squared error.
 
 ```{r compile_ann}
 firstANN %>% compile(loss="mse",                         # see keras$losses$
@@ -129,9 +191,14 @@ Depending on your environment, not all optimization algorithms are supported.
 
 #### Fitting the model
 
-The last step in training the network is to connect the defined and compiled model with training---and possibly test---data.
+The last step in training the network is to connect the defined and compiled model 
+with training---and possibly test---data.
 
-For this example we use the `Hitters` data from the ISLR2 package. This is a data set with 322 observations of major league baseball players from the 1986 and 1987 seasons. The following code removes observations with missing values from the data frame, defines a vector of ids for the test data (1/3 of the observations) and computes a scaled and centered model matrix using all 20 input variables. 
+For this example we use the `Hitters` data from the ISLR2 package. This is a data 
+set with 322 observations of major league baseball players from the 1986 and 1987 
+seasons. The following code removes observations with missing values from the data 
+frame, defines a vector of ids for the test data (1/3 of the observations) and 
+computes a scaled and centered model matrix using all 20 input variables. 
 
 ```{r setup_data}
 library(ISLR2)
@@ -146,14 +213,33 @@ x <- scale(model.matrix(Salary ~ . - 1, data = Gitters))
 y <- Gitters$Salary
 ```
 
-Note that the model contains several factors (`League`, `Division`, `NewLeague`) whose levels are encoded as binary variables in the model matrix. One could exclude those from scaling and centering as they already are in the proper range. In a regression model you would not want to scale these variables to preserve the interpretation of their coefficients. In a neural network interpretation of the model coefficients is not important and we include all columns of the model matrix in the scaling operation.
+Note that the model contains several factors (`League`, `Division`, `NewLeague`) 
+whose levels are encoded as binary variables in the model matrix. One could exclude 
+those from scaling and centering as they already are in the proper range. In a 
+regression model you would not want to scale these variables to preserve the 
+interpretation of their coefficients. In a neural network interpretation of the model 
+coefficients is not important and we include all columns of the model matrix in the 
+scaling operation.
 
-The following code fits the model to the training data (`-testid`) using 20 **epochs** and a minibatch size of 32. 
-That means the gradient is computed based on 32 randomly chosen observations in each step of the stochastic gradient descent algorithm. Since there are 176 training observations it takes $176/32=5.5$ SGD steps to process all $n$ observations. This is known as an **epoch** and is akin to the concept of an **iteration** in numerical optimization: a full pass through the data. The fundamental difference between an epoch and an iteration lies in the fact that updates of the parameters occur after each gradient computation. In a full iteration, there is one update after the pass through the entire data. In SGD with minibatch, there are multiple updates of the parameters, one for each minibatch.
+The following code fits the model to the training data (`-testid`) using 20 **epochs** 
+and a minibatch size of 32. That means the gradient is computed based on 32 randomly 
+chosen observations in each step of the stochastic gradient descent algorithm. Since 
+there are 176 training observations it takes $176/32=5.5$ SGD steps to process all 
+$n$ observations. This is known as an **epoch** and is akin to the concept of an 
+**iteration** in numerical optimization: a full pass through the data. The fundamental 
+difference between an epoch and an iteration lies in the fact that updates of the
+parameters occur after each gradient computation. In a full iteration, there is one
+update after the pass through the entire data. In SGD with minibatch, there are 
+multiple updates of the parameters, one for each minibatch.
 
-Running 200 epochs with a batch size of 32 and a training set size of 176 results in 200 * 5.5 = 1,100 gradient evaluations.
+Running 200 epochs with a batch size of 32 and a training set size of 176 results
+in 200 * 5.5 = 1,100 gradient evaluations.
 
-The `validation_data=` option lists the test data for the training. The objective function and metrics specified in the `compile` command earlier are computed at each epoch for the training and the test data if the latter is specified. If you do not have a validation data set, you can specify `validation_split=` and request that a fraction of the training data is held back for validation.
+The `validation_data=` option lists the test data for the training. The objective 
+function and metrics specified in the `compile` command earlier are computed at 
+each epoch for the training and the test data if the latter is specified. If you 
+do not have a validation data set, you can specify `validation_split=` and request 
+that a fraction of the training data is held back for validation.
 
 ```{r fit_ann}
 history <- firstANN %>% 
@@ -165,7 +251,13 @@ history <- firstANN %>%
   )
 ```
 
-Keras reports for each epoch the value of the loss metric (mean squared error) for the training and validation data and the monitored metrics (mean absolute error) for the validation data. As you can see from the lengthy output, all criteria are still decreasing after 200 epochs. It is helpful to view the epoch history graphically. If you run the code in an interactive environment (e.g., RStudio), the epoch history is displayed and updated live. You can always plot the epoch `history` with the `plot` command:
+Keras reports for each epoch the value of the loss metric (mean squared error) for 
+the training and validation data and the monitored metrics (mean absolute error) 
+for the validation data. As you can see from the lengthy output, all criteria are 
+still decreasing after 200 epochs. It is helpful to view the epoch history graphically. 
+If you run the code in an interactive environment (e.g., RStudio), the epoch history 
+is displayed and updated live. You can always plot the epoch `history` with the 
+`plot` command:
 
 ```{r ann_200_plot, fig.align='center', out.width="80%"}
 #| fig.cap: Epoch history for the first 200 epochs.
@@ -174,8 +266,17 @@ Keras reports for each epoch the value of the loss metric (mean squared error) f
 plot(history, smooth=FALSE)  # see ?plot.keras_training_history for doc
 ```
 
-All criteria are steadily declining and have not leveled out after 200 epochs (@fig-hitters-ann-200). As expected, the mean squared error and mean absolute error are higher in the validation data than in the training data. This is not always the case when training neural networks. Maybe surprisingly, after about 75 epochs the metrics are showing more variability from epoch to epoch in the training data than in the validation data. Also, there is no guarantee that criteria decrease monotonically, the mean squared error of epoch $t$ can be higher than that of epoch $t-1$. We are looking for the results to settle down and stabilize before calling the optimization completed. More epochs need to be run in this example.
-Fortunately, you can continue where the previous run has left off. The following code trains the network for another 100 epochs:
+All criteria are steadily declining and have not leveled out after 200 epochs (@fig-hitters-ann-200). 
+As expected, the mean squared error and mean absolute error are higher in the validation 
+data than in the training data. This is not always the case when training neural 
+networks. Maybe surprisingly, after about 75 epochs the metrics are showing more 
+ariability from epoch to epoch in the training data than in the validation data. Also, 
+there is no guarantee that criteria decrease monotonically, the mean squared error of 
+epoch $t$ can be higher than that of epoch $t-1$. We are looking for the results to 
+settle down and stabilize before calling the optimization completed. More epochs 
+need to be run in this example.
+Fortunately, you can continue where the previous run has left off. The following 
+code trains the network for another 100 epochs:
 
 
 ```{r ann_300}
@@ -190,10 +291,18 @@ firstANN %>%
 
 ---
 
-When training models this way you keep your eyes on the epoch history to study the behavior of the loss function and other metrics on training and test data sets. You have to make a judgement call as to when the optimization has stabilized and further progress is minimal. Alternatively, you can install a function that stops the optimization when certain conditions are met. 
+When training models this way you keep your eyes on the epoch history to study the 
+behavior of the loss function and other metrics on training and test data sets. You 
+have to make a judgement call as to when the optimization has stabilized and further
+progress is minimal. Alternatively, you can install a function that stops the 
+optimization when certain conditions are met. 
 
-This is done in the following code with the `callback_early_stopping` callback function (not run here). 
-The options of the early stopping function ask it to monitor the loss function on the validation data and stop the optimization when the criterion fails to decrease (`mode="min"`) over 10 epochs (`patience=10`). Any change of the monitored metric has to be at least 0.1 in magnitude to qualify as an improvement (`min_delta=.1`).
+This is done in the following code with the `callback_early_stopping` callback 
+function (not run here). The options of the early stopping function ask it to monitor 
+the loss function on the validation data and stop the optimization when the criterion
+fails to decrease (`mode="min"`) over 10 epochs (`patience=10`). Any change of the 
+monitored metric has to be at least 0.1 in magnitude to qualify as an improvement 
+(`min_delta=.1`).
 
 ```{r callback, eval=FALSE}
 early_stopping <- callback_early_stopping(monitor = 'val_loss', 
@@ -234,9 +343,17 @@ mean(abs(y[testid] - predvals))
 
 #### Random numbers 
 
-An aspect of Keras that can be befuddling to `R` users is lack of control over the random mechanisms during training. Neural networks rely on random numbers for picking starting values, selecting observations into mini batches, selecting neurons in dropout layers, etc. 
+An aspect of Keras that can be befuddling to `R` users is lack of control over the 
+random mechanisms during training. Neural networks rely on random numbers for picking
+starting values, selecting observations into mini batches, selecting neurons in 
+dropout layers, etc. 
 
-Since the code executes in Python, the `set.seed()` operation does not have the intended effect of fixing the sequence of generated random numbers. The underlying Python code relies on the NumPy random number generator. TensorFlow has its own random number generator on top of that. Python code that uses Keras with the TensorFlow backend needs to set the seed for the NumPy and the TensorFlow generator to obtain reproducible results:
+Since the code executes in Python, the `set.seed()` operation does not have the 
+intended effect of fixing the sequence of generated random numbers. The underlying 
+Python code relies on the NumPy random number generator. TensorFlow has its own 
+random number generator on top of that. Python code that uses Keras with the 
+TensorFlow backend needs to set the seed for the NumPy and the TensorFlow generator 
+to obtain reproducible results:
 
 ```{.default}
 from numpy.random import seed
@@ -247,13 +364,20 @@ set_random_seed(2)
 
 The `R` user is unfortunately out of luck.
 
-If it is any consolation, running Keras in Python might still generate non-reproducible results. You might also need to set the seed in the `random` Python library. Multi-threading operations on CPUs---and GPUs in particular---can produce  a non-deterministic order of operations.  
+If it is any consolation, running Keras in Python might still generate non-reproducible
+results. You might also need to set the seed in the `random` Python library. 
+Multi-threading operations on CPUs---and GPUs in particular---can produce  a 
+non-deterministic order of operations.  
 
-One recommendation to deal with non-deterministic results is training the model several times and averaging the results, essentially ensembling them. When a single training run takes several hours, doing it thirty times is not practical.
+One recommendation to deal with non-deterministic results is training the model 
+several times and averaging the results, essentially ensembling them. When a 
+ingle training run takes several hours, doing it thirty times is not practical.
 
 ### MNIST Image Classification {#sec-mnist-analysis-ann}
 
-We now return to the MNIST image classification data introduced in @sec-mnist-first-look. Recall that the data comprise 60,000 training images and 10,000 test images of handwritten digits (0--9). Each image has 28 x 28 pixels recording a grayscale value. 
+We now return to the MNIST image classification data introduced in @sec-mnist-first-look. 
+Recall that the data comprise 60,000 training images and 10,000 test images of 
+handwritten digits (0--9). Each image has 28 x 28 pixels recording a grayscale value. 
 
 The MNIST data is provided by Keras:
 
@@ -270,7 +394,12 @@ dim(x_train)
 dim(x_test)
 ```
 
-The images are stored as a three-dimensional array, and need to be reshaped into a matrix. For classification tasks with $k$ categories, Keras expects as the target values a matrix of $k$ columns. Column $k$ contains ones in the rows for observations where the observed category is $k$, and zeros otherwise. This is called one-hot encoding of the target variable. Luckily, `keras` has built-in functions that handle both tasks for us.
+The images are stored as a three-dimensional array, and need to be reshaped into 
+a matrix. For classification tasks with $k$ categories, Keras expects as the target 
+values a matrix of $k$ columns. Column $k$ contains ones in the rows for observations 
+where the observed category is $k$, and zeros otherwise. This is called one-hot 
+encoding of the target variable. Luckily, `keras` has built-in functions that 
+handle both tasks for us.
 
 ```{r chunk13}
 x_train <- array_reshape(x_train, c(nrow(x_train), 784))
@@ -307,14 +436,28 @@ x_train <- x_train / 255
 x_test  <- x_test / 255
 ```
 
-The target variable does not need to be scaled, the one-hot encoding together with the use of a softmax output function ensures that the output for each category is a value between 0 and 1, and that they sum to 1 across the 10 categories. We will interpret them as predicted probabilities that an observed image is assigned to a particular digit.
+The target variable does not need to be scaled, the one-hot encoding together with 
+the use of a softmax output function ensures that the output for each category is 
+a value between 0 and 1, and that they sum to 1 across the 10 categories. We will 
+interpret them as predicted probabilities that an observed image is assigned to a 
+particular digit.
 
-To classify the MNIST images we consider two types of neural networks in the remainder of this chapter: a multi layer ANN and a network without a hidden layer. The latter is a multi category perceptron and very similar to a multinomial logistic regression model. 
+To classify the MNIST images we consider two types of neural networks in the 
+remainder of this chapter: a multi layer ANN and a network without a hidden layer. 
+The latter is a multi category perceptron and very similar to a multinomial logistic 
+regression model. 
 
 #### Multi layer neural network
 
-We now train the network shown in @fig-mnist-2-layer, an ANN with two hidden layers. We also add dropout regularization layers after each fully connected hidden layer. The first layer specifies the input shape of 28 x 28 = 784. It has 128 neurons and ReLU activation. Why? Because. 
-This is followed by a first dropout layer with rate $\phi_1 = 0.3$, another fully connected hidden layer with 64 nodes and hyperbolic tangent activation function, a second dropout layer with rate $\phi_2 = 0.2$, and a final softmax output layer. Why? Because.
+We now train the network shown in @fig-mnist-2-layer, an ANN with two hidden layers.
+We also add dropout regularization layers after each fully connected hidden layer. 
+The first layer specifies the input shape of 28 x 28 = 784. It has 128 neurons and 
+ReLU activation. Why? Because. 
+
+This is followed by a first dropout layer with rate $\phi_1 = 0.3$, another fully 
+connected hidden layer with 64 nodes and hyperbolic tangent activation function, 
+a second dropout layer with rate $\phi_2 = 0.2$, and a final softmax output layer.
+Why? Because.
 
 ##### Setup the network
 
@@ -342,12 +485,14 @@ The `summary()` function let's us inspect whether we got it all right.
 ```{r mnist_ann_sum}
 summary(modelnn)
 ```
-The total number of parameters in this network is 109,386, a sizeable network but not a huge network.
+The total number of parameters in this network is 109,386, a sizeable network 
+but not a huge network.
 
 ##### Set up the optimization
 
 Next, we add details to the model to specify the fitting algorithm. 
-We fit the model by minimizing the categorical cross-entropy function and monitor the classification accuracy during the iterations.
+We fit the model by minimizing the categorical cross-entropy function and monitor 
+the classification accuracy during the iterations.
 
 ```{r mnist_annn_compile, warning=FALSE, message=FALSE}
 modelnn %>% compile(loss="categorical_crossentropy",
@@ -359,7 +504,8 @@ modelnn %>% compile(loss="categorical_crossentropy",
 ##### Fit the model
 
 We are ready to go. The final step is to supply training data, and fit the model.
-With a batch size of 128 observations, each epoch corresponds to 60,000 / 128 = 469 gradient evaluations.
+With a batch size of 128 observations, each epoch corresponds to 60,000 / 128 = 469
+gradient evaluations.
 
 
 ```{r mnist_data_fit, warning=FALSE, fig.align="center", out.width="90%"}
@@ -374,44 +520,72 @@ history <- modelnn %>%
 plot(history, smooth = FALSE)
 ```
 
-After about 10 epochs the training and validation accuracy are stabilizing although the loss continues to decrease. Interestingly, the accuracy and loss in the 10,000 image validation set is better than in the 60,000 image training data set. Considering that the grayscale values are entered into this neural network as 784 numeric input variables without taking into account any spatial arrangement of the pixels on the image, a classification accuracy of 96\% on unseen images is quite good. Whether that is sufficient depends on the application. 
+After about 10 epochs the training and validation accuracy are stabilizing although 
+the loss continues to decrease. Interestingly, the accuracy and loss in the 10,000 
+image validation set is better than in the 60,000 image training data set. Considering
+that the grayscale values are entered into this neural network as 784 numeric 
+input variables without taking into account any spatial arrangement of the pixels 
+on the image, a classification accuracy of 96\% on unseen images is quite good. 
+Whether that is sufficient depends on the application. 
 
-As we will see in @sec-deep-learning, neural networks that specialize in the processing of grid-like data such as images easily improve on this performance.
+As we will see in @sec-deep-learning, neural networks that specialize in the 
+processing of grid-like data such as images easily improve on this performance.
 
 ##### Calculate predicted categories
 
-To calculate the predicted categories for the images in the test data set, we use the `predict` function. The result of that operation is a vector of 10 predicted *probabilities* for each observation.
+To calculate the predicted categories for the images in the test data set, we use 
+the `predict` function. The result of that operation is a vector of 10 predicted 
+*probabilities* for each observation.
 
 
 ```{r, message=FALSE}
 predvals <- modelnn %>% predict(x_test)
 ```
 
-For the first image, the probabilities that its digit belongs to any of the 10 classes is given by this vector
+For the first image, the probabilities that its digit belongs to any of the 10 
+classes is given by this vector
 
 ```{r}
 round(predvals[1,],4)
 which.max(predvals[1,])
 ```
 
-The maximum probability is `{r} round(predvals[1,which.max(predvals[1,])],4)` in position `{r} which.max(predvals[1,])`. The image is classified as a "7" (the digits are 0-based).
+The maximum probability is `{r} round(predvals[1,which.max(predvals[1,])],4)` in 
+position `{r} which.max(predvals[1,])`. The image is classified as a "7" (the digits 
+are 0-based).
 
-`keras` provides the convenience function `k_argmax()` to perform this operation; it returns the index of the maximum value:
+`keras` provides the convenience function `k_argmax()` to perform this operation; 
+it returns the index of the maximum value:
 
 ```{r mnist_ann_pred, message=FALSE}
 predcl <- modelnn %>% predict(x_test) %>% k_argmax() 
-as.numeric(predcl[1:36])
-g_test[1:36]
+
 ```
 
-Only one of the images among the first 20 has been misclassified. The ninth image was labeled as a "5" but has been predicted as a "4". Looking at the softmax probabilities for image \#34, two categories have a sizable probability: the algorithm is not quite sure whether the image depicts a "5" or a "6".
+Which of the first 500 observations were misclassified?
 
 ```{r}
-round(predvals[34,],4)
+miscl <- which(as.numeric(predcl[1:500]) != g_test[1:500])
+miscl
+```
+
+```{r}
+cat("Observed value for obs # ", miscl[1], ":", g_test[miscl[1]],"\n")
+cat("Predicted valie for obs #", miscl[1], ":", as.numeric(predcl[miscl[1]]))
+```
+
+The first misclassified observation is #`{r} miscl[1]`. The observed digit value
+is `{r} g_test[miscl[1]]`, the predicted value is `{r} as.numeric(predcl[miscl[1]])`.
+The softmax probabilities for this observation show why it predicted
+category `{r} as.numeric(predcl[miscl[1]])`:
+
+```{r}
+round(predvals[miscl[1],],4)
 ```
 
 We can visualize the data with the `image` function. 
-The next code segment does this for the first and ninth observations.
+The next code segment does this for the first observation in the data set
+and for the first two mis-classified observations:
 
 ```{r, fig.asp=1, fig.align='center', out.width="70%"}
 # visualize the digits
@@ -422,26 +596,35 @@ plotIt <- function(id=1) {
           im, 
           col=gray((0:255)/255), 
           xaxt='n', 
-          main=paste("Image label: ",
-                     g_test[id], 
-                     " Predicted: ", 
-                     as.numeric(predcl[id])))
+          main=paste("Observation #",id,"--",
+                     "Image label: ",g_test[id], 
+                     " Predicted: ", as.numeric(predcl[id])))
 }
 
 plotIt(1)
-plotIt(9)
-plotIt(34)
+plotIt(miscl[1])
+plotIt(miscl[2])
 ```
 
-We see why predicting image \#34 correctly could be challenging. That is one ugly "4".
 
 #### Multinomial logistic regression {#sec-ann-multinomial}
 
-A 96\% accuracy is impressive, but maybe it is not good enough. In applications where the consequences of errors are high, this accuracy might be insufficient. Suppose we are using the trained network to recognize written digits on personal checks. Getting 400 out of 10,000 digits wrong would be unacceptable. Banks would deposit incorrect amounts all the time.
+A 96\% accuracy is impressive, but maybe it is not good enough. In applications 
+where the consequences of errors are high, this accuracy might be insufficient. 
+Suppose we are using the trained network to recognize written digits on personal 
+checks. Getting 400 out of 10,000 digits wrong would be unacceptable. Banks would 
+deposit incorrect amounts all the time.
 
-If that is the application for the trained algorithm, we should consider other models for these data. This raises an interesting question: how much did we gain by adding the layers of the network? If this is an effective strategy to increase accuracy then we could consider adding more layers. If not, then maybe we need to research an entirely different network architecture.
+If that is the application for the trained algorithm, we should consider other 
+models for these data. This raises an interesting question: how much did we gain 
+by adding the layers of the network? If this is an effective strategy to increase 
+accuracy then we could consider adding more layers. If not, then maybe we need to 
+research an entirely different network architecture.
 
-Before trying deeper alternatives we can establish one performance benchmark by removing the hidden layers and training what essentially is a single layer **perceptron** (@sec-ann-intro). This model has an input layer and an output layer. In terms of the `keras` syntax it is specified with a single layer:
+Before trying deeper alternatives we can establish one performance benchmark by 
+removing the hidden layers and training what essentially is a single layer **perceptron** 
+(@sec-ann-intro). This model has an input layer and an output layer. In terms of 
+the `keras` syntax it is specified with a single layer:
 
 ```{r mnist_perceptron, warning=FALSE}
 modellr <- keras_model_sequential() %>%
@@ -450,8 +633,12 @@ modellr <- keras_model_sequential() %>%
                 activation="softmax")
 summary(modellr)
 ```
-This is essentially a multinomial logistic regression model with a 10-category target variable and 784 input variables.
-The model is much smaller than the previous network (it has *only* 7,850 parameters) but is huge if we think of it as a multinomial logistic regression model. Many software packages for multinomial regression would struggle to fit a model of this size. When articulated as a neural network, training such a model is actually a breeze.
+This is essentially a multinomial logistic regression model with a 10-category 
+target variable and 784 input variables. The model is much smaller than the previous 
+network (it has *only* 7,850 parameters) but is huge if we think of it as a multinomial 
+logistic regression model. Many software packages for multinomial regression would 
+struggle to fit a model of this size. When articulated as a neural network, 
+training such a model is actually a breeze.
 
 We proceed just as before.
 
@@ -470,7 +657,10 @@ history <- modellr %>% fit(x_train,
 plot(history, smooth = FALSE)
 ```
 
-Even with just a single layer, the model performs quite well, its accuracy is around 92\%. Adding the additional layer in the previous ANN did improve the accuracy. On the other hand, it took more than 100,000 extra parameters to move from 92\% to 96\% accuracy. 
+Even with just a single layer, the model performs quite well, its accuracy is around
+92\%. Adding the additional layer in the previous ANN did improve the accuracy. 
+On the other hand, it took more than 100,000 extra parameters to move from 92\% 
+to 96\% accuracy. 
 
 
 

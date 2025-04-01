@@ -564,7 +564,7 @@ Note
 \]</span> or an average, <span class="math display">\[
 \ell(\boldsymbol{\theta}; \textbf{y}) = \frac{1}{n} \sum_{i=1}^n C_i(\boldsymbol{\theta};\textbf{y})
 \]</span> where <span class="math inline">\(C_i\)</span> is a measure of <strong>loss</strong> associated with observation <span class="math inline">\(i\)</span>.</p>
-<p>In least-squares estimation, for example, <span class="math inline">\(C_i(\boldsymbol{\theta};\textbf{y})\)</span> measures the squared-error loss between the observed data and the model <span class="math inline">\(f(\textbf{x};\boldsymbol{\theta})\)</span>: <span class="math display">\[
+<p>In least-squares estimation, for example, <span class="math inline">\(C_i(\boldsymbol{\theta};\textbf{y})\)</span> measures the squared error loss between the observed data and the model <span class="math inline">\(f(\textbf{x};\boldsymbol{\theta})\)</span>: <span class="math display">\[
 C_i(\boldsymbol{\theta};\textbf{y}) = \left(y_i - f(\textbf{x}_i;\boldsymbol{\theta}) \right)^2
 \]</span> In linear least squares, this loss simplifies to <span class="math display">\[
 C_i(\boldsymbol{\theta};\textbf{y}) = \left(y_i - \textbf{x}_i^\prime\boldsymbol{\theta}\right)^2
@@ -610,7 +610,7 @@ Caution
 <div id="fig-grad-descent1" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-grad-descent1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/GradientDescent1.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/GradientDescent1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+<a href="images/GradientDescent1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/GradientDescent1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-grad-descent1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;32.1: Minimizing a function <span class="math inline">\(f(x)\)</span> in one parameter <span class="math inline">\(x\)</span>.
@@ -620,7 +620,7 @@ Figure&nbsp;32.1: Minimizing a function <span class="math inline">\(f(x)\)</span
 <div id="fig-grad-descent2" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-grad-descent2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/GradientDescent2.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/GradientDescent2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+<a href="images/GradientDescent2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/GradientDescent2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-grad-descent2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;32.2: Minimizing a function <span class="math inline">\(f(x)\)</span> in one parameter <span class="math inline">\(x\)</span>.
@@ -631,7 +631,7 @@ Figure&nbsp;32.2: Minimizing a function <span class="math inline">\(f(x)\)</span
 <div id="fig-min-func-gradient" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-min-func-gradient-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/MinimizeFunction.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/MinimizeFunction.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/MinimizeFunction.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/MinimizeFunction.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-min-func-gradient-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;32.3: Find solution that minimizes a function in one parameter.
@@ -708,7 +708,7 @@ https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning
 \boldsymbol{\theta}^{[i+1]} = \boldsymbol{\theta}^{[i]} - \epsilon \boldsymbol{\delta}(\boldsymbol{\theta}^{[i]};y_i) \qquad i=1,\cdots,n-1
 \]</span> The true gradient is approximated as the gradient of the <span class="math inline">\(i\)</span><sup>th</sup> sample, and an update is calculated for each sample. This process of passing over the data and updating the parameters <span class="math inline">\(n\)</span> times repeats until convergence, often with a random shuffling of the data between passes to avoid cycling of the algorithm.</p>
 <p>Classical GD and SGD as presented here present the two extremes of calculating gradients between parameter updates: once for the entire sample, or for each observation. While the gradients computed in GD are very stable, they require the most computation between updates. The gradients in SGD on the other hand can be erratic and a poor approximation of the overall gradient. A compromise is <strong>minibatch</strong> gradient descent, where gradients are calculated for a small batch of observations, usually a few hundred.</p>
-<p>SGD with minibatches and backpropagation has become a standard in training neural networks. The original SGD has a fixed learning rate, and an obvious extension is to modify the learning rate, for example, decreasing <span class="math inline">\(\epsilon\)</span> with the iteration. The SGD algorithm then learns quickly early on and learns slower as the algorithm reaches convergence. Adaptive versions with a per-parameter learning rate are AdaGrad (Adaptive Gradient) and RMSProp (Root Mean Square Propagation). Since 2014, Adam-based optimizers (Adaptive Moment Estimation), an extension of RMSProp, have been used extensively in training neural networks due to their strong performance in practice.</p>
+<p>SGD with minibatches and backpropagation has become a standard in training neural networks. The original SGD has a fixed learning rate, and an obvious extension is to modify the learning rate, for example, decreasing <span class="math inline">\(\epsilon\)</span> with the iteration. The SGD algorithm then learns quickly early on and learns slower as the algorithm eaches convergence. Adaptive versions with a per-parameter learning rate are AdaGrad (Adaptive Gradient) and RMSProp (Root Mean Square Propagation). Since 2014, Adam-based optimizers (Adaptive Moment Estimation), an extension of RMSProp, have been used extensively in training neural networks due to their strong performance in practice.</p>
 <section id="backpropagation" class="level3">
 <h3 class="anchored" data-anchor-id="backpropagation">Backpropagation</h3>
 <p>Working with neural networks you will hear and read about <strong>backpropagation</strong>. This is not a separate optimization algorithm, but an efficient method of calculating the gradients in a multi layer neural network. Because these networks are based on chaining transformations, you can express the gradient with respect to a parameter by the chain rule of calculus.</p>
@@ -739,7 +739,7 @@ https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning
 <div id="fig-dropout-learning" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-dropout-learning-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/DropoutLearning.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4"><img src="images/DropoutLearning.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/DropoutLearning.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4"><img src="images/DropoutLearning.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dropout-learning-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;32.4: Dropout in input and hidden layer.
@@ -757,7 +757,7 @@ Figure&nbsp;32.4: Dropout in input and hidden layer.
 <h4 class="anchored" data-anchor-id="sec-ann-vanishing-gradients">Vanishing gradients</h4>
 <p>The <strong>vanishing gradient</strong> problem describes the issue where the gradient values become very small and learning of the network slows down (or stops), simply because the gradients are small, not because we have found a minimum of the objective function. This affects deep networks more than shallow networks and the early layers suffer more from vanishing gradients than deep layers since the gradient is accumulated by moving backwards through the network.</p>
 <p>The intuition for this phenomenon is that the overall gradient has a certain value, distributed across all the layers. As layers are chaining transformations, the overall derivative is essentially a long chain rule of products. If the values multiplied in this operation are small, the overall product can be tiny—the gradient is numerically vanishing.</p>
-<p>The vanishing gradient problem was more serious before the discovery of ReLU activation. The use of the sigmoid activation function contributed to vanishing gradients and limited the ability to train networks with many layers. To see why, consider the sigmoid activation <span class="math inline">\(\sigma(x) = 1/(1+\exp\{-x\})\)</span> and its derivative. Since <span class="math inline">\(\sigma(x)\)</span> is the c.d.f. of the standard logistic distribution, the derivative is the standard logistic density function <span class="math display">\[
+<p>The vanishing gradient problem was more serious before the discovery of ReLU activation. The use of the sigmoid activation function contributed to vanishing gradients and limited the ability to train networks with many layers. To see why, consider the sigmoid activation <span class="math inline">\(\sigma(x) = 1/(1+\exp\{-x\})\)</span> and its derivative. Since <span class="math inline">\(\sigma(x)\)</span> is the c.d.f. of the standard logistic distribution, the derivative is the standard ogistic density function <span class="math display">\[
 f(x) = \frac{\partial \sigma(x)}{\partial x} = \frac{\exp^{-x}}{\left(1+\exp^{-x} \right)^2}
 \]</span></p>
 <div class="cell" data-layout-align="center">
@@ -786,9 +786,9 @@ Figure&nbsp;32.5: Density function of the standard logistic distribution.
 <p>To address the dying ReLU problem and to help with the vanishing gradient issue, the <strong>leaky</strong> ReLU activation function has been proposed: <span class="math display">\[
 \sigma(x) = \left \{ \begin{array}{ll} x &amp; x &gt; 0 \\ \alpha x &amp; x \le 0\end{array}\right .
 \]</span> Leaky ReLU returns a small negative value when <span class="math inline">\(x &lt; 0\)</span>, leading to a non-zero activation and a non-zero (albeit constant, <span class="math inline">\(\alpha\)</span>) gradient. Values for <span class="math inline">\(\alpha\)</span> in the range of 0.01 to 0.1 are common.</p>
-<p>Related activation functions that avoid the dying ReLU issue are the <strong>exponential linear unit</strong> (ELU) function <span class="math display">\[
+<p>Related activation functions that avoid the dying ReLU issue are the *exponential linear unit<strong> (ELU) function <span class="math display">\[
 \sigma(x) = \left \{ \begin{array}{ll} x &amp; x &gt; 0 \\ \alpha (e^x-1) &amp; x \le 0 \end{array}\right .
-\]</span> and the <strong>Gaussian ELU</strong> <span class="math display">\[
+\]</span> and the </strong>Gaussian ELU** <span class="math display">\[
 \sigma(x) = x \,\Phi(x)
 \]</span> where <span class="math inline">\(\Phi(x)\)</span> is the standard Gaussian cumulative distribution function (<a href="#fig-relu-type-funcs" class="quarto-xref">Figure&nbsp;<span>32.6</span></a>).</p>
 <div class="cell" data-layout-align="center">
@@ -815,7 +815,7 @@ Check this resource for comments on scaling in neural networks and
 Python code
 https://machinelearningmastery.com/how-to-improve-neural-network-stability-and-modeling-performance-with-data-scaling/
 --->
-<p>Scaling the input variables is typically done for statistical learning methods that depend on measures of distance (clustering) or where the scale of inputs affects the distribution of variability (principal component analysis). In linear regression scaling the inputs by standardizing or normalizing is not really necessary unless the differences in scales across the inputs create numerical instability. Methods that regularize such as ridge or lasso regression often apply scaling internally to make sure that a common adjustment factor (the regularization penalty) applies equally to all coefficients.</p>
+<p>Scaling the input variables is typically done for statistical learning methods that depend on measures of distance (clustering) or where the scale of inputs affects the distribution of variability (principal component analysis). In linear regression scaling the inputs by standardizing or normalizing is not really necessary unless he differences in scales across the inputs create numerical instability. Methods that regularize such as ridge or lasso regression often apply scaling internally to make sure that a common adjustment factor (the regularization penalty) applies equally to all coefficients.</p>
 <p>Where do artificial neural networks fit in this? Should you consider scaling the input variables when training ANNs?</p>
 <p>The answer is “Yes, usually you should” for the following reasons:</p>
 <ul>
@@ -1423,7 +1423,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"loop":false,"openEffect":"zoom","closeEffect":"zoom","descPosition":"bottom","selector":".lightbox"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","loop":false,"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

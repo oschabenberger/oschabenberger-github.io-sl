@@ -10,30 +10,79 @@ $$
 
 ### A Look Back
 
-Few analytic methods have occupied conversations in recent years as neural networks. They seem at times inscrutable and complex, and mysteriously powerful. Yet neural networks, or better **artificial neural networks** (ANN), had their ups and downs since the **perceptron** was described by @McCullochPitts.
+Few analytic methods have occupied conversations in recent years as neural networks. 
+They seem at times inscrutable and complex, and mysteriously powerful. Yet neural 
+networks, or better **artificial neural networks** (ANN), had their ups and downs 
+since the **perceptron** was described by @McCullochPitts.
 
-Once, ANNs were thought to hold the key to artificial intelligence (AI) and that within a short period of time machines based on neural networks would be capable to perform any task. These exuberant expectations could not be met. From the peak of inflated expectations the field of AI slumped into the trough of disillusionment and the first AI winter had set in. It was not fashionable in the 1980s or 1990s to say you were working on artificial intelligence. Neural networks were just another supervised learning approach to predict or classify a target variable. Compare the situation to today, when it is not fashionable to say you are working on anything but AI.
+Once, ANNs were thought to hold the key to artificial intelligence (AI) and that 
+within a short period of time machines based on neural networks would be capable
+to perform any task. These exuberant expectations could not be met. From the peak 
+of inflated expectations the field of AI slumped into the trough of disillusionment
+and an AI winter set in. It was not fashionable in the 1980s or 1990s 
+to say you were working on artificial intelligence. Neural networks were just 
+another supervised learning approach to predict or classify a target variable. 
+Compare the situation to today, when it is not fashionable to say you are working 
+on anything but AI.
 
-Then, around 2010, everything changed---again. Classification models built on specialized neural networks improved greatly in performance. In 
-2012, AlexNet, a **convolutional neural network** (CNN, a special type of artificial neural network for image data), had the best top-5 error rate in the annual [ImageNet](https://www.image-net.org/index.php) competition, beating out human interpreters for the first time. The task in the ImageNet competition is to recognize the objects on images and correctly associate them with 1,000 categories.
+Then, around 2010, everything changed---again. Classification models built on 
+specialized neural networks improved greatly in performance. In 2012, AlexNet, a 
+**convolutional neural network** (CNN, a special type of artificial neural network 
+for image data), had the best top-5 error rate in the annual 
+[ImageNet](https://www.image-net.org/index.php) competition, beating out human 
+interpreters for the first time. The task in the ImageNet competition is to recognize 
+the objects on images and correctly associate them with 1,000 categories.
 
-This was a watershed moment in the history of artificial intelligence. Algorithms outperforming their human masters is not too surprising to us. After all, we build algorithms of all kinds for exactly that purpose: to perform a task repeatedly and reliably at a scale beyond human capacity. Who would want to trade a calculator for doing arithmetic themselves? The watershed moment occurred because an ANN bested human interpreters in a task that many previously thought was squarely in the human domain: *sensing* the world.
+This was a watershed moment in the history of artificial intelligence. Algorithms 
+outperforming their human masters is not too surprising to us. After all, we build 
+algorithms of all kinds for exactly that purpose: to perform a task repeatedly and 
+reliably at a scale beyond human capacity. Who would want to trade a calculator for
+doing arithmetic themselves? The watershed moment occurred because an ANN bested 
+human interpreters in a task that many previously thought was squarely in the human 
+domain: *sensing* the world.
 
-Up until now, computerized systems and algorithms were great at solving problems that are [difficult for humans]{.underline} but [easy for computers]{.underline}. Those are problems that can be described by formal rules and logic. Performing mathematical operations and capturing the tax code in software are examples.
+Up until now, computerized systems and algorithms were great at solving problems 
+that are [difficult for humans]{.underline} but [easy for computers]{.underline}. 
+Those are problems that can be described by formal rules and logic. Performing 
+mathematical operations and capturing the tax code in software are examples.
 
-The CNN that won ImageNet solved a problem that is [easy for humans]{.underline} but was so far [difficult for computers]{.underline}: interpreting the natural world. We can look at the world and immediately recognize the objects in our field of vision: a tree here, a person there--we might know their name--, a flower pot on top of a table. This task requires a large amount of knowledge about the world, yet it is something we can do intuitively. How was it possible that now an algorithm trained on data had become better at this task than us? 
+The CNN that won ImageNet solved a problem that is [easy for humans]{.underline} 
+but was so far [difficult for computers]{.underline}: interpreting the natural world. 
+We can look at the world and immediately recognize the objects in our field of 
+vision: a tree here, a person there--we might know their name--, a flower pot on 
+top of a table. This task requires a large amount of knowledge about the world, 
+yet it is something we can do intuitively. How was it possible that now an algorithm 
+trained on data had become better at this task than us? 
 
 Had it really?
 
-AlexNet had not become more knowledgeable about the world. The ANN was not capable of synthesizing information and concepts and deriving the nature of objects from it. It was not intelligent. The ANN was trained to be a pattern matching machine. Using many labeled training examples, where the objects on an image had been identified by humans for the benefit of the algorithm, the network learned to associate labels with certain patterns in the image pixels. When presented with a new image, the algorithm can then map the presented pixels against the learned associations and predict with surprising accuracy which objects it "sees" on the image.
+AlexNet had not become more knowledgeable about the world. The ANN was not capable 
+of synthesizing information and concepts and deriving the nature of objects from it. 
+It was not intelligent. The ANN was trained to be a pattern matching machine. Using 
+many labeled training examples, where the objects on an image had been identified by 
+humans for the benefit of the algorithm, the network learned to associate labels with 
+certain patterns in the image pixels. When presented with a new image, the algorithm 
+can then map the presented pixels against the learned associations and predict with 
+surprising accuracy which objects it "sees" on the image.
 
-The pattern matching that occurs in our brains intuitively based on colors, shapes, edges, movement, context, etc., had been replaced with a crude pattern matching based on pixels. Exchange the pixels with some other means of encoding the visual information, and the neural network would fail miserably, unless it is retrained on the new type of data.
+The pattern matching that occurs in our brains intuitively based on colors, shapes, 
+edges, movement, context, etc., had been replaced with a crude pattern matching 
+based on pixels. Exchange the pixels with some other means of encoding the visual 
+information, and the neural network would fail miserably, unless it is retrained 
+on the new type of data.
 
-Still, training an algorithm to perform a complex task as image recognition so well was remarkable. Other examples of neural network-based algorithms moving into the domain of easy-for-human specialties came from the fields of robotics, autonomous operations (driving), natural language understanding (reading, writing, summarization, interpretation), etc. That begged the questions
+Still, training an algorithm to perform a complex task as image recognition so 
+well was remarkable. Other examples of neural network-based algorithms moving into 
+the domain of easy-for-human specialties came from the fields of robotics, autonomous
+operations (driving), natural language understanding (reading, writing, summarization, 
+interpretation), etc. That begged the questions
 
 * How was this possible?
 
-* Why now? Neural networks had been around since the 1940s? Why did it take another 6 decades to improve their performance. Regression has been around for a long time as well and it is not as if we are suddenly experiencing a massive "regression revolution".
+* Why now? Neural networks had been around since the 1940s? Why did it take 
+another 6 decades to improve their performance? Regression has been around for a 
+long time as well and it is not as if we are suddenly experiencing a massive 
+"regression revolution".
 
 ### What Changed?
 
@@ -49,52 +98,118 @@ Several major developments came together to raise the performance and profile of
 
 5. Dedicated software packages for deep learning
 
-The performance of neural networks to this point had been limited by the size of the networks and the computational resources required to train them. While a large statistical model might have a thousand parameters, this would constitute a pretty small neural network by today's standards. Networks consist of layer and those with more layers, so-called deep neural networks, tend to abstract concepts better than shallow networks. This increases the number of parameters dramatically, however. Millions of parameters is not uncommon in deep neural networks. GPT-1, released in June 2018 had 117 million parameters. GPT-2, released in February 2019 had 1.5 **b**illion parameters. GPT-3.5, released in November 2022 featured 175 billion parameters.
+The performance of neural networks to this point had been limited by the size of 
+the networks and the computational resources required to train them. While a large
+statistical model might have a thousand parameters, this would constitute a pretty
+small neural network by today's standards. Networks consist of layers and those with 
+more layers, so-called **deep** neural networks, tend to abstract concepts better 
+than shallow networks. This increases the number of parameters dramatically, however. 
+Millions of parameters is not uncommon in deep neural networks. GPT-1, released in 
+June 2018 had 117 million parameters. GPT-2, released in February 2019 had 1.5 
+**b**illion parameters. GPT-3.5, released in November 2022 featured 175 billion 
+parameters.
 
-The internet facilitated the collection (vacuuming) of data. In object classification, acceptable performance can be achieved with about 5,000 training observations for each category to be classified. If you want an algorithm to be good at identifying cats, you need 5,000 pictures of cats. To achieve human-level performance in categorization you need about 10 million observations. The massive data sets needed to train deep neural networks well are now available. The rise of the large language models (LLMs) such as GPT would probably not have been possible without the internet as the training data.
+The internet facilitated the collection (vacuuming) of data. In object classification, 
+acceptable performance can be achieved with about 5,000 training observations for 
+each category to be classified. If you want an algorithm to be good at identifying 
+cats, you need 5,000 pictures of cats. To achieve human-level performance in 
+categorization you need about 10 million observations. The massive data sets needed 
+to train deep neural networks well are now available. It is estimated that the 
+number of cat pictures on the internet rose from 1.3 billion in 2010 to over 6.5
+billion in 2023. The rise of the large language models (LLMs) such as GPT would 
+probably not have been possible without the internet as the training data.
 
-Estimating such a large number of parameters is a formidable problem, made more complex by the nonlinear nature of neural networks and their over-parameterization. A single computer limits the size of networks that can be trained. Distributed computing platforms in which relatively cheap compute servers are stitched together into large high-performance computing arrays provided the necessary horsepower to train large networks. Cloud computing made these computing resources widely available to anyone with a credit card. 
+Estimating such a large number of parameters is a formidable problem, made more 
+complex by the nonlinear nature of neural networks and their over-parameterization. 
+A single computer limits the size of networks that can be trained. Distributed 
+computing platforms in which relatively cheap compute servers are stitched together 
+into large high-performance computing arrays provided the necessary horsepower 
+to train large networks. Cloud computing made these computing resources widely 
+available to anyone with a credit card. 
 
-Maybe more importantly, the use of GPUs (graphical processing units) instead of CPUs changed the computational equations. It turns out that much of the math in training neural networks is similar to the type of vector operations that occur in processing images. The GPU chips that accelerated graphics operations have become the dominating chip architecture for AI models. NVIDIA, maker of GPUs, evolved from a company supporting video gaming and graphics rendering to one of the most valuable companies on the planet. Its market capitalization was about \$10 billion in 2014. It has eclipsed \$3 trillion in June 2024. As of this writing, NVIDIA is worth more than Meta, Tesla, Netflix, AMD, Intel, and IBM **combined**.
+Maybe more importantly, the use of GPUs (graphical processing units) instead of 
+CPUs changed the computational equations. It turns out that much of the math in 
+training neural networks is similar to the type of vector operations that occur in 
+processing images. The GPU chips that accelerated graphics operations have become 
+the dominating chip architecture for AI models. NVIDIA, maker of GPUs, evolved 
+from a company supporting video gaming and graphics rendering to one of the most v
+aluable companies on the planet. Its market capitalization was about \$10 billion 
+in 2014. It has eclipsed \$3 trillion in June 2024. As of this writing, NVIDIA 
+is worth more than Meta, Tesla, Netflix, AMD, Intel, and IBM **combined**.
 
-Initially, neural networks were used to process continuous input data, not unlike traditional regression or classification methods. The earliest applications of neural networks was as binary classifiers. Specialized networks were developed to process unstructured data such as text, images, audio. Convolutional neural networks revolutionized image processing and recurrent neural networks had a large impact on natural language processing. Increasingly, these architectures are now being replaced by **transformer models** such as GPT, BERT, or LLama.
+Initially, neural networks were used to process continuous input data, not unlike 
+traditional regression or classification methods. The earliest applications of 
+neural networks was as binary classifiers. Specialized networks were developed to 
+process unstructured data such as text, images, audio. Convolutional neural networks 
+revolutionized image processing and recurrent neural networks had a large impact 
+on natural language processing. Increasingly, these architectures are now being 
+replaced by **transformer models** such as GPT, BERT, or LLama.
 
 ---
 
-Because sensing the world and operating in it takes more brain than brawn, and partly because the term neural network invoked comparisons with human brain function, it was thought that---finally---machines are besting us and coming for us. The era of **artificial general intelligence** (AGI) was finally upon us. Not so fast.
+Because sensing the world and operating in it takes more brain than brawn, and 
+partly because the term neural network invoked comparisons with human brain function, 
+it was thought that---finally---machines are besting us and coming for us. 
+The era of **artificial general intelligence** (AGI) was finally upon us--so they 
+thought. Not so fast.
 
-Well, that did not happen, and it probably never will based on algorithms just trained on data. Although we are today experiencing another massive shift in AI capabilities thanks to transformer models. These are basically very complex forms of artificial neural networks. Still, I firmly believe that no artificial general intelligence (AGI) will be based on a probabilistic prediction algorithm trained on historical data.
+Well, that did not happen, the machines did not eliminate us and they did not
+take away all our jobs. It probably never will happen based on algorithms just 
+trained on data. Although we are today experiencing another massive shift in AI 
+capabilities thanks to transformer models. These are basically very complex forms 
+of artificial neural networks. Still, I firmly believe that no artificial general 
+intelligence (AGI) will be based on a probabilistic prediction algorithm trained 
+on historical data.
 
-Neural networks do not mimic the functioning of the human brain. Their fundamental building block is called a neuron, and that is where the similarities end. A neuron in an ANN does not at all work like a neuron in the brain. At best a parallel can be drawn because neurons in an ANN are connected and "activated" through weights.
+Neural networks do not mimic the functioning of the human brain. Their fundamental
+building block is called a neuron, and that is where the similarities end. A neuron 
+in an ANN does not at all work like a neuron in the brain. At best a parallel can 
+be drawn because neurons in an ANN are connected and "activated" through weights.
 
-So let's start figuring out what makes artificial neural networks tick.
+So let's start investigating what makes artificial neural networks tick.
 
 ### The Basics
 
-Artificial neural networks are supervised learning tools. Like other techniques in this family of algorithms they convert an input material (data) through an algorithm into the prediction or classification of a target variable (@fig-sup-learning).
+Artificial neural networks are supervised learning tools. Like other techniques 
+in this family of algorithms they convert an input material (data) through an 
+algorithm into the prediction or classification of a target variable (@fig-sup-learning).
 
 ![Supervised learning in a nutshell.](images/SupervisedLearning.png){#fig-sup-learning fig-align="center" width=80% .lightbox}
 
-Neural networks can take as input any type of data and produce any type of output. @fig-sup-learning displays this as predicting or classifying a target variable $Y$, but keep in mind that such a prediction could also be the most likely word in the translation of an input sequence of words into an output sequence of words in a different language. The stuff that happens in between input and output is organized in layers of transformations. The output of one layer is the input to the next layer. Each layer is associated with parameters, linear predictors, and nonlinear transformations.
+Neural networks can take as input any type of data and produce any type of output. 
+@fig-sup-learning displays this as predicting or classifying a target variable $Y$, 
+but keep in mind that such a prediction could also be the most likely word in the 
+translation of an input sequence of words into an output sequence of words in a 
+different language. The stuff that happens in between input and output is organized 
+in layers of transformations. The output of one layer is the input to the next layer. 
+Each layer is associated with parameters, linear predictors, and nonlinear transformations.
 
 A network with a single hidden layer is shown in @fig-sup-learning-ann. This brings the total number of layers in the network to three: 
 
-* an input layer with data
-* a hidden layer that transforms the input data somehow and passes it on to an output layer
-* an output layer that transforms the results from the hidden layer into the goal of the analysis, a prediction or a classification.
+* an **input** layer with data
+* a **hidden** layer that transforms the input data somehow and passes it on t
+o an output layer
+* an **output** layer that transforms the results from the hidden layer into the 
+goal of the analysis, a prediction or a classification.
 
 
 ![Supervised learning with single layer ANN.](images/SupervisedLearningANN.png){#fig-sup-learning-ann fig-align="center" width=80% .lightbox}
 
-The earliest networks were called **perceptrons**, they did not have a hidden layer. A single layer perceptron thus processes the input data and transforms it directly into the output (@fig-perceptron). 
+The earliest networks were called **perceptrons**, they did not have a hidden 
+layer. A single layer perceptron thus processes the input data and transforms it 
+directly into the output (@fig-perceptron). 
 
 ![Perceptron and single layer network.](images/Perceptron_Network.png){#fig-perceptron fig-align="center" width=80% .lightbox}
 
-That sounds a lot like any other statistical model where the mean of the target is modeled as a function of inputs and parameters:
+That sounds a lot like any other statistical model where the mean of the target 
+is modeled as a function of inputs and parameters:
 $$
 \Exp[Y] = f(x_1,x_2,\cdots,x_p,\theta_1, \cdots,\theta_k)
 $$
-Neural networks are in fact often viewed as tools to approximate unknown functions. The basic idea is that the approximation can be achieved by using a nonlinear transformation, called an **activation**, of a linear function. Simplifying our model we can then write $f(x_1,x_2,\cdots,x_p,\theta_1, \cdots,\theta_k)$ as 
+Neural networks are in fact often viewed as tools to approximate unknown functions. 
+The basic idea is that the approximation can be achieved by using a nonlinear 
+transformation, called an **activation**, of a linear function. Simplifying our 
+model we can then write $f(x_1,x_2,\cdots,x_p,\theta_1, \cdots,\theta_k)$ as 
 $$
 g(\beta_0 + \beta_1 x_1 + \cdots\beta_p x_p)
 $$

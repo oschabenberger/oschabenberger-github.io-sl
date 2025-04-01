@@ -74,9 +74,11 @@ Some care seems warranted in making the claim that boosted models do not overfit
 As Andreas Buja points out in the discussion of the paper by @Friedman_et_al_2000,
 the 
 
->*500 or so stumps and twigs that I have seen fitted in a single boosting fit would 
+:::{.quote}
+500 or so stumps and twigs that I have seen fitted in a single boosting fit would 
 come crashing down if they were fitted jointly. Therefore, the essence of the 
-protection against overfit is in the suboptimality of the fitting method.*
+protection against overfit is in the suboptimality of the fitting method.
+:::
 
 In other words, using stumps in boosting allows one to start small and get better.
 Boosting a strong learner does not provide the same protection against overfitting.
@@ -109,7 +111,7 @@ and the goal is to classify $Y$ based on the inputs $X_1,\cdots,X_p$.
     
 * 3. The final classifier is 
 $$
-f(\bx) = \text{sign}\left( \sum_{m=1}^m\alpha_m f_m(\bx) \right)
+f(\bx) = \text{sign}\left( \sum_{m=1}^M \alpha_m f_m(\bx) \right)
 $$
 
 The target variable for binary classification is coded $\{-1,1\}$ instead of 
@@ -134,7 +136,7 @@ classifier $f_m(\bx)$.
 If $\text{err}_m = 0.5$, the classifier $f_m(\bx)$ is as good as a random guess and 
 $\alpha_m = 0$. The weights of the misclassified observations will not change.
 If the classification error is lower---$f_m(\bx)$ performs better than a random
-guess---, $\alpha_m > 1$ and the weights of the misclassified observations 
+guess---then $\alpha_m > 1$ and the weights of the misclassified observations 
 receive a positive boost (@fig-adaboost-weights).
 
 ```{r, echo=FALSE, fig.align="center", out.width="90%"}
@@ -182,7 +184,7 @@ AdaBoost algorithm above are modified as follows:
     f_m(\bx) = \frac{1}{2} \log\left\{\frac{p_m(\bx)}{1-p_m(\bx)}\right\}
     $$
     * (c) Recompute the weights $w_i \leftarrow w_i\exp\{-y_i f_m(\bx_i)\}$ and
-    renormalize the weigths so that $\sum w_i =1 $.
+    renormalize the weights so that $\sum w_i =1$.
     
 This formulation is helpful to show that adaptive boosting is equivalent to fitting
 an additive model in a forward-stagewise manner, where the loss function is 

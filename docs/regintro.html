@@ -627,7 +627,7 @@ Y_i = \beta_0 + \beta_1 x_{i} + \beta_2 x_{i}^2 + \beta_3 x_i^3 + \cdots + \epsi
 <div id="fig-smoothing-mindmap" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-smoothing-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/SmoothingMindMap.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/SmoothingMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/SmoothingMindMap.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/SmoothingMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-smoothing-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;6.2: Different approaches to structuring the regression problem.
@@ -707,7 +707,7 @@ Figure&nbsp;6.3: Local linear trends approximate an overall trend
 <div id="fig-making-models-local" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-making-models-local-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/MakingModelsLocal.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/MakingModelsLocal.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+<a href="images/MakingModelsLocal.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/MakingModelsLocal.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-making-models-local-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;6.4: Techniques by which models can be localized
@@ -885,10 +885,10 @@ K(x_0,x_i) = I(||x_i-x_0|| \le ||x_{(k)} - x_0 ||)
 <li><p><span class="math inline">\(p=10\)</span> covers <span class="math inline">\(0.1^{1/10} = 0.79\)</span> of the range of <span class="math inline">\(X_1, \cdots, X_{10}\)</span></p></li>
 </ul>
 <p>As <span class="math inline">\(p\)</span> increases, you have to increase the “neighborhood” to capture a constant fraction of the observations. Eventually, there is nothing local about these neighborhoods and many points will be near the edge of the data space. If you place 50 observations in 20 dimensions no two observations are close to each other.</p>
-<div id="fig-curse-dimensionality" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center" width="80%">
+<div id="fig-curse-dimensionality" class="quarto-figure quarto-figure-center quarto-float anchored" width="80%" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-curse-dimensionality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/CurseOfDimensionality.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/CurseOfDimensionality.png" id="fig-curse-dimensionality" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:80.0%"></a>
+<a href="images/CurseOfDimensionality.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/CurseOfDimensionality.png" id="fig-curse-dimensionality" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-curse-dimensionality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;6.5
@@ -1487,7 +1487,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","openEffect":"zoom","loop":false,"descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

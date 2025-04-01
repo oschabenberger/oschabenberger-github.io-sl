@@ -603,9 +603,9 @@ window.Quarto = {
 <p>However, one can also find examples where boosting stumps does not outperform a single, carefully constructed, deep tree. The choice of the base learner can be important in boosting applications. <span class="citation" data-cites="Sutton_2005">Sutton (<a href="references.html#ref-Sutton_2005" role="doc-biblioref">2005</a>)</span> provides a hint on how to decide on the base tree: when input effects are additive, stumps work well. If interactions between the inputs are expected, increase the depth of the base tree. In the same vein, <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">2021, 347</a>)</span> recommend to set the number of splits equal to the largest expected interaction. For example, if three-way interactions exist between the inputs, set the number of splits to three.</p>
 <hr>
 <p>An often mentioned benefit of boosting is protection against overfitting. Some care seems warranted in making the claim that boosted models do not overfit. As Andreas Buja points out in the discussion of the paper by <span class="citation" data-cites="Friedman_et_al_2000">J. Friedman, Hastie, and Tibshirani (<a href="references.html#ref-Friedman_et_al_2000" role="doc-biblioref">2000</a>)</span>, the</p>
-<blockquote class="blockquote">
-<p><em>500 or so stumps and twigs that I have seen fitted in a single boosting fit would come crashing down if they were fitted jointly. Therefore, the essence of the protection against overfit is in the suboptimality of the fitting method.</em></p>
-</blockquote>
+<div class="quote">
+<p>500 or so stumps and twigs that I have seen fitted in a single boosting fit would come crashing down if they were fitted jointly. Therefore, the essence of the protection against overfit is in the suboptimality of the fitting method.</p>
+</div>
 <p>In other words, using stumps in boosting allows one to start small and get better. Boosting a strong learner does not provide the same protection against overfitting. Buja also concludes that this focus on using many suboptimal estimators explains why boosting was invented in computer science and machine learning rather than in statistics. The idea of taking suboptimal steps is foreign to statisticians who would rather find the grand optimal estimator.</p>
 </section>
 <section id="sec-boost-ada" class="level2" data-number="20.2">
@@ -637,7 +637,7 @@ window.Quarto = {
 </ul></li>
 <li><ol start="3" type="1">
 <li>The final classifier is <span class="math display">\[
-f(\textbf{x}) = \text{sign}\left( \sum_{m=1}^m\alpha_m f_m(\textbf{x}) \right)
+f(\textbf{x}) = \text{sign}\left( \sum_{m=1}^M \alpha_m f_m(\textbf{x}) \right)
 \]</span></li>
 </ol></li>
 </ul>
@@ -646,7 +646,7 @@ f(\textbf{x}) = \text{sign}\left( \sum_{m=1}^m\alpha_m f_m(\textbf{x}) \right)
 w_i \leftarrow w_i\exp\{\alpha_m 1(y_i \ne f_m(\textbf{x}_i)\}
 \]</span></p>
 <p>If observation <span class="math inline">\(i\)</span> is correctly classified by the <span class="math inline">\(m\)</span><sup>th</sup> classifier, then <span class="math inline">\(y_i = f_m(\textbf{x}_i)\)</span> and the weight does not change. On the other hand, if observation <span class="math inline">\(i\)</span> is not correctly classified, then its weight is <strong>boosted</strong> by the amount <span class="math inline">\(\exp\{\alpha_m\}\)</span>. <span class="math inline">\(\alpha_m\)</span> in turn depends on the (weighted) misclassification rate of the classifier <span class="math inline">\(f_m(\textbf{x})\)</span>.</p>
-<p>If <span class="math inline">\(\text{err}_m = 0.5\)</span>, the classifier <span class="math inline">\(f_m(\textbf{x})\)</span> is as good as a random guess and <span class="math inline">\(\alpha_m = 0\)</span>. The weights of the misclassified observations will not change. If the classification error is lower—<span class="math inline">\(f_m(\textbf{x})\)</span> performs better than a random guess—, <span class="math inline">\(\alpha_m &gt; 1\)</span> and the weights of the misclassified observations receive a positive boost (<a href="#fig-adaboost-weights" class="quarto-xref">Figure&nbsp;<span>20.1</span></a>).</p>
+<p>If <span class="math inline">\(\text{err}_m = 0.5\)</span>, the classifier <span class="math inline">\(f_m(\textbf{x})\)</span> is as good as a random guess and <span class="math inline">\(\alpha_m = 0\)</span>. The weights of the misclassified observations will not change. If the classification error is lower—<span class="math inline">\(f_m(\textbf{x})\)</span> performs better than a random guess—then <span class="math inline">\(\alpha_m &gt; 1\)</span> and the weights of the misclassified observations receive a positive boost (<a href="#fig-adaboost-weights" class="quarto-xref">Figure&nbsp;<span>20.1</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-adaboost-weights" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -680,7 +680,7 @@ Figure&nbsp;20.1: <span class="math inline">\(\alpha_m\)</span> and <span class=
   \]</span></li>
 </ol></li>
 <li><ol start="3" type="a">
-<li>Recompute the weights <span class="math inline">\(w_i \leftarrow w_i\exp\{-y_i f_m(\textbf{x}_i)\}\)</span> and renormalize the weigths so that $w_i =1 $.</li>
+<li>Recompute the weights <span class="math inline">\(w_i \leftarrow w_i\exp\{-y_i f_m(\textbf{x}_i)\}\)</span> and renormalize the weights so that <span class="math inline">\(\sum w_i =1\)</span>.</li>
 </ol></li>
 </ul></li>
 </ul>
