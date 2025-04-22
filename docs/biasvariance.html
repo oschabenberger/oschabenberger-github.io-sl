@@ -54,7 +54,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -617,7 +637,7 @@ Figure&nbsp;2.4: Smoothing splines with 6 degrees of freedom fit to the four dat
 </figcaption>
 </figure>
 </div>
-<p>The splines show more flexibility than the linear regression lines and follow the observed data more closely. The curviness of the true function <span class="math inline">\(f(x)\)</span> is echoed in the curviness of the splines, but some splines seem to try to connect the dots more than they are picking up the true trend. Because the splines follow the observed data more closely, the four functions show more variability from sample to sample than the linear regression lines.</p>
+<p>The splines show more flexibility than the linear regression lines and follow the observed data more closely. The curviness of the true function <span class="math inline">\(f(x)\)</span> is echoed i n the curviness of the splines, but some splines seem to try to connect the dots more than they are picking up the true trend. Because the splines follow the observed data more closely, the four functions show more variability from sample to sample than the linear regression lines.</p>
 <p>Suppose the task is to develop a model that predicts a new observation well, one that did not participate in fitting the model. The model needs to generalize to previously unseen data. Should we choose linear regression or smoothing splines as our method? A method that is highly variable because it follows the data too closely will not generalize well—its predictions will be off because they are highly variable. A method that is not flexible enough also does not generalize well—its predictions will be off because the model is not correct.</p>
 <p>Mathematically, we can express the problem of predicting a new observation as follows. Since the true function is unknown, it is also unknown at the new data location <span class="math inline">\(x_{0}\)</span>. However, we observed a value <span class="math inline">\(y\)</span> at <span class="math inline">\(x_{0}\)</span>. Based on the model we choose the function can be predicted at <span class="math inline">\(x_{0}\)</span>. But since we do not know the true function <span class="math inline">\(f(x)\)</span>, we can only measure the discrepancy between the value we observe and the value we predicted; this quantity is known as the error of prediction.</p>
 <table class="table">
@@ -675,7 +695,7 @@ Figure&nbsp;2.4: Smoothing splines with 6 degrees of freedom fit to the four dat
 <div id="fig-dartboard" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-dartboard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/Bullseye.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/Bullseye.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></a>
+<a href="images/Bullseye.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/Bullseye.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dartboard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2.5: Accuracy and precision—the dart board bullseye metaphor.
@@ -704,7 +724,9 @@ Note
 </div>
 <div class="definition-container">
 <p>An estimator <span class="math inline">\(h\left( \textbf{Y}\right)\)</span> of the parameter <span class="math inline">\(\theta\)</span> is said to be biased if its expected value does not equal <span class="math inline">\(\theta\)</span>.</p>
-<p><span class="math display">\[\text{Bias}\left\lbrack h\left( \textbf{Y}\right);\theta \right\rbrack = \text{E}\left\lbrack h\left( \textbf{Y}\right) - \theta \right\rbrack = \text{E}\left\lbrack h\left( \textbf{Y}\right) \right\rbrack - \theta\]</span></p>
+<p><span class="math display">\[
+\text{Bias}\left\lbrack h\left( \textbf{Y}\right);\theta \right\rbrack = \text{E}\left\lbrack h\left( \textbf{Y}\right) - \theta \right\rbrack = \text{E}\left\lbrack h\left( \textbf{Y}\right) \right\rbrack - \theta
+\]</span></p>
 </div>
 </div>
 <p>The last equality in the definition follows because the expected value of a constant is identical to the constant. In the dartboard example, <span class="math inline">\(\theta\)</span> is the bullseye and <span class="math inline">\(h\left( \textbf{Y}\right)\)</span> is the distance of the dart from the bullseye. The bias is the expected value of that distance, the average across many repetitions (dart throws).</p>
@@ -712,27 +734,35 @@ Note
 <section id="mean-squared-error" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="mean-squared-error"><span class="header-section-number">2.3</span> Mean Squared Error</h2>
 <p>With these definitions in place, let’s return to the question whether to favor the linear regression or the smoothing spline to predict a new observation at <span class="math inline">\(x_0\)</span>? The model can be written as</p>
-<p><span class="math display">\[Y = f(x) + \epsilon\]</span></p>
+<p><span class="math display">\[
+Y = f(x) + \epsilon
+\]</span></p>
 <p>where <span class="math inline">\(\epsilon\)</span> is a random variable with mean 0 and variance <span class="math inline">\(\sigma^{2}\)</span>, the irreducible variability. The observational model for <span class="math inline">\(n\)</span> observed data points is</p>
-<p><span class="math display">\[Y_{i} = f\left( x_{i} \right) + \epsilon_{i}\ \ \ \ \ \ \ \ \ i = 1,\ldots,n\]</span></p>
+<p><span class="math display">\[
+Y_{i} = f\left( x_{i} \right) + \epsilon_{i}\ \ \ \ \ \ \ \ \ i = 1,\ldots,n
+\]</span></p>
 <p>The <span class="math inline">\(Y_{i}\)</span> are observed unless there are missing values. However, for a new observation this might not be the case. The model for the new observation is no different than the previous model</p>
-<p><span class="math display">\[Y_{0} = f\left( x_0 \right) + \epsilon\]</span></p>
+<p><span class="math display">\[
+Y_{0} = f\left( x_0 \right) + \epsilon
+\]</span></p>
 <p>but only <span class="math inline">\(x_0\)</span> is known.</p>
-<p>There are two possible targets for prediction: <span class="math inline">\(f\left( x_{0} \right)\)</span> and <span class="math inline">\(f\left( x_{0} \right) + \epsilon\)</span>. The former is the expected value of <span class="math inline">\(Y_{0}\)</span>: <span class="math display">\[\text{E}\left\lbrack Y_{0} \right\rbrack = f\left( x_0 \right) + \text{E}\lbrack\epsilon\rbrack = f\left( x_{0} \right)\]</span></p>
+<p>There are two possible targets for prediction: <span class="math inline">\(f\left( x_{0} \right)\)</span> and <span class="math inline">\(f\left( x_{0} \right) + \epsilon\)</span>. The former is the expected value of <span class="math inline">\(Y_{0}\)</span>: <span class="math display">\[
+\text{E}\left\lbrack Y_{0} \right\rbrack = f\left( x_0 \right) + \text{E}\lbrack\epsilon\rbrack = f\left( x_{0} \right)
+\]</span></p>
 <p>This is a fixed quantity (a constant), not a random variable. The latter is a random variable. Interestingly, the estimator of both quantities is the same, <span class="math inline">\(\widehat{f}\left( x_0 \right)\)</span>. The difference comes into play when we consider the uncertainty associated with estimating <span class="math inline">\(f\left( x_0 \right)\)</span> or predicting <span class="math inline">\(f\left( x_0 \right) + \epsilon\)</span>—more on this later.</p>
-<p>We need a way to express the discrepancy between the estimator and the target that incorporates the estimator’s accuracy and precision—this is the mean-squared error.</p>
+<p>We need a way to express the discrepancy between the estimator and the target that incorporates the estimator’s accuracy and precision—this is the mean squared error.</p>
 <div class="definition">
 <div class="definition-header">
-<p>Definition: Mean-squared error (MSE)</p>
+<p>Definition: Mean Squared error (MSE)</p>
 </div>
 <div class="definition-container">
-<p>The mean-squared error of estimator <span class="math inline">\(h\left( \textbf{Y}\right)\)</span> for target <span class="math inline">\(\theta\)</span> is the expected value of the squared differences between estimator and target</p>
+<p>The mean squared error of estimator <span class="math inline">\(h\left( \textbf{Y}\right)\)</span> for target <span class="math inline">\(\theta\)</span> is the expected value of the squared differences between estimator and target</p>
 <p><span class="math display">\[
     \text{MSE}\left\lbrack h\left( \textbf{Y}\right);\ \theta \right\rbrack = \text{E}\left\lbrack \left( h\left( \textbf{Y}\right) - \theta \right)^{2} \right\rbrack
 \]</span></p>
 </div>
 </div>
-<p>The mean-squared error is the expected square deviation between the estimator and its target. Expanding the right hand side and arranging terms we can write the MSE as the sum of two components</p>
+<p>The mean squared error is the expected square deviation between the estimator and its target. Expanding the right hand side and arranging terms we can write the MSE as the sum of two components</p>
 <p><span class="math display">\[\begin{align*}
         \text{MSE}(h(\textbf{Y});\theta) &amp;= \text{E} \left [ \left( h(\textbf{Y}) - \theta \right)^2\right] \\
         &amp;= \text{E} \left [h(\textbf{Y})^2 - 2 h(\textbf{Y}) \theta + \theta^2\right ]\\
@@ -754,12 +784,16 @@ Tip
 <p>We use a common trick in the third line of this derivation, to add and subtract the same quantity: <span class="math inline">\(\mu^2\)</span>. This allows completion of the squares that lead to the variance and the squared bias terms.</p>
 </div>
 </div>
-<p>The mean-squared error decomposes into the variance of the estimator, <span class="math inline">\(\text{Var}[h(\textbf{Y})]\)</span>, and the squared bias between the estimator and the target it is trying to estimate. The MSE equals the variance only if the estimator is unbiased. The bias enters in squared terms because the variance is measured in squared units and because negative and positive bias discrepancies should not balance out.</p>
+<p>The mean squared error decomposes into the variance of the estimator, <span class="math inline">\(\text{Var}[h(\textbf{Y})]\)</span>, and the squared bias between the estimator and the target it is trying to estimate. The MSE equals the variance only if the estimator is unbiased. The bias enters in squared terms because the variance is measured in squared units and because negative and positive bias discrepancies should not balance out.</p>
 <p>If we apply the MSE definition to the problem of using estimator <span class="math inline">\(\widehat{f}\left( x_0 \right)\)</span> to predict <span class="math inline">\(f\left( x_0 \right)\)</span>,</p>
-<p><span class="math display">\[\text{MSE}\left\lbrack \widehat{f}\left( x_{0} \right);f\left( x_{0} \right)\  \right\rbrack = \text{Var}\left\lbrack \widehat{f}\left( x_{0} \right) \right\rbrack + \text{Bias}\left\lbrack \widehat{f}\left( x_{0} \right);f\left( x_{0} \right) \right\rbrack^{2}\]</span></p>
+<p><span class="math display">\[
+\text{MSE}\left\lbrack \widehat{f}\left( x_{0} \right);f\left( x_{0} \right)\  \right\rbrack = \text{Var}\left\lbrack \widehat{f}\left( x_{0} \right) \right\rbrack + \text{Bias}\left\lbrack \widehat{f}\left( x_{0} \right);f\left( x_{0} \right) \right\rbrack^{2}
+\]</span></p>
 <p>we see how the variability of the estimator and its squared bias contribute to the overall MSE. Similarly, if the goal is to predict a new observation, rather than its mean, the expression becomes</p>
-<p><span class="math display">\[\text{MSE}\left\lbrack \widehat{f}\left( x_{0} \right);Y_{0} \right\rbrack\text{ = MSE}\left\lbrack \widehat{f}\left( x_{0} \right);f\left( x_{0} \right) + \epsilon\  \right\rbrack = \text{Var}\left\lbrack \widehat{f}\left( x_{0} \right) \right\rbrack + \text{Bias}\left\lbrack \widehat{f}\left( x_{0} \right);f\left( x_{0} \right) \right\rbrack^{2} + \sigma^{2}\]</span></p>
-<p>You now see why <span class="math inline">\(\sigma^{2}\)</span> is called the irreducible error. Even if the estimator <span class="math inline">\(\widehat{f}\left( x_{0} \right)\)</span> would have no variability and be unbiased, the mean-squared error in predicting <span class="math inline">\(Y_{0}\)</span> can never be smaller than <span class="math inline">\(\sigma^{2}\)</span>.</p>
+<p><span class="math display">\[
+\text{MSE}\left\lbrack \widehat{f}\left( x_{0} \right);Y_{0} \right\rbrack\text{ = MSE}\left\lbrack \widehat{f}\left( x_{0} \right);f\left( x_{0} \right) + \epsilon\  \right\rbrack = \text{Var}\left\lbrack \widehat{f}\left( x_{0} \right) \right\rbrack + \text{Bias}\left\lbrack \widehat{f}\left( x_{0} \right);f\left( x_{0} \right) \right\rbrack^{2} + \sigma^{2}
+\]</span></p>
+<p>You now see why <span class="math inline">\(\sigma^{2}\)</span> is called the irreducible error. Even if the estimator <span class="math inline">\(\widehat{f}\left( x_{0} \right)\)</span> would have no variability and be unbiased, the mean squared error in predicting <span class="math inline">\(Y_{0}\)</span> can never be smaller than <span class="math inline">\(\sigma^{2}\)</span>.</p>
 <div class="example">
 <div class="example-header">
 <p>Example: <span class="math inline">\(k\)</span>-Nearest Neighbor Regression</p>
@@ -767,7 +801,9 @@ Tip
 <div class="example-container">
 <p>The <span class="math inline">\(k\)</span>-nearest neighbor (<span class="math inline">\(k\)</span>-NN for short) regression estimator is a simple estimator of the local structure between a target variable <span class="math inline">\(y\)</span> and an input variable <span class="math inline">\(x\)</span>. The value <span class="math inline">\(k\)</span> represents the number of values in the neighborhood of some input <span class="math inline">\(x_{0}\)</span> that are used to predict <span class="math inline">\(y\)</span>. The extreme case is <span class="math inline">\(k = 1\)</span>, the value of <span class="math inline">\(f\left( x_{0} \right)\)</span> is predicted as the <span class="math inline">\(y\)</span>-value of the observation closest to <span class="math inline">\(x_{0}\)</span>.</p>
 <p>Suppose our data come from a distribution with mean <span class="math inline">\(f(x)\)</span> and variance <span class="math inline">\(\sigma^{2}\)</span>. The mean-square error decomposition for the <span class="math inline">\(k\)</span>-NN estimator is then</p>
-<p><span class="math display">\[\text{MSE}\left\lbrack \widehat{f}\left( x_{0} \right);Y_{0} \right\rbrack\text{ = }\frac{\sigma^{2}}{k}{+ \left\lbrack f\left( x_{0} \right) - \frac{1}{k}\sum_{}^{}Y_{(i)} \right\rbrack}^{2} + \sigma^{2}\]</span></p>
+<p><span class="math display">\[
+\text{MSE}\left\lbrack \widehat{f}\left( x_{0} \right);Y_{0} \right\rbrack\text{ = }\frac{\sigma^{2}}{k}{+ \left\lbrack f\left( x_{0} \right) - \frac{1}{k}\sum_{}^{}Y_{(i)} \right\rbrack}^{2} + \sigma^{2}
+\]</span></p>
 <p>where <span class="math inline">\(y_{(i)}\)</span> denotes the <span class="math inline">\(k\)</span> observations in the neighborhood of <span class="math inline">\(x_{0}\)</span>.</p>
 <p>The three components of the MSE decomposition are easily identified:</p>
 <ol type="1">
@@ -779,24 +815,28 @@ Tip
 <p>As <span class="math inline">\(k\)</span> increases, the variance of the estimator decreases. For a large enough value of <span class="math inline">\(k\)</span>, all observations are included in the “neighborhood” and the estimator is equal to <span class="math inline">\(\overline{Y}\)</span>. If <span class="math inline">\(f(x)\)</span> changes with <span class="math inline">\(x\)</span>, the nearest neighbor method will then have smallest variance but large bias.</p>
 </div>
 </div>
-<p>If we want to minimize the mean-squared error, we can strive for estimators with low bias and low variance. If we cannot have both, how do we balance between the bias and variance component of an estimator? That is the bias-variance tradeoff.</p>
+<p>If we want to minimize the mean squared error, we can strive for estimators with low bias and low variance. If we cannot have both, how do we balance between the bias and variance component of an estimator? That is the bias-variance tradeoff.</p>
 <p>Statisticians resolve the tension with the <strong>UMVUE</strong> principle. Uniformly minimum-variance unbiased estimation requires to first identify unbiased estimators, those for which <span class="math inline">\(\text{Bias}\lbrack \widehat{f}\left( x_{0} \right);f\left( x_{0} \right) \rbrack = 0\)</span>, and then to select the estimator with the smallest variance among the unbiased estimators. According to UMVUE you will never consider a biased estimator. It is comforting to know that on average the estimator will be on target. This principle would select estimator <strong>C</strong> in the dartboard example over estimator <strong>B</strong> because the latter is biased. If you have only one dart left and you need to get as close to the bullseye as possible, would you ask player <strong>B</strong> or player <strong>C</strong> to take a shot for the team?</p>
-<p>UMVU estimators are not necessarily minimum mean-squared error estimators. It is possible that a biased estimator has a sharply reduced variance so that the sum of variance and squared bias is smaller than the variance of the best unbiased estimator. If we want to achieve a small mean-square error, then we should consider estimators with some bias and small variance. Resolving the bias-variance tradeoff by eliminating all biased estimators does not lead to the “best” predictive models. Of course, this depends on our definition of “best”.</p>
+<p>UMVU estimators are not necessarily minimum mean squared error estimators. It is possible that a biased estimator has a sharply reduced variance so that the sum of variance and squared bias is smaller than the variance of the best unbiased estimator. If we want to achieve a small mean-square error, then we should consider estimators with some bias and small variance. Resolving the bias-variance tradeoff by eliminating all biased estimators does not lead to the “best” predictive models. Of course, this depends on our definition of “best”.</p>
 <p>In practice, <span class="math inline">\(f\left( x_{0} \right)\)</span> is not known and the bias component <span class="math inline">\(\text{Bias}\lbrack \widehat{f}\left( x_{0} \right);f\left( x_{0} \right) \rbrack\)</span> cannot be evaluated by computing the difference of expected values. For many modeling techniques we can calculate—or at least estimate— <span class="math inline">\(\text{Var}\lbrack \widehat{f}\left( x_{0} \right) \rbrack\)</span>, the variance component of the MSE. Those derivations depend on strong assumptions about distributional properties and the correctness of the model. So, we essentially need to treat the MSE as an unknown quantity. Fortunately, we can estimate it from data.</p>
 <div class="definition">
 <div class="definition-header">
-<p>Definition: Mean-squared prediction error (MSPE)</p>
+<p>Definition: Mean Squared Prediction Error (MSPE)</p>
 </div>
 <div class="definition-container">
-<p>The mean-squared prediction error (MSPE) is the average squared prediction error in a sample of <span class="math inline">\(n\)</span> observations,</p>
+<p>The mean squared prediction error (MSPE) is the average squared prediction error in a sample of <span class="math inline">\(n\)</span> observations,</p>
 <p><span class="math display">\[\text{MSPE} = \frac{1}{n}\sum_{i=1}^n\left( y_i - \widehat{f}\left( x_i \right) \right)^{2}\]</span></p>
 </div>
 </div>
 <p>Taking the sample average replaces taking formal expectations over the distribution of <span class="math inline">\(( Y - \widehat{f}(x) )^2\)</span>.</p>
-<p>Back to choosing between the regression and spline models. If we denote the two approaches <span class="math inline">\(\widehat{f}_{r}(x)\)</span> and <span class="math inline">\(\widehat{f}_{s}(x)\)</span>, respectively, selecting the winning model based on the mean-squared prediction error reduces to picking the model with the smaller MSPE:</p>
-<p><span class="math display">\[\frac{1}{n}\sum_{i = 1}^{n}\left( y_{i} - {\widehat{f}}_{r}\left( x_{i} \right) \right)^{2}\]</span></p>
+<p>Back to choosing between the regression and spline models. If we denote the two approaches <span class="math inline">\(\widehat{f}_{r}(x)\)</span> and <span class="math inline">\(\widehat{f}_{s}(x)\)</span>, respectively, selecting the winning model based on the mean squared prediction error reduces to picking the model with the smaller MSPE:</p>
+<p><span class="math display">\[
+\frac{1}{n}\sum_{i = 1}^{n}\left( y_{i} - {\widehat{f}}_{r}\left( x_{i} \right) \right)^{2}
+\]</span></p>
 <p>or</p>
-<p><span class="math display">\[\frac{1}{n}\sum_{i = 1}^{n}\left( y_{i} - {\widehat{f}}_{s}\left( x_{i} \right) \right)^{2}\]</span></p>
+<p><span class="math display">\[
+\frac{1}{n}\sum_{i = 1}^{n}\left( y_{i} - {\widehat{f}}_{s}\left( x_{i} \right) \right)^{2}
+\]</span></p>
 <p>As we will see, this is not without problems. These expressions are calculating the MSPE by averaging over the data points used in training the model; we call this the MSPE of the training set or MSE<sub>Tr</sub> for short. To identify models that generalize well to new observations, it is recommended to calculate the MSPE across a test set of observations that was not used to fit the model; this is called the MSPE of the test set or the MSE<sub>Te</sub> for short.</p>
 <p>We will discuss training, test, and validation data sets in more detail below.</p>
 <p>Whether you are working with MSPE in a regression context or MCR in a classification problem, the goal is to develop a model that is neither too complex nor too simple. We want to avoid over- and underfitting the model.</p>
@@ -806,7 +846,7 @@ Tip
 <p>The preceding discussion might suggest that flexible models such as the smoothing spline have high variability and that rigid models such as the simple linear regression model have large bias. This generalization does not necessarily hold although in practice it often works out this way. The reason for this is not that simple linear regression models are biased—they can be unbiased. The reason why flexible models tend to have high variance and low bias and rigid models tend to have low variance and high bias has to do with <strong>overfitting</strong> and <strong>underfitting</strong>.</p>
 <p>An overfit model follows the observed data <span class="math inline">\(Y_{i}\)</span> too closely and does not capture the mean trend <span class="math inline">\(f(x)\)</span>. The overfit model memorizes the training data too much. When you predict a new observation with an overfit model that memory causes high variability. Remember that the variability we are focusing on here is the variability across repetitions of the sample process. Imagine drawing 1,000 sets of <span class="math inline">\(n\)</span> observations, repeating the model training and predicting from each model at the new location <span class="math inline">\(x_{0}\)</span>. We now have 1,000 predictions at <span class="math inline">\(x_{0}\)</span>. Because the overfit model follows the training data too closely, its predictions will be variable at <span class="math inline">\(x_{0}\)</span>.</p>
 <p>An underfit model, on the other hand, lacks the flexibility to capture the mean trend <span class="math inline">\(f(x)\)</span>. Underfit models result, for example, when important predictor variables are not included in the model.</p>
-<p>The most extreme case of overfitting a model is the <strong>saturated</strong> model. It perfectly predicts the observed data. Suppose you collect only two pairs of <span class="math inline">\((x,y)\)</span> data: (1,0) and (2,1). A two-parameter straight line model will fit these data perfectly. The straight line has an intercept of –1 and a slope of +1. It passes through the observed points and the mean-squared prediction error is zero.</p>
+<p>The most extreme case of overfitting a model is the <strong>saturated</strong> model. It perfectly predicts the observed data. Suppose you collect only two pairs of <span class="math inline">\((x,y)\)</span> data: (1,0) and (2,1). A two-parameter straight line model will fit these data perfectly. The straight line has an intercept of –1 and a slope of +1. It passes through the observed points and the mean squared prediction error is zero.</p>
 <div id="fig-saturated" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-saturated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -819,7 +859,9 @@ Figure&nbsp;2.6: A straight line model saturates a data set with two $(x,y)$ pai
 </div>
 <p>Saturated models are not very interesting, they are just a re-parameterization of the data, capturing both signal <span class="math inline">\(f(x)\)</span> <strong>and</strong> noise <span class="math inline">\(\epsilon\)</span>. A useful model separates the signal from the noise. Saturated models are used behind the scenes of some statistical estimation methods, for example to measure how much of the variability in the data is captured by a model—this type of model metric is known as the deviance. Saturated models are never the end goal of data analytics.</p>
 <p>On the other extreme lies the constant model; it does not use any input variables. It assumes that the mean of the target variable is the same everywhere:</p>
-<p><span class="math display">\[Y_{i} = \mu + \epsilon_{i}\]</span></p>
+<p><span class="math display">\[
+Y_{i} = \mu + \epsilon_{i}
+\]</span></p>
 <p>This model, also known as the intercept-only model, is slightly more useful than the saturated model. It is rarely the appropriate model in data science applications; it expresses the signal as a flat line, the least flexible model of all.</p>
 <p>In our discussion of the model building process during the data science project life cycle we encountered an example of pharmacokinetic data, 500 observations on how a drug is absorbed and eliminated by the body over time (<span class="math inline">\(t\)</span>). The data are replayed in the next figure along with the fit of the constant model. The constant model underpredicts the drug concentration between times <span class="math inline">\(t = 3\)</span> and <span class="math inline">\(t = 12\)</span> and overpredicts everywhere else.</p>
 <div id="fig-underfit-model" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
@@ -833,15 +875,17 @@ Figure&nbsp;2.7: Concentration of a drug in patient’s bodies over time.
 </figure>
 </div>
 <p>Suppose we draw 1,000 sets of <span class="math inline">\(n = 500\)</span> observations, fit the constant model to each, and predict at the new time <span class="math inline">\(t_{0}\)</span>. Because the constant model does not depend on time, we get the same predicted value regardless of the value of <span class="math inline">\(t_{0}\)</span>. In each sample of size <span class="math inline">\(n\)</span>, the predicted value will be the sample mean, <span class="math inline">\(\overline{y} = \frac{1}{500}\sum_{}^{}y_{i}\)</span>. The variability of the 1,000 predictions will be small; it is the variance of the sample mean:</p>
-<p><span class="math display">\[\text{Var}\left\lbrack \widehat{f}\left( x_0 \right) \right\rbrack = \frac{\sigma^2}{500}\]</span></p>
-<p>If the true model does depend on <span class="math inline">\(t\)</span>—and the plot of the data suggests this is the case—the bias of the predictions will be large. The mean-squared prediction error is dominated by the squared bias component in this case.</p>
+<p><span class="math display">\[
+\text{Var}\left\lbrack \widehat{f}\left( x_0 \right) \right\rbrack = \frac{\sigma^2}{500}
+\]</span></p>
+<p>If the true model does depend on <span class="math inline">\(t\)</span>—and the plot of the data suggests this is the case—the bias of the predictions will be large. The mean squared prediction error is dominated by the squared bias component in this case.</p>
 <p>Somewhere between the two extremes of a hopelessly overfit saturated model and a hopelessly underfit constant model are models that capture the signal <span class="math inline">\(f(x)\)</span> well enough without chasing the noisy signal <span class="math inline">\(f(x) + \epsilon\)</span> too much. Those models permit a small amount of bias if that results in a reduction of the variance of the predictions.</p>
 <p>To summarize,</p>
 <ul>
 <li><p><strong>Overfit</strong> models do not generalize well because they follow the training data too closely. They tend to have low bias and a large variance.</p></li>
 <li><p><strong>Underfit</strong> models do not generalize well because they do not capture the salient trend (signal) in the data. They tend to have high bias and low variance.</p></li>
-<li><p>A large mean-squared prediction error can result in either case but is due to a different cause.</p></li>
-<li><p>For a small mean-squared prediction error you need to have small bias and small variance.</p></li>
+<li><p>A large mean squared prediction error can result in either case but is due to a different cause.</p></li>
+<li><p>For a small mean squared prediction error you need to have small bias and small variance.</p></li>
 <li><p>In practice, zero-bias methods with high variance are rarely the winning approaches. The best MSPE is often achieved by allowing some bias to substantially decrease the variance.</p></li>
 </ul>
 <p>The danger of overfitting is large when models contain many parameters, and when the number of parameters <span class="math inline">\(p\)</span> is large relative to the sample size <span class="math inline">\(n\)</span>. When many attributes (inputs) are available and you throw them all into the model, the result will likely be an overfit model that does not generalize well. It will have a large prediction error. In other words, there is a cost to adding unimportant information to a model. Methods for dealing with such high-dimensional problems play an important role in statistics and machine learning and are discussed in detail in a more advanced section. We mention here briefly:</p>
@@ -862,7 +906,7 @@ Figure&nbsp;2.7: Concentration of a drug in patient’s bodies over time.
 <li><p>are distributional assumptions such as normality of the model errors met,</p></li>
 <li><p>is it reasonable to assume that the data points are uncorrelated (or even independent)</p></li>
 </ul>
-<p>We can also use the <strong>training data</strong> after the model fit to detect data points that have a high influence of the analysis—that is, the presence of those points substantially affects an important aspect of the model. And based on the training data we can study the interdependence of the model inputs and whether those relationships affect the model performance negatively.</p>
+<p>We can also use the <strong>training data</strong> after the model fit to detect data points that have a high influence of the analysis—that is, the presence of those oints substantially affects an important aspect of the model. And based on the training data we can study the interdependence of the model inputs and whether those relationships affect the model performance negatively.</p>
 <p>The diagnostic techniques just mentioned rely on</p>
 <ul>
 <li><p>Residual diagnostics</p></li>
@@ -888,13 +932,13 @@ Figure&nbsp;2.7: Concentration of a drug in patient’s bodies over time.
 <li><p>The depth of decision trees</p></li>
 <li><p>The number <span class="math inline">\(k\)</span> in <span class="math inline">\(k\)</span>-nearest neighbor methods</p></li>
 <li><p>The convergence rate and other tolerances in numerical optimization</p></li>
-<li><p>The learning rate, number of nodes, and number of layers in neural networks</p></li>
+<li><p>The learning rate, number of units, and number of layers in neural networks</p></li>
 </ul>
 <p>We can calculate the MSPE or MCR of the trained model, depending on whether we are dealing with a regression or a classification problem. Doing so for the training data has some serious drawbacks. We have seen earlier that saturated models have no prediction error since they perfectly connect the dots in the data. Trying to minimize the MSPE based on the training data (MSE<sub>Tr</sub>) invariably leads to overfit models since you can always drive MSE<sub>Tr</sub> toward zero.</p>
 </section>
 <section id="test-data" class="level3">
 <h3 class="anchored" data-anchor-id="test-data">Test Data</h3>
-<p>To measure the true predictive performance of a model we need to apply the model to a different set of observations; a set that was not used in training the model. This set of observations is called the <strong>test data</strong> set. With a test data set we can measure how well the model generalizes and we can also use it to select the appropriate amount of flexibility of the model. The following graph shows the general behavior of test and train mean-squared prediction error as a function of model flexibility and complexity.</p>
+<p>To measure the true predictive performance of a model we need to apply the model to a different set of observations; a set that was not used in training the model. This set of observations is called the <strong>test data</strong> set. With a test data set we can measure how well the model generalizes and we can also use it to select the appropriate amount of flexibility of the model. The following graph shows the general behavior of test and train mean squared prediction error as a function of model flexibility and complexity.</p>
 <p>The MSPE of the test data set is on average higher than the MSPE of the training data set. Since these are random variables, it can happen in a particular application that the test error is lower than the training error, but this is rare. The model complexity/flexibility is measured here by the number of inputs in the model. As this number increases, the MSE<sub>Tr</sub> decreases toward zero. The MSE<sub>Te</sub>, on the other hand, first decreases, reaches a minimum, and increases again. The MSE<sub>Te</sub> is high for models with few parameters because of bias, it increases with model flexibility past the minimum because of variability. The two contributors to the MSE work at different ends of the spectrum—you find models that balance bias and variance somewhere in-between.</p>
 <div id="fig-train-test-error" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -902,7 +946,7 @@ Figure&nbsp;2.7: Concentration of a drug in patient’s bodies over time.
 <img src="images/MSETe_MSE_Tr.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-train-test-error-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.8: MSETr and MSETe as a function of model flexibility (complexity).
+Figure&nbsp;2.8: MSE<sub>Tr</sub> and MSE<sub>Te</sub> as a function of model flexibility (complexity).
 </figcaption>
 </figure>
 </div>
@@ -933,34 +977,113 @@ Figure&nbsp;2.8: MSETr and MSETe as a function of model flexibility (complexity)
 <p>We are not done, however. Does the best student in the group have a chance in the competition? We now enter the <strong>testing</strong> phase to answer the question: how well will the best student perform? After administering a real test with new problems, we find out that the student scores above 90%: they are ready for the competition. If, however, we find out that the student scores below 25%, we will not send them to the competition. Instead, we return to the drawing board with a new training procedure and/or a set of new training problems.</p>
 </div>
 </div>
-<p>Validation and test data are often used interchangeably because the test data <strong>is</strong> often used as the validation data. The questions “which model is best?” and “how well does the model perform?” are answered simultaneously: the best model is the one that achieves the best metric on the test data set. Often that results in choosing the model with the lowest MSE<sub>Te</sub> or MCR<sub>Te</sub>.</p>
+<p>Validation and test data are often used interchangeably because the test data set <strong>is</strong> often used as the validation data set. The questions “which model is best?” and “how well does the model perform?” are answered simultaneously: the best model is the one that achieves the best metric on the test data set. Often that results in choosing the model with the lowest MSE<sub>Te</sub> or MCR<sub>Te</sub>.</p>
 </section>
 <section id="hold-out-sample" class="level3">
 <h3 class="anchored" data-anchor-id="hold-out-sample">Hold-out Sample</h3>
 <p>Let’s return to the important question: where do we find the test data set?</p>
 <p>Maybe you just happen to have a separate set of data lying around that is just like the training data, but you did not use it. Well, that is highly unlikely.</p>
 <p>Typically, we use the data collected, generated, or available for the study to carve out observations for training and testing. This is called a <strong>hold-out sample</strong>, a subset of the observations is held back for testing and validation. If we start with <span class="math inline">\(n\)</span> observations, we use <span class="math inline">\(n - m\)</span> observation to train the model (the training data set), and <span class="math inline">\(m\)</span> observations to test/validate the model.</p>
-<p>In Python you can create this train:test split with the train_test_split() function in sklearn. The following statements load the fitness data from DuckDB into a Pandas DataFrame and split it into two frames of 15 and 16 observations.</p>
+<div class="example">
+<div class="example-header">
+<p>Example: 50:50 Train:Test Split</p>
+</div>
+<div class="example-container">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>Using the <code>sample()</code> function in the <code>R</code> <code>base</code> package is a convenient way to split data into train and test data sets. For more sophisticated data splitting, for example by sampling within partitions or creating validation folds, check out the <code>createDataPartition()</code> and <code>createFolds()</code> functions in the <code>caret</code> package.</p>
+<p>The following statements load the fitness data from DuckDB into a Pandas DataFrame and split it into two frames of 15 and 16 observations.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>(database<span class="op">=</span><span class="st">"ads.ddb"</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> con.sql(<span class="st">"SELECT * FROM fitness"</span>).df()</span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>conn <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir=</span><span class="st">"ads.ddb"</span>, <span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(conn, <span class="st">"SELECT * FROM fitness"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(conn)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>train, test <span class="op">=</span> train_test_split(fit,random_state<span class="op">=</span><span class="dv">235</span>,train_size<span class="op">=</span><span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">235</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">dim</span>(fit)[<span class="dv">1</span>]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>tindex <span class="ot">&lt;-</span> <span class="fu">sample</span>(n,<span class="fu">floor</span>(n<span class="sc">/</span><span class="dv">2</span>))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>tindex</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 22 21 30 31 26 17 24  5  1 14  6 12 20  3 25</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> fit[tindex,]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> fit[<span class="sc">-</span>tindex,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>set.seed</code> function call initializes the random number generator for reproducible results. The <code>sample</code> function selects a random permutation of the 15 of the <span class="math inline">\(n\)</span>=31 observation numbers. The observation indices returned from <code>sample</code> are then used to select the rows in the training data. The negation of the vector of indices is used to select the rows into the test data set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 15  7</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 16  7</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Age            Weight          Oxygen         RunTime     
+ Min.   :38.00   Min.   :61.24   Min.   :37.39   Min.   : 8.65  
+ 1st Qu.:46.00   1st Qu.:72.12   1st Qu.:42.72   1st Qu.:10.29  
+ Median :49.00   Median :79.15   Median :46.08   Median :11.08  
+ Mean   :48.73   Mean   :78.54   Mean   :45.95   Mean   :11.01  
+ 3rd Qu.:51.50   3rd Qu.:86.75   3rd Qu.:48.90   3rd Qu.:11.56  
+ Max.   :57.00   Max.   :91.63   Max.   :54.62   Max.   :14.03  
+   RestPulse        RunPulse        MaxPulse    
+ Min.   :44.00   Min.   :146.0   Min.   :155.0  
+ 1st Qu.:48.00   1st Qu.:165.0   1st Qu.:168.0  
+ Median :55.00   Median :170.0   Median :172.0  
+ Mean   :54.13   Mean   :168.5   Mean   :172.7  
+ 3rd Qu.:58.00   3rd Qu.:175.0   3rd Qu.:176.0  
+ Max.   :67.00   Max.   :186.0   Max.   :192.0  </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Age            Weight          Oxygen         RunTime      
+ Min.   :38.00   Min.   :59.08   Min.   :39.44   Min.   : 8.170  
+ 1st Qu.:42.75   1st Qu.:73.54   1st Qu.:45.62   1st Qu.: 9.572  
+ Median :46.50   Median :76.32   Median :47.72   Median :10.100  
+ Mean   :46.69   Mean   :76.42   Mean   :48.71   Mean   :10.185  
+ 3rd Qu.:51.00   3rd Qu.:81.42   3rd Qu.:50.54   3rd Qu.:10.565  
+ Max.   :57.00   Max.   :91.63   Max.   :60.05   Max.   :13.080  
+   RestPulse        RunPulse        MaxPulse    
+ Min.   :40.00   Min.   :148.0   Min.   :155.0  
+ 1st Qu.:48.00   1st Qu.:163.5   1st Qu.:168.0  
+ Median :49.50   Median :169.0   Median :174.0  
+ Mean   :52.81   Mean   :170.7   Mean   :174.8  
+ 3rd Qu.:59.75   3rd Qu.:177.0   3rd Qu.:185.0  
+ Max.   :70.00   Max.   :186.0   Max.   :188.0  </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>In Python you can create this train:test split with the <code>train_test_split()</code> function in sklearn. The following statements load the fitness data from DuckDB into a Pandas DataFrame and split it into two frames of 15 and 16 observations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>(database<span class="op">=</span><span class="st">"ads.ddb"</span>, read_only<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> con.sql(<span class="st">"SELECT * FROM fitness"</span>).df()</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>con.close()</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>train, test <span class="op">=</span> train_test_split(fit,random_state<span class="op">=</span><span class="dv">235</span>,train_size<span class="op">=</span><span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The <code>random_state=</code> parameter sets the seed for the random number generator. By setting this to a non-zero integer, the random number generator starts to produce numbers with that seed value. This makes the selection reproducible, subsequent runs of the program will produce identical—yet random—results. The <code>train_size=</code> parameter specifies the proportion of observations in the training set—if the value is between 0 and 1—or the number of observations in the training set—if the value is an integer &gt; 1.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>train.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>train.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>(15, 7)</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>train.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>train.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>             Age     Weight     Oxygen  ...  RestPulse   RunPulse    MaxPulse
 count  15.000000  15.000000  15.000000  ...  15.000000   15.00000   15.000000
@@ -976,13 +1099,13 @@ max    57.000000  91.630000  59.571000  ...  67.000000  186.00000  188.000000
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>test.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>test.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>(16, 7)</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>test.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>test.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>             Age     Weight     Oxygen  ...  RestPulse    RunPulse    MaxPulse
 count  16.000000  16.000000  16.000000  ...  16.000000   16.000000   16.000000
@@ -997,7 +1120,12 @@ max    57.000000  91.630000  60.055000  ...  70.000000  186.000000  192.000000
 [8 rows x 7 columns]</code></pre>
 </div>
 </div>
-<p>The two data sets have very similar properties as judged by the descriptive statistics. If the goal is to develop a model that can predict the difficult to measure oxygen intake from easy to measure attributes such as age, weight, and pulse, then we would use the 15 observations in the <code>train</code> frame to fit the model and the 16 observations in the <code>test</code> frame to evaluate the model.</p>
+</div>
+</div>
+</div>
+<p>The two data sets have very similar properties as judged by the descriptive statistics. If the goal is to develop a model that can predict the difficult to measure oxygen intake from easy to measure attributes such as age, weight, and pulse, then we would use the 15 observations in the <code>train</code> data frame to fit the model and the 16 observations in the <code>test</code> data frame to evaluate the model.</p>
+</div>
+</div>
 <p>If we cull the test data from the overall data, how should we determine an appropriate size for the test data? The previous example used a 50:50 split, would it have mattered if we had taken a 20:80 or a 90:10 split? For the two data sets to serve their respective functions, you need enough observations in the training data set to fit the model well enough so it can be tested, and you need enough observations in the test data set to produce a stable estimate of MSE<sub>Te</sub>. In practice splits that allocate between 50 and 90% of the observations to the training data set are common.</p>
 <p>With small training proportions you run the risk that the model cannot be fit and/or that the data does not support the intended model. For example, with a 10:90 train:test split in the fitness example, the training data contains only 3 observations and evaluating the effect of all input variables on oxygen intake is not possible—the model is saturated after three inputs are in the model. With categorical inputs, you need to make sure that the training and test data sets contain all the categories. For example, if you categorize age into four age groups and only three groups are present in the training data after the split, the resulting model no longer applies to a population with four age groups.</p>
 <p>From this discussion we can glean the general advantages and disadvantages of hold-out test samples.</p>
@@ -1037,9 +1165,13 @@ max    57.000000  91.630000  60.055000  ...  70.000000  186.000000  192.000000
 </tbody>
 </table>
 <p>The last two disadvantages in the table weigh heavily. Since we cannot rely on the training error for model selection, we are <em>sacrificing</em> observations by excluding them from training. At least we expect then a good estimate of the test error. The reason for overestimating the true test error with a train:test hold-out sample is that models tend to perform worse when trained on fewer observations. Reducing the size of the training data set results in less precise parameter estimates which in turn increases the variability of predictions.</p>
-<p>To compare the variability of the hold-out sample method with other techniques, we draw on the Auto data set from ISLR2 (An Introduction to Statistical Learning by James et al.). The data comprise information on fuel mileage and other vehicle attributes of 392 automobiles. Suppose we want to model mileage as a function of horsepower. The next figure shows the raw data and fits of a linear and quadratic model</p>
-<p><span class="math display">\[\text{mpg}_{i} = \beta_{0} + \beta_{1}\text{hp}_{i} + \epsilon_{i}\]</span></p>
-<p><span class="math display">\[\text{mpg}_{i} = \beta_{0} + \beta_{1}\text{hp}_{i} + {\beta_{2}\text{hp}_{i}^{2} + \epsilon}_{i}\]</span></p>
+<p>To compare the variability of the hold-out sample method with other techniques, we draw on the <code>Auto</code> data set from <span class="citation" data-cites="James2013_ISLR2">James et al. (<a href="references.html#ref-James2013_ISLR2" role="doc-biblioref">2021</a>)</span> (ISLR2). The data comprise information on fuel mileage and other vehicle attributes of 392 automobiles. Suppose we want to model mileage as a function of horsepower. <a href="#fig-auto-linquad" class="quarto-xref">Figure&nbsp;<span>2.9</span></a> shows the raw data and fits of a linear and quadratic model</p>
+<p><span class="math display">\[
+\text{mpg}_{i} = \beta_{0} + \beta_{1}\text{hp}_{i} + \epsilon_{i}
+\]</span></p>
+<p><span class="math display">\[
+\text{mpg}_{i} = \beta_{0} + \beta_{1}\text{hp}_{i} + {\beta_{2}\text{hp}_{i}^{2} + \epsilon}_{i}
+\]</span></p>
 <div id="fig-auto-linquad" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-auto-linquad-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1051,7 +1183,9 @@ Figure&nbsp;2.9: Simple linear and quadratic polynomial fit for miles per gallon
 </figure>
 </div>
 <p>A simple linear regression—the red line in the figure—does not seem appropriate. The model does not pick up the curvature in the underlying trend. A quadratic model seems more appropriate. Can this be quantified? What about a cubic model</p>
-<p><span class="math display">\[\text{mpg}_{i} = \beta_{0} + \beta_{1}\text{hp}_{i} + {\beta_{2}\text{hp}_{i}^{2} + \beta_{3}\text{hp}_{i}^{3} + \epsilon}_{i}\]</span></p>
+<p><span class="math display">\[
+\text{mpg}_{i} = \beta_{0} + \beta_{1}\text{hp}_{i} + {\beta_{2}\text{hp}_{i}^{2} + \beta_{3}\text{hp}_{i}^{3} + \epsilon}_{i}
+\]</span></p>
 <p><a href="#fig-auto-valid1" class="quarto-xref">Figure&nbsp;<span>2.10</span></a> shows the hold-out test errors for all polynomial models up to degree 10. The simple linear regression (SLR) model has degree 1 and is shown on the left. The test error is large for the SLR model and for the 10-degree polynomial. The former is biased as can be seen from the previous graph. The latter is too wiggly and leads to a poor test error because of high variability. The test error is minimized for the quadratic model but we note that the test error is also low for degrees 7—9.</p>
 <div id="fig-auto-valid1" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1063,7 +1197,7 @@ Figure&nbsp;2.10: Hold-out test errors for polynomial models from first to tenth
 </figcaption>
 </figure>
 </div>
-<p>Based on this result we would probably choose the second-degree polynomial. To what extent is this decision the result of having selected the specific 196 observations in the 50:50 split? We can evaluate this by repeating the sampling process a few more times. The next graph shows the results of 9 other 50:50 random splits.</p>
+<p>Based on this result we would probably choose the second-degree polynomial. To what extent is this decision the result of having selected the specific 196 observations in the 50:50 split? We can evaluate this by repeating the sampling process a few more times. <a href="#fig-auto-valid10" class="quarto-xref">Figure&nbsp;<span>2.11</span></a> shows the results from 9 additional 50:50 random splits.</p>
 <p>The variability in the results is considerable. Most replications would select a second-degree polynomial as the model with the lowest MSE<sub>Te</sub>, but several replications achieve a smallest MSE<sub>Te</sub> for much higher degree polynomials (5<sup>th</sup> degree, 7<sup>th</sup> degree, etc.).</p>
 <div id="fig-auto-valid10" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1079,7 +1213,7 @@ Figure&nbsp;2.11: Test errors in ten hold-out samples, 50:50 splits. The errors 
 <p>How about the following proposal:</p>
 <ul>
 <li><p>Split the data 50:50 into sets <span class="math inline">\(t_1\)</span> and <span class="math inline">\(t_2\)</span></p></li>
-<li><p>Use <span class="math inline">\(t_1\)</span> as the training data set and determine the mean-squared prediction error from <span class="math inline">\(t_{2}\)</span>, call this MSE<sub>Te</sub>(<span class="math inline">\(t_{2}\)</span>)</p></li>
+<li><p>Use <span class="math inline">\(t_1\)</span> as the training data set and determine the mean squared prediction error from <span class="math inline">\(t_{2}\)</span>, call this MSE<sub>Te</sub>(<span class="math inline">\(t_{2}\)</span>)</p></li>
 <li><p>Reverse the roles of <span class="math inline">\(t_1\)</span> and <span class="math inline">\(t_2\)</span>, using <span class="math inline">\(t_2\)</span> to train the model and <span class="math inline">\(t_1\)</span> to compute the test error MSE<sub>Te</sub>(<span class="math inline">\(t_1\)</span>)</p></li>
 <li><p>Compute the overall test error as the average MSE<sub>Te</sub> = 0.5 x (MSE<sub>Te</sub>(<span class="math inline">\(t_1\)</span>) + MSE<sub>Te</sub>(<span class="math inline">\(t_2\)</span>))</p></li>
 </ul>
@@ -1157,23 +1291,33 @@ Figure&nbsp;2.11: Test errors in ten hold-out samples, 50:50 splits. The errors 
 <p>Squared error and zero-one loss dominate data science work in regression and classification problems. For specific methods you will find additional loss functions used to optimize a particular aspect of the model, for example, growing and pruning of decision trees.</p>
 <p>Suppose the loss associated with an observation is denoted <span class="math inline">\(\mathcal{l}_{i}\)</span>. Cross-validation estimates the average loss for each of <span class="math inline">\(k\)</span> sets of observations and averages the <span class="math inline">\(k\)</span> estimates into an overall cross-validation estimate of the loss.</p>
 <p>Suppose we create two random sets of (near) equal size for the 31 observations in the fitness data set; <span class="math inline">\(k = 2\)</span>. The sets will have <span class="math inline">\(n_1 = 15\)</span> and <span class="math inline">\(n_2 = 16\)</span> observations. This leads to one cross-validation estimate of the loss function for each set:</p>
-<p><span class="math display">\[CV_1\left( \mathcal{l} \right) = \frac{1}{n_1}\sum_{i = 1}^{n_1}\mathcal{l}_{i}\]</span></p>
-<p><span class="math display">\[CV_2\left( \mathcal{l} \right) = \frac{1}{n_2}\sum_{i = 1}^{n_1}\mathcal{l}_i\]</span></p>
+<p><span class="math display">\[
+CV_1\left( \mathcal{l} \right) = \frac{1}{n_1}\sum_{i = 1}^{n_1}\mathcal{l}_{i}
+\]</span></p>
+<p><span class="math display">\[
+CV_2\left( \mathcal{l} \right) = \frac{1}{n_2}\sum_{i = 1}^{n_1}\mathcal{l}_i
+\]</span></p>
 <p>The overall cross-validation loss is the average of the two:</p>
-<p><span class="math display">\[CV\left( \mathcal{l} \right) = \frac{1}{2}\left( CV_{1}\left( \mathcal{l} \right) + CV_{2}\left( \mathcal{l} \right) \right)\]</span></p>
+<p><span class="math display">\[
+CV\left( \mathcal{l} \right) = \frac{1}{2}\left( CV_{1}\left( \mathcal{l} \right) + CV_{2}\left( \mathcal{l} \right) \right)
+\]</span></p>
 <p>This is a special case of <span class="math inline">\(k\)</span>-fold cross-validation; the sets are referred to as folds. The other special case is leave-one-out cross-validation.</p>
 </section>
 <section id="k-fold-cross-validation" class="level3">
 <h3 class="anchored" data-anchor-id="k-fold-cross-validation"><span class="math inline">\(K\)</span>-fold Cross-validation</h3>
 <p>The set of <span class="math inline">\(n\)</span> observations is divided randomly into <span class="math inline">\(k\)</span> groups of (approximately) equal size. The groups are called the <span class="math inline">\(k\)</span> folds. The model is fit <span class="math inline">\(k\)</span> times, holding out a different fold each time. After computing the loss in each fold</p>
-<p><span class="math display">\[{CV}_{j}\left( \mathcal{l} \right) = \frac{1}{n_{j}}\sum_{i = 1}^{n_{j}}\mathcal{l}_{i}\]</span></p>
+<p><span class="math display">\[
+{CV}_{j}\left( \mathcal{l} \right) = \frac{1}{n_{j}}\sum_{i = 1}^{n_{j}}\mathcal{l}_{i}
+\]</span></p>
 <p>the overall loss is calculated as the average</p>
-<p><span class="math display">\[CV\left( \mathcal{l} \right) = \frac{1}{k}\sum_{j = 1}^{k}{{CV}_{j}\left( \mathcal{l} \right)}\]</span></p>
+<p><span class="math display">\[
+CV\left( \mathcal{l} \right) = \frac{1}{k}\sum_{j = 1}^{k}{{CV}_{j}\left( \mathcal{l} \right)}
+\]</span></p>
 <p><a href="#fig-cv-folds5" class="quarto-xref">Figure&nbsp;<span>2.12</span></a> shows 5-fold cross-validation for <span class="math inline">\(n = 100\)</span> observations. The observations are randomly divided into 5 groups of 20 observations each. The model is trained five times. The first time around, observations in fold 1 serve as the test data set, folds 2—5 serve as the training data set. The second time around, fold 2 serves as the test data set and folds 1, 3, 4, and 5 are the training data set; and so forth. Each time, the average loss is calculated for the 20 observations not included in training. At the end, five average cross-validation losses are averaged to calculate the overall loss.</p>
 <div id="fig-cv-folds5" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cv-folds5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/five_fold_CV.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/five_fold_CV.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/five_fold_CV.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/five_fold_CV.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cv-folds5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2.12: Example of 5-fold cross-validation for 100 observations. Numbers in the cells represent observation numbers. The records were randomly arranged prior to assigning the folds.
@@ -1320,6 +1464,11 @@ Figure&nbsp;2.15: Leave-one-out cross-validation for polynomials in the Auto dat
 <div class="hidden" aria-hidden="true">
 <span class="glightbox-desc lightbox-desc-1">Figure&nbsp;2.5: Accuracy and precision—the dart board bullseye metaphor.</span>
 <span class="glightbox-desc lightbox-desc-2">Figure&nbsp;2.12: Example of 5-fold cross-validation for 100 observations. Numbers in the cells represent observation numbers. The records were randomly arranged prior to assigning the folds.</span>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-James2013_ISLR2" class="csl-entry" role="listitem">
+James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2021. <em>An Introduction to Statistical Learning: With Applications in r, 2nd Ed.</em> Springer. <a href="https://www.statlearning.com/">https://www.statlearning.com/</a>.
+</div>
 </div>
 </section>
 </section>
@@ -1904,7 +2053,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","openEffect":"zoom","closeEffect":"zoom","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

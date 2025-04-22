@@ -601,8 +601,10 @@ Figure&nbsp;6.1: Finding the appropriate degree of smoothness in regression.
 <p>But we cannot just consider bias and variance among all possible functions <span class="math inline">\(f^*\)</span>, we need to add further structure to make solutions tractable. Adding structure is done by imposing constraints on <span class="math inline">\(f^*\)</span> so that we can find a (hopefully unique) solution within the class of constraints. For example, we can structure the problem by insisting that only global functions with a linear predictor are considered.</p>
 <p>Consider the case of predicting the mean of the target variable at some location <span class="math inline">\(\textbf{x}_0\)</span> in the input space. <span class="math inline">\(\textbf{x}_0\)</span> can be a one of the observed data points or a new value. A <strong>global</strong> model is one that applies regardless of the value of <span class="math inline">\(\textbf{x}_0\)</span>. A <strong>local</strong> model on the other hand applies a different model depending on the value of <span class="math inline">\(\textbf{x}_0\)</span>.</p>
 <p>In <a href="statmodels.html#sec-model-components" class="quarto-xref"><span>Section 1.2</span></a> the concept of the linear predictor was introduced:</p>
-<p><span class="math display">\[\eta = \beta_{0} + \beta_1 x_1 + \cdots + \beta_p x_p\]</span></p>
-<p>The constraint—global model with linear predictor—adds a lot of structure to the regression problem. We are now looking for mean functions of the following form</p>
+<p><span class="math display">\[
+\eta = \beta_{0} + \beta_1 x_1 + \cdots + \beta_p x_p
+\]</span></p>
+<p>The constraint—global model with linear predictor—adds much structure to the regression problem. We are now looking for mean functions of the following form</p>
 <p><span class="math display">\[
 \text{E}[Y_i | \textbf{x}_i] = g(\eta) = g(\beta_0 + \beta_1 x_{i1} + \cdots + \beta_p x_{ip})
 \]</span></p>
@@ -627,7 +629,7 @@ Y_i = \beta_0 + \beta_1 x_{i} + \beta_2 x_{i}^2 + \beta_3 x_i^3 + \cdots + \epsi
 <div id="fig-smoothing-mindmap" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-smoothing-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/SmoothingMindMap.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/SmoothingMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/SmoothingMindMap.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/SmoothingMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-smoothing-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;6.2: Different approaches to structuring the regression problem.
@@ -639,7 +641,8 @@ Figure&nbsp;6.2: Different approaches to structuring the regression problem.
 <h3 class="anchored" data-anchor-id="constraints-on-estimation">Constraints on Estimation</h3>
 <p>Imposing constraints on the solution of the regression problem can also be done through the method of parameter estimation. Take, for example, the linear regression model <span class="math inline">\(y_i = \textbf{x}_i^\prime\boldsymbol{\beta}+ \epsilon_i\)</span>. The ordinary least squares (OLS) estimator satisfies <span class="math display">\[
 \mathop{\mathrm{arg\,min}}_\boldsymbol{\beta}\sum_{i=1}^n \left(y_i - \textbf{x}_i^\prime\boldsymbol{\beta}\right)^2
-\]</span> The solution is constrained in the sense that it is the orthogonal projection of the data onto the space spanned by the columns of the <span class="math inline">\(\textbf{X}\)</span> matrix. While OLS estimators are easy to work with and have nice properties, for example they are unbiased if the model is correct, they suffer from large variability in high dimensional problems (large <span class="math inline">\(p\)</span>) and when the <span class="math inline">\(x\)</span>-s are highly interrelated. A solution to that problem lies in adding further constraints on the estimators.</p>
+\]</span></p>
+<p>The solution is constrained in the sense that it is the orthogonal projection of the data onto the space spanned by the columns of the <span class="math inline">\(\textbf{X}\)</span> matrix. While OLS estimators are easy to work with and have nice properties, for example they are unbiased if the model is correct, they suffer from large variability in high-dimensional problems (large <span class="math inline">\(p\)</span>) and when the <span class="math inline">\(x\)</span>-s are highly interrelated. A solution to that problem lies in adding further constraints on the estimators.</p>
 <p><strong>Ridge regression</strong> minimizes instead of the OLS criterion the expression <span class="math display">\[
 \sum_{i=1}^n \left(y_i - \textbf{x}_i^\prime \boldsymbol{\beta}\right)^2 + \lambda\sum_{j=1}^p\beta_j^2
 \]</span> The additional term (<span class="math inline">\(\lambda\sum \beta_j^2\)</span>) is a <strong>roughness</strong> (regularization) penalty added to the least-squares criterion. For a given value of the hyperparameter <span class="math inline">\(\lambda\)</span>, large values of the <span class="math inline">\(\beta\)</span>-coefficients add a greater penalty to the error sum of squares than small values of the coefficients. This has the effect of suppressing the magnitude of the <span class="math inline">\(\beta\)</span>s, shrinking them toward zero. The Ridge regression estimator is an example of a class of estimators called <strong>shrinkage estimators</strong> for that reason.</p>
@@ -667,9 +670,6 @@ f(\textbf{x}) = g(\eta) = g(\textbf{x}^\prime\boldsymbol{\beta})
 <div class="example-container">
 <p>The data in the following graph show the concentration of a drug in the body of patients over time. The drug was administered at time 0 at one of two doses. The doses are shown with different colored symbols. After a period of absorption the body begins to eliminate the drug.</p>
 <div class="cell" data-layout-align="center">
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: DBI</code></pre>
-</div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -707,20 +707,20 @@ Figure&nbsp;6.3: Local linear trends approximate an overall trend
 <div id="fig-making-models-local" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-making-models-local-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/MakingModelsLocal.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/MakingModelsLocal.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+<a href="images/MakingModelsLocal.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/MakingModelsLocal.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-making-models-local-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;6.4: Techniques by which models can be localized
 </figcaption>
 </figure>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout callout-style-default callout-tip callout-titled" title="Localizing a Model">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Tip
+Localizing a Model
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -748,10 +748,18 @@ Tip
 </div>
 <div class="example-container">
 <p>The following data from the Connecticut Tumor Registry and represent age-adjusted numbers of melanoma incidences per 100,000 people for the 37 years from 1936 to 1972 (Houghton, Flannery, and Viola 1980). These data are used in the Getting Started example of the SAS PROC LOESS documentation.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>melanoma <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM melanoma"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(melanoma)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"duckdb"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir =</span> <span class="st">"ads.ddb"</span>,<span class="at">read_only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>melanoma <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"SELECT * FROM melanoma"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(melanoma)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  year incidences
 1 1936        0.9
@@ -762,12 +770,34 @@ Tip
 6 1941        1.2</code></pre>
 </div>
 </div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>(database<span class="op">=</span><span class="st">"ads.ddb"</span>, read_only<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>melanoma <span class="op">=</span> con.sql(<span class="st">"SELECT * FROM melanoma"</span>).df()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>con.close()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>melanoma.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   year  incidences
+0  1936         0.9
+1  1937         0.8
+2  1938         0.8
+3  1939         1.3
+4  1940         1.4</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 <p>Suppose we are interested in predicting the mean melanoma incidence at 1957.3 in a 3-NN analysis. The following graph shows the prediction location <span class="math inline">\(x_0 = 1957.3\)</span>, the three nearest neighbors, and the predicted incidence as their average (cross symbol).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="regintro_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
+<p><img src="regintro_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
 </figure>
 </div>
 </div>
@@ -777,7 +807,7 @@ Tip
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="regintro_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
+<p><img src="regintro_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
 </figure>
 </div>
 </div>
@@ -788,7 +818,7 @@ Tip
 <ul>
 <li><p>Flexible, general, and intuitive</p></li>
 <li><p>Combines fitting and prediction into a single step. To compute a predicted value at <span class="math inline">\(x_0\)</span>, the model is fit to the data in the neighborhood of <span class="math inline">\(x_0\)</span>.</p></li>
-<li><p>Interpolative rather than extrapolative. You cannot extrapolate a local method reliably beyond the range of observed data. At the boundary of the space, the <span class="math inline">\(k\)</span> nearest neighbors are the same data points near the edge of the observed range. The estimate does not change once the most extreme <span class="math inline">\(k\)</span> data points are selected.</p></li>
+<li><p>Interpolative rather than extrapolative. You cannot extrapolate a local method reliably beyond the range of observed data. At the boundary of the space, the <span class="math inline">\(k\)</span>-nearest neighbors are the same data points near the edge of the observed range. The estimate does not change once the most extreme <span class="math inline">\(k\)</span> data points are selected.</p></li>
 </ul>
 <div class="example">
 <div class="example-header">
@@ -800,7 +830,7 @@ Tip
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="regintro_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
+<p><img src="regintro_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
 </figure>
 </div>
 </div>
@@ -812,12 +842,13 @@ Tip
 <li><p>Suffer from the <strong>curse of dimensionality</strong>. (See next subsection)</p></li>
 <li><p>Control smoothness through hyperparameters, here, <span class="math inline">\(k\)</span>. To see the effect of <span class="math inline">\(k\)</span> on the bias-variance tradeoff, we consider the mean squared error of the <span class="math inline">\(k\)</span>-NN estimator. Suppose <span class="math inline">\(Y = f(x)+\epsilon\)</span>, <span class="math inline">\(\epsilon \sim (0,\sigma^2)\)</span>, and the <span class="math inline">\(k\)</span>-NN estimator is the arithmetic mean in the neighborhood <span class="math display">\[
 \widehat{f}(x_0) = \frac{1}{k}\sum_{i=1}^k f(x_{(i)}) = \frac{1}{k}\sum_{i=1}^k y_i
-\]</span> The MSE of <span class="math inline">\(\widehat{f}(x_0)\)</span> as an estimator of <span class="math inline">\(f(x)\)</span> is <span class="math display">\[
-\text{E}\left[(Y-\widehat{f}(x_0))^2 \right] = \frac{\sigma^2}{k} + \left(f(x_0) - \widehat{f}(x_0) \right)^2 + \sigma^2
-\]</span> The first term, <span class="math inline">\(\sigma^2/k\)</span> is the variance of a sample mean of <span class="math inline">\(k\)</span> observations, the second term is the squared bias component, and the third term is the irreducible error. As <span class="math inline">\(k\)</span> increases the <span class="math inline">\(k\)</span>-NN estimator approaches the sample mean <span class="math inline">\(\overline{Y}\)</span> with variance <span class="math inline">\(\sigma^2/n\)</span>. While the variance term gets smaller, the squared bias term increases unless <span class="math inline">\(f(x)\)</span> does not depend on <span class="math inline">\(x\)</span>, in which case the sample mean is the optimal estimator. As <span class="math inline">\(k\)</span> decreases, squared bias component decreases but the variance component <span class="math inline">\(\sigma^2/k\)</span> is large. In the extreme case of <span class="math inline">\(k=1\)</span> the mean squared error becomes <span class="math display">\[
-\text{E}\left[(Y-\widehat{f}(x_0))^2 \right] = 2 \sigma^2 + (f(x_0) - f(x_{(1)})^2
-\]</span> In summary: If <span class="math inline">\(k\)</span> is large, the estimator has low variability and large bias; if <span class="math inline">\(k\)</span> is small, the estimator has large variability and small bias. This is the classical bias-variance tradeoff.</p></li>
+\]</span></p></li>
 </ul>
+<p>The MSE of <span class="math inline">\(\widehat{f}(x_0)\)</span> as an estimator of <span class="math inline">\(f(x)\)</span> is <span class="math display">\[
+\text{E}\left[(Y-\widehat{f}(x_0))^2 \right] = \frac{\sigma^2}{k} + \left(f(x_0) - \widehat{f}(x_0) \right)^2 + \sigma^2
+\]</span> The first term, <span class="math inline">\(\sigma^2/k\)</span> is the variance of a sample mean of <span class="math inline">\(k\)</span> observations, the second term is the squared bias component, and the third term is the irreducible error. As <span class="math inline">\(k\)</span> increases the <span class="math inline">\(k\)</span>-NN estimator approaches the sample mean <span class="math inline">\(\overline{Y}\)</span> w ith variance <span class="math inline">\(\sigma^2/n\)</span>. While the variance term gets smaller, the squared bias term increases unless <span class="math inline">\(f(x)\)</span> does not depend on <span class="math inline">\(x\)</span>, in which case the sample mean is the optimal estimator. As <span class="math inline">\(k\)</span> decreases, squared bias component decreases but the variance component <span class="math inline">\(\sigma^2/k\)</span> is large. In the extreme case of <span class="math inline">\(k=1\)</span> the mean squared error becomes <span class="math display">\[
+\text{E}\left[(Y-\widehat{f}(x_0))^2 \right] = 2 \sigma^2 + (f(x_0) - f(x_{(1)})^2
+\]</span> In summary: If <span class="math inline">\(k\)</span> is large, the estimator has low variability and large bias; if <span class="math inline">\(k\)</span> is small, the estimator has large variability and small bias. This is the classical bias-variance tradeoff.</p>
 <div class="example">
 <div class="example-header">
 <p>Example: Melanoma Incidences (Cont’d)</p>
@@ -828,7 +859,7 @@ Tip
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="regintro_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
+<p><img src="regintro_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
 </figure>
 </div>
 </div>
@@ -841,29 +872,93 @@ Tip
 <p>Example: Melanoma Incidences (Cont’d)</p>
 </div>
 <div class="example-container">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <p>The following statements perform leave-one-out cross-validation by setting the number of cross-validation folds equal to the number of observations (<code>nfolds=nrow(melanoma)</code>) using the <code>knn.cv</code> function in the <code>Rfast</code> library.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Rfast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>kcv <span class="ot">&lt;-</span> Rfast<span class="sc">::</span><span class="fu">knn.cv</span>(<span class="at">nfolds=</span><span class="fu">nrow</span>(melanoma),</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">y=</span>melanoma<span class="sc">$</span>incidences,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">x=</span><span class="fu">as.matrix</span>(melanoma<span class="sc">$</span>year),</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">k=</span><span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">20</span>,<span class="dv">1</span>),</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">type=</span><span class="st">"R"</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(kcv<span class="sc">$</span>crit, <span class="at">ylab=</span><span class="st">"MSPE"</span>,<span class="at">xlab=</span><span class="st">"k"</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="fu">min</span>(kcv<span class="sc">$</span>crit),<span class="at">col=</span><span class="st">"red"</span>,<span class="at">lty=</span><span class="st">"dotted"</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">which</span>(kcv<span class="sc">$</span>crit<span class="sc">==</span><span class="fu">min</span>(kcv<span class="sc">$</span>crit)),<span class="at">col=</span><span class="st">"red"</span>,<span class="at">lty=</span><span class="st">"dotted"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Rfast)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>kcv <span class="ot">&lt;-</span> Rfast<span class="sc">::</span><span class="fu">knn.cv</span>(<span class="at">nfolds=</span><span class="fu">nrow</span>(melanoma),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">y=</span>melanoma<span class="sc">$</span>incidences,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">x=</span><span class="fu">as.matrix</span>(melanoma<span class="sc">$</span>year),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">k=</span><span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">20</span>,<span class="dv">1</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">type=</span><span class="st">"R"</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(kcv<span class="sc">$</span>crit, <span class="at">ylab=</span><span class="st">"MSPE"</span>,<span class="at">xlab=</span><span class="st">"k"</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="fu">min</span>(kcv<span class="sc">$</span>crit),<span class="at">col=</span><span class="st">"red"</span>,<span class="at">lty=</span><span class="st">"dotted"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">which</span>(kcv<span class="sc">$</span>crit<span class="sc">==</span><span class="fu">min</span>(kcv<span class="sc">$</span>crit)),<span class="at">col=</span><span class="st">"red"</span>,<span class="at">lty=</span><span class="st">"dotted"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="regintro_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
+<p><img src="regintro_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></p>
 </figure>
 </div>
 </div>
 </div>
-<p><span class="math inline">\(k=2\)</span> is the value for which the nearest-neighbor analysis achieves the lowest LOOCV error for this data set.</p>
+<p>The value for which the nearest-neighbor analysis achieves the lowest LOOCV error for this data set is <span class="math inline">\(k=2\)</span>.</p>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> KNeighborsRegressor</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert 'year' to a numpy array and reshape for sklearn (needs 2D array)</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> melanoma[<span class="st">'year'</span>].values.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> melanoma[<span class="st">'incidences'</span>].values</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>k_values <span class="op">=</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">21</span>) </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>mspe <span class="op">=</span> []</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform leave-one-out cross-validation for each k value</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> k_values:</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    knn <span class="op">=</span> KNeighborsRegressor(n_neighbors<span class="op">=</span>k)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># We use -1 * negative_mean_squared_error which gives us MSE</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># We use leave-one-out CV (equivalent to nfolds=nrow(melanoma))</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cross_val_score(</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        knn, X, y, </span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>        cv<span class="op">=</span><span class="bu">len</span>(melanoma),  <span class="co"># leave-one-out CV</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>        scoring<span class="op">=</span><span class="st">'neg_mean_squared_error'</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    mspe.append(<span class="op">-</span>np.mean(scores))  <span class="co"># Convert back to positive MSE</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the plot</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>plt.plot(k_values, mspe, marker<span class="op">=</span><span class="st">'o'</span>)</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>plt.axhline(y<span class="op">=</span><span class="bu">min</span>(mspe), color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'dotted'</span>)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>plt.axvline(x<span class="op">=</span>k_values[np.argmin(mspe)], color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'dotted'</span>)</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'k'</span>)</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'MSPE'</span>)</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'K-Nearest Neighbors Cross-Validation'</span>)</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="regintro_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Optimal k value: </span><span class="sc">{</span>k_values[np.argmin(mspe)]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimal k value: 2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Minimum MSPE: </span><span class="sc">{</span><span class="bu">min</span>(mspe)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Minimum MSPE: 0.08452702702702707</code></pre>
+</div>
+</div>
+<p>The value for which the nearest-neighbor analysis achieves the lowest LOOCV error for this data set is <span class="math inline">\(k=2\)</span>.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 <p>The <span class="math inline">\(k\)</span>-NN estimator is a special case of a kernel estimator. Rather than a smooth bell-shaped kernel function that assigned real-valued weights to observations, its kernel is binary, an observation either contributes fully to the estimate or does not contribute at all–depending on whether it is in the neighborhood of <span class="math inline">\(\textbf{x}_0\)</span>. The kernel function for the <span class="math inline">\(k\)</span>-NN estimator can be written as <span class="math display">\[
@@ -885,10 +980,10 @@ K(x_0,x_i) = I(||x_i-x_0|| \le ||x_{(k)} - x_0 ||)
 <li><p><span class="math inline">\(p=10\)</span> covers <span class="math inline">\(0.1^{1/10} = 0.79\)</span> of the range of <span class="math inline">\(X_1, \cdots, X_{10}\)</span></p></li>
 </ul>
 <p>As <span class="math inline">\(p\)</span> increases, you have to increase the “neighborhood” to capture a constant fraction of the observations. Eventually, there is nothing local about these neighborhoods and many points will be near the edge of the data space. If you place 50 observations in 20 dimensions no two observations are close to each other.</p>
-<div id="fig-curse-dimensionality" class="quarto-figure quarto-figure-center quarto-float anchored" width="80%" data-fig-align="center">
+<div id="fig-curse-dimensionality" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center" width="80%">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-curse-dimensionality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/CurseOfDimensionality.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/CurseOfDimensionality.png" id="fig-curse-dimensionality" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:80.0%"></a>
+<a href="images/CurseOfDimensionality.png" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/CurseOfDimensionality.png" id="fig-curse-dimensionality" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-curse-dimensionality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;6.5
@@ -1487,7 +1582,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","openEffect":"zoom","loop":false,"descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","descPosition":"bottom","closeEffect":"zoom","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

@@ -572,7 +572,7 @@ window.Quarto = {
   </ul></li>
   <li><a href="#sec-dl-rnn" id="toc-sec-dl-rnn" class="nav-link" data-scroll-target="#sec-dl-rnn"><span class="header-section-number">34.3</span> Recurrent Neural Networks</a>
   <ul>
-  <li><a href="#vanishing-gradients" id="toc-vanishing-gradients" class="nav-link" data-scroll-target="#vanishing-gradients">Vanishing Gradients</a></li>
+  <li><a href="#vanishing-and-exploding-gradients" id="toc-vanishing-and-exploding-gradients" class="nav-link" data-scroll-target="#vanishing-and-exploding-gradients">Vanishing (and Exploding) Gradients</a></li>
   <li><a href="#long-short-term-memory-models-lstm" id="toc-long-short-term-memory-models-lstm" class="nav-link" data-scroll-target="#long-short-term-memory-models-lstm">Long Short-Term Memory Models (LSTM)</a></li>
   </ul></li>
   <li><a href="#sec-dl-transformers" id="toc-sec-dl-transformers" class="nav-link" data-scroll-target="#sec-dl-transformers"><span class="header-section-number">34.4</span> Transformers</a>
@@ -611,7 +611,7 @@ window.Quarto = {
 <div id="fig-deep-mindmap" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-deep-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/DeepLearningMindMap.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/DeepLearningMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/DeepLearningMindMap.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/DeepLearningMindMap.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-deep-mindmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.1: Deep learning mind map.
@@ -626,9 +626,9 @@ Figure&nbsp;34.1: Deep learning mind map.
 <hr>
 <p>Deep learning flipped the narrative about artificial intelligence applying to tasks that are easy for computers but difficult for humans. Automating things that are intuitive for us, such as sensing the world, reading, writing, playing games, understanding language, were long thought to be out of reach for computers. That changed with the rise of deep learning in the early 2000s and was marked by watershed moments such as a reinforcement-trained system beating the world’s best Go player 4:1.</p>
 <p>The idea of deep learning is to represent solutions as a hierarchy of related concepts. The hierarchy looks like a layered graph, hence the name deep learning. Instead of engineering features and trying to predict or classify based on carefully chosen features, deep learning starts with the obvious inputs (pixels, audio, text) and learns concepts about them from the data. Instead of providing to the system representation of the concepts through features, we let the system discover representations. The definition of deep learning according to <span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="references.html#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016</a>)</span> reflects this view:</p>
-<blockquote class="blockquote">
-<p><em>Deep learning is a particular kind of machine learning that achieves great power and flexibility by learning to represent the world as a nested hierarchy of concepts, with each concept defined in relation to simpler concepts, and more abstract representations computed in terms of less abstract ones.</em></p>
-</blockquote>
+<div class="quote">
+<p>Deep learning is a particular kind of machine learning that achieves great power and flexibility by learning to represent the world as a nested hierarchy of concepts, with each concept defined in relation to simpler concepts, and more abstract representations computed in terms of less abstract ones.</p>
+</div>
 <p><a href="#fig-deep-example" class="quarto-xref">Figure&nbsp;<span>34.2</span></a>, adapted from <span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="references.html#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016</a>)</span>, depicts this concept for the case of object classification with images. To build a model that can classify the content of the image directly from the pixel information is difficult at best. However, we can train a model to learn different representations about the image content, first colors, then edges, and so forth. The combination of the abstract representations then allows the algorithm to assign “probabilities” with the possible object categories. Based on the probabilities we choose a possible explanation.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -640,13 +640,14 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>We put probabilities in quotation marks because the last step of the</p>
+<p>We put probabilities in quotation marks because the last step of the deep neural network for object classification is a fully connected output layer with softmax output function. The softmax function simply maps <span class="math inline">\(K\)</span> numbers onto the <span class="math inline">\([0,1]\)</span> interval such that larger numbers occupy larger segments of the interval. There is nothing in the softmax calculation that implies that the values are actual probabilities.</p>
+<p>This does not stop people from interpreting the result of a softmax activation as probabilities.</p>
 </div>
 </div>
 <div id="fig-deep-example" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-deep-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/DeepLearningExample.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="images/DeepLearningExample.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/DeepLearningExample.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="images/DeepLearningExample.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-deep-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.2: Deep learning as a hierarchy of concepts. Adapted from <span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="references.html#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016</a>)</span>
@@ -656,16 +657,16 @@ Figure&nbsp;34.2: Deep learning as a hierarchy of concepts. Adapted from <span c
 <p>A fundamental issue with artificial intelligence for tasks that are intuitive for humans is how to get the required knowledge about the world into the machine? A computer does not look at a photo the same way we do. It sees pixels, we see concepts. Once we know what a tomato looks like we can conceptualize tomatoness and recognize a different tomato variety immediately. How do we teach computers about tomatoes?</p>
 <p>The deep learning solution is to extract knowledge from data through machine learning. Several implicit assumptions are at work here:</p>
 <ul>
-<li>the knowledge required to understand a system is actually in the data</li>
-<li>the knowledge can be extracted</li>
-<li>there is enough data to make sure the machine can learn and learn the right thing</li>
+<li>The knowledge required to understand a system is in the data</li>
+<li>The knowledge can be extracted from the data</li>
+<li>There is enough data to make sure the machine can learn and learn the right<span class="math inline">\(^{\texttrademark{}}\)</span> thing</li>
 </ul>
 <p>This raises many fundamental questions. For example, by scanning all the text on the internet, does a machine really understand language? Is language not more—much more—than just data? Is a computer vision algorithm that has 95% accuracy in object classification not just a pixel pattern-matching system and does not really understand the concepts it is classifying? The answer to both questions is an emphatic “Yes!”</p>
 <p>The quintessential tool for deep learning is the deep neural network.</p>
 </section>
 <section id="sec-dl-cnn" class="level2" data-number="34.2">
 <h2 data-number="34.2" class="anchored" data-anchor-id="sec-dl-cnn"><span class="header-section-number">34.2</span> Convolutional Neural Networks</h2>
-<p>Convolutional neural networks (CNN) have become the dominant architecture in computer vision applications—until transformer architectures, that is. A CNN is a neural network for data with a grid-like topology, such as the array of pixels on an image. In contrast to a generic ANN with fully connected layers, a CNN takes advantage of the spatial arrangement of the data. CNNs can also be applied to types of time series data such as samples at regular time intervals. It turns out that another class of deep learning networks, the recurrent neural networks (RNNs), are better suited to analyze sequential data.</p>
+<p>Convolutional neural networks (CNN) have become the dominant architecture in computer vision applications—until transformer architectures arrived. A CNN is a neural network for data with a grid-like topology, such as the array of pixels on an image. In contrast to a generic ANN with fully connected layers, a CNN takes advantage of the spatial arrangement of the data. CNNs can also be applied to types of time series data such as samples at regular time intervals. It turns out that another class of deep learning networks, the recurrent neural networks (RNNs), are better suited to analyze sequential data.</p>
 <p>CNNs take advantage of the rich structure of image data to</p>
 <ul>
 <li>reduce the number of parameters</li>
@@ -675,7 +676,7 @@ Figure&nbsp;34.2: Deep learning as a hierarchy of concepts. Adapted from <span c
 <div id="fig-image-class-and-obj" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-image-class-and-obj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/ImageClassificationAndObjectDetect.jpeg" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="images/ImageClassificationAndObjectDetect.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/ImageClassificationAndObjectDetect.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="quarto-lightbox-gallery-3"><img src="images/ImageClassificationAndObjectDetect.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-image-class-and-obj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.3: Object detection and classification
@@ -711,7 +712,7 @@ Figure&nbsp;34.5: Facial detection and recognition
 <div id="fig-waldo" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-waldo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/WhereisWaldo2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" data-glightbox="description: .lightbox-desc-4"><img src="images/WhereisWaldo2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
+<a href="images/WhereisWaldo2.png" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="quarto-lightbox-gallery-4"><img src="images/WhereisWaldo2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-waldo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.6: Where is Waldo?
@@ -759,7 +760,7 @@ Figure&nbsp;34.6: Where is Waldo?
 <div id="fig-convolution-example1" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-convolution-example1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/ConvolutionExample1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" data-glightbox="description: .lightbox-desc-5"><img src="images/ConvolutionExample1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/ConvolutionExample1.png" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="quarto-lightbox-gallery-5"><img src="images/ConvolutionExample1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-convolution-example1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.7: Convolving the first row of a <span class="math inline">\(3\times 4\)</span> image with a <span class="math inline">\(2 \times 2\)</span> kernel.
@@ -769,7 +770,7 @@ Figure&nbsp;34.7: Convolving the first row of a <span class="math inline">\(3\ti
 <div id="fig-convolution-example2" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-convolution-example2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/ConvolutionExample2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" data-glightbox="description: .lightbox-desc-6"><img src="images/ConvolutionExample2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/ConvolutionExample2.png" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="quarto-lightbox-gallery-6"><img src="images/ConvolutionExample2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-convolution-example2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.8: Convolving the second row of a <span class="math inline">\(3\times 4\)</span> image with a <span class="math inline">\(2 \times 2\)</span> kernel.
@@ -791,10 +792,10 @@ Figure&nbsp;34.8: Convolving the second row of a <span class="math inline">\(3\t
 <div id="fig-sparse-connectivity" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sparse-connectivity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/SparseConnectivity.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" data-glightbox="description: .lightbox-desc-7"><img src="images/SparseConnectivity.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/SparseConnectivity.png" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="quarto-lightbox-gallery-7"><img src="images/SparseConnectivity.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sparse-connectivity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;34.9: Sparse and full connectivity, adapted from <span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="references.html#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016, 336–37</a>)</span>
+Figure&nbsp;34.9: Sparse and full connectivity, adapted from <span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="references.html#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016, 336–37</a>)</span>. The convolutional neural net exhibits sparse connectivity.
 </figcaption>
 </figure>
 </div>
@@ -813,12 +814,12 @@ Figure&nbsp;34.9: Sparse and full connectivity, adapted from <span class="citati
 </section>
 <section id="filtering-example" class="level4">
 <h4 class="anchored" data-anchor-id="filtering-example">Filtering example</h4>
-<p>To see how kernels can extract features of arrays, we consider a special case where the kernel weights are predetermined to create a desired effect. Suppose you are dealing with grayscale images and you subtract from a cell the value of the neighboring pixel to the right (or left). This operation will reveal vertical edges. A slightly more sophisticated application is the Sobel filter for finding edges. The filter consists of two kernels, <span class="math inline">\(G_x\)</span> for edges in the <span class="math inline">\(x\)</span>-direction (horizontal) and its transpose, <span class="math inline">\(G_y\)</span> for the detection of edges in the <span class="math inline">\(y\)</span>-direction: <span class="math display">\[
+<p>To see how kernels can extract features of arrays, we consider a special case where the kernel weights are predetermined to create a desired effect. Suppose you are dealing with grayscale images and you subtract from a cell the value of the neighboring pixel to the right (or left). This operation will reveal vertical edges. A slightly more sophisticated application is the <strong>Sobel filter</strong> for finding edges. The filter consists of two kernels, <span class="math inline">\(G_x\)</span> for edges in the <span class="math inline">\(x\)</span>-direction (horizontal) and its transpose, <span class="math inline">\(G_y\)</span> for the detection of edges in the <span class="math inline">\(y\)</span>-direction: <span class="math display">\[
 G_x = \left [ \begin{array}{rrr} 1 &amp; 0 &amp; -1 \\ 2 &amp; 0 &amp; -2 \\ 1 &amp; 0 &amp; -1 \end{array} \right ]
     \qquad
 G_y = \left [ \begin{array}{rrr} 1 &amp; 2 &amp; 1 \\ 0 &amp; 0 &amp; 0 \\ -1 &amp; -2 &amp; -1 \end{array} \right ]
 \]</span></p>
-<p><a href="#fig-sobel" class="quarto-xref">Figure&nbsp;<span>34.10</span></a> depicts the application of <span class="math inline">\(G_x\)</span> to the first cell of the array after extending the bounday by one cell. <a href="#fig-sobel-full" class="quarto-xref">Figure&nbsp;<span>34.11</span></a> shows the result of the convolution for all cells.</p>
+<p><a href="#fig-sobel" class="quarto-xref">Figure&nbsp;<span>34.10</span></a> depicts the application of <span class="math inline">\(G_x\)</span> to the first cell of the array after extending the boundary by one cell. <a href="#fig-sobel-full" class="quarto-xref">Figure&nbsp;<span>34.11</span></a> shows the result of the convolution for all cells.</p>
 <div id="fig-sobel" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sobel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -840,32 +841,33 @@ Figure&nbsp;34.11: Edge detection with Sobel filter <span class="math inline">\(
 </figure>
 </div>
 <p>Filters such as the Sobel filter are applied in classical image processing where known transformations are applied to the pixels. When fitting convolutional neural networks we do not specify which filters to apply. Instead, we let the algorithm learn the best filters for a layer by estimating the weights of the kernel.</p>
+<hr>
 <p>After convolving the cells, the values pass through an activation function as in other neural networks—also called the <strong>detector stage</strong>. ReLU activation is common these days, sigmoid functions were popular prior to the discovery of the rectified linear unit. The convolution and activation are often combined into a single step, sometimes they are shown as separate processing stages (separate layers).</p>
 </section>
 </section>
 <section id="pooling" class="level3">
 <h3 class="anchored" data-anchor-id="pooling">Pooling</h3>
-<p>The pooling stage of a convolutional layer—often shown as its own layer—takes the output of a convolved and activated layer and replaces its values with summaries of nearby values. Similar to applying a kernel, a pooling layer has a window of cells to consider and a stride by which it shifts across the array. Unlike the convolution layer, there are no parameters associated with pooling. The effect of pooling is a reduction in the dimension of the output; the goal is to perform this reduction with minimal loss of information. The pooling layer is also called a downsample layer for this reason.</p>
+<p>The <strong>pooling stage</strong> of a convolutional layer—often shown as its own layer—takes the output of a convolved and activated layer and replaces its values with summaries of nearby values. Similar to applying a kernel, a pooling layer has a window of cells to consider and a stride by which it shifts across the array. Unlike the convolution layer, there are no parameters associated with pooling. The effect of pooling is a reduction in the dimension of the output; the goal is to perform this reduction with minimal loss of information. The pooling layer is also called a downsample layer for this reason.</p>
 <p>Adding a pooling layer serves two purposes: to mitigate the sensitivity of the convolution to location and to downsample the representation, reducing the number of parameters for subsequent layers.</p>
 <p><a href="#fig-pooling" class="quarto-xref">Figure&nbsp;<span>34.12</span></a> shows a full convolutional layer with all three phases: convolution, activation (here, ReLU), and pooling. Two pooling operations are shown for <span class="math inline">\(2 \times 2\)</span> pooling with stride 2: using the average of the values and using the maximum value in the pooling window.</p>
 <div id="fig-pooling" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-pooling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/ConvolutionalLayerWithPooling.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" data-glightbox="description: .lightbox-desc-8"><img src="images/ConvolutionalLayerWithPooling.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/ConvolutionalLayerWithPooling.png" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="quarto-lightbox-gallery-8"><img src="images/ConvolutionalLayerWithPooling.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pooling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.12: Convolutional layer with pooling.
 </figcaption>
 </figure>
 </div>
-<p>The most common pooling operations are taking the max value (max-pooling) and taking the average, with a preference of the former because it confers more invariance to the output.</p>
+<p>The most common pooling operations are taking the max value (max-pooling) and taking the average, with a preference for the former because taking the maximum confers more invariance to the output.</p>
 </section>
 <section id="considerations" class="level3">
 <h3 class="anchored" data-anchor-id="considerations">Considerations</h3>
 <section id="channels-and-feature-maps" class="level4">
 <h4 class="anchored" data-anchor-id="channels-and-feature-maps">Channels and feature maps</h4>
 <p>When working with images and CNNs you encounter the terms <strong>channels</strong> and <strong>feature maps</strong>. The terms are used interchangeably and refer to the number of input or output features. When processing color images, channels at the input layer refer to the RGB color values, the input layer has three channels or feature maps. In the case of the MNIST digit data set, there is a single channel, the grayscale value.</p>
-<p>After the input layer, the number of channels or feature maps is determined by the number of filters. A convolutional layer with 16 filters has 16 output channels, one per filter. Each channel has a different set of weights, but the weights within a channel that convolve the image are the same (parameter sharing).</p>
+<p>After the input layer, the number of channels or feature maps is determined by the number of filters. A convolutional layer with 16 filters has 16 output channels, one per filter. Each channel has a different set of weights, but the weights convolving the image within a channel are the same (parameter sharing).</p>
 <p>We think of the first layer of the CNN as consuming the color information and other layers creating new channels of information about the image.</p>
 <p>Each layer of a CNN has input and output features, known as <strong>feature maps</strong>.</p>
 <p>After the input layer, the number of feature maps is determined by the number of filters. After the input layer, these are also referred to as the channels. At the input layer, the channels for RGB images refer to the three color values.</p>
@@ -898,14 +900,14 @@ Figure&nbsp;34.12: Convolutional layer with pooling.
 <div id="fig-lenet-5" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-lenet-5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/LeNet_5.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" data-glightbox="description: .lightbox-desc-9"><img src="images/LeNet_5.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/LeNet_5.png" class="lightbox" data-glightbox="description: .lightbox-desc-9" data-gallery="quarto-lightbox-gallery-9"><img src="images/LeNet_5.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-lenet-5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.13: LetNet-5 architecture. <a href="https://d2l.ai/chapter_convolutional-neural-networks/lenet.html">Source</a>
 </figcaption>
 </figure>
 </div>
-<p>The first convolution layer (C1) has 6 filters (kernels) of size 5 x 5. Its result is passed to a 2 x 2 pooling layer with stride 2. This reduces the dimension of the output to 14 x 14. The next convolutional layer C2 applies 16 filters of size 5 x 5, leading to output channels of size 10 x 10. These pass through another pooling layer to reduce the output to size 5 x 5. After flattening, two fully connected layers follow with 120 and 84 units, respectively. The final dense output layer has 10 units corresponding to the digits “0”–“9”. The convolutional and fully connected layers used sigmoid activation functions. The original LeNets used a Gaussian decoder rather than the softmax output function.</p>
+<p>The first convolution layer (C1) has 6 filters (kernels) of size 5 x 5. Its result is passed to a 2 x 2 pooling layer with stride 2. This reduces the dimension of the output to 14 x 14. The next convolutional layer C3 applies 16 filters of size 5 x 5, leading to output channels of size 10 x 10. These pass through another pooling layer to reduce the output to size 5 x 5. After flattening, two fully connected layers follow with 120 and 84 units, respectively. The final dense output layer has 10 units corresponding to the digits “0”–“9”. The convolutional and fully connected layers used sigmoid activation functions. The original LeNets used a Gaussian decoder rather than the softmax output function.</p>
 <p>Setting up LeNet-5 in <code>keras</code> is pretty straightforward. You build up the layers sequentially as just described.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(keras)</span>
@@ -1001,35 +1003,35 @@ ________________________________________________________________________________
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>          )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Epoch 1/15
-469/469 - 3s - loss: 1.0381 - accuracy: 0.6928 - val_loss: 0.3382 - val_accuracy: 0.9036 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 1.1479 - accuracy: 0.6603 - val_loss: 0.3951 - val_accuracy: 0.8903 - 3s/epoch - 7ms/step
 Epoch 2/15
-469/469 - 3s - loss: 0.2675 - accuracy: 0.9203 - val_loss: 0.2022 - val_accuracy: 0.9394 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.3106 - accuracy: 0.9102 - val_loss: 0.2323 - val_accuracy: 0.9304 - 3s/epoch - 7ms/step
 Epoch 3/15
-469/469 - 3s - loss: 0.1804 - accuracy: 0.9452 - val_loss: 0.1512 - val_accuracy: 0.9532 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.2152 - accuracy: 0.9349 - val_loss: 0.1718 - val_accuracy: 0.9467 - 3s/epoch - 7ms/step
 Epoch 4/15
-469/469 - 3s - loss: 0.1360 - accuracy: 0.9590 - val_loss: 0.1125 - val_accuracy: 0.9640 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.1641 - accuracy: 0.9490 - val_loss: 0.1426 - val_accuracy: 0.9567 - 3s/epoch - 7ms/step
 Epoch 5/15
-469/469 - 3s - loss: 0.1100 - accuracy: 0.9663 - val_loss: 0.1001 - val_accuracy: 0.9681 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.1309 - accuracy: 0.9590 - val_loss: 0.1032 - val_accuracy: 0.9680 - 3s/epoch - 7ms/step
 Epoch 6/15
-469/469 - 3s - loss: 0.0926 - accuracy: 0.9722 - val_loss: 0.0904 - val_accuracy: 0.9700 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.1081 - accuracy: 0.9668 - val_loss: 0.0979 - val_accuracy: 0.9682 - 3s/epoch - 7ms/step
 Epoch 7/15
-469/469 - 3s - loss: 0.0822 - accuracy: 0.9749 - val_loss: 0.0693 - val_accuracy: 0.9781 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.0926 - accuracy: 0.9712 - val_loss: 0.0978 - val_accuracy: 0.9674 - 3s/epoch - 7ms/step
 Epoch 8/15
-469/469 - 3s - loss: 0.0737 - accuracy: 0.9770 - val_loss: 0.0649 - val_accuracy: 0.9804 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.0822 - accuracy: 0.9746 - val_loss: 0.0699 - val_accuracy: 0.9780 - 3s/epoch - 7ms/step
 Epoch 9/15
-469/469 - 3s - loss: 0.0674 - accuracy: 0.9791 - val_loss: 0.0675 - val_accuracy: 0.9789 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.0735 - accuracy: 0.9774 - val_loss: 0.0636 - val_accuracy: 0.9794 - 3s/epoch - 7ms/step
 Epoch 10/15
-469/469 - 3s - loss: 0.0614 - accuracy: 0.9807 - val_loss: 0.0569 - val_accuracy: 0.9816 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.0669 - accuracy: 0.9788 - val_loss: 0.0659 - val_accuracy: 0.9789 - 3s/epoch - 7ms/step
 Epoch 11/15
-469/469 - 3s - loss: 0.0564 - accuracy: 0.9827 - val_loss: 0.0529 - val_accuracy: 0.9820 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.0614 - accuracy: 0.9811 - val_loss: 0.0568 - val_accuracy: 0.9825 - 3s/epoch - 7ms/step
 Epoch 12/15
-469/469 - 3s - loss: 0.0539 - accuracy: 0.9831 - val_loss: 0.0486 - val_accuracy: 0.9837 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.0578 - accuracy: 0.9816 - val_loss: 0.0490 - val_accuracy: 0.9844 - 3s/epoch - 7ms/step
 Epoch 13/15
-469/469 - 3s - loss: 0.0499 - accuracy: 0.9842 - val_loss: 0.0622 - val_accuracy: 0.9795 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.0532 - accuracy: 0.9832 - val_loss: 0.0579 - val_accuracy: 0.9834 - 3s/epoch - 7ms/step
 Epoch 14/15
-469/469 - 3s - loss: 0.0469 - accuracy: 0.9856 - val_loss: 0.0504 - val_accuracy: 0.9837 - 3s/epoch - 7ms/step
+469/469 - 3s - loss: 0.0509 - accuracy: 0.9837 - val_loss: 0.0462 - val_accuracy: 0.9857 - 3s/epoch - 7ms/step
 Epoch 15/15
-469/469 - 3s - loss: 0.0444 - accuracy: 0.9862 - val_loss: 0.0446 - val_accuracy: 0.9860 - 3s/epoch - 7ms/step</code></pre>
+469/469 - 3s - loss: 0.0469 - accuracy: 0.9851 - val_loss: 0.0429 - val_accuracy: 0.9860 - 3s/epoch - 7ms/step</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history, <span class="at">smooth=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -1040,12 +1042,12 @@ Epoch 15/15
 </div>
 </div>
 </div>
-<p>After only 15 epochs the LeNet model has achieved a classification accuracy of 98.64%, considerably higher than the fully connected network, and with fewer parameters. You can improve the model to 99% accuracy by continuing to train. Also, I encourage you to play with different activation functions (try the hyperbolic tangent), batch sizes, layer structure, etc.</p>
+<p>After only 15 epochs the LeNet model has achieved a classification accuracy of 98.64%, higher than the fully connected network, and with fewer parameters. You can improve the model to 99% accuracy by continuing to train. Also, you are encouraged to play with different activation functions (try the hyperbolic tangent), batch sizes, layer structure, etc.</p>
 <p>Here are some of the predicted values. Remember that the first “5” in position 9 of the test data set was notoriously difficult to classify for the ANN.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>predcl <span class="ot">&lt;-</span> lenet5 <span class="sc">%&gt;%</span> <span class="fu">predict</span>(x_test) <span class="sc">%&gt;%</span> <span class="fu">k_argmax</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>313/313 - 0s - 403ms/epoch - 1ms/step</code></pre>
+<pre><code>313/313 - 0s - 433ms/epoch - 1ms/step</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>g_test[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1053,7 +1055,7 @@ Epoch 15/15
 </div>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>(predcl[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] 7 2 1 0 4 1 4 9 5 9 0 6 9 0 1 5 9 7 3 4 9 6 6 5 4 0 7 4 0 1 3 1 3 4 7 2</code></pre>
+<pre><code> [1] 7 2 1 0 4 1 4 9 5 9 0 6 9 0 1 5 9 7 8 4 9 6 6 5 4 0 7 4 0 1 3 1 3 4 7 2</code></pre>
 </div>
 </div>
 <div class="cell" data-layout-align="center">
@@ -1096,7 +1098,7 @@ Epoch 15/15
 <div id="fig-merlin-birdid" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-merlin-birdid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/MerlinBirdID.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" data-glightbox="description: .lightbox-desc-10"><img src="images/MerlinBirdID.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:45.0%"></a>
+<a href="images/MerlinBirdID.png" class="lightbox" data-glightbox="description: .lightbox-desc-10" data-gallery="quarto-lightbox-gallery-10"><img src="images/MerlinBirdID.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:45.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-merlin-birdid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.14: Part of my Life List in Merlin Bird ID.
@@ -1108,7 +1110,7 @@ Figure&nbsp;34.14: Part of my Life List in Merlin Bird ID.
 <div id="fig-merlin-specto" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-merlin-specto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/MerlinSpectogram.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" data-glightbox="description: .lightbox-desc-11"><img src="images/MerlinSpectogram.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:45.0%"></a>
+<a href="images/MerlinSpectogram.png" class="lightbox" data-glightbox="description: .lightbox-desc-11" data-gallery="quarto-lightbox-gallery-11"><img src="images/MerlinSpectogram.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:45.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-merlin-specto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.15: Spectogram in Merlin Bird ID.
@@ -1134,27 +1136,27 @@ Figure&nbsp;34.15: Spectogram in Merlin Bird ID.
 </ul>
 <p>The challenge of processing order-dependent data is to imbue the system with some form of “memory”. When processing a word in a sentence, the system must have some notion of how the word relates to previous words. Locating the year in the sentence “I was born in 1983” and “In 1983, I was born” should not require different sets of parameters. Recurrent neural networks accomplish that by replacing the hidden layer in ANN with a special layer that maintains the internal state of past layer inputs—this state is called the <strong>hidden state</strong> of the network.</p>
 <p>The input is processed sequentially—one word or token at a time—and the hidden state is updated at each step. Output is generated based on the internal state and the new input value.</p>
-<p>To make these ideas more concrete, suppose that we are processing some text. First, we use an encoding mechanism to transform the text in a series of input vectors. For example, using <strong>one-hot encoding</strong> with a dictionary of 1,000 words, the input is a sequence <span class="math inline">\(\textbf{x}^{(1)}, \cdots, \textbf{x}^{(n)}\)</span> of <span class="math inline">\(n\)</span> vectors of size <span class="math inline">\(1000 \times 1\)</span>. Each vector has a 1 in the dictionary position where the word is found and 999 zeros in all other positions. One can also encode the input with a <strong>word embedding</strong>, where each word is represented by a <span class="math inline">\(m\)</span>-dimensional vector of real numbers, called an embedding. The embeddings can be learned as separate layers or you can use pre-trained embeddings such as word2vec. GloVe, fastText, ELMo, and others.</p>
+<p>To make these ideas more concrete, suppose that we are processing some text. First, we use an encoding mechanism to transform the text in a series of input vectors. For example, using <strong>one-hot encoding</strong> with a dictionary of 1,000 words, the input is a sequence <span class="math inline">\(\textbf{x}^{(1)}, \cdots, \textbf{x}^{(n)}\)</span> of <span class="math inline">\(n\)</span> vectors of size <span class="math inline">\(1000 \times 1\)</span>. Each vector has a 1 in the dictionary position where the word is found and 999 zeros in all other positions. One can also encode the input with a <strong>word embedding</strong>, where each word is represented by an <span class="math inline">\(m\)</span>-dimensional vector of real numbers, called an embedding. The embeddings can be learned as separate layers or you can use pre-trained embeddings such as word2vec. GloVe, fastText, ELMo, and others.</p>
 <p>Let <span class="math inline">\(\textbf{h}^{(t)}\)</span> denote the state of the system at “time” <span class="math inline">\(t%\)</span>. Time is simply an indication of the position in the system, not necessarily wall clock time. A dynamic (recurrent) system is defined as <span class="math display">\[
 \textbf{h}^{(t)} = f(\textbf{h}^{(t-1)},\textbf{x}^{(t)};\boldsymbol{\theta})
 \]</span></p>
 <p>A recurrent neural network learns <span class="math inline">\(\textbf{h}^{(t)}\)</span> from <span class="math inline">\([\textbf{x}^{(t)},\textbf{x}^{(t-1)},\textbf{x}^{(t-2)},\cdots,\textbf{x}^{(2)},\textbf{x}^{(1)}]\)</span> by using at each step the same transition function <span class="math inline">\(f\)</span> and the same parameters <span class="math inline">\(\boldsymbol{\theta}\)</span>.</p>
-<p>The traditional way of depicting neural networks as connected neurons with activations does not work well for RNNs. Instead, two ways of representing recurrence in networks are popular, known as the <strong>folded</strong> and <strong>unfolded</strong> views (<a href="#fig-rnn-folded-unfolded" class="quarto-xref">Figure&nbsp;<span>34.16</span></a>)</p>
+<p>The traditional way of depicting neural networks as connected neurons with activations does not work well for RNNs. Instead, two ways of representing recurrence in networks are popular, known as the <strong>folded</strong> and <strong>unfolded</strong> views (<a href="#fig-rnn-folded-unfolded" class="quarto-xref">Figure&nbsp;<span>34.16</span></a>). The folded view shows the relationships of the input, hidden, and output layer. The unfolded view adds the sequence dimension of the input and output.</p>
 <div id="fig-rnn-folded-unfolded" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rnn-folded-unfolded-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/RNN_Schema.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" data-glightbox="description: .lightbox-desc-12"><img src="images/RNN_Schema.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/RNN_Schema.png" class="lightbox" data-glightbox="description: .lightbox-desc-12" data-gallery="quarto-lightbox-gallery-12"><img src="images/RNN_Schema.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rnn-folded-unfolded-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.16: Folded and unfolded RNN representation.
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-rnn-full" class="quarto-xref">Figure&nbsp;<span>34.17</span></a> shows the full view of an RNN in both representation, adding target, loss functions and weight matrices <span class="math inline">\(\textbf{U}\)</span>, <span class="math inline">\(\textbf{W}\)</span>, and <span class="math inline">\(\textbf{V}\)</span>. These matrices represent the weights for the input-to-hidden state connections, the hidden state-to-hidden state connections, and the hidden state-to-output connections. These weight matrices <span class="math inline">\(\textbf{U}\)</span>, <span class="math inline">\(\textbf{W}\)</span>, and <span class="math inline">\(\textbf{V}\)</span> are the parameters of the RNN that need to be estimated.</p>
+<p><a href="#fig-rnn-full" class="quarto-xref">Figure&nbsp;<span>34.17</span></a> shows the full view of an RNN in both representation, adding target, loss functions and weight matrices <span class="math inline">\(\textbf{U}\)</span>, <span class="math inline">\(\textbf{W}\)</span>, and <span class="math inline">\(\textbf{V}\)</span>. These matrices represent the weights for the input-to-hidden state connections, the hidden state-to-hidden state connections, and the hidden state-to-output connections. These weight matrices <span class="math inline">\(\textbf{U}\)</span>, <span class="math inline">\(\textbf{W}\)</span>, and <span class="math inline">\(\textbf{V}\)</span> are the parameters of the RNN that need to be estimated. The matrices are the same at all levels of the sequence—in other words, there is one <span class="math inline">\(\textbf{W}\)</span> matrix of weights for all connections between hidden units, one <span class="math inline">\(\textbf{U}\)</span> matrix of weights for all connections between inputs and hidden units.</p>
 <div id="fig-rnn-full" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rnn-full-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/RNN_Full.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" data-glightbox="description: .lightbox-desc-13"><img src="images/RNN_Full.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/RNN_Full.png" class="lightbox" data-glightbox="description: .lightbox-desc-13" data-gallery="quarto-lightbox-gallery-13"><img src="images/RNN_Full.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rnn-full-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.17: Complete representation of an RNN.
@@ -1162,26 +1164,26 @@ Figure&nbsp;34.17: Complete representation of an RNN.
 </figure>
 </div>
 <p>Notice that a recurrent neural network can generate output at every step of the recurrence. This is relevant in language translation, for example. In other applications, such as sentiment analysis, only the output at the final stage of the sequence matters.</p>
-<p>The <strong>same</strong> weights are used at each step, this is where the parameter sharing comes in: <span class="math display">\[
-\textbf{h}^{(t)} = \sigma\left( \bU\textbf{x}^{(t)} + \textbf{W}\textbf{h}^{(t-1)} + \textbf{b}\right)
+<p>The <strong>same</strong> weights are used at each step, this is where parameter sharing comes in: <span class="math display">\[
+\textbf{h}^{(t)} = \sigma\left( \textbf{U}\textbf{x}^{(t)} + \textbf{W}\textbf{h}^{(t-1)} + \textbf{b}\right)
 \]</span></p>
 <p>The hidden layers of the network, represented by the hidden state at each step, are fed by activations from the previous layer and by the input data for this step.</p>
 <p>As in other neural network architectures, the size of the layers is a hyperparameter that needs to be tuned. In ANNs and RNNs it corresponds to the number of units in a hidden layer, in CNNs it is a function of the kernel size and the number of channels (feature maps). If the hidden state of an RNN is chosen too small the model will underfit and the network lacks expressive power. If the hidden state is chosen too big the model will overfit and not generalize well to new input sequences.</p>
-<section id="vanishing-gradients" class="level3">
-<h3 class="anchored" data-anchor-id="vanishing-gradients">Vanishing Gradients</h3>
+<section id="vanishing-and-exploding-gradients" class="level3">
+<h3 class="anchored" data-anchor-id="vanishing-and-exploding-gradients">Vanishing (and Exploding) Gradients</h3>
 <p>The vanishing gradient problem, first discussed in <a href="training_ann.html#sec-ann-vanishing-gradients" class="quarto-xref"><span>Section 32.3.2.1</span></a>, is particular punishing for recurrent neural networks, because the same weight matrices are used at all steps of the sequence. Exploding gradients, the opposite problem, when repeated multiplication leads to very large values, is also an issue with RNNs.</p>
 <p>Suppose that we repeatedly multiply the square symmetric matrix <span class="math inline">\(\textbf{A}\)</span> with itself. Apply the eigenvalue decomposition <span class="math display">\[
 \textbf{A}= \textbf{Q}\boldsymbol{\lambda}\textbf{Q}^\prime
 \]</span> where <span class="math inline">\(\boldsymbol{\lambda}\)</span> is the diagonal matrix of eigenvalues and <span class="math inline">\(\textbf{Q}\)</span> is an orthogonal matrix. You can now write the <span class="math inline">\(k\)</span>-fold product in terms of the decomposition: <span class="math display">\[
 \textbf{A}\times \textbf{A}\times \cdots \times \textbf{A}= \textbf{Q}\boldsymbol{\lambda}^k\textbf{Q}^\prime
 \]</span> The <span class="math inline">\(k\)</span>-fold product involves the <span class="math inline">\(k\)</span><sup>th</sup> power of the eigenvalues. If <span class="math inline">\(\lambda_i &lt; 0\)</span>, then <span class="math inline">\(\lambda_i^k\)</span> will vanish. If <span class="math inline">\(\lambda_i &gt; 1\)</span>, then <span class="math inline">\(\lambda_i^k\)</span> will explode for large values of <span class="math inline">\(k\)</span>.</p>
-<p>Because of this problem, training RNNs can be difficult. Vanishing gradients slow down the learning of the network, making it difficult to learn long-term dependencies. Signals that occur early in the sequence get washed out by the time they have propagated through the chain. Short-term dependencies will receive more weight. Exploding gradients can make the training numerically unstable.</p>
+<p>Because of this problem, training RNNs can be difficult. Vanishing gradients slow down the learning of the network, making it difficult to learn long-term dependencies. Signals that occur early in the sequence get washed out by the time they have propagated through the chain. Short-term dependencies will receive more weight. On the other hand, exploding gradients can make the training numerically unstable.</p>
 <p>As a result, RNNs are limited to learning relatively short sequences (&lt; 20). To overcome these issues, related architectures have been proposed, for example, Gated RNNs and Long Short-Term Memory (LSTM) models.</p>
 </section>
 <section id="long-short-term-memory-models-lstm" class="level3">
 <h3 class="anchored" data-anchor-id="long-short-term-memory-models-lstm">Long Short-Term Memory Models (LSTM)</h3>
 <p>The name <em>long short-term</em> memory appears strange at first. What is long short-term memory? The basic idea of the LSTM becomes clear when its goals are considered: the idea is to create paths through time that do not vanish. Rather than trying to hold on to all past information through the common weights, an LSTM model adds components to the recurrence that allow the network to decide which states to remember and which states to forget.</p>
-<p>An LSTM provides short-term memory for RNNs that can last many steps in the sequence—hence the name. How it accomplishes this is by way of <strong>gates</strong>, units that control other elements of the network. Each gate is itself a network with weights, biases, and an activation function. A <strong>memory cell</strong> of an LSTM (<a href="#fig-lstm-cell" class="quarto-xref">Figure&nbsp;<span>34.18</span></a>) consists of</p>
+<p>An LSTM provides short-term memory for RNNs that can last many steps in the sequence—hence the name. It accomplishes this by way of <strong>gates</strong>, units that control other elements of the network. Each gate is itself a network with weights, biases, and an activation function. A <strong>memory cell</strong> of an LSTM (<a href="#fig-lstm-cell" class="quarto-xref">Figure&nbsp;<span>34.18</span></a>) consists of</p>
 <ul>
 <li><strong>Internal state</strong> <span class="math inline">\(s^{(t)}\)</span></li>
 <li><strong>Hidden state</strong> <span class="math inline">\(h^{(t)}\)</span></li>
@@ -1209,7 +1211,7 @@ Figure&nbsp;34.17: Complete representation of an RNN.
 <div id="fig-lstm-cell" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-lstm-cell-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/LSTM_Cell.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" data-glightbox="description: .lightbox-desc-14"><img src="images/LSTM_Cell.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+<a href="images/LSTM_Cell.png" class="lightbox" data-glightbox="description: .lightbox-desc-14" data-gallery="quarto-lightbox-gallery-14"><img src="images/LSTM_Cell.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-lstm-cell-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.18: LSTM Memory Cell
@@ -1226,7 +1228,7 @@ Figure&nbsp;34.18: LSTM Memory Cell
 <div id="fig-network-types" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-network-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/NeuralNetworkTypes.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" data-glightbox="description: .lightbox-desc-15"><img src="images/NeuralNetworkTypes.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/NeuralNetworkTypes.png" class="lightbox" data-glightbox="description: .lightbox-desc-15" data-gallery="quarto-lightbox-gallery-15"><img src="images/NeuralNetworkTypes.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-network-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34.19: Basic neural network types.
@@ -1234,15 +1236,15 @@ Figure&nbsp;34.19: Basic neural network types.
 </figure>
 </div>
 <p>For three decades the basic neural network architecture remained the same, despite many advances. CNNs became the de-factor standard in computer vision and LSTMs became the standard in natural language processing. Rather than fundamental architectural breakthroughs, the progress in deep learning was due to greater computational resources and the availability of more data. Until <strong>transformers</strong>, that is.</p>
-<p>In 2017, <span class="citation" data-cites="Vaswani_etal_2017">Vaswani et al. (<a href="references.html#ref-Vaswani_etal_2017" role="doc-biblioref">2017</a>)</span> proposed in the paper “Attention is all you need” a new network architecture for sequence-to-sequence data where the input and output is sequential (as in a RNN). The goal was to address issues with long-range dependencies and contextual understanding in RNN-style models. All recurrent layers were replaced with a new type of network layer, the <strong>self-attention layer</strong>. Besides improved performance in language translation tasks, a key difference between recurrent and attention architectures was the opportunities for parallel training in the latter. Because recurrent networks process data in a sequential order, opportunities for parallel execution are limited to within-layer operations. Transformer architecture introduced an additional encoding—positional encoding—to capture positional information.</p>
-<p>The paper by <span class="citation" data-cites="Vaswani_etal_2017">Vaswani et al. (<a href="references.html#ref-Vaswani_etal_2017" role="doc-biblioref">2017</a>)</span> has been cited more than 120,000 times (by July 2024). For statisticians used to read methodological papers, it is noteworthy that the paper does not contain a single theorem or proof. It introduces self-attention mechanism as an extension of the attention mechanism introduced in <span class="citation" data-cites="Bahdanau2014NeuralMT">Bahdanau, Cho, and Bengio (<a href="references.html#ref-Bahdanau2014NeuralMT" role="doc-biblioref">2014</a>)</span> and makes recommendations how to build self-attention-based encoder-decoder models. This work fundamentally changed work on neural network architectures and led to the foundation large-language models such as GPT, Bert, LLama, and others. The revolution was on.</p>
+<p>In 2017, <span class="citation" data-cites="Vaswani_etal_2017">Vaswani et al. (<a href="references.html#ref-Vaswani_etal_2017" role="doc-biblioref">2017</a>)</span> proposed in the paper “Attention is all you need” a new network architecture for sequence-to-sequence data where the input and output is sequential (as in the RNN). The goal was to address issues with long-range dependencies and contextual understanding in RNN-style models. All recurrent layers were replaced with a new type of network layer, the <strong>self-attention layer</strong>. Besides improved performance in language translation tasks, an important difference between recurrent and attention architectures was the opportunities for parallel training in the latter. Because recurrent networks process data in a sequential order, opportunities for parallel execution are limited to within-layer operations. Transformer architecture introduced an additional encoding—positional encoding—to capture positional information.</p>
+<p>The paper by <span class="citation" data-cites="Vaswani_etal_2017">Vaswani et al. (<a href="references.html#ref-Vaswani_etal_2017" role="doc-biblioref">2017</a>)</span> has been cited more than 198,000 times (by April 2025). For statisticians used to read methodological papers, it is noteworthy that the paper does not contain a single theorem or proof. It introduces self-attention mechanism as an extension of the attention mechanism introduced in <span class="citation" data-cites="Bahdanau2014NeuralMT">Bahdanau, Cho, and Bengio (<a href="references.html#ref-Bahdanau2014NeuralMT" role="doc-biblioref">2014</a>)</span> and makes recommendations how to build self-attention-based encoder-decoder models. This work fundamentally changed work on neural network architectures and led to the foundation large-language models such as GPT, Bert, LLama, and others. The revolution was on.</p>
 <p>To summarize what makes transformer architectures special, here are a few points:</p>
 <ul>
 <li><p>Using self-attention mechanism instead of recurrence allows the model to consider the entire sequence simultaneously. This allows processing of longer sequences compared to RNN-style models.</p></li>
 <li><p>Eliminates the need for recurrence or hidden states. Instead, positional encoding maintains information about the sequential nature of the data.</p></li>
 <li><p>Training in parallel allows building of larger networks</p></li>
-<li><p>Self-supervised learning: unsupervised learning is followed by supervised fine-tuning. A good example are GPT and Chat GPT. GPT is the foundation model that provides language understanding. Chat GPT is the question-answer application trained on top of the GPT foundation model.</p></li>
-<li><p>Transformers excel not only in natural language processing, but also computer vision, audio processing, etc. Vision transformers, for example, convert images into a sequential format and apply a transformer architecture. Transformer models is the new hammer deep learning had been waiting for.</p></li>
+<li><p>Self-supervised learning: unsupervised learning is followed by supervised fine-tuning. Take, for example, GPT and ChatGPT. GPT is the foundation model that provides language understanding. ChatGPT is the question-answer application trained on top of the GPT foundation model.</p></li>
+<li><p>Transformers excel not only in natural language processing, but also computer vision, audio processing, etc. Vision transformers, for example, convert images into a sequential format and apply a transformer architecture. Transformer models turned out to be the new hammer deep learning had been waiting for.</p></li>
 </ul>
 </section>
 <section id="self-attention" class="level3">
@@ -1278,7 +1280,7 @@ Figure&nbsp;34.21
 <span class="glightbox-desc lightbox-desc-4">Figure&nbsp;34.6: Where is Waldo?</span>
 <span class="glightbox-desc lightbox-desc-5">Figure&nbsp;34.7: Convolving the first row of a <span class="math inline">\(3\times 4\)</span> image with a <span class="math inline">\(2 \times 2\)</span> kernel.</span>
 <span class="glightbox-desc lightbox-desc-6">Figure&nbsp;34.8: Convolving the second row of a <span class="math inline">\(3\times 4\)</span> image with a <span class="math inline">\(2 \times 2\)</span> kernel.</span>
-<span class="glightbox-desc lightbox-desc-7">Figure&nbsp;34.9: Sparse and full connectivity, adapted from <span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="references.html#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016, 336–37</a>)</span></span>
+<span class="glightbox-desc lightbox-desc-7">Figure&nbsp;34.9: Sparse and full connectivity, adapted from <span class="citation" data-cites="Goodfellow-et-al-2016">Goodfellow, Bengio, and Courville (<a href="references.html#ref-Goodfellow-et-al-2016" role="doc-biblioref">2016, 336–37</a>)</span>. The convolutional neural net exhibits sparse connectivity.</span>
 <span class="glightbox-desc lightbox-desc-8">Figure&nbsp;34.12: Convolutional layer with pooling.</span>
 <span class="glightbox-desc lightbox-desc-9">Figure&nbsp;34.13: LetNet-5 architecture. <a href="https://d2l.ai/chapter_convolutional-neural-networks/lenet.html">Source</a></span>
 <span class="glightbox-desc lightbox-desc-10">Figure&nbsp;34.14: Part of my Life List in Merlin Bird ID.</span>
@@ -1882,7 +1884,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"openEffect":"zoom","descPosition":"bottom","closeEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","loop":false,"closeEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

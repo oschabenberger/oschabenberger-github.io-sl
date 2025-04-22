@@ -214,22 +214,42 @@ and the $\epsilon_i$ are assumed zero-mean random variables with common variance
 
 The following code loads the data from the `ads` DuckDB database.
 
+:::{.panel-tabset group="language"}
+
+## R
+
 ```{r, warning=FALSE, message=FALSE}
 library("duckdb")
+
 con <- dbConnect(duckdb(),dbdir = "ads.ddb",read_only=TRUE)
 fit <- dbGetQuery(con, "SELECT * FROM fitness")
+dbDisconnect(con)
 
 head(fit)
 ```
 
-```{r, echo=FALSE}
-dbDisconnect(con)
+## Python
+
+```{python}
+import duckdb
+
+con = duckdb.connect(database="ads.ddb", read_only=True)
+fit = con.sql("SELECT * FROM fitness").df()
+con.close()
+
+fit.head()
 ```
+:::
+
 
 The target variable for the linear model is `Oxygen`, the remaining variables are 
 inputs to the regression. The next statements create the $\by$ vector and the 
 $\bX$ matrix for the model. Note that the first column of $\bX$ is a vector of 
 ones, representing the "input" for the intercept $\beta_0$.
+
+:::{.panel-tabset group="language"}
+
+## R
 
 ```{r}
 y <- as.matrix(fit[,which(names(fit)=="Oxygen")])
@@ -237,6 +257,36 @@ X <- as.matrix(cbind(Intcpt=rep(1,nrow(fit)),
                      fit[,which(names(fit)!="Oxygen")]))
 head(X)
 ```
+
+## Python
+
+```{python}
+import pandas as pd
+import numpy as np
+
+y = fit[['Oxygen']].values
+
+# First create a column of 1s for the intercept
+intercept = np.ones((len(fit), 1))
+
+# Get all columns except Oxygen
+X_without_intercept = fit.drop('Oxygen', axis=1).values
+
+# Combine intercept and other columns and add column names
+X = np.hstack((intercept, X_without_intercept))
+X_column_names = ['Intcpt'] + list(fit.drop('Oxygen', axis=1).columns)
+
+print("First few rows of X:")
+print(X[:5, :])  
+print("Column names:", X_column_names)
+```
+
+:::
+
+
+:::{.panel-tabset group="language"}
+
+## R
 
 Next we are building the $\bXpX$ matrix and compute its inverse, $(\bXpX)^{-1}$, 
 with the `solve()` function. `t()` transposes a matrix and `%*%` indicates that 
@@ -247,14 +297,46 @@ XpX <- t(X) %*% X
 XpXInv <- solve(XpX)
 ```
 
+## Python
+
+Next we are building the $\bXpX$ matrix and compute its inverse, $(\bXpX)^{-1}$, 
+with the `np.linalg.inv()` function. `.T` transposes a matrix and `@` indicates that 
+we are performing matrix multiplication rather than elementwise multiplication.
+
+```{python}
+XpX = X.T @ X
+# Alternative: XpX = np.matmul(X.T, X)
+
+XpXInv = np.linalg.inv(XpX)
+```
+
+:::
+
+
 We can verify that `XpxInv` is indeed the inverse of `XpX` by multiplying the two. 
 This should yield the identity matrix
+
+:::{.panel-tabset group="language"}
+
+## R
 
 ```{r}
 round(XpX %*% XpXInv,3)
 ```
 
+## Python
+
+```{python}
+np.round(XpX @ XpXInv,3)
+```
+
+:::
+
 Next we compute the OLS estimate of $\bbeta$ and the predicted values $\widehat{\by} = \bX\widehat{\bbeta}$.
+
+:::{.panel-tabset group="language"}
+
+## R
 
 ```{r}
 beta_hat <- XpXInv %*% t(X) %*% y
@@ -262,6 +344,18 @@ beta_hat
 
 y_hat <- X %*% beta_hat
 ```
+
+## Python
+
+```{python}
+beta_hat = XpXInv @ X.T @ y
+print(beta_hat)
+
+y_hat = X @ beta_hat
+
+```
+
+:::
 
 The estimate of the intercept is $\widehat{\beta}_0$ = `{r} beta_hat[1]`, the 
 estimate of the coefficient for `Age` is $\widehat{\beta}_1$ = `{r} beta_hat[2]` 
@@ -279,6 +373,10 @@ $$
 
 are computed as
 
+:::{.panel-tabset group="language"}
+
+## R
+
 ```{r}
 library("Matrix")
 
@@ -293,13 +391,34 @@ sigma2_hat
 ```
 
 We used the `rankMatrix` function in the `Matrix` package to compute the rank of $\bX$, 
-which is identical to the rank of $\bXpX$. With these quantities available, the 
-variance-covariance matrix of $\widehat{\bbeta}$, 
+which is identical to the rank of $\bXpX$. 
+
+## Python
+
+```{python}
+residuals = y - y_hat
+
+SSE = np.sum(residuals**2)
+n = len(fit)
+rankX = np.linalg.matrix_rank(XpX)
+sigma2_hat = SSE / (n - rankX)
+
+print(f"SSE: {SSE:.4f}")
+print(f"sigma2_hat: {sigma2_hat:.4f}")
+```
+
+:::
+
+With these quantities available, the variance-covariance matrix of $\widehat{\bbeta}$, 
 $$
 \Var[\widehat{\bbeta}] = \sigma^2 (\bXpX)^{-1}
 $$ 
 can be estimated by substituting $\widehat{\sigma}^2$. The standard errors of the 
 regression coefficient estimates are the square roots of the diagonal values of this matrix.
+
+:::{.panel-tabset group="language"}
+
+## R
 
 ```{r}
 Var_beta_hat <- sigma2_hat * XpXInv
@@ -307,14 +426,29 @@ se_beta_hat <- sqrt(diag(Var_beta_hat))
 se_beta_hat
 ```
 
-Now let's compare our results to the output from the `lm()` function in `R`.
+## Python
+
+```{python}
+Var_beta_hat = sigma2_hat * XpXInv
+se_beta_hat = np.sqrt(np.diag(Var_beta_hat))
+print(se_beta_hat)
+```
+
+:::
+
+:::{.panel-tabset group="language"}
+
+## R
+
+Now let's compare our results to the output from the `lm()` function.
 
 ```{r}
 linmod <- lm(Oxygen ~ ., data=fit)
 summary(linmod)
 ```
 
-Based on the quantities calculated earlier, the following code reproduces the `lm` summary.
+Based on the quantities calculated earlier, the following code reproduces the `lm` summary
+in `R`.
 
 ```{r}
 tvals <- beta_hat/se_beta_hat
@@ -332,6 +466,32 @@ cat("F-statistic: ", Fstat, "on ",
     rankX-1, "and", n-rankX, "DF, p-value:", 1-pf(Fstat,rankX-1,n-rankX))
 
 ```
+
+## Python
+
+Now let's compare our results to the output to the ordinary least squares
+fit in `statsmodels`. 
+
+```{python}
+import statsmodels.api as sm
+
+X = sm.add_constant(fit.drop('Oxygen', axis=1))
+y = fit['Oxygen']
+
+# Fit the model
+linmod = sm.OLS(y, X).fit()
+
+print(linmod.summary())
+
+# If you want to access specific components:
+# print("Coefficients:", linmod.params)
+# print("Standard errors:", linmod.bse)
+# print("R-squared:", linmod.rsquared)
+```
+
+:::
+
+
 
 ### Weighted and Generalized Least Squares {#sec-wls-gls}
 
@@ -473,10 +633,24 @@ $$
 $$ 
 We fit this model to a tiny data set with just five observations
 
+:::{.panel-tabset group="language}
+
+## R
+
 ```{r}
 y <- c(0.1, 0.4, 0.6, 0.9)
 x <- c(0.2, 0.5, 0.7, 1.8)
 ```
+
+## Python
+
+```{python}
+import numpy as np
+
+y = np.array([0.1, 0.4, 0.6, 0.9])
+x = np.array([0.2, 0.5, 0.7, 1.8])
+```
+:::
 
 The derivatives of the mean function with respect to the parameters are given by
 
@@ -485,8 +659,12 @@ The derivatives of the mean function with respect to the parameters are given by
   \frac{\partial f(x;\btheta)}{\partial \theta_2} &= \theta_1 \log(x) x^{\theta_2} \exp\{-x^{\theta_2}\}
 \end{align*}
 
-and we can write a simple `R` function to compute the derivative matrix $\bF$ 
+and we can write a simple function to compute the derivative matrix $\bF$ 
 based on a current estimate of $\btheta$. The function `getres` computes $\br(\btheta^{(t)})$.
+
+:::{.panel-tabset group="language}
+
+## R
 
 ```{r}
 getF <- function(x, theta) {
@@ -502,20 +680,42 @@ getres <- function(y,x,theta) {
 }
 ```
 
+## Python
+
+```{python}
+def getF(x, theta):
+    exterm = np.exp(-x**theta[1])
+    der1 = -exterm
+    der2 = theta[0] * np.log(x) * (x**theta[1]) * exterm
+    return np.column_stack((der1, der2))
+
+def getres(y, x, theta):
+    fx = 1 - theta[0] * np.exp(-x**theta[1])
+    return y - fx
+```
+:::
+
+
 Now all we need is starting values $\btheta^{(0)}$ and a loop that iterates until 
 the estimation routine has converged. It is a good idea to not take a full Gauss-Newton 
-step in the updates since there is no guarantee that SSE is lower at iterate $t+1$ 
+step in the updates since there is no guarantee that SSE at iterate $t+1$ is lower 
 than at iterate $t$. We thus multiply the update to the current value by the 
 hyperparameter $\alpha < 1$. In machine learning, this step size is known as the 
 **learning rate**. A full implementation of the Gauss-Newton algorithm could 
 determine $\alpha$ dynamically at each iteration through a line search algorithm.
 
+:::{.panel-tabset group="language}
+
+## R
+
 ```{r}
+# Set parameters
 maxiter <- 50          # the max number of iterations
 alpha <- 0.5           # the learning rate
 theta <- c(1, 1.3)     # the starting values
 tol <- 1e-6            # the convergence tolerance
 
+# Main loop
 for (iter in 1:maxiter) {
     X <- getF(x,theta)
     r <- getres(y,x,theta)
@@ -539,12 +739,46 @@ for (iter in 1:maxiter) {
 
 ```
 
+## Python
+
+```{python}
+# Set parameters
+maxiter = 50                   # the max number of iterations
+alpha = 0.5                    # the learning rate
+theta = np.array([1, 1.3])     # the starting values
+tol = 1e-6                     # the convergence tolerance
+
+# Main loop
+for iter in range(1, maxiter + 1):
+    X = getF(x, theta)
+    r = getres(y, x, theta)
+    
+    # The linear least squares update
+    new_theta = theta + alpha * (np.linalg.solve(X.T @ X, X.T @ r))
+    
+    # Check convergence criterion
+    crit = np.max(np.abs(new_theta - theta) / np.abs(theta))
+    if crit < tol:
+        print(f"Algorithm converged after {iter} iterations! SSE = {np.sum(r**2)}")
+        print(new_theta)
+        break
+    else:
+        theta = new_theta
+        print(crit)
+```
+
+:::
+
 After 17 iterations with a learning rate (step size) of $\alpha=0.5$ the algorithm 
 converged on parameter estimates $\widehat{\theta}_1$ = 0.9366 and $\widehat{\theta}_2$ = 1.2791.
 
+:::{.panel-tabset group="language"}
+
+## R
+
 We can validate these results with the `nls` function from the `nls2` package.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(nls2)
 nonlin_data <- data.frame(cbind(y=y,x=x))
 f_x <- y ~ 1 - theta1 * exp(-x^theta2)
@@ -553,6 +787,45 @@ nls(f_x,
     data=nonlin_data)
     
 ```
+
+## Python
+
+We can validate these results with `curve_fit` in `scipy`.
+
+```{python}
+import numpy as np
+from scipy.optimize import curve_fit
+
+# Define the function to fit
+def func(x, theta1, theta2):
+    return 1 - theta1 * np.exp(-x**theta2)
+
+initial_params = [1, 1.3]
+
+# Perform the non-linear least squares fit
+params, pcov = curve_fit(func, x, y, p0=initial_params)
+
+# Print the results
+print("Estimated parameters:")
+print(f"theta1 = {params[0]}")
+print(f"theta2 = {params[1]}")
+
+# Calculate standard errors
+perr = np.sqrt(np.diag(pcov))
+print("\nStandard errors:")
+print(f"theta1 error = {perr[0]}")
+print(f"theta2 error = {perr[1]}")
+
+# Calculate the fitted values
+y_fit = func(x, params[0], params[1])
+
+# Calculate sum of squared residuals
+residuals = y - y_fit
+ssr = np.sum(residuals**2)
+print(f"\nSum of squared residuals: {ssr}")
+```
+
+:::
 
 ## Maximum Likelihood Estimation
 
@@ -614,12 +887,22 @@ Suppose that $n=4$ and we observe $\by = [3, 4, 2, 2]$. The sample mean is $\ove
 The following `R` code computes the log-likelihood function $\mathcal{l}(\lambda; \by)$ for 
 different values of $\lambda$. The log-likelihood function has a maximum at $\overline{y} = 2.75$.
 
+:::{.panel-tabset group="language"}
+
+## R
+
 ```{r, out.width="75%", fig.align="center"}
+
+# Define the original data
 y <- c(3, 4, 2, 2)
 n <- length(y)
 sumy <- sum(y)
 sumlogfac <- sum(log(factorial(y)))
+
+# Create a range of lambda values
 lambda <- seq(0.1, 5, 0.1)
+
+# Calculate log likelihood for each lambda
 loglike <- log(lambda)*sumy - n*lambda - sumlogfac
 
 plot(lambda,loglike,type="l",bty="l",lwd=1.5,
@@ -628,6 +911,42 @@ plot(lambda,loglike,type="l",bty="l",lwd=1.5,
 abline(v=mean(y),lty="dotted",lwd=1.5,col="red")
 
 ```
+
+
+## Python
+
+```{python, out.width="75%", fig.align="center"}
+import numpy as np
+import matplotlib.pyplot as plt
+import math
+from scipy.special import factorial
+
+# Define the original data
+y = np.array([3, 4, 2, 2])
+n = len(y)
+sumy = np.sum(y)
+sumlogfac = np.sum(np.log(factorial(y)))
+
+# Create a range of lambda values
+lambda_values = np.arange(0.1, 5.1, 0.1)
+
+# Calculate log likelihood for each lambda
+loglike = sumy * np.log(lambda_values) - n * lambda_values - sumlogfac
+
+# Create the plot
+plt.figure(figsize=(8, 5))
+plt.plot(lambda_values, loglike, linewidth=1.5)
+plt.axvline(x=np.mean(y), linestyle='dotted', linewidth=1.5, color='red')
+plt.xlabel('λ')
+plt.ylabel('log likelihood')
+plt.box(False)
+
+plt.show()
+
+```
+
+:::
+
 :::
 :::::
 

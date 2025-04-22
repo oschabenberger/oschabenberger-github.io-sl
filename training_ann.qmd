@@ -255,13 +255,28 @@ $$
 $$
 
 
-The rationale is that the objective function decreases fastest in the direction of the opposite gradient. However, it is not guaranteed that $\ell(\btheta^{[t+1]};\by) \le \ell(\btheta^{[t]}; \by)$ if one takes a full step in the direction of the negative gradient. But the inequality should be true for some value $\epsilon$, called the **learning rate** or **step size**.
+The rationale is that the objective function decreases fastest in the direction 
+of the opposite gradient. However, it is not guaranteed that $\ell(\btheta^{[t+1]};\by) \le \ell(\btheta^{[t]}; \by)$ 
+if one takes a full step in the direction of the negative gradient. But the 
+inequality should be true for some value $\epsilon$, called the **learning rate** 
+or **step size**.
 
-An analogy to explain gradient descent is finding one's way down from a mountain at night. You cannot see the path because of darkness, yet you need to descent from the mountain. The best way is to measure the slope in the vicinity of your location (compute the gradient), and to take a step in the direction of the greatest downhill slope. If you repeat this procedure you will either get off the mountain (find the global minimum) or get stuck in a depression (find a local minimum) such as a mountain lake.
+An analogy to explain gradient descent is finding one's way down from a mountain 
+at night. You cannot see the path because of darkness, yet you need to descent from 
+the mountain. The best way is to measure the slope in the vicinity of your location 
+(compute the gradient), and to take a step in the direction of the greatest downhill 
+slope. If you repeat this procedure you will either get off the mountain (find the 
+global minimum) or get stuck in a depression (find a local minimum) such as a mountain 
+lake.
 
-In addition to changing the step length with the learning rate, we can also modify the direction in which we move downhill. The idea is that by taking a more shallow path the direction can be sustained for a longer period of time without measuring the slope again. This would reduce the number of gradient calculations, which can be expensive.
+In addition to changing the step length with the learning rate, we can also modify 
+the direction in which we move downhill. The idea is that by taking a more shallow 
+path the direction can be sustained for a longer period of time without measuring 
+the slope again. This would reduce the number of gradient calculations, which can 
+be expensive.
 
-The classical gradient descent, also called **batch** GD, computes the gradient across all $n$ observations in the training data set. 
+The classical gradient descent, also called **batch** GD, computes the gradient 
+across all $n$ observations in the training data set. 
 When the objective function takes the form of a sum,
 $$
 \ell(\btheta; \by) = \frac{1}{n} \sum_{i=1}^n C_i(\btheta;\by)
@@ -274,6 +289,7 @@ The parameters are updated after the gradients have been computed for all the
 parameters according to @eq-gradient-update. When $n$ is large, computing the 
 gradient can be time consuming. First-order methods tend to require more iterations 
 until convergence and computing the gradient is a primary bottleneck of the algorithms. 
+
 The **stochastic** GD version is an online algorithm that computes gradients and 
 updates one observation at a time:
 $$

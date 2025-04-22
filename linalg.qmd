@@ -74,15 +74,20 @@ y_{1} \\
 y_{n}
 \end{bmatrix}$$
 
-The difference is significant because $\bY$ is a random variable and $\by$ is a vector of constants. $\bY$ has a multi-variate distribution with mean and variance, $\by$ is just a vector of numbers.
+The difference is significant because $\bY$ is a random variable and $\by$ is a 
+vector of constants. $\bY$ has a multi-variate distribution with mean and variance, 
+$\by$ is just a vector of numbers.
 
-We follow the convention that all vectors are column vectors, so that $\by_{(n)}$ serves as a shorthand for $\by_{(n \times 1)}$.
+We follow the convention that all vectors are column vectors, so that $\by_{(n)}$ 
+serves as a shorthand for $\by_{(n \times 1)}$.
 
-The typical element of a matrix is written as a scalar with subscripts that refer to rows and columns. For example, the statement
+The typical element of a matrix is written as a scalar with subscripts that refer
+to rows and columns. For example, the statement
 
 $$\bA = \left\lbrack a_{ij} \right\rbrack$$
 
-says that matrix $\bA$ consists of the scalars $a_{ij}$; for example, $a_{23}$ is the scalar in row 2, column 3 of the matrix.
+says that matrix $\bA$ consists of the scalars $a_{ij}$; for example, $a_{23}$ 
+is the scalar in row 2, column 3 of the matrix.
 
 ## Special Matrices
 

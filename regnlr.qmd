@@ -8,7 +8,8 @@ $$
 
 ## Introduction
 
-A model is **nonlinear** if the derivative of the mean function with respect to any parameter is a function of one or more parameter. Curvilinear models such as the polynomial
+A model is **nonlinear** if the derivative of the mean function with respect to
+any parameter is a function of one or more parameter. Curvilinear models such as the polynomial
 $$
  \Exp[Y] = \beta_0 + \beta_1x + \beta_2x^2
 $$

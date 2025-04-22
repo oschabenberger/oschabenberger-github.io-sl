@@ -704,7 +704,8 @@ https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning
 \ell(\boldsymbol{\theta}; \textbf{y}) = \frac{1}{n} \sum_{i=1}^n C_i(\boldsymbol{\theta};\textbf{y})
 \]</span> the gradient is the sum of the individual gradients <span class="math display">\[
 \delta(\theta_j; \textbf{y}) = \frac{\partial \ell(\boldsymbol{\theta};\textbf{y})}{\partial \theta_j} = \frac{1}{n} \sum_{i=1}^n \frac{\partial C_i(\boldsymbol{\theta};\textbf{y})}{\partial \theta_j}
-\]</span> The parameters are updated after the gradients have been computed for all the parameters according to <a href="#eq-gradient-update" class="quarto-xref">Equation&nbsp;<span>32.1</span></a>. When <span class="math inline">\(n\)</span> is large, computing the gradient can be time consuming. First-order methods tend to require more iterations until convergence and computing the gradient is a primary bottleneck of the algorithms. The <strong>stochastic</strong> GD version is an online algorithm that computes gradients and updates one observation at a time: <span class="math display">\[
+\]</span> The parameters are updated after the gradients have been computed for all the parameters according to <a href="#eq-gradient-update" class="quarto-xref">Equation&nbsp;<span>32.1</span></a>. When <span class="math inline">\(n\)</span> is large, computing the gradient can be time consuming. First-order methods tend to require more iterations until convergence and computing the gradient is a primary bottleneck of the algorithms.</p>
+<p>The <strong>stochastic</strong> GD version is an online algorithm that computes gradients and updates one observation at a time: <span class="math display">\[
 \boldsymbol{\theta}^{[i+1]} = \boldsymbol{\theta}^{[i]} - \epsilon \boldsymbol{\delta}(\boldsymbol{\theta}^{[i]};y_i) \qquad i=1,\cdots,n-1
 \]</span> The true gradient is approximated as the gradient of the <span class="math inline">\(i\)</span><sup>th</sup> sample, and an update is calculated for each sample. This process of passing over the data and updating the parameters <span class="math inline">\(n\)</span> times repeats until convergence, often with a random shuffling of the data between passes to avoid cycling of the algorithm.</p>
 <p>Classical GD and SGD as presented here present the two extremes of calculating gradients between parameter updates: once for the entire sample, or for each observation. While the gradients computed in GD are very stable, they require the most computation between updates. The gradients in SGD on the other hand can be erratic and a poor approximation of the overall gradient. A compromise is <strong>minibatch</strong> gradient descent, where gradients are calculated for a small batch of observations, usually a few hundred.</p>
@@ -1423,7 +1424,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","loop":false,"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"openEffect":"zoom","closeEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
