@@ -761,8 +761,8 @@ F-statistic: 234.2 on 4 and 387 DF,  p-value: &lt; 2.2e-16</code></pre>
 Dep. Variable:                    mpg   R-squared:                       0.708
 Model:                            OLS   Adj. R-squared:                  0.705
 Method:                 Least Squares   F-statistic:                     234.2
-Date:                Tue, 22 Apr 2025   Prob (F-statistic):          6.18e-102
-Time:                        12:51:20   Log-Likelihood:                -1120.1
+Date:                Thu, 24 Apr 2025   Prob (F-statistic):          6.18e-102
+Time:                        14:28:54   Log-Likelihood:                -1120.1
 No. Observations:                 392   AIC:                             2250.
 Df Residuals:                     387   BIC:                             2270.
 Df Model:                           4                                         
@@ -1413,8 +1413,8 @@ F-statistic: 86.48 on 15 and 376 DF,  p-value: &lt; 2.2e-16</code></pre>
 Dep. Variable:                    mpg   R-squared:                       0.775
 Model:                            OLS   Adj. R-squared:                  0.766
 Method:                 Least Squares   F-statistic:                     86.48
-Date:                Tue, 22 Apr 2025   Prob (F-statistic):          9.05e-112
-Time:                        12:51:22   Log-Likelihood:                -1068.6
+Date:                Thu, 24 Apr 2025   Prob (F-statistic):          9.05e-112
+Time:                        14:28:56   Log-Likelihood:                -1068.6
 No. Observations:                 392   AIC:                             2169.
 Df Residuals:                     376   BIC:                             2233.
 Df Model:                          15                                         
@@ -1804,8 +1804,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 Dep. Variable:                    mpg   R-squared:                       0.708
 Model:                            OLS   Adj. R-squared:                  0.705
 Method:                 Least Squares   F-statistic:                     234.2
-Date:                Tue, 22 Apr 2025   Prob (F-statistic):          6.18e-102
-Time:                        12:51:22   Log-Likelihood:                -1120.1
+Date:                Thu, 24 Apr 2025   Prob (F-statistic):          6.18e-102
+Time:                        14:28:57   Log-Likelihood:                -1120.1
 No. Observations:                 392   AIC:                             2250.
 Df Residuals:                     387   BIC:                             2270.
 Df Model:                           4                                         
@@ -1949,15 +1949,14 @@ strong multicollinearity or other numerical problems.</code></pre>
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content" data-group="language">
 <div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
-<!---
-For some reason reading the pisa table from duckdb in R
-crashes during knitting, but not when running interactively.
-It works when knitting the Python code. The problem persists
-after updating the duckdb library. Have to go with csv file for now.
---->
 <div class="cell">
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>pisa <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/pisa.csv"</span>, <span class="at">stringsAsFactors =</span><span class="cn">TRUE</span>)</span>
-<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pisa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),<span class="at">dbdir=</span><span class="st">"ads.ddb"</span>, <span class="at">read_only=</span><span class="cn">FALSE</span>)</span>
+<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a>pisa <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con,<span class="st">"SELECT * from pisa;"</span>)</span>
+<span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb94-6"><a href="#cb94-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb94-7"><a href="#cb94-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pisa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               Country MathMean MathShareLow MathShareTop ReadingMean
 1       Shanghai-China      613          3.8         55.4         570
@@ -2007,10 +2006,14 @@ after updating the duckdb library. Have to go with csv file for now.
 </div>
 <div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a>pisa <span class="op">=</span> pd.read_csv(<span class="st">'data/pisa.csv'</span>).dropna()</span>
-<span id="cb100-4"><a href="#cb100-4" aria-hidden="true" tabindex="-1"></a>pisa.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb100-4"><a href="#cb100-4" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>(database<span class="op">=</span><span class="st">"ads.ddb"</span>, read_only<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb100-5"><a href="#cb100-5" aria-hidden="true" tabindex="-1"></a>pisa <span class="op">=</span> con.sql(<span class="st">"SELECT * FROM pisa;"</span>).df().dropna()</span>
+<span id="cb100-6"><a href="#cb100-6" aria-hidden="true" tabindex="-1"></a>con.close()</span>
+<span id="cb100-7"><a href="#cb100-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb100-8"><a href="#cb100-8" aria-hidden="true" tabindex="-1"></a>pisa.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                Country  MathMean  ...    logGDPp  HighIncome
 0        Shanghai-China       613  ...   8.742670       False
@@ -2421,8 +2424,8 @@ F-statistic: 128.2 on 11 and 494 DF,  p-value: &lt; 2.2e-16</code></pre>
 Dep. Variable:                   medv   R-squared:                       0.741
 Model:                            OLS   Adj. R-squared:                  0.735
 Method:                 Least Squares   F-statistic:                     128.2
-Date:                Tue, 22 Apr 2025   Prob (F-statistic):          5.54e-137
-Time:                        12:51:23   Log-Likelihood:                -1498.9
+Date:                Thu, 24 Apr 2025   Prob (F-statistic):          5.54e-137
+Time:                        14:28:58   Log-Likelihood:                -1498.9
 No. Observations:                 506   AIC:                             3022.
 Df Residuals:                     494   BIC:                             3072.
 Df Model:                          11                                         
@@ -3023,8 +3026,8 @@ F-statistic: 59.93 on 3 and 502 DF,  p-value: &lt; 2.2e-16</code></pre>
 Dep. Variable:                   medv   R-squared:                       0.264
 Model:                            OLS   Adj. R-squared:                  0.259
 Method:                 Least Squares   F-statistic:                     59.93
-Date:                Tue, 22 Apr 2025   Prob (F-statistic):           3.96e-33
-Time:                        12:51:25   Log-Likelihood:                -1762.8
+Date:                Thu, 24 Apr 2025   Prob (F-statistic):           3.96e-33
+Time:                        14:29:00   Log-Likelihood:                -1762.8
 No. Observations:                 506   AIC:                             3534.
 Df Residuals:                     502   BIC:                             3550.
 Df Model:                           3                                         
@@ -3353,8 +3356,8 @@ F-statistic: 128.2 on 11 and 494 DF,  p-value: &lt; 2.2e-16</code></pre>
 Dep. Variable:                   medv   R-squared:                       0.741
 Model:                            OLS   Adj. R-squared:                  0.735
 Method:                 Least Squares   F-statistic:                     128.2
-Date:                Tue, 22 Apr 2025   Prob (F-statistic):          5.54e-137
-Time:                        12:51:26   Log-Likelihood:                -1498.9
+Date:                Thu, 24 Apr 2025   Prob (F-statistic):          5.54e-137
+Time:                        14:29:02   Log-Likelihood:                -1498.9
 No. Observations:                 506   AIC:                             3022.
 Df Residuals:                     494   BIC:                             3072.
 Df Model:                          11                                         
@@ -4118,7 +4121,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","loop":false,"openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

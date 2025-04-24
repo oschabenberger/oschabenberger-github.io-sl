@@ -80,8 +80,9 @@ Rather than one global estimate $\widehat{\bbeta}$ we get as many estimates as
 there are points we wish to predict at: 
 $\widehat{\beta}(x_0), \widehat{\beta}(x^*_0), \widehat{\beta}(x^{**}_0), \cdots$.
 
-The following simulated data is taken from the course on Predictive Modeling 
-by @Garcia-Portugues2024. The true mean function is
+The data shown in @fig-sim-data-garcia is simulated according to a data set in 
+the course on Predictive Modeling by @Garcia-Portugues2024. 
+The true mean function is
 $$
 f(x) = x^2 \, \cos(x)
 $$
@@ -90,14 +91,39 @@ $$
 Y(x) = f(x) + \epsilon\quad \epsilon \sim \textit{iid } G(0,4)
 $$
 
-```{r}
-set.seed(12345)
-n <- 100
-eps <- rnorm(n, sd = 2)
-m <- function(x) x^2 * cos(x)
-X <- rnorm(n, sd = 2)
-Y <- m(X) + eps
+:::{.panel-tabset group="language"}
+
+## R
+
+<!---
+#set.seed(12345)
+#n <- 100
+#eps <- rnorm(n, sd = 2)
+#m <- function(x) x^2 * cos(x)
+#X <- rnorm(n, sd = 2)
+#Y <- m(X) + eps
+--->
+
+```{r, warning=FALSE, message=FALSE}
+library(duckdb)
+
+con <- dbConnect(duckdb(),dbdir="ads.ddb", read_only=FALSE)
+simReg <- dbGetQuery(con,"SELECT * from SiMRegData;")
+dbDisconnect(con)
 ```
+
+## Python
+
+```{python}
+import duckdb
+import pandas as pd
+
+con = duckdb.connect(database="ads.ddb", read_only=True)
+simReg = con.sql("SELECT * FROM SimRegData;").df()
+con.close()
+```
+
+:::
 
 ```{r, out.width="75%", fig.asp=0.8, echo=FALSE, fig.align="center"}
 #| label: fig-sim-data-garcia
@@ -105,9 +131,12 @@ Y <- m(X) + eps
 #| fig.cap: Simulated data according to @Garcia-Portugues2024.
 #| 
 xGrid <- seq(-5, 6, l = 250)
+m <- function(x) x^2 * cos(x)
+
 par(mar=c(4.1, 4.1, 2, 3)) # bottom, left, top, right
-plot(X, Y, las=1,bty="l")
-rug(X, side = 1); rug(Y, side = 2)
+plot(simReg$X, simReg$Y, xlab="X", ylab="Y", las=1,bty="l")
+rug(simReg$X, side = 1); 
+rug(simReg$Y, side = 2)
 lines(xGrid, m(xGrid), col = "black",lwd=1.5)
 ```
 
@@ -119,14 +148,19 @@ Example: 3-nearest Neighbor Estimation
 The following code computes the 3-NN regression estimator at a grid of $x_0$ 
 values, ranging from -4 to 4.
 
+:::{.panel-tabset group="language"}
+
+## R
+
 ```{r}
 x_0 <- seq(-4,4,1)
 k3_reg <- Rfast::knn(as.matrix(x_0),
-                     as.matrix(Y),
-                     as.matrix(X),k=3,type="R") 
+                     as.matrix(simReg$Y),
+                     as.matrix(simReg$X),k=3,type="R") 
 
 cbind(x_0,k3_reg)
 ```
+
 The same results can be obtained using an intercept-only model with weights 
 calculated according to $K(x_0,x_i)$. The `proxy::dist()` function computes the 
 distance between the $x_0$ locations and the $x$ values. The loop constructs the 
@@ -135,15 +169,74 @@ weight vector for each prediction point, assigning 1 to the points within the
 `lm()` from one prediction point to the next is the vector of weights.
 
 ```{r}
-d <- proxy::dist(x_0,X,method="euclidean")
+d <- proxy::dist(x_0,simReg$X,method="euclidean")
 for (i in 1:length(x_0)) {
     d_lim <- head(sort(d[i,]),3)
-    w <- rep(0,length(X))
+    w <- rep(0,length(simReg$X))
     w[which((d[i,] >= d_lim[1] & (d[i,] <= d_lim[3])))] <- 1
-    cat("x_0: ", x_0[i], "beta_hat: ",lm(Y ~ 1, weights=w)$coefficients,"\n")
+    cat("x_0: ", x_0[i], "beta_hat: ",lm(simReg$Y ~ 1, weights=w)$coefficients,"\n")
 }
 ```
+## Python
 
+
+```{python}
+import numpy as np
+from sklearn.neighbors import KNeighborsRegressor
+
+x_0 = np.arange(-4, 5, 1) 
+
+x_0_reshaped = x_0.reshape(-1, 1)
+
+knn = KNeighborsRegressor(n_neighbors=3)
+knn.fit(np.array(simReg.X).reshape(-1,1), np.array(simReg.Y).reshape(-1,1))
+
+k3_reg = knn.predict(x_0_reshaped)
+
+result = np.column_stack((x_0, k3_reg))
+print(result)
+```
+
+The same results can be obtained using an intercept-only model with weights 
+calculated according to $K(x_0,x_i)$. The `cdist` function computes the 
+distance between the $x_0$ locations and the $x$ values. The loop constructs the 
+weight vector for each prediction point, assigning 1 to the points within the 
+3-neighbor distance and 0 to the points outside. The only change in the call to 
+the weighted least squares function `sm.WLS` is the change in the weight vector
+between the prediction points.
+
+```{python}
+import numpy as np
+from scipy.spatial.distance import cdist
+from sklearn.linear_model import LinearRegression
+import statsmodels.api as sm
+
+Y = np.array(simReg.Y).reshape(-1,1)
+X = np.array(simReg.X).reshape(-1,1)
+
+# Calculate Euclidean distance matrix
+d = cdist(x_0_reshaped, X, metric='euclidean')
+
+for i in range(len(x_0)):
+    distances = d[i, :]
+    sorted_indices = np.argsort(distances)
+    
+    # Get the 3 closest distances
+    d_lim = distances[sorted_indices[:3]]
+    
+    w = np.zeros(len(X))
+    # Set weight to 1 for points with distances between d_lim[0] and d_lim[2] (inclusive)
+    mask = (distances >= d_lim[0]) & (distances <= d_lim[2])
+    w[mask] = 1
+    
+    # Fit weighted linear model with intercept only (Y ~ 1)
+    model = sm.WLS(Y, np.ones(len(Y)), weights=w)
+    results = model.fit()
+    
+    print(f"x_0: {x_0[i]}, beta_hat: {results.params[0]:.4f}")
+```
+
+:::
 ::::
 :::
 
@@ -255,24 +348,34 @@ of the bandwidth parameter $\lambda$.
 Example: Kernel Regression with Simulated Data
 ::::
 ::::{.example-container}
+
+:::{.panel-tabset group="language"}
+
+## R
+
 The `ksmooth()` function in the `stats` package (built-in) can be used to compute 
 the kernel regression smoother. `x.points=` specifies the points at which 
-to evaluate the smoothed fit. `kernel="normal"` chooses the Gaussian kernel
+to evaluate the smoothed fit. `kernel="normal"` chooses the Gaussian kernel.
+
+You can also use the `locpoly` function in the `KernSmooth` package, an example
+follows later.
 
 ``` {r}
-kr_05 <- ksmooth(X,Y,kernel="normal",bandwidth=0.5, x.points=xGrid)
-kr_09 <- ksmooth(X,Y,kernel="normal",bandwidth=0.9, x.points=xGrid)
+kr_05 <- ksmooth(simReg$X,simReg$Y,kernel="normal",bandwidth=0.5, x.points=xGrid)
+kr_09 <- ksmooth(simReg$X,simReg$Y,kernel="normal",bandwidth=0.9, x.points=xGrid)
 ```
 
 
 ``` {r, out.width="75%", fig.asp=0.8, fig.align="center", echo=FALSE}
 #| label: fig-simdata-kernel-regression
 #| fig.cap: Kernel regression estimates for Gaussian kernel with $\lambda=0.5$ and $\lambda=0.9$.
-plot(X, Y, las=1, bty="l")
-rug(X, side = 1); rug(Y, side = 2)
-lines(xGrid, m(xGrid), col = "black", lwd=1.5)
-lines(kr_05$x, kr_05$y, col = "red" ,lwd=1.5)
-lines(kr_09$x, kr_09$y, col = "blue",lwd=1.5)
+plot(simReg$X, simReg$Y, xlab="X", ylab="Y", las=1, bty="l")
+rug(simReg$X, side = 1); 
+rug(simReg$Y, side = 2)
+
+lines(xGrid, m(xGrid), col= "black", lwd=1.5)
+lines(kr_05$x, kr_05$y, col= "red" ,lwd=1.5)
+lines(kr_09$x, kr_09$y, col= "blue",lwd=1.5)
 legend("top", 
        legend = c("True mean function", 
                   expression(paste("Kernel regression, ", lambda, "=0.5")),
@@ -281,15 +384,84 @@ legend("top",
        lwd = 1.5, 
        col = c("black","red","blue"))
 ```
+
+## Python
+
+The `KernelReg` function in `statsmodels` computes the kernel regression smoother.
+By default the function fits local linear regression models with a Gaussian
+kernel. The `var_type='c'` parameter instructs the function that the variables
+in the model are continuous. To match the results of the kernel regression
+smoother `ksmooth()` in `R`, we set `reg_type='lc'` to request a local constant
+model.
+
+```{python}
+from statsmodels.nonparametric.kernel_regression import KernelReg
+X = np.array(simReg.X).flatten() 
+Y = np.array(simReg.Y).flatten()
+
+xGrid = np.linspace(-5, 6, 250)
+xGrid = np.array(xGrid).flatten()
+
+def m(x):
+    return x**2 * np.cos(x)
+
+kr_model_1 = KernelReg(endog=Y, exog=X, var_type='c', reg_type='lc',bw=[0.186])
+kr_1_mean, kr_1_mfx = kr_model_1.fit(xGrid)
+
+kr_model_2 = KernelReg(endog=Y, exog=X, var_type='c', reg_type='lc', bw=[0.33])
+kr_2_mean, kr_2_mfx = kr_model_2.fit(xGrid)
+```
+
+
+```{python, out.width="75%", fig.asp=0.8, fig.align="center", echo=FALSE, message=FALSE}
+import matplotlib.pyplot as plt
+import numpy as np
+
+plt.figure(figsize=(10, 6))
+
+plt.scatter(simReg.X, simReg.Y, color='black')
+plt.ylim(top=20)
+
+plt.xlabel('X')
+plt.ylabel('Y')
+
+# Add rug plots
+# For X-axis (bottom)
+plt.tick_params(axis='x', which='major', direction='in')
+plt.tick_params(axis='x', which='minor', direction='in')
+for x in simReg.X:
+    plt.axvline(x=x, ymin=0, ymax=0.03, color='black', alpha=0.7)
+
+# For Y-axis (left)
+plt.tick_params(axis='y', which='major', direction='in')
+plt.tick_params(axis='y', which='minor', direction='in')
+for y in simReg.Y:
+    plt.axhline(y=y, xmin=0, xmax=0.03, color='black', alpha=0.7)
+
+# Plot the lines
+plt.plot(xGrid, m(xGrid), color='black', linewidth=1.5, label='True mean function')
+plt.plot(xGrid, kr_1_mean, color='red', linewidth=1.5, label='Kernel regression, λ=0.18')
+plt.plot(xGrid, kr_2_mean, color='blue', linewidth=1.5, label='Kernel regression, λ=0.33')
+
+# Add legend at the top
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15))
+
+# Show the plot
+plt.tight_layout()
+plt.show()
+```
+
+:::
+
 ::::
 :::
 
 Several noteworthy items in @fig-simdata-kernel-regression:
 
-- The kernel regression estimate for $\lambda=0.9$ is more smooth than the estimate 
-for $\lambda=0.5$. A larger bandwidth widens the kernel (weight) function. As 
-$\lambda$ increases the fit approaches a flat line at $\widehat{\beta} = \overline{y}$, 
-a global model.
+- The kernel regression estimate for larger values of $\lambda$ is more smooth 
+than the estimate for smaller values of $\lambda$. A larger bandwidth widens the 
+kernel (weight) function. As $\lambda$ increases the fit approaches a flat line at 
+$\widehat{\beta} = \overline{y}$, a global model.
 
 - In contrast to the $k$-NN estimator, the kernel regression estimator is smooth. 
 $k$-NN estimates change abruptly when a point leaves the $k$-neighborhood and 
@@ -310,12 +482,30 @@ $\lambda$ can be chosen by some form of cross-validation.
 
 - The kernel regression estimates generally capture the mean function well, but 
 seem to struggle near the edges of the $x$-range. Both underestimate the trend 
-at the edge, the estimate with $\lambda=0.5$ turns away more sharply than the 
-estimate with $\lambda = 0.9$. The problem near the edge is that the estimator 
-can use information only from one side of the edge. Fitting the model at $x_0 = \max(x_i)$ 
-only observations with $x < x_0$ are assigned non-zero weight. Unless the mean 
-function is flat beyond the range of $x$, the kernel estimator will be biased 
-near the edges of the range.
+at the edge, the estimate for small $\lambda$ turns away more sharply than the 
+estimate for the larger $\lambda$ value. The problem near the edge is that the 
+estimator can use information only from one side of the edge. Fitting the model 
+at $x_0 = \max(x_i)$ only observations with $x < x_0$ are assigned non-zero weight. 
+Unless the mean function is flat beyond the range of $x$, the kernel estimator 
+will be biased near the edges of the range.
+
+:::{.callout-note}
+If you compare the `R` and Python results in the previous example, it appears
+that the `ksmooth` and `KernelReg` functions arrived at the same fits for
+different values of the bandwidth parameter, $[0.5, 0.9]$ in `R` and 
+$[0.186, 0.33]$ in Python.
+
+The reason for the discrepancy is that`ksmooth` in `R` uses the bandwidth parameter 
+to scale the Gaussian kernel so that the first and third quartiles are at 
+$\pm 0.25 \lambda$. The inter-quartile range of the Gaussian distribution is 
+approximately 1.34 times its standard deviation. 
+
+The `KernelReg` function uses the bandwidth as the standard deviation of the 
+Gaussian kernel (I think!). The value $\lambda=0.9$ in `ksmooth`
+places the quartiles at $\pm 0.225$, the inter-quartile
+range is 0.45 and the corresponding standard deviation of the Gaussian kernel
+in `kmsooth` is $0.45/1.34 = 0.33$. 
+:::
 
 
 ### Cross-validation for $\lambda$
@@ -328,9 +518,18 @@ particular set of data can be determined by a form of cross-validation.
 Example: Kernel Regression with Simulated Data
 ::::
 ::::{.example-container}
-Here we implement a function that performs leave-one-out CV and computes the 
+
+:::{.panel-tabset group="language"}
+
+## R
+
+The `ksmooth` function in `R` does not support cross-validation so we implement
+a function from scratch for LOOCV based on the 
 average squared prediction residual (PRESS). The function is then evaluated on 
-a grid of candidate bandwidth values.
+a grid of candidate bandwidth values. For each value of the bandwidth, 
+every data point is removed from the training set, then predicted, and its
+contribution to the prediction sum of squares is calculated.
+
 
 ```{r}
 ksm.cv <- function(X,Y,bw=0.5) {
@@ -354,8 +553,8 @@ ksm.cv <- function(X,Y,bw=0.5) {
     return (as.data.frame(cbind(bw,MSTe,ngood)))
 }
 
-bw_grid <- seq(0.5,1.5,0.05)
-cvres <- ksm.cv(X,Y,bw_grid)
+bw_grid <- seq(0.5,1.5,0.01)
+cvres <- ksm.cv(simReg$X,simReg$Y,bw_grid)
 
 cat("Smallest LOOCV MSE ", 
     cvres$MSTe[which.min(cvres$MSTe)],
@@ -364,7 +563,7 @@ cat("Smallest LOOCV MSE ",
 ```
 
 @fig-simdata-loocv-kr displays the LOOCV mean-squared error for bandwidth values 
-from 0.5 to 1.5 in steps of 0.05. The smallest error is achieved at $\lambda = 1.1$. 
+from 0.5 to 1.5 in steps of 0.01. The smallest error is achieved at $\lambda = 1.1$. 
 @fig-simdata-kr-best displays the kernel regression estimate for that bandwidth. 
 The local model fits the data well but continues to show bias at the boundary of 
 the $x$-range.
@@ -372,9 +571,11 @@ the $x$-range.
 ```{r, out.width="80%", fig.align="center", echo=FALSE}
 #| fig.cap: Leave-one-out cross-validation MSE as a function of bandwidth. 
 #| label: fig-simdata-loocv-kr
-plot(x=cvres$bw,y=cvres$MSTe, 
+plot(x=cvres$bw,
+     y=cvres$MSTe, 
      xlab="Bandwidth",
      ylab="LOOCV MSE",
+     type="l",
      las=1,
      bty="l")
 abline(h=cvres$MSTe[which.min(cvres$MSTe)],col="red",lty="dotted")
@@ -382,18 +583,89 @@ abline(v=cvres$bw[which.min(cvres$MSTe)],col="red",lty="dotted")
 ```
 
 
-
 ``` {r, out.width="75%", fig.asp=0.8, fig.align="center", echo=FALSE}
-#| fig.cap: Kernel regression estimates at the cross-validated value of $lambda=1.1$ and true mean function. 
+#| fig.cap: Kernel regression estimates at the cross-validated value of $\lambda=1.1$ and true mean function. 
 #| label: fig-simdata-kr-best
 
-kr <- ksmooth(X,Y,kernel="normal",bandwidth=cvres$bw[which.min(cvres$MSTe)], x.points=xGrid)
+kr <- ksmooth(simReg$X,simReg$Y,kernel="normal",
+              bandwidth=cvres$bw[which.min(cvres$MSTe)], x.points=xGrid)
 
-plot(X, Y, las=1, bty="l")
-rug(X, side = 1); rug(Y, side = 2)
+plot(simReg$X, simReg$Y, xlab="X", ylab="Y", las=1, bty="l")
+rug(simReg$X, side = 1); 
+rug(simReg$Y, side = 2)
 lines(xGrid, m(xGrid), col = "black", lwd=1.5)
 lines(kr$x, kr$y, col = "red" ,lwd=1.5)
 ```
+
+## Python
+
+In Python we can rely on the built-in cross-validation of the `KernelReg`
+function in `statsmodels` to determine the best bandwidth by leave-one-out
+cross-validation. To trigger cross-validation, either pass an array of bandwidth 
+values in the `bw` argument or specify `bw='cv_ls'`.
+
+```{python}
+from statsmodels.nonparametric.kernel_regression import KernelReg
+
+X = np.array(simReg.X).flatten() 
+Y = np.array(simReg.Y).flatten()
+
+xGrid = np.linspace(-5, 6, 250)
+xGrid = np.array(xGrid).flatten()
+
+kr_model = KernelReg(endog=Y, exog=X, var_type='c',reg_type='lc',bw='cv_ls')
+kr_mean, kr_mfx = kr_model.fit(xGrid)
+
+print(f"Cross-validated bandwidth: {kr_model.bw[0]:.4f}")
+```
+
+@fig-simdata-kr-best-py displays the kernel regression estimate for the selected
+bandwidth of 0.4093. The local constant model fits the data well but continues to show 
+bias at the boundary of the $x$-range.
+
+```{python, out.width="75%", fig.asp=0.8, fig.align="center", echo=FALSE, message=FALSE}
+#| fig.cap: Kernel regression estimates at the cross-validated value of $lambda=0.4093$ and true mean function. 
+#| label: fig-simdata-kr-best-py
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+def m(x):
+    return x**2 * np.cos(x)
+
+plt.figure(figsize=(10, 6))
+
+plt.scatter(simReg.X, simReg.Y, color='black')
+plt.ylim(top=20)
+plt.xlabel('X')
+plt.ylabel('Y')
+
+# Add rug plots
+# For X-axis (bottom)
+plt.tick_params(axis='x', which='major', direction='in')
+plt.tick_params(axis='x', which='minor', direction='in')
+for x in simReg.X:
+    plt.axvline(x=x, ymin=0, ymax=0.03, color='black', alpha=0.7)
+
+# For Y-axis (left)
+plt.tick_params(axis='y', which='major', direction='in')
+plt.tick_params(axis='y', which='minor', direction='in')
+for y in simReg.Y:
+    plt.axhline(y=y, xmin=0, xmax=0.03, color='black', alpha=0.7)
+
+# Plot the lines
+plt.plot(xGrid, m(xGrid), color='black', linewidth=1.5, label='True mean function')
+plt.plot(xGrid, kr_mean, color='red', linewidth=1.5, label='Kernel regression, λ=0.4093')
+
+# Add legend at the top
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15))
+
+# Show the plot
+plt.tight_layout()
+plt.show()
+```
+
+:::
 ::::
 :::
 
@@ -405,6 +677,8 @@ might erroneously conclude that the "best" value is the value on the boundary of
 your candidate values. This is not a problem in @fig-simdata-loocv-kr where the 
 minimum MSE does not fall on the boundary.
 :::
+
+
 
 ## Local Regression
 
@@ -438,14 +712,14 @@ at $x_0$ satisfy a weighted least squares criterion. For a model of degree 1 the
 criterion is
 
 $$
-			\argmin_{\beta_0(x_0), \beta_1(x_0)} = \sum_{i=1}^n K_\lambda(x_0,x_i) \left(y_i - \beta_0(x_0) - \beta_1(x_0) x_i \right )^2
+\argmin_{\beta_0(x_0), \beta_1(x_0)} = \sum_{i=1}^n K_\lambda(x_0,x_i) \left(y_i - \beta_0(x_0) - \beta_1(x_0) x_i \right )^2
 $$
 
 ### Choosing the Degree
 
 The degree of a local regression polynomial is typically small, $p=1$ or $p=2$. 
-Higher-order polynomials are against the spirit of local methods that any function 
-can be approximated in a small neighborhood by a low-order polynomials. 
+Higher-order polynomials are against the principle of local methods to approximate 
+any function by a low-order polynomial in a small neighborhood . 
 
 The boundary bias we noticed in the kernel regression ($p=0$) estimates is greatly 
 reduced when $p > 0$. The local model now depends on $x$ and does not approximate 
@@ -460,29 +734,35 @@ models in the interior of the $x$ range. This is a classical bias-variance trade
 Example: Linear and Quadratic Local Polynomials with Simulated Data
 ::::
 ::::{.example-container}
+
+:::{.panel-tabset group="language"}
+
+## R
+
 The `KernSmooth::locpoly` function in `R` computes local polynomial regression 
-estimates with Gaussian kernels. For comparison purposes, the following fit models 
-of degree 0, 1, and 2 for the same bandwidth. 
+estimates with Gaussian kernels. For comparison purposes, the following code
+fit models of degree 0, 1, and 2 with the same bandwidth. For degree 0 we 
+get the Nadaraya-Watson kernel regression estimator. For degree 1 we are fitting
+a local linear regression, for degree 2 a local quadratic regression model.
 
-
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(KernSmooth)
 
-lp_05_0 <- locpoly(X,Y,
+lp_05_0 <- locpoly(simReg$X,simReg$Y,
                    degree   =0,
                    kernel   ="normal",
                    bandwidth=0.5,
                    gridsize =250,
                    range.x  =c(-5,6))
 
-lp_05_1 <- locpoly(X,Y,
+lp_05_1 <- locpoly(simReg$X,simReg$Y,
                    degree   =1,
                    kernel   ="normal",
                    bandwidth=0.5,
                    gridsize =250,
                    range.x  =c(-5,6))
 
-lp_05_2 <- locpoly(X,Y,
+lp_05_2 <- locpoly(simReg$X,simReg$Y,
                    degree   =2,
                    kernel   ="normal",
                    bandwidth=0.5,
@@ -499,8 +779,9 @@ regression (degree 0) estimate.
 #| fig.cap: Local polynomials of degree 0, 1, and 2 with Gaussian kernels and $\lambda = 0.5$.
 #| label: fig-simdata-locpoly
 #| 
-plot(X, Y, las=1,bty="l")
-rug(X, side = 1); rug(Y, side = 2)
+plot(simReg$X, simReg$Y, xlab="X", ylab="Y",las=1,bty="l")
+rug(simReg$X, side = 1); 
+rug(simReg$Y, side = 2)
 
 lines(xGrid, m(xGrid), col = "black", lwd=1.5)
 lines(lp_05_0$x, lp_05_0$y, col = "red"      ,lwd=1.5, lty="solid")
@@ -509,13 +790,87 @@ lines(lp_05_2$x, lp_05_2$y, col = "darkgreen",lwd=1.5, lty="dotted")
 legend("topleft", 
        bty="n",
        legend = c("True mean function", 
-                  expression(paste("LocPoly(0), ", lambda, "=0.5")),
-                  expression(paste("LocPoly(1), ", lambda, "=0.5")),
-                  expression(paste("LocPoly(2), ", lambda, "=0.5"))),
+                  "Local constant (degree=0)",
+                  "Local linear (degree=1)",
+                  "Local quadratic (degree=2)"),
        lwd = 1.5, 
        col = c("black","red","blue","darkgreen"),
        lty = c("solid","solid","dashed","dotted"))
 ```
+
+## Python
+
+For local polynomials of zero and first degree, the `KernelReg` function
+can be used. Specify `reg_type='lc'` for degree zero (local constant) and
+`reg_type='ll'` for degree one (local linear). For local polynomials of 
+second degree and higher a different approach must be taken. One could 
+use the `KernelRidge` function from `sklearn` with a second degree polynomial
+mean function and set the ridge parameter to a very small value, essentially
+turning off the ridge regularization.
+
+
+```{python}
+import numpy as np
+import statsmodels.api as sm
+from statsmodels.nonparametric.kernel_regression import KernelReg
+
+X = np.array(simReg.X).flatten() 
+Y = np.array(simReg.Y).flatten()
+
+xGrid = np.linspace(-5, 6, 250)
+xGrid = np.array(xGrid).flatten()
+
+lp_05_0_model = KernelReg(endog=Y,exog=X,var_type='c',bw=[0.5],
+    reg_type='lc',  # local constant (degree = 0)
+)
+lp_05_0_y, _ = lp_05_0_model.fit(xGrid)
+
+# For degree = 1 (local linear regression)
+lp_05_1_model = KernelReg(endog=Y,exog=X,var_type='c',bw=[0.5],
+    reg_type='ll',  # local linear (degree = 1)
+)
+lp_05_1_y, _ = lp_05_1_model.fit(xGrid)
+```
+
+The local linear model is more flexible at the same bandwidth than the
+local constant model. (@fig-simdata-locpoly-py). 
+The estimates are similar in the interior of the $x$ range. The boundary 
+bias of the linear model is much reduced compared to the kernel 
+regression (degree 0) estimate.
+
+```{python, out.width="75%", fig.asp=0.8, fig.align="center", echo=FALSE, message=FALSE}
+#| fig.cap: Local polynomials of degree 0 and 1 with Gaussian kernels and $\lambda = 0.5$.
+#| label: fig-simdata-locpoly-py
+#| 
+plt.figure(figsize=(10, 6));
+
+plt.scatter(simReg.X, simReg.Y, color='black');
+plt.ylim(top=20);
+plt.xlabel('X');
+plt.ylabel('Y');
+
+plt.tick_params(axis='x', which='major', direction='in');
+plt.tick_params(axis='x', which='minor', direction='in');
+for x in simReg.X:
+    plt.axvline(x=x, ymin=0, ymax=0.03, color='black', alpha=0.7);
+
+plt.tick_params(axis='y', which='major', direction='in');
+plt.tick_params(axis='y', which='minor', direction='in');
+for y in simReg.Y:
+    plt.axhline(y=y, xmin=0, xmax=0.03, color='black', alpha=0.7);
+
+plt.plot(xGrid, m(xGrid), color='black', linewidth=1.5, label='True mean function');
+plt.plot(xGrid, lp_05_0_y, color='red', linewidth=1.5, label='Local constant (degree = 0)');
+plt.plot(xGrid, lp_05_1_y, color='blue', linewidth=1.5, label='Local linear (degree = 1)');
+
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15));
+
+#Show the plot
+plt.tight_layout();
+plt.show()
+```
+
+:::
 ::::
 :::
 
@@ -531,6 +886,16 @@ The tricube kernel was preferred because it reduces to exactly 0 and thus exclud
 observations outside of the tricube window from the calculations. The resulting 
 computational savings were important at the time LOESS was proposed.
 
+:::{.example}
+::::{.example-header}
+Example: LOESS Model of Degree 1 with Simulated Data
+::::
+::::{.example-container}
+
+:::{.panel-tabset group="language"}
+
+## R
+
 The `loess` function in `R` implements LOESS and specifies the bandwidth through 
 a `span` parameter that determines the neighborhood of $x_0$ as a proportion of 
 the data points. The tricube weight function is then applied to the points in the 
@@ -542,53 +907,44 @@ of larger trends, as in the analysis of residuals.
 Fitting of LOESS models and cross-validating the span parameter can be done 
 conveniently in `R` with the `train` function in the `caret` package.
 
-:::{.example}
-::::{.example-header}
-Example: LOESS Model of Degree 1 with Simulated Data
-::::
-::::{.example-container}
+
 ``` {r loess_caret, warning=FALSE, message=FALSE}
 library(caret)
 
-df <- data.frame(cbind(Y,X))
 model <- caret::train(Y ~ X, 
-               data    =df,
-               method  ="gamLoess", 
-               tuneGrid=expand.grid(span = 0.2, degree=1), 
-               trContro=trainControl(method = "none"))
+               data     =simReg,
+               method   ="gamLoess", 
+               tuneGrid =expand.grid(span=0.2, degree=1), 
+               trControl=trainControl(method = "none"))
 ```
 
-``` {r, out.width="80%", fig.asp=0.8, echo=FALSE, fig.align="center"}
+``` {r, out.width="80%", fig.asp=0.8, echo=FALSE, fig.align="center", warning=FALSE}
 #| fig.cap: LOESS smooth with span 0.2, degree 1.
 #| label: fig-simdata-loess_02
 #| 
-plot(X, Y, las=1,bty="l")
-rug(X, side = 1); 
-rug(Y, side = 2)
-lines(xGrid, m(xGrid), col = "black", lwd=1.5)
-suppressWarnings(
-    lines(xGrid,predict(model, newdata=data.frame("X"=xGrid)), col="red", lwd=2)
-)
+plot(simReg$X, simReg$Y, xlab="X", ylab="Y", las=1,bty="l")
+rug(simReg$X, side = 1); 
+rug(simReg$Y, side = 2)
+lines(xGrid, m(xGrid), col="black", lwd=1.5)
+lines(xGrid,predict(model, newdata=data.frame("X"=xGrid)), col="red", lwd=2)
 ```
-::::
-:::
 
 To perform cross-validation for the span parameter, you can supply instructions 
 to the `train` function. The `tuneGrid` parameter provides a data frame with values 
 for the hyperparameters. In the code below, the span is varied from 0.15 to 0.75 
 in 40 steps and the degree of the local polynomial is held fixed at 1. The 
 `trControl` parameter defines the behavior of the `train` function. Here, 10-fold 
-cross-validatoin of the hyperparameters is requested.
+cross-validation of the hyperparameters is requested.
 
 
 ``` {r loess_k_10, fig.align="center", out.width="80%", warning=FALSE}
 set.seed(3678)
 
-ctrl <- trainControl(method = "cv", number = 10)
-grid <- expand.grid(span = seq(0.15, 0.75, len = 40), degree = 1)
+ctrl <- trainControl(method="cv", number=10)
+grid <- expand.grid(span=seq(0.15, 0.75, len=40), degree=1)
 
 model <- train(Y ~ X, 
-               data     =df, 
+               data     =simReg, 
                method   ="gamLoess", 
                tuneGrid =grid, 
                trControl=ctrl)
@@ -605,6 +961,68 @@ The smallest root mean square error (RMSE) of
 `{r} round(min(model$results$RMSE),4)` is achieved with a span of
 `{r} round(model$results$span[which.min(model$results$RMSE)],4)`. 
 
+
+## Python
+
+To fit a LOESS model of first degree in Python we can use the `KernelReg`
+function again, choosing the tricube kernel instead of the default Gaussian
+kernel and requesting `reg_type='ll'`.
+
+```{python}
+from statsmodels.nonparametric.kernel_regression import KernelReg
+
+X = np.array(simReg.X).flatten() 
+Y = np.array(simReg.Y).flatten()
+
+xGrid = np.linspace(-5, 6, 250)
+xGrid = np.array(xGrid).flatten()
+
+loess_model = KernelReg(endog=Y, exog=X, var_type='c', ckertype='tricube',
+    reg_type='ll',
+    bw='cv_ls')
+loess_mean, _ = kr_model.fit(xGrid)
+
+print(f"Cross-validated LOESS bandwidth: {loess_model.bw[0]:.4f}")
+```
+
+@fig-simdata-loess-py shows the fit of the LOESS model with the optimal 
+bandwidth of 1.124.
+
+
+```{python, out.width="75%", fig.asp=0.8, fig.align="center", echo=FALSE, message=FALSE}
+#| fig.cap: LOESS fit with cross-validated bandwidth for the tricube kernel.
+#| label: fig-simdata-loess-py
+#| 
+plt.figure(figsize=(10, 6));
+
+plt.scatter(simReg.X, simReg.Y, color='black');
+plt.ylim(top=20);
+plt.xlabel('X');
+plt.ylabel('Y');
+
+plt.tick_params(axis='x', which='major', direction='in');
+plt.tick_params(axis='x', which='minor', direction='in');
+for x in simReg.X:
+    plt.axvline(x=x, ymin=0, ymax=0.03, color='black', alpha=0.7);
+
+plt.tick_params(axis='y', which='major', direction='in');
+plt.tick_params(axis='y', which='minor', direction='in');
+for y in simReg.Y:
+    plt.axhline(y=y, xmin=0, xmax=0.03, color='black', alpha=0.7);
+
+plt.plot(xGrid, m(xGrid), color='black', linewidth=1.5, label='True mean function');
+plt.plot(xGrid, loess_mean, color='red', linewidth=1.5, label='LOESS');
+
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15));
+
+#Show the plot
+plt.tight_layout();
+plt.show()
+```
+
+:::
+::::
+:::
 
 ## Basis Functions {#sec-basis-functions}
 
@@ -781,14 +1199,18 @@ Example: Cubic Spline with 3 Knots
 ::::
 ::::{.example-container}
 For the simulated data we can fit a cubic spline with 3 knots by constructing a 
-model matrix for @eq-cubic-spline-tpf and passing it to the `lm.fit` function. 
+model matrix for @eq-cubic-spline-tpf and passing it to a linear regression function. 
 First we need to decide on the placement of the three knots. One option is to place 
 knots evenly throughout the range of $x$. Or, we can place knots at certain 
 percentiles of the distribution of the $x$ data. We choose the 1st, 2nd (median), 
 and 3rd quartile here.
 
+:::{.panel-tabset group="language"}
+
+## R
+
 ```{r}
-s <- summary(X)
+s <- summary(simReg$X)
 c_1 <- s[2] # 1st. quartile
 c_2 <- s[3] # median
 c_3 <- s[5] # 3rd quartile
@@ -800,7 +1222,7 @@ c_3
 tpf <- function(x,knot,degree) {
     t <- ifelse(x > knot, (x-knot)^degree, 0)
 }
-
+X <- as.vector(simReg$X)
 Xmatrix <- cbind(rep(1,length(X)), X, X^2, X^3, 
                  tpf(X,c_1,3), tpf(X,c_2,3), tpf(X,c_3,3))
 colnames(Xmatrix) <- c("Inctpt","x","x^2","x^3","tpf_c1","tpf_c2","tpf_c3")
@@ -812,8 +1234,11 @@ from the augmented power function terms, for example the second observation.
 Observation \#8, which falls to the right of $c_3$ = `{r} round(c_3,4)` receives a 
 contribution from all three truncated power function terms.
 
+Now we pass the $\bX$ matrix and $\bY$ vector to the `lm.fit` function to get
+the ordinary least squares coefficient estimates:
+
 ```{r}
-cub_spline <- lm.fit(x=Xmatrix,y=Y)
+cub_spline <- lm.fit(x=Xmatrix,y=simReg$Y)
 cub_spline$coefficients
 ```
 
@@ -828,15 +1253,130 @@ xx <- cbind(rep(1,length(xGrid)),
 
 pred <- xx %*% cub_spline$coefficients
 
-plot(X, Y, las=1,bty="l")
-rug(X, side = 1); rug(Y, side = 2)
+plot(simReg$X, simReg$Y, xlab="X", ylab="Y",las=1,bty="l")
+rug(simReg$X, side = 1); 
+rug(simReg$Y, side = 2)
 
-lines(xGrid, m(xGrid), col = "black", lwd=1.5)
-lines(xGrid, pred, col = "red",lwd=1.5, lty="solid")
+lines(xGrid, m(xGrid), col= "black", lwd=1.5)
+lines(xGrid, pred, col= "red",lwd=1.5, lty="solid")
 ```
 
 For a model with only seven parameters the cubic spline with knots at the 1st, 2nd, 
 and 3rd quartile provides an excellent fit (@fig-simdata-cubspline).
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+
+s = np.percentile(simReg['X'], [25, 50, 75])
+c_1 = s[0]  # 1st quartile
+c_2 = s[1]  # median
+c_3 = s[2]  # 3rd quartile
+
+print(np.round(c_1,4))
+print(np.round(c_2,4))
+print(np.round(c_3,4))
+
+# Define the truncated power function
+def tpf(x, knot, degree):
+    return np.where(x > knot, (x - knot)**degree, 0)
+
+# Create the design matrix
+X = simReg['X'].values
+ones = np.ones(len(X))
+X_squared = X**2
+X_cubed = X**3
+tpf_c1 = tpf(X, c_1, 3)
+tpf_c2 = tpf(X, c_2, 3)
+tpf_c3 = tpf(X, c_3, 3)
+
+Xmatrix = np.column_stack((ones, X, X_squared, X_cubed, tpf_c1, tpf_c2, tpf_c3))
+Xmatrix_df = pd.DataFrame(Xmatrix, 
+                         columns=["Inctpt", "x", "x^2", "x^3", "tpf_c1", "tpf_c2", "tpf_c3"])
+
+print(np.round(Xmatrix[:10], 4))
+```
+
+Observations to the left of $c_1 = -1.0258$ do not receive a contribution 
+from the augmented power function terms, for example the second observation. 
+Observation \#8, which falls to the right of $c_3 = 1.3967$ receives a 
+contribution from all three truncated power function terms.
+
+Now we pass the $\bX$ matrix and $\bY$ vector to the `LinearReression` function 
+of `sklearn` to get the ordinary least squares coefficient estimates:
+
+```{python}
+from sklearn.linear_model import LinearRegression
+
+# Fit the model
+model = LinearRegression(fit_intercept=False)
+model.fit(Xmatrix, simReg['Y'])
+
+# Get coefficients
+coefficients = model.coef_
+print(np.round(coefficients,4))
+```
+
+```{python, echo=FALSE, out.width="80%", fig.align="center"}
+#| label: fig-simdata-cubspline-py
+#| fig.cap: Cubic spline fit by linear least squares based on truncated power basis functions.
+
+import matplotlib.pyplot as plt
+
+xGrid = np.linspace(-5, 6, 250)
+
+def m(x):
+    return x**2 * np.cos(x)
+
+# Create the design matrix for prediction
+xx = np.column_stack((
+    np.ones(len(xGrid)),
+    xGrid, 
+    xGrid**2, 
+    xGrid**3,
+    tpf(xGrid, c_1, 3),
+    tpf(xGrid, c_2, 3),
+    tpf(xGrid, c_3, 3)
+))
+
+pred = xx @ coefficients
+
+# Create the plot
+plt.figure(figsize=(10, 6));
+plt.scatter(simReg['X'], simReg['Y'], label='Data', color='black');
+plt.ylim(top=20)
+plt.xlabel('X');
+plt.ylabel('Y');
+
+# Rug plots v1
+plt.tick_params(axis='x', which='major', direction='in');
+plt.tick_params(axis='x', which='minor', direction='in');
+for x in simReg.X:
+    plt.axvline(x=x, ymin=0, ymax=0.03, color='black', alpha=0.7);
+
+plt.tick_params(axis='y', which='major', direction='in');
+plt.tick_params(axis='y', which='minor', direction='in');
+for y in simReg.Y:
+    plt.axhline(y=y, xmin=0, xmax=0.03, color='black', alpha=0.7);
+
+## Rug plots v2
+#plt.plot(simReg['X'], [plt.ylim()[0]] * len(simReg['X']), '|', color='k', ms=20);
+#plt.plot([plt.xlim()[0]] * len(simReg['Y']), simReg['Y'], '_', color='k', ms=5);
+
+plt.plot(xGrid, m(xGrid), color='black', linewidth=1.5, label='True function');
+plt.plot(xGrid, pred, color='red', linewidth=1.5, label='Cubic spline fit');
+
+plt.legend(loc='upper center');
+plt.grid(False);
+plt.show();
+```
+For a model with only seven parameters the cubic spline with knots at the 1st, 2nd, 
+and 3rd quartile provides an excellent fit (@fig-simdata-cubspline-py).
+
+:::
+
 ::::
 :::
 
@@ -852,6 +1392,10 @@ The truncated power basis function is one approach to generating the $\bX$ matri
 for a least-squares regression that produces a particular spline. It is not the 
 numerically most advantageous approach. There are many equivalent basis functions 
 to represent polynomials. A popular basis are the B-spline basis functions.
+
+:::{.panel-tabset group="language"}
+
+## R
 
 The `R` functions `bs()` and `ns()` in the `splines` library compute cubic spline 
 matrices and natural cubic spline matrices based on B-splines. 
@@ -869,7 +1413,6 @@ knots at the 1st, 2nd, and 3rd quartiles; the same values used earlier in the
 truncated power function example.
 
 ``` {r}
-
 round(xx[1:10,],5)
 ```
 
@@ -885,7 +1428,6 @@ round(cor(Xmatrix[,2:7]),5)
 round(cor(xx),5)
 ```
 
-
 The function `ns()` produces the natural cubic splines from the B-spline basis.
 
 ```{r}
@@ -896,8 +1438,8 @@ round(nn[1:10,],5)
 The models can be fit without first generating the spline matrix:
 
 ``` {r}
-ns_spline <- lm(Y ~ ns(X,df=6))
-bs_spline <- lm(Y ~ bs(X,df=6))
+ns_spline <- lm(simReg$Y ~ ns(X,df=6))
+bs_spline <- lm(simReg$Y ~ bs(X,df=6))
 ```
 
 @fig-simdata-bs-ns displays the fitted values for the 6-df cubic and natural cubic splines.
@@ -907,10 +1449,11 @@ bs_spline <- lm(Y ~ bs(X,df=6))
 #| label: fig-simdata-bs-ns
 #| lightbox:
 #| 
-plot(X, Y, las=1,bty="l")
-rug(X, side = 1); rug(Y, side = 2)
+plot(simReg$X, simReg$Y, xlab="X", ylab="Y", las=1,bty="l")
+rug(simReg$X, side = 1); 
+rug(simReg$Y, side = 2)
 
-lines(xGrid, m(xGrid), col = "black", lwd=1.5)
+lines(xGrid, m(xGrid), col="black", lwd=1.5)
 lines(xGrid, 
       predict(bs_spline,newdata=data.frame(X=xGrid)), 
       col = "red",lwd=1.5, lty="dashed")
@@ -927,6 +1470,115 @@ legend("topleft",
        lty = c("solid","dashed","dotted"))
 ```
 
+## Python
+
+In Python you can compute B-splines and cubic regression splines using the 
+`dmatrix` function in `patsy`. The `bs()` and `cr()` formula arguments of 
+`patsy` represent those splines.
+
+```{python, warning=FALSE, message=FALSE}
+from patsy import dmatrix
+from scipy.stats import pearsonr
+
+# For natural and B-splines, we'll use patsy which provides similar functionality to R's splines
+# Equivalent to bs(X, df=6) in R
+xx = dmatrix("bs(x, df=6)", {"x": X}, return_type='dataframe')
+
+print(xx.columns) 
+
+# Print first 10 rows of the B-spline basis
+np.set_printoptions(suppress=True)
+print(np.round(xx.values[:10], 5))
+```
+
+Although the `xx` matrix produced by `bs()` is not identical to the `Xmatrix` based 
+on the truncated power basis functions, the models are equivalent and the predicted 
+values are identical. The conditioning of the $\bXpX$ matrix based on the truncated 
+power basis is poorer than the conditioning of the $\bXpX$ matrix computed from 
+the B-spline basis. The pairwise correlations are generally higher in the former.
+
+```{python, warning=FALSE, message=FALSE}
+corr_mat = np.corrcoef(Xmatrix[:, 1:7], rowvar=False)
+print(np.round(corr_mat, 5))
+
+bs_corr = np.corrcoef(xx.values, rowvar=False)
+print("Correlation of B-spline basis:")
+print(np.round(bs_corr[1:6,1:6], 5))
+```
+
+The `cr()` argument of `dmatrix` produces cubic regression splines. These match
+the implementation in the `mgcv` package in `R`, rather than the `ns` function.
+
+```{python}
+nn = dmatrix("cr(x, df=6)", {"x": X}, return_type='dataframe') 
+print("First 10 rows of natural spline basis:")
+print(np.round(nn.values[:10], 4))
+```
+
+We now fit the models based on the B-splines and cubic regression splines.
+
+```{python}
+import statsmodels.api as sm
+
+X_ns = dmatrix("cr(x, df=6)", {"x": X})
+model_ns = sm.OLS(simReg['Y'], X_ns).fit()
+#model_ns.summary()
+
+X_bs = dmatrix("bs(x, df=6)", {"x": X})
+model_bs = sm.OLS(simReg['Y'], X_bs).fit()
+#model_bs.summary()
+```
+
+
+```{python, echo=FALSE, out.width="80%", fig.align="center"}
+#| fig.cap: Cubic and natural cubic splines with 6 degrees of freedom.
+#| label: fig-simdata-bs-ns-py
+#| lightbox:
+#| 
+xGrid = np.linspace(X.min(), X.max(), 250)
+
+def m(x):
+    return x**2 * np.cos(x)
+
+xGrid_ns = dmatrix("cr(x, df=6)", {"x": xGrid})
+xGrid_bs = dmatrix("bs(x, df=6)", {"x": xGrid})
+
+pred_ns = model_ns.predict(xGrid_ns)
+pred_bs = model_bs.predict(xGrid_bs)
+
+# Create the plot
+plt.figure(figsize=(10, 6));
+plt.scatter(simReg['X'], simReg['Y'], label='Data', color='black');
+plt.ylim(top=20);
+plt.xlabel('X');
+plt.ylabel('Y');
+
+# Rug plots v1
+plt.tick_params(axis='x', which='major', direction='in');
+plt.tick_params(axis='x', which='minor', direction='in');
+for x in simReg.X:
+    plt.axvline(x=x, ymin=0, ymax=0.03, color='black', alpha=0.7);
+
+plt.tick_params(axis='y', which='major', direction='in');
+plt.tick_params(axis='y', which='minor', direction='in');
+for y in simReg.Y:
+    plt.axhline(y=y, xmin=0, xmax=0.03, color='black', alpha=0.7);
+
+## Rug plots v2
+#plt.plot(simReg['X'], [plt.ylim()[0]] * len(simReg['X']), '|', color='k', ms=20);
+#plt.plot([plt.xlim()[0]] * len(simReg['Y']), simReg['Y'], '_', color='k', ms=5);
+
+plt.plot(xGrid, m(xGrid), color='black', linewidth=1.5, label='True mean function');
+plt.plot(xGrid, pred_bs, color='red', linewidth=1.5, label='Natural cubic spline, df=6');
+plt.plot(xGrid, pred_ns, color='blue', linewidth=1.5, label='Cubic spline, df=6');
+
+plt.legend(loc='upper center');
+plt.grid(False);
+plt.show();
+
+```
+:::
+
 An objective method for choosing the number of knots in regression splines is 
 through cross-validation. 
 
@@ -935,23 +1587,26 @@ through cross-validation.
 Example: Choosing Degrees of Freedom by Cross-validation 
 ::::
 ::::{.example-container}
-The following code use the `caret::train` function in `R` to choose the degrees 
-of freedom of the cubic spline based on 10-fold cross-validation. The degrees of freedom evaluated range from 2 to 20.
 
+:::{.panel-tabset group="language"}
+
+## R
+
+The following code use the `caret::train` function in `R` to choose the degrees 
+of freedom of the cubic spline based on 10-fold cross-validation. The degrees of 
+freedom evaluated range from 2 to 20.
 
 ``` {r, fig.align="center", out.width="80%"}
-df <- data.frame(Y=Y,X=X)
-
 set.seed(3678)
 
 ctrl <- trainControl(method = "cv", number = 10)
 grid <- expand.grid(df = seq(2,20,by=1))
 
 model <- train(Y ~ X, 
-               data      = df, 
-               method    = "gamSpline", 
-               tuneGrid  = grid, 
-               trControl = ctrl)
+               data     =simReg, 
+               method   ="gamSpline", 
+               tuneGrid =grid, 
+               trControl=ctrl)
 
 model
 plot(model)
@@ -964,23 +1619,128 @@ Next, the final model is trained using the degrees of freedom chosen by cross-va
 
 ```{r}
 model <- train(Y ~ X, 
-               data      = df, 
-               method    = "gamSpline", 
-               tuneGrid  = expand.grid(df=model$bestTune$df), 
-               trControl = trainControl(method = "none"))
+               data     =simReg, 
+               method   ="gamSpline", 
+               tuneGrid =expand.grid(df=model$bestTune$df), 
+               trControl=trainControl(method = "none"))
 ```
 
 
 ```{r, echo=FALSE, out.width="80%", fig.align="center"}
 #| fig.cap: Cross-validated cubic spline fit.
 
-plot(X, Y, las=1,bty="l")
-rug(X, side = 1); rug(Y, side = 2)
+plot(simReg$X, simReg$Y, xlab="X", ylab="Y", las=1,bty="l")
+rug(simReg$X, side = 1); 
+rug(simReg$Y, side = 2)
 
-lines(xGrid, m(xGrid), col = "black", lwd=1.5)
+lines(xGrid, m(xGrid), col="black", lwd=1.5)
 lines(xGrid,predict(model,newdata=data.frame(X=xGrid)), 
       col = "red",lwd=1.5, lty="solid")
 ```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from patsy.builtins import bs, cr
+import statsmodels.api as sm
+
+# Define a function to evaluate models
+def train_spline_model(X, y, param_grid):
+    results = {'param': [], 'mean_test_score': []}
+    
+    for ddf in param_grid['ddf']:
+        formula_str = f"bs(x, df={ddf}, include_intercept=True)"
+        Xmat = dmatrix(formula_str, {"x": X})
+        mlr = sm.OLS(y, Xmat).fit()
+        leverage = mlr.get_influence().hat_matrix_diag
+        PRESS_res = mlr.resid / (1 - leverage)
+        PRESS = np.sum(PRESS_res**2)
+
+        results['param'].append(ddf)
+        results['mean_test_score'].append(PRESS/len(leverage))
+
+    # Find best parameter
+    best_idx = np.argmin(results['mean_test_score'])
+    best_param = results['param'][best_idx]
+    
+    return results, best_param
+
+param_grid = {'ddf': list(range(5, 25))}
+
+# Train the model
+X_array = simReg['X'].values
+y_array = simReg['Y'].values
+results, best_df = train_spline_model(X_array, y_array, param_grid)
+
+
+# Print results
+print(f"Best df parameter: {best_df}")
+print("Cross-validation results:")
+for i, df in enumerate(results['param']):
+    print(f"df: {df}, RMSE: {np.sqrt(results['mean_test_score'][i])}")
+
+# Plot the results
+plt.figure(figsize=(10, 6));
+plt.plot(results['param'], np.array(results['mean_test_score']));
+plt.xlabel('Degrees of Freedom');
+plt.ylabel('RMSE');
+plt.title('Cross-Validation Results');
+plt.grid(True);
+plt.show();
+```
+
+The square root of the mean square error (RMSE) achieves a minimum for 15 degrees
+of freedom although any value between 13 and 15 is reasonable.
+
+Next, the final model is trained using the degrees of freedom chosen by 
+cross-validation and predicted values are computed for a grid of $X$-values.
+
+```{python}
+formula_str = f"bs(x, df={best_df})"
+Xmat = dmatrix(formula_str, {"x": X_array})
+mlr = sm.OLS(y_array, Xmat).fit()
+
+XGrid_mat = dmatrix(formula_str, {"x": xGrid})
+pred = mlr.predict(XGrid_mat)
+
+```
+
+
+```{python, echo=FALSE, out.width="80%", fig.align="center"}
+#| fig.cap: Cross-validated cubic spline fit.
+#| lightbox:
+#| 
+
+# Create the plot
+plt.figure(figsize=(10, 6));
+plt.scatter(simReg['X'], simReg['Y'], label='Data', color='black');
+plt.ylim(top=20);
+plt.xlabel('X');
+plt.ylabel('Y');
+
+# Rug plots v1
+plt.tick_params(axis='x', which='major', direction='in');
+plt.tick_params(axis='x', which='minor', direction='in');
+for x in simReg.X:
+    plt.axvline(x=x, ymin=0, ymax=0.03, color='black', alpha=0.7);
+
+plt.tick_params(axis='y', which='major', direction='in');
+plt.tick_params(axis='y', which='minor', direction='in');
+for y in simReg.Y:
+    plt.axhline(y=y, xmin=0, xmax=0.03, color='black', alpha=0.7);
+
+plt.plot(xGrid, m(xGrid), color='black', linewidth=1.5);
+plt.plot(xGrid, pred, color='red', linewidth=1.5);
+
+plt.grid(False);
+plt.show();
+```
+
+:::
+
 ::::
 :::
 
@@ -1032,6 +1792,7 @@ $$
 df_\lambda = tr(\textbf{S}_\lambda) = \sum_{i=1}^n [s_{ii}]_\lambda
 $$
 
+
 :::{.example}
 ::::{.example-header}
 Example: Apple Share Prices
@@ -1040,6 +1801,10 @@ Example: Apple Share Prices
 The data for this example are the weekly closing share prices of Apple (ticker symbol 
 AAPL) between January 1996 and January 2024. @fig-aapl-share-price shows a time series 
 of these prices along with the dates major Apple products were introduced.
+
+:::{.panel-tabset group="language"}
+
+## R
 
 ```{r, warning=FALSE, message=FALSE}
 library(splines)
@@ -1053,6 +1818,27 @@ weekly$date <- make_date(weekly$year,weekly$month,weekly$day)
 dbDisconnect(con)
 ```
 
+## Python
+
+```{python}
+import duckdb
+import pandas as pd
+from datetime import date
+
+con = duckdb.connect(database="ads.ddb", read_only=True)
+weekly = con.sql("SELECT * FROM AAPLWeekly;").df()
+con.close()
+
+weekly['date'] = pd.to_datetime({'year': weekly['year'], 
+                                'month': weekly['month'], 
+                                'day': weekly['day']})
+
+#Alternatively, if you need a Python date object rather than pandas datetime:
+#from datetime import date
+#weekly['date'] = weekly.apply(lambda row: date(row['year'], row['month'], row['day']), axis=1)
+```
+
+:::
 
 ```{r, echo=FALSE, out.width="90%", fig.align="center"}
 #| fig.cap: Weekly AAPL close share prices from January 1996 until January 2024 and dates major products were introduced.
@@ -1081,11 +1867,17 @@ text(iPadDate,205,cex=0.75,"iPad")
 text(watchDate,205,cex=0.75,"Apple Watch")
 
 ```
+
+:::{.panel-tabset group="language"}
+
+## R
+
 The `smooth.spline` function in `R` computes smoothing splines and selects the 
 smoothing parameter (the penalty hyperparameter) by leave-one-out cross-validation. 
 It should be noted that `smooth.spline` by default does **not** place knots at all 
 unique $x$ values, but places evenly-spaced knots, their number is a function 
-of the unique number of $x$-values. You can change this behavior by setting `all.knots=TRUE`.
+of the unique number of $x$-values. You can change this behavior by setting 
+`all.knots=TRUE`.
 
 In the AAPL example, there are 1,461 unique dates, and `smooth.spline` would 
 choose `{r} .nknots.smspl(1461)` knots by default.
@@ -1099,7 +1891,6 @@ nx
 ```
 
 
-
 ```{r}
 smspl_a <- smooth.spline(y=weekly$Close,
                        x=weekly$date,
@@ -1107,6 +1898,7 @@ smspl_a <- smooth.spline(y=weekly$Close,
                        cv=TRUE)
 smspl_a
 ```
+
 The cross-validation leads to a PRESS criterion of `{r} round(smspl_a$cv.crit,4)` 
 and equivalent degrees of freedom of `{r} round(smspl_a$df,3)`. The regularization 
 penalized the spline from 1461 interior knots to the equivalent of a spline with 
@@ -1122,6 +1914,7 @@ smspl_s <- smooth.spline(y=weekly$Close,
                          cv=TRUE)
 smspl_s
 ```
+
 The smoothing parameter is much smaller, `spar`=`{r} round(smspl_s$spar,5)` and 
 the equivalent degrees of freedom are not much different from the number of knots 
 used (154). This suggests that this smoothing spline has not been penalized 
@@ -1153,6 +1946,44 @@ legend("topleft",legend=c("all.knots = T (1,461)","all.knots = F (154)"),
 lines(smspl_a$x,smspl_a$y,col="red", lwd=1)
 lines(smspl_s$x,smspl_s$y,col="blue", lwd=1)
 ```
+
+## Python
+
+Several Python libraries provide smoothing functionality based on splines,
+for example `pygam` (`LinearGam`), `sklearn` (`SplineTransformer`), and 
+`scipy.interpolate` (`UnivariateSpline` and `make_smoothing_spline`). The
+function that comes closest to the convenience of `smooth.spline` in `R`, 
+which uses a penalized least squares approach and knot placements at all (or
+a large number) values of the input is `make_smoothing_spline`. The function
+performs generalized cross-validation to determine the optimal penalty 
+parameter for the regularization term.
+
+By not specifying the `lam` parameter of `make_smoothing_spline`, estimation
+of the penalty term by generalized cross-validation is invoked.
+
+```{python, fig.asp=0.7, out.width="90%", fig.align="center", message=FALSE}
+from scipy.interpolate import make_smoothing_spline
+
+x = weekly['date']
+y = weekly['Close']
+
+spl = make_smoothing_spline(x,y)
+
+plt.figure(figsize=(10, 6));
+plt.plot(weekly['date'], weekly['Close'], color='black', linewidth=1.5);
+
+plt.xlabel('Date');
+plt.ylabel('Closing Price');
+
+times = pd.date_range(x.min(), periods=1461, freq='1W')
+plt.plot(times, spl(times), color='red', linewidth=0.5);
+
+plt.grid(False);
+plt.show();
+```
+
+
+:::
 
 ::::
 :::

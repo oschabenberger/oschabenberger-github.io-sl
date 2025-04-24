@@ -1343,16 +1343,13 @@ level in a country is influenced by economic wealth, and if so, to what extent.
 
 ## R
 
-<!---
-For some reason reading the pisa table from duckdb in R
-crashes during knitting, but not when running interactively.
-It works when knitting the Python code. The problem persists
-after updating the duckdb library. Have to go with csv file for now.
---->
-
 ```{r read_pisa, warning=FALSE, message=FALSE}
+library(duckdb)
 
-pisa <- read.csv("data/pisa.csv", stringsAsFactors =TRUE)
+con <- dbConnect(duckdb(),dbdir="ads.ddb", read_only=FALSE)
+pisa <- dbGetQuery(con,"SELECT * from pisa;")
+dbDisconnect(con)
+
 head(pisa)
 
 ```
@@ -1375,9 +1372,13 @@ head(p_conf)
 ## Python
 
 ```{python Py_read_pisa}
+import duckdb
 import pandas as pd
 
-pisa = pd.read_csv('data/pisa.csv').dropna()
+con = duckdb.connect(database="ads.ddb", read_only=True)
+pisa = con.sql("SELECT * FROM pisa;").df().dropna()
+con.close()
+
 pisa.head()
 ```
 
