@@ -84,9 +84,6 @@ plot(density(na.omit(Hitters$Salary)), main="Salary")
 plot(density(na.omit(log(Hitters$Salary))), main="log(Salary)")
 ```
 
-```{r}
-
-```
 
 The following statements load the `rpart` library and request a decision tree
 according to the model formula. Note that not all variables specified in the 
