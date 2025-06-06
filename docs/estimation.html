@@ -627,7 +627,7 @@ Note
 <p>To find the minimum we set to zero the derivative of <span class="math inline">\(\text{SSE}(\boldsymbol{\beta})\)</span> with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span>. Expanding the residual sum of squares yields <span class="math display">\[
 SSE(\boldsymbol{\beta}) = \textbf{Y}^\prime\textbf{Y}- 2\boldsymbol{\beta}^\prime\textbf{X}^\prime\textbf{Y}+ \boldsymbol{\beta}^\prime\textbf{X}^\prime\textbf{X}\boldsymbol{\beta}
 \]</span></p>
-<p>The derivative (<a href="linalg.html#sec-matrix-differentiation" class="quarto-xref"><span>Section 3.5</span></a>) with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span> is <span class="math display">\[
+<p>The derivative (<a href="linalg.html#sec-matrix-differentiation" class="quarto-xref"><span>Section 3.8</span></a>) with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span> is <span class="math display">\[
 \frac{\partial\,\text{SSE}(\boldsymbol{\beta})}{\partial\boldsymbol{\beta}} = -2\textbf{X}^\prime\textbf{Y}+ 2\textbf{X}^\prime\textbf{X}\boldsymbol{\beta}
 \]</span></p>
 <p>Setting the derivative to zero and solving yields the <strong>normal equations</strong> as above: <span class="math display">\[
@@ -1058,8 +1058,8 @@ Residual standard error:  2.316948  on  24 degrees of freedom</code></pre>
 Dep. Variable:                 Oxygen   R-squared:                       0.849
 Model:                            OLS   Adj. R-squared:                  0.811
 Method:                 Least Squares   F-statistic:                     22.43
-Date:                Wed, 30 Apr 2025   Prob (F-statistic):           9.72e-09
-Time:                        17:23:10   Log-Likelihood:                -66.068
+Date:                Fri, 06 Jun 2025   Prob (F-statistic):           9.72e-09
+Time:                        08:21:14   Log-Likelihood:                -66.068
 No. Observations:                  31   AIC:                             146.1
 Df Residuals:                      24   BIC:                             156.2
 Df Model:                           6                                         
@@ -1565,7 +1565,7 @@ f(\textbf{y}; \boldsymbol{\theta}) = \prod_{i=1}^n \, f(y_i; \boldsymbol{\theta}
 </ul>
 <section id="linear-model-with-gaussian-errors" class="level3">
 <h3 class="anchored" data-anchor-id="linear-model-with-gaussian-errors">Linear Model with Gaussian Errors</h3>
-<p>Suppose we want to find an estimator for <span class="math inline">\(\boldsymbol{\beta}\)</span> in the linear model <span class="math inline">\(\textbf{Y}= \textbf{X}\boldsymbol{\beta}+ \boldsymbol{\epsilon}\)</span> where the model errors follow a Gaussian distribution with mean <span class="math inline">\(\textbf{0}\)</span> and variance <span class="math inline">\(\textbf{V}\)</span>. <span class="math inline">\(\textbf{Y}\)</span> then follows a Gaussian distribution because it is a linear function of <span class="math inline">\(\boldsymbol{\epsilon}\)</span> (see <a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 3.7</span></a>). The probability density function of <span class="math inline">\(\textbf{Y}\)</span> is</p>
+<p>Suppose we want to find an estimator for <span class="math inline">\(\boldsymbol{\beta}\)</span> in the linear model <span class="math inline">\(\textbf{Y}= \textbf{X}\boldsymbol{\beta}+ \boldsymbol{\epsilon}\)</span> where the model errors follow a Gaussian distribution with mean <span class="math inline">\(\textbf{0}\)</span> and variance <span class="math inline">\(\textbf{V}\)</span>. <span class="math inline">\(\textbf{Y}\)</span> then follows a Gaussian distribution because it is a linear function of <span class="math inline">\(\boldsymbol{\epsilon}\)</span> (see <a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 3.9</span></a>). The probability density function of <span class="math inline">\(\textbf{Y}\)</span> is</p>
 <p><span class="math display">\[
 f\left( \textbf{Y}\right)=\frac{\left| \textbf{V}\right|^{- 1/2}}{(2\pi)^{\frac{n}{2}}}\exp\left\{ - \frac{1}{2}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{- 1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right) \right\}
 \]</span></p>
@@ -1575,7 +1575,7 @@ f\left( \textbf{Y}\right)=\frac{\left| \textbf{V}\right|^{- 1/2}}{(2\pi)^{\frac{
 \]</span></p>
 <p>Finding the maximum of this function with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span> is equivalent to minimizing the quadratic form <span class="math display">\[
 \left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{-1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)
-\]</span> with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span>. Applying the results about matrix differentiation in <a href="linalg.html#sec-matrix-differentiation" class="quarto-xref"><span>Section 3.5</span></a> leads to</p>
+\]</span> with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span>. Applying the results about matrix differentiation in <a href="linalg.html#sec-matrix-differentiation" class="quarto-xref"><span>Section 3.8</span></a> leads to</p>
 <p><span class="math display">\[\begin{align*}
 \frac{\partial}{\partial\boldsymbol{\beta}}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right)^\prime\textbf{V}^{- 1}\left( \textbf{Y}- \textbf{X}\boldsymbol{\beta}\right) &amp;= \frac{\partial}{\partial\boldsymbol{\beta}}\left\{ \textbf{Y}^\prime\textbf{V}^{- 1}\textbf{Y}- 2\textbf{Y}^\prime\textbf{V}^{- 1}\textbf{X}\boldsymbol{\beta}+ \boldsymbol{\beta}^\prime\textbf{X}^\prime\textbf{V}^{- 1}\textbf{X}\boldsymbol{\beta}\right\} \\
 

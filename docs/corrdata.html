@@ -603,7 +603,7 @@ window.Quarto = {
 <li><p>The <span class="math inline">\(R^2\)</span> statistic in linear models is the square of the correlation coefficient between <span class="math inline">\(Y\)</span> and <span class="math inline">\(\widehat{Y}\)</span>.</p></li>
 <li><p>Principal component analysis (<a href="pca.html" class="quarto-xref"><span>Chapter 24</span></a>) constructs uncorrelated linear projections of the input variables.</p></li>
 <li><p>Correlation does not imply causation.</p></li>
-<li><p>Random variables that are independent are also uncorrelated. The reverse is not generally true, but it is true for Gaussian random variables (<a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 3.7</span></a>).</p></li>
+<li><p>Random variables that are independent are also uncorrelated. The reverse is not generally true, but it is true for Gaussian random variables (<a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 3.9</span></a>).</p></li>
 <li><p>The covariance/correlation structure between inputs is explicitly modeled in model-based clustering (<a href="mbc.html" class="quarto-xref"><span>Chapter 26</span></a>).</p></li>
 <li><p>Multicollinearity is a broader concept than pairwise correlations. In the presence of weak pairwise correlations you can have strong multicollinearity (<a href="regglobal.html#sec-collinearity-diag" class="quarto-xref"><span>Section 7.4.4</span></a>).</p></li>
 </ul>
@@ -1132,7 +1132,7 @@ Figure&nbsp;30.8: Correlation functions with <span class="math inline">\(\phi = 
 \text{Cov}[ \boldsymbol{\epsilon}_i,\boldsymbol{\epsilon}_j] &amp;= \textbf{0}\quad i \neq j
 \end{align*}
 \tag{30.3}\]</span></span></p>
-<p>This seems like a subtle change, we simply added the assumption that the errors are Gaussian distributed in <a href="#eq-gauss-error-model" class="quarto-xref">Equation&nbsp;<span>30.3</span></a>. It has significant implications. If <span class="math inline">\(\boldsymbol{\epsilon}_i\)</span> is a vector of Gaussian random variables, then, by the linearity property of Gaussian variables, <span class="math inline">\(\textbf{Y}_i\)</span> is also Gaussian distributed with mean <span class="math inline">\(\textbf{X}_i\boldsymbol{\beta}\)</span> and variance <span class="math inline">\(\textbf{V}_i\)</span> (<a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 3.7</span></a>).</p>
+<p>This seems like a subtle change, we simply added the assumption that the errors are Gaussian distributed in <a href="#eq-gauss-error-model" class="quarto-xref">Equation&nbsp;<span>30.3</span></a>. It has significant implications. If <span class="math inline">\(\boldsymbol{\epsilon}_i\)</span> is a vector of Gaussian random variables, then, by the linearity property of Gaussian variables, <span class="math inline">\(\textbf{Y}_i\)</span> is also Gaussian distributed with mean <span class="math inline">\(\textbf{X}_i\boldsymbol{\beta}\)</span> and variance <span class="math inline">\(\textbf{V}_i\)</span> (<a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 3.9</span></a>).</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1950,7 +1950,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","selector":".lightbox","descPosition":"bottom","loop":false});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","openEffect":"zoom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

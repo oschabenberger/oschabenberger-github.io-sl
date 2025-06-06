@@ -605,7 +605,7 @@ p(Y) &amp;= \sum_{j=1}^k \Pr(Y, S=j) \\
 </section>
 <section id="gaussian-mixture-models" class="level2" data-number="26.2">
 <h2 data-number="26.2" class="anchored" data-anchor-id="gaussian-mixture-models"><span class="header-section-number">26.2</span> Gaussian Mixture Models</h2>
-<p>A special case of FMMs are Gaussian mixtures where the component distributions are multivariate Gaussian. (See <a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 3.7</span></a> for a review of the multivariate Gaussian distribution.) The mixture distribution in model-based clustering is <span class="math display">\[
+<p>A special case of FMMs are Gaussian mixtures where the component distributions are multivariate Gaussian. (See <a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 3.9</span></a> for a review of the multivariate Gaussian distribution.) The mixture distribution in model-based clustering is <span class="math display">\[
 p(\textbf{X}) = \sum_{j=1}^k \pi_j \, G(\boldsymbol{\mu}_j,\boldsymbol{\Sigma}_j)
 \]</span></p>
 <p>Each <span class="math inline">\(G(bmu_j,\boldsymbol{\Sigma}_j)\)</span> is a <span class="math inline">\(p\)</span>-variate Gaussian, <span class="math inline">\(\boldsymbol{\mu}_j\)</span> and <span class="math inline">\(\boldsymbol{\Sigma}_j\)</span> are the <span class="math inline">\((p \times 1)\)</span> mean vector and the <span class="math inline">\((p \times p)\)</span> covariance matrix of the <span class="math inline">\(j\)</span>th component. These need to be estimated. In terms of clusters, <span class="math inline">\(\boldsymbol{\mu}_j\)</span> is the center of the <span class="math inline">\(j\)</span><sup>th</sup> cluster and <span class="math inline">\(\boldsymbol{\Sigma}_j\)</span> determines the volume, shape, and orientation of the <span class="math inline">\(j\)</span><sup>th</sup> cluster.</p>
@@ -622,7 +622,7 @@ p(\textbf{X}) = \sum_{j=1}^k \pi_j \, G(\boldsymbol{\mu}_j,\boldsymbol{\Sigma}_j
 <div id="fig-biv-gaussian" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-biv-gaussian-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/BivariateGaussians.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="images/BivariateGaussians.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="images/BivariateGaussians.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="images/BivariateGaussians.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-biv-gaussian-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;26.1: Contours of bivariate (<span class="math inline">\(p=2\)</span>) Gaussian distributions. The mean vector centers the distribution in the coordinate system. The variances stretch in the direction of <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>. The distribution on the right is rotated in the coordinate system because of the correlation between the variables.
@@ -1177,7 +1177,7 @@ Top 3 models based on the BIC criterion:
 <div id="fig-iris-mbc-bic" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-iris-mbc-bic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="mbc_files/figure-html/fig-iris-mbc-bic-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="mbc_files/figure-html/fig-iris-mbc-bic-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+<a href="mbc_files/figure-html/fig-iris-mbc-bic-1.png" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="mbc_files/figure-html/fig-iris-mbc-bic-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-iris-mbc-bic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;26.3: BIC versus number of mixture components for all ten covariance models.
@@ -1797,7 +1797,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom","loop":false});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","descPosition":"bottom","closeEffect":"zoom","loop":false});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

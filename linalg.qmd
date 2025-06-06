@@ -8,7 +8,10 @@ $$
 
 ## Basics
 
-Command of linear algebra is essential in data science, models and estimators are often expressed in terms of tensors, matrices, and vectors. Using scalar-based arithmetic becomes tedious very quickly as models become more complex. For example, the simple linear regression model and a straight line through the intercept model can be written as
+Command of linear algebra is essential in data science, models and estimators are 
+often expressed in terms of tensors, matrices, and vectors. Using scalar-based 
+arithmetic becomes tedious very quickly as models become more complex. For example, 
+the simple linear regression model and a straight line through the intercept model can be written as
 
 $$Y_{i} = \beta_{0} + \beta_{1}x_{i} + \epsilon_{i}$$
 
@@ -20,13 +23,20 @@ $${\widehat{\beta}}_{1} = \frac{\left( \sum_{i = 1}^{n}{\left( y_{i} - \overline
 
 $${\widehat{\beta}}_{1} = \frac{\left( \sum_{i = 1}^{n}{y_{i}x_{i}} \right)}{\sum_{i = 1}^{n}x_{i}^{2}}$$
 
-The formulas get messier as we add another input variable to the model. Using matrix---vector notation, the estimator of all the regression coefficients takes the same form, regardless of the size of the model:
+The formulas get messier as we add another input variable to the model. Using 
+matrix---vector notation, the estimator of all the regression coefficients takes 
+the same form, regardless of the size of the model:
 
 $$\widehat{\bbeta} = \left( \bX^{\prime}\bX \right)^{- 1}\bX^{\prime}\bY$$
 
-A scalar is a single real number, a vector is an array of scalars arranged in a single column (a column vector) or a row (a row vector). A matrix is a two-dimensional array of scalars, a tensor is a multi-dimensional array.
+A scalar is a single real number, a vector is an array of scalars arranged in a 
+single column (a column vector) or a row (a row vector). A matrix is a two-dimensional 
+array of scalars, a tensor is a multi-dimensional array.
 
-The **order** of a vector or matrix is specified as (rows x columns) and is sometimes used as a subscript for clarity. For example,$\bA_{(3 \times 5)}$ denotes a matrix with 3 rows and 5 columns. It can be viewed as a concatenation} of five $(3 \times 1)$ column vectors:
+The **order** of a vector or matrix is specified as (rows x columns) and is 
+sometimes used as a subscript for clarity. For example,$\bA_{(3 \times 5)}$ 
+denotes a matrix with 3 rows and 5 columns. It can be viewed as a concatenation} 
+of five $(3 \times 1)$ column vectors:
 
 $$\bA_{(3 \times 5)}=\begin{bmatrix}
 \begin{matrix}
@@ -58,7 +68,11 @@ $\ba_{1} = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}\ \ \ \ \ \ba_{2} = \begin{b
 
 A matrix with as many rows as columns is called a **square** matrix.
 
-Bold symbols are common, lowercase for vectors and uppercase for matrices, but there are some exceptions. When dealing with vectors of random variables, bold uppercase notation is used for a vector of random variables and bold lowercase notation is used for a vector of the realized values. For example, if $Y_{1},\cdots,Y_{n}$ is a random sample of size $n$, the vector of random variables is
+Bold symbols are common, lowercase for vectors and uppercase for matrices, but 
+there are some exceptions. When dealing with vectors of random variables, bold 
+uppercase notation is used for a vector of random variables and bold lowercase 
+notation is used for a vector of the realized values. For example, if $Y_{1},\cdots,Y_{n}$ 
+is a random sample of size $n$, the vector of random variables is
 
 $$\bY_{(n \times 1)} = \begin{bmatrix}
 Y_{1} \\
@@ -91,27 +105,143 @@ is the scalar in row 2, column 3 of the matrix.
 
 ## Special Matrices
 
+### Special Values
+
 A few special matrices, common in statistics and machine learning are
 
--   $\bone_{n} = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix}$, the **unit** vector of size $n$; all its elements are 1.
+- $\bone_{n} = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix}$, the **unit** vector 
+of size $n$; all its elements are 1.
 
--   $\bzero_{n} = \begin{bmatrix} 0 \\ \vdots \\ 0 \end{bmatrix}$, the **zero** vector of size $n$; all its elements are 0.
+- $\bzero_{n} = \begin{bmatrix} 0 \\ \vdots \\ 0 \end{bmatrix}$, the **zero** vector 
+of size $n$; all its elements are 0.
 
--   $\bzero_{(n \times k)} = \begin{bmatrix} 0 & 0 & 0 \\ \vdots & \cdots & \vdots \\ 0 & 0 & 0 \end{bmatrix}$, the **zero** matrix of order $(n \times k)$. All its elements are 0.
+- $\bzero_{(n \times k)} = \begin{bmatrix} 0 & 0 & 0 \\ \vdots & \cdots & \vdots \\ 0 & 0 & 0 \end{bmatrix}$, 
+the **zero** matrix of order $(n \times k)$. All its elements are 0.
 
--   $\bJ_{(n \times k)} = \begin{bmatrix} 1 & 1 & 1 \\ \vdots & \cdots & \vdots \\ 1 & 1 & 1 \end{bmatrix}$, the **unit** matrix of size $(n \times k)$. All its elements are 1.
+- $\bJ_{(n \times k)} = \begin{bmatrix} 1 & 1 & 1 \\ \vdots & \cdots & \vdots \\ 1 & 1 & 1 \end{bmatrix}$, 
+the **unit** matrix of size $(n \times k)$. All its elements are 1.
 
--   $\bI_{n} = \begin{bmatrix} 1 & 0 & 0 \\ 0 & \ddots & 0 \\ 0 & 0 & 1 \end{bmatrix}$, the **identity** matrix of size $(n \times n)$ with 1s on the diagonal and 0s elsewhere.
+- $\bI_{n} = \begin{bmatrix} 1 & 0 & 0 \\ 0 & \ddots & 0 \\ 0 & 0 & 1 \end{bmatrix}$, the 
+**identity** matrix of size $(n \times n)$ with 1s on the diagonal and 0s elsewhere.
 
-If the order of these matrices is obvious from the context, the subscripts tend to be omitted.
+If the order of these matrices is obvious from the context, the subscripts can be omitted.
+
+### Special Patterns
+
+Patterned matrices play an important role in statistical operations. Recognizing
+a particular structure of a matrix we can reduce the amount of work required to
+find inverses, eigenvalues, determinants, etc. For example, if $\bD$ is a diagonal
+matrix with $d_{ii} \ne 0$, then an inverse $\bD^{-1}$ can be found by simply
+replacing $d_{ii}$ with $1/d_{ii}$. Finding the inverse of a matrix in general is
+a much more elaborate task. 
+
+Performing operations on patterned matrices can lead to patterns in the result
+of the operations. An example is the multiplication of partitioned matrices.
+
+A matrix with the same number of rows and columns is a **square** matrix. 
+
+Square matrices for which the typical element $a_{ij} = a_{ji}$ are **symmetric**
+matrices. For example, the matrix
+$$
+\begin{bmatrix}
+54 & 37 & 5 \\
+37 & 27 & 4 \\
+5 &   4 & 21
+\end{bmatrix}
+$$
+is  a symmetric matrix, The values in the off-diagonal cells are mirrored 
+across the diagonal. Symmetric matrices play an important role in statistics;
+cross-product, variance-covariance, "hat", and correlation matrices are examples. 
+
+
+```{r, echo=FALSE, eval=FALSE}
+a1 <- c(1,4,6,1,0)
+a2 <- c(1,3,4,0,1)
+a3 <- c(1,4,-2,0,0) 
+X <- as.matrix(cbind(a1,a2,a3))
+X
+crossprod(X)
+```
+
+A **diagonal** matrix is a symmetric matrix where all off-diagonal entries
+are zero. The identity matrix $\bI_{n}$ is diagonal, as is the following
+$$
+\begin{bmatrix}
+54 & 0 & 0 \\
+0 & 27 & 0 \\
+0 & 0 & 21
+\end{bmatrix}
+$$
+
+A **triangular** matrix is a square matrix with zeros above (lower triangular)
+or below (upper triangular) the diagonal. For example, 
+$$
+\bA_u = \begin{bmatrix} 
+a_{11} & a_{12} & a_{13} \\
+0      & a_{22} & a_{23} \\
+0      &   0    & a_{33}
+\end{bmatrix}
+$$
+is upper-triangular and 
+$$
+\bA_l = \begin{bmatrix} 
+a_{11} &   0    &    0 \\
+a_{21} & a_{22} &    0 \\
+a_{31} & a_{32} & a_{33}
+\end{bmatrix}
+$$
+is lower-triangular. Lower and upper triangular matrices play an important role
+in solving linear systems by LU decomposition. The procedure derives its name
+from factorizing a matrix into a lower (L) and upper (U) triangular form.
+
+---
+
+A matrix is said to be **partitioned**, if it can be arranged in separate blocks
+of sub-matrices. Most important in statistics and data science are partitions
+of square matrices:
+$$
+\bB_{(n \times n)} = \begin{bmatrix}
+\bB_{11} & \bB_{12} \\
+\bB_{21} & \bB_{22}
+\end{bmatrix}
+$$
+ 
+The sizes of the $B_{ij}$ sub-matrices are $(n_i \times n_j)$. An important
+case of partitioning occurs in the variance-covariance matrix of two random
+vectors (more on this below). Briefly, if $\bY = [\bY_1, \bY_2]^\prime$, then 
+the variance matrix of $\bY$ is partitioned as follows:
+$$
+\text{Var}[\bY] = \begin{bmatrix}
+\Var[\bY_1] & \Cov[\bY_1,\bY_2] \\
+\Cov[\bY_2,\bY_1] & \Var[\bY_2]
+\end{bmatrix}
+$$
+
+A partitioned matrix is **block-diagonal**, if the off-diagonal sub-matrices are
+zero matrices. This occurs with the variance matrix of $\bY = [\bY_1, \bY_2]^\prime$,
+if $\bY_1$ and $\bY_2$ are uncorrelated:
+$$
+\text{Var}[\bY] = \begin{bmatrix}
+\Var[\bY_1] & \bzero \\
+\bzero & \Var[\bY_2]
+\end{bmatrix}
+$$
+
 
 ## Basic Operations on Matrices and Vectors
 
-The basic operations on matrices and vectors are addition, subtraction, multiplication, transposition, and inversion. These are standard operations in manipulating matrix and vector equations. Decompositions such as Cholesky roots, eigenvalue and singular value decompositions are more advanced operations that are important in solving estimation problems in statistics.
+The basic operations on matrices and vectors are addition, subtraction, multiplication, 
+transposition, and inversion. These are standard operations in manipulating matrix 
+and vector equations. Decompositions such as Cholesky roots, eigenvalue and singular value 
+decompositions are more advanced operations that are important in solving estimation 
+problems in statistics.
 
 ### Transpose
 
-The **transpose** of a matrix is obtained by exchanging rows and columns. If $a_{ij}$ is the element in row $i$, column $j$ of matrix $\bA$, the transpose of $\bA$, denoted $\bA^\prime$, has typical element $a_{ji}$. In case of the $(3\  \times 5)$ matrix shown previously, its transpose is
+The **transpose** of a matrix is obtained by exchanging rows and columns. 
+If $a_{ij}$ is the element in row $i$, column $j$ of matrix $\bA$, the transpose 
+of $\bA$, denoted $\bA^\prime$, has typical element $a_{ji}$. In case of the 
+$(3\  \times 5)$ matrix shown previously, its transpose is
 
 $$\bA^\prime_{(5 \times 3)} = \begin{bmatrix}
 \begin{matrix}
@@ -227,21 +357,42 @@ Here are a few helpful rules for matrix multiplication:
 
 7.  $\left( c\bA \right)^\prime = c\bA^\prime$
 
+
 ### Inversion and Rank
 
-In scalar algebra, division and multiplication are inverse operations, dividing a non-zero scalar by itself yields the multiplicative identity: $\frac{a}{a} = 1$. What is the equivalent of this operation for matrices? First, inversion of a matrix does not reduce it to a scalar, the multiplicative identity for matrices is the identity matrix $\bI$, a diagonal matrix with 1s on the diagonal. Second, the inversion is only defined for square matrices. If $\bA$ is an $(n \times n)$ matrix, the matrix $\bB$ for which
+In scalar algebra, division and multiplication are inverse operations, dividing a 
+non-zero scalar by itself yields the multiplicative identity: $\frac{a}{a} = 1$. 
+What is the equivalent of this operation for matrices? First, inversion of a matrix 
+does not reduce it to a scalar, the multiplicative identity for matrices is the 
+identity matrix $\bI$, a diagonal matrix with 1s on the diagonal. Second, the 
+inversion is only defined for square matrices. If $\bA$ is an $(n \times n)$ matrix, 
+the matrix $\bB$ for which
 
-$$\bA\bB = \bI$$
+$$
+\bA\bB = \bI
+$$
 
 is called the **inverse** of $\bA$, denoted as $\bA^{- 1}$.
 
-Inverse matrices do not have to exist, even for square matrices. If $\bA$ has an inverse matrix, then $\bA$ is called a **non-singular** matrix. In that case, $\bA^{- 1}\bA = \bA\bA^{- 1} = \text{I}$.
+#### Full rank matrices
 
-For the inverse of a square matrix to exist, for the matrix to be non-singular, the matrix must be of full **rank**. The rank of a matrix, denoted $r(\bA)$, is the number of its linearly independent columns. What does that mean? Suppose we are dealing with a $(n \times k)$ matrix $\bB$ and its column vectors are $\bB_{1},\cdots,\bB_{k}$. A linear combination of the columns of $\bB$ is
+Inverse matrices do not have to exist, even for square matrices. If $\bA$ has an 
+inverse matrix, then $\bA$ is called a **nonsingular** matrix. In that case, 
+$\bA^{- 1}\bA = \bA\bA^{- 1} = \text{I}$.
 
-$$c_{1}\bb_{1} + c_{2}\bb_{2} + \cdots + c_{k}\bb_{k} = q$$
+For the inverse of a square matrix to exist, for the matrix to be non-singular, 
+the matrix must be of full **rank**. The rank of a matrix, denoted $r(\bA)$, is 
+the number of its linearly independent columns. What does that mean? Suppose we 
+are dealing with a $(n \times k)$ matrix $\bB$ and its column vectors are 
+$\bB_{1},\cdots,\bB_{k}$. A linear combination of the columns of $\bB$ is
 
-If you can find a set of scalars $c_{1},\cdots,c_{k}$ such that $q = 0$, then the columns of $\bB$ are linearly dependent. If the only set of scalars that yields $q = 0$ is
+$$
+c_{1}\bb_{1} + c_{2}\bb_{2} + \cdots + c_{k}\bb_{k} = q
+$$
+
+If you can find a set of scalars $c_{1},\cdots,c_{k}$ such that $q = 0$, then 
+the columns of $\bB$ are linearly dependent. If the only set of scalars that 
+yields $q = 0$ is
 
 $$c_{1} = c_{2} = \cdots = c_{k} = 0$$
 
@@ -255,29 +406,46 @@ Here are a few more useful results about the rank of a matrix:
 
 3.  $r\left( \bA + \bB \right) \leq r\left( \bA \right) + r(\bB)$
 
-The first two results are particularly important in statistical models. In models with linear structures, it is common to collect the $p$ input variables in a linear model, including the intercept as a column of ones, into a matrix $\bX_{(n\  \times p + 1)}$:
+The first two results are particularly important in statistical models. In models 
+with linear structures, it is common to collect the $p$ input variables in a 
+linear model, including the intercept as a column of ones, into a matrix 
+$\bX_{(n\  \times p + 1)}$:
 
-$$\bX_{(n\  \times p + 1)} = \begin{bmatrix}
+$$
+\bX_{(n\  \times p + 1)} = 
+\begin{bmatrix}
 1 & x_{11} & \begin{matrix}
 \cdots & x_{1p}
 \end{matrix} \\
- \vdots & \vdots & \begin{matrix}
+ \vdots & \vdots & 
+ \begin{matrix}
  \ddots & \vdots 
-\end{matrix} \\
+ \end{matrix} \\
 1 & x_{n1} & \begin{matrix}
 \cdots & x_{np}
 \end{matrix}
-\end{bmatrix}$$
+\end{bmatrix}
+$$
 
-Suppose we want to solve the linear system $\bY = \bX\bc$ for $\bc$. Start by pre-multiplying both sides of the equation with the transpose of $\bX$:
+Suppose we want to solve the linear system $\bY = \bX\bc$ for $\bc$. Start by 
+pre-multiplying both sides of the equation with the transpose of $\bX$:
 
-$$\bX^{\prime}\bY = \bX^{\prime}\bX\bc$$
+$$
+\bX^{\prime}\bY = \bX^{\prime}\bX\bc
+$$
 
-If we had an inverse of $\bX^\prime\bX$, then we can now pre-multiply both sides with that inverse and isolate $\text{c}$:
+If we had an inverse of $\bX^\prime\bX$, then we can now pre-multiply both sides 
+with that inverse and isolate $\text{c}$:
 
-$${\left( \bXpX \right)^{\mathbf{- 1}}\bX}^{\prime}\bY = \left( \bXpX \right)^{-1}\bXpX\bc = \bI\bc = \bc$$
+$$
+\left( \bXpX \right)^{\mathbf{- 1}}\bX^{\prime}\bY = \left( \bXpX \right)^{-1}\bXpX\bc = \bI\bc = \bc
+$$
 
-We have a solution to the system, namely ${\bc=\left( \bXpX \right)}^{- 1}\bX^{\prime}\bY$, only if the inverse $\left( \bXpX \right)^{-1}$ exists. And that requires this $(p + 1) \times (p + 1)$ matrix is of full rank $r\left( \left( \bXpX \right)^{- 1} \right) = p + 1$. This, in turn is equivalent to saying that $\bX$ has full rank $p + 1$ because of property (i).
+We have a solution to the system, namely ${\bc=\left( \bXpX \right)}^{- 1}\bX^{\prime}\bY$, 
+only if the inverse $\left( \bXpX \right)^{-1}$ exists. And that requires this 
+$(p + 1) \times (p + 1)$ matrix is of full rank 
+$r\left( \left( \bXpX \right)^{- 1} \right) = p + 1$. This, in turn is equivalent 
+to saying that $\bX$ has full rank $p + 1$ because of property (i).
 
 Here are some useful results about inverse matrices:
 
@@ -289,19 +457,94 @@ Here are some useful results about inverse matrices:
 
 4.  $r\left( \bA^{- 1} \right) = r(\bA)$
 
-If the matrix $\bX$ is of less than full rank, it is called a **rank-deficient** matrix. Can we still solve the linear system $\bY = \bX\bc$? Not by using a (regular) inverse matrix, but there is a way out, by using a **generalized inverse** matrix. If a matrix $\bA^{-}$ can be found that satisfies
 
-$$\bA\bA^{-}\bA = \bA$$
+#### Inverse of partitioned matrices
 
-then it is called the generalized inverse (or pseudo-inverse or g-inverse) of $\bA$. Suppose we can find such a generalized inverse $\left( \bX^{\prime}\bX \right)^{-}$f or $\bX^\prime\bX$. What if we use that in the solution of the linear system,
+Suppose that $\bB_{(n \times n)}$ is a partitioned matrix
+$$
+\bB_{(n \times n)} = \begin{bmatrix}
+\bB_{11} & \bB_{12} \\
+\bB_{21} & \bB_{22}
+\end{bmatrix}
+$$
 
-$$\bc = {\left( \bX^{\prime}\bX \right)^{-}\bX}^{\prime}\bY$$
+where $B_{ij}$ is of dimension $n_i \times n_j$. If $\bA = \bB^{-1}$, then $\bA$
+is also a partitioned matrix with 
+$$
+\begin{align*}
+\bA_{11} &= \left[\bB_{11} - \bB_{12}\bB_{22}^{-1}\bB_{21} \right]^{-1} \\
+\bA_{12} &= -\bB_{11}^{-1}\bB_{12}\left[\bB_{22} - \bB_{21}\bB_{11}^{-1}\bB_{12}\right]^{-1} = \bB_{11}^{-1}\bB_{12}\bA_{22} \\
+\bA_{22} &= \left[\bB_{22} - \bB_{21}\bB_{11}^{-1}\bB_{12}\right] \\
+\bA_{21} &= -\bB_{22}^{-1}\bB_{21}\left[\bB_{11} - \bB_{12}\bB_{22}^{-1}\bB_{21}\right]^{-1} -\bB_{22}^{-1}\bB_{21}\bA_{11}
+\end{align*}
+$$
 
-Unfortunately, whereas regular inverses are unique, there are (infinitely) many generalized inverses that satisfy the condition $(\bXpX)\left( \bXpX \right)^{-}\bXpX = \bXpX$. So, there will be infinitely many possible solutions to the linear system. Fortunately, it turns out that generalized inverses have some nice properties, for example, $\bX\left( \bXpX \right)^{-}\bX$ is invariant to the choice of the generalized inverse. Even if the solution $\bc$ is not unique, $\bX\bc$ is unique. This result is important in linear models with rank-deficient design matrices, a condition that is common when the model contains classification variables. While the parameter estimates in such a model are not unique, because we need to use a generalized inverse to derive the estimates, the predicted values are the same, no matter which generalized inverse we choose.
+#### Rank-deficient matrices
+
+The linear system $\bY = \bX\bc$ has a unique solution if $\bX$ is an $(n\times n)$
+nonsingular matrix. If $\bX$ is not square or if $\bX$ is singular, then we
+can still find a solution to the linear system, but it is not unique.
+If the matrix $\bX$ is of less than full rank (singular), it is called a **rank-deficient** 
+matrix. We can then make progress by using a **generalized inverse** matrix instead
+of the (non-existing) inverse. 
+
+Also called **pseudo inverses** or **g-inverses**, the generalized inverse of
+matrix $\bX$ is denoted $\bX^{-}$ and satisfies
+
+$$
+\bX\bX^{-}\bX = \bX
+$$
+Suppose we can find such a generalized inverse $\left( \bX^{\prime}\bX \right)^{-}$ 
+of $\bX^\prime\bX$. What if we use that in the solution of the linear system,
+
+$$
+\bc = {\left( \bX^{\prime}\bX \right)^{-}\bX}^{\prime}\bY
+$$
+
+Unfortunately, whereas regular inverses are unique, there are (infinitely) many 
+generalized inverses that satisfy the condition $(\bXpX)\left( \bXpX \right)^{-}\bXpX = \bXpX$. 
+So, there will be infinitely many possible solutions to the linear system. Fortunately, 
+it turns out that generalized inverses have some nice properties, for example,
+$\bX\left( \bXpX \right)^{-}\bX$ is invariant to the choice of the generalized 
+inverse. Even if the solution $\bc$ is not unique, $\bX\bc$ is unique. This result 
+is important in linear models with rank-deficient design matrices, a condition 
+that is common when the model contains classification variables. While the parameter 
+estimates in such a model are not unique---because we need to use a generalized 
+inverse to derive the estimates---the predicted values are the same, no matter 
+which generalized inverse we selected.
+
+Here are some properties of generalized inverses, these resemble the properties 
+of the inverse:
+
+1. If $c$ is nonzero, then $(c\bA)^- = (1/c)\bA^-$
+
+2. $\bA\bA^bA = \bA \text{ and } \bA^-\bA\bA^- = \bA^-$
+
+3. $\left(\bA^\prime\right)^- = \left(\bA^-\right)^\prime$
+
+4. $\left(\bA^- \right)^- = \bA$
+
+5. $r(\bA^-) = r(\bA) = r(\bA\bA^-) = r(\bA\bA^-\bA)$
+
+6. If $\bA$ is symmetric, so is $\bA^-$
+
+A technique for constructing generalized inverses relies on the singular value
+decomposition and is covered below. For a diagonal matrix $\bD$, constructing
+a generalized inverse is simple: replace the non-zero diagonal values $d_{ii}$
+with $1\d_{ii}$, and leave the zero diagonal values in place.
 
 ### Determinant
 
-The rank reduces a matrix to a single scalar value, the number of linearly independent columns of the matrix. Another value that reduces a square matrix to a single scalar is the determinant, written as $det(\bA)$ or $|\bA|$. The determinant has a geometric interpretation which is not that relevant for our discussion. What matters more is that the determinant appears frequently in expressions of multivariate probability distributions and knowing how to manipulate the determinants.
+The rank reduces a matrix to a single scalar value, the number of linearly 
+independent columns of the matrix. Another value that reduces a square matrix to 
+a single scalar is the **determinant**, written as $det(\bA)$ or $|\bA|$. 
+
+If a matrix $\bA$ has an inverse, then it is square and its determinant is nonzero.
+
+The determinant has a geometric interpretation which is not that relevant for our 
+discussion. What matters is that the determinant appears frequently in 
+expressions of multivariate probability distributions and knowing how to manipulate 
+the determinants.
 
 1.  $|\bA| = |\bA^\prime|$
 
@@ -322,6 +565,7 @@ The rank reduces a matrix to a single scalar value, the number of linearly indep
 9.  If $\bA$ is a triangular matrix, then $|\bA| = \prod_{i = 1}^{n}a_{ii}$
 
 10. If $\bA$ is a diagonal matrix, then $|\bA| = \prod_{i = 1}^{n}a_{ii}$
+
 
 ### Trace
 
@@ -433,35 +677,69 @@ Finally, an important result about expected values of quadratic forms, heavily u
 
 $$\Exp\left\lbrack \bY^\prime\mathbf{AY} \right\rbrack = tr\left( \bA\Var\left\lbrack \bY \right\rbrack \right) + \Exp\left\lbrack \bY \right\rbrack^\prime\bA\ \Exp\lbrack\bY\rbrack$$
 
-## Matrix Differentiation {#sec-matrix-differentiation}
+### Correlation Matrix
 
-Estimation of parameters in statistical models often requires minimization or maximization of an objective function. For example, the ordinary least squares (OLS) principle finds the OLS estimator as the function of the data that minimizes the error sum of squares of the model. Maximum likelihood finds estimators of the parameters as the functions of the data that maximizes the joint likelihood (the joint distribution function) of the data.
+Suppose $\bY_n$ is a random vector with a positive definite (full rank) variance matrix 
+$\bV = \Var[\bY] = [v_{ij}]$. The **correlation matrix** is the $(n \times n)$
+matrix with typical element
+$$
+\bR = \left[\text{Corr}[Y_i,Y_j]\right] = \frac{v_{ij}}{\sqrt{v_{ii} \ v_{jj}}}
+$$
 
-The parameters of the models appear as elements of vectors and matrices. Finding estimators of the parameters thus requires calculus on vectors and matrices. Consider matrix $\bA$, whose elements depend on a scalar parameter $\theta$, $\bA = \left\lbrack a_{ij}(\theta) \right\rbrack$. The derivative of $\bA$ with respect to $\theta$ is the matrix of the derivatives of the typical elements $a_{ij}(\theta)$ with respect to $\theta$. We write this formally as
+You can express $\bR$ as a product of matrices,
+$$
+\bR = \bD^{-1/2} \bV \bD^{-1/2}
+$$
+where $\bD$ is a $(n \times n)$ diagonal matrix that contains the variances $v_{ii}$
+on its diagonal.
 
-$$\frac{\partial\bA}{\partial\theta} = \left\lbrack \frac{\partial a_{ij}(\theta)}{\partial\theta} \right\rbrack$$
 
-The derivative of a function $f(\btheta)$ with respect to the vector $\btheta_{(p \times 1)}$ is the vector of the partial derivatives of the function
+## Cross-product Matrix
 
-$$\frac{\partial f\left( \btheta \right)}{\partial\btheta} = \begin{bmatrix}
-\frac{\partial f\left( \btheta \right)}{\partial\theta_{1}} \\
- \vdots \\
-\frac{\partial f\left( \btheta \right)}{\partial\theta_{p}}
-\end{bmatrix}$$
+Statistical models are often expressed in terms of a vector of length $p$ derived
+from the input variables of the model: $\bx = [x_1, x_2, \cdots, x_p]^\prime$.
+With continuous input variables, $x_j$ refers to the value of the variable itself
+or a transformation such as the logarithm, square root, etc. The values of $x_j$ can
+also be constructed from transformations and functions involving other variables,
+for example $x_3 = x_1 * x_2$. 
 
-Here are some useful results from vector and matrix calculus where $\bA$ and $\bB$ are functions of $\theta$ and vector $\bX$ does not depend on $\theta$:
+In the case of a qualitative factor with $k$ levels, the factor can occupy $k-1$ binary variables
+in the model vector. Often, a 1 is added at the beginning of the vector to 
+accommodate an intercept term: $\bx = [1, x_1, x_2, \cdots, x_p]^\prime$.
 
-1.  $\frac{{\partial ln}\left| \bA \right|}{\partial\theta} = \frac{1}{\left| \bA \right|}\frac{\partial\left| \bA \right|}{\partial\theta} = tr\left( \bA^{- 1}\frac{\partial\bA}{\partial\theta} \right)$
+The vector of inputs for the $i$^th^ observation is then $\bx_i = [1, x_{i1}, x_{i2}, \cdots, x_{ip}]^\prime$.
 
-2.  $\frac{\partial\bA^{- 1}}{\partial\theta} = - \bA^{- 1}\frac{\partial\bA}{\partial\theta\ }\bA^{- 1}$
+When these input rows are stacked, we obtain the $(n \times p+1)$ **model
+matrix** (sometimes called the **design matrix**)
+$$
+\bX_{(n\times p+1)} = \begin{bmatrix}
+   1 & x_{11} & x_{12} & \cdots & x_{1p} \\
+   1 & x_{21} & x_{22} & \cdots & x_{2p} \\
+   \vdots     & \vdots & \ddots & \vdots \\
+   1 & x_{n1} & x_{n2} & \cdots & x_{np}
+\end{bmatrix}
+$${#eq-model-matrix}
 
-3.  $\frac{\partial tr\left( \mathbf{AB} \right)}{\partial\theta} = tr\left( \frac{\mathbf{\partial}\bA}{\partial\theta}\bB \right) + tr\left( \bA\frac{\mathbf{\partial}\bB}{\partial\theta} \right)$
+A **cross-product** matrix is the product of the transpose of a matrix with itself:
+$$
+\bXpX
+$$
+A cross-product matrix is square and symmetric. The cross-product of the model matrix
+plays an important role in estimating model parameters and in determining their 
+properties. For the model matrix in @eq-model-matrix, the entries of the 
+cross-product matrix take the following form
+$$
+\bXpX = \begin{bmatrix}
+  n & \sum x_{i1} & \sum x_{i2} & \cdots & \sum x_{ip} \\
+  \sum x_{i1}   & \sum x_{i1}^2 & \sum x_{i1}x_{i2} & \cdots & \sum x_{i1}x_{ip} \\
+  \sum x_{i2} & \sum x_{i2}x_{i1} & \sum x_{i2}^2 & \cdots & \sum x_{i2}x_{ip}  \\
+ \vdots & \vdots & \vdots & \ddots & \vdots \\
+  \sum x_{ip} & \cdots & \cdots & \cdots & \sum x_{ip}^2
+\end{bmatrix}
+$$
 
-4.  $\frac{\partial\bX^\prime\bA^{- 1}\bX}{\partial\theta} = - \bX^\prime\bA^{- 1}\frac{\partial\bA}{\partial\theta}\bA^{- 1}\bX$
-
-5.  $\frac{\partial\bX^{\prime}\mathbf{Ax}}{\partial\bX} = 2\mathbf{Ax}$
-
-6.  $\frac{\partial\bX^\prime\bA}{\partial\bX} = \frac{\partial\bA^\prime\bX}{\partial\bX} = \bA$
+The sum of squares of the $\bX$ columns are on the diagonal, the sum of the 
+cross-products are in the off-diagonal cells. 
 
 ## Idempotent Matrices  {#sec-idempotent}
 
@@ -526,16 +804,19 @@ You can use these properties to show that in the linear regression model with un
 
 $$\Var\left\lbrack \bY - \widehat{\bY} \right\rbrack = \sigma^{2}(\bI - \bH)$$
 
-### A Special Case
+---
 
-Consider the special case where $\bX = \bone_{n}$, a column vector of ones. The corresponding linear model is $\bY = \bone\beta + \bepsilon$, an intercept-only model. The hat matrix for this model is
+Consider the special case where $\bX = \bone_{n}$, a column vector of ones. The 
+corresponding linear model is $\bY = \bone\beta + \bepsilon$, an intercept-only model. 
+The hat matrix for this model is
 
 $$\bone\left( \bone^{\prime}\bone \right)^{- 1}\bone^\prime = \frac{1}{n}\bone\bone^\prime = \frac{1}{n}\bJ = \begin{bmatrix}
 \frac{1}{n} & \cdots & \frac{1}{n} \\
  \vdots & \ddots & \vdots \\
 \frac{1}{n} & \cdots & \frac{1}{n}
 \end{bmatrix}
-$$a matrix filled with $\frac{1}{n}$. The projection of $\bY$ onto the space generated by $\bone_{n}$ is
+$$a matrix filled with $\frac{1}{n}$. The projection of $\bY$ onto the space 
+generated by $\bone_{n}$ is
 
 $$\frac{1}{n}\mathbf{JY} = \begin{bmatrix}
 \overline{Y} \\
@@ -543,13 +824,250 @@ $$\frac{1}{n}\mathbf{JY} = \begin{bmatrix}
 \overline{Y}
 \end{bmatrix}$$
 
-The predicted values are all the same, the sample mean. In other words, $\beta = \overline{Y}$. Since the projector is idempotent, deriving the variance of the predicted value in the *iid* case is simple:
+The predicted values are all the same, the sample mean. In other words, 
+$\beta = \overline{Y}$. Since the projector is idempotent, deriving the variance 
+of the predicted value in the *iid* case is simple:
 
-$$\Var\left\lbrack \bH\bY \right\rbrack = \bH\text{Var}\left\lbrack \bY \right\rbrack\bH^\prime = \sigma^{2}\bH\bH^{\prime} = \sigma^{2}\bH = \sigma^{2}\frac{1}{n}\bJ=\begin{bmatrix}
+$$
+\Var\left\lbrack \bH\bY \right\rbrack = \bH\text{Var}\left\lbrack \bY \right\rbrack\bH^\prime = \sigma^{2}\bH\bH^{\prime} = \sigma^{2}\bH = \sigma^{2}\frac{1}{n}\bJ=\begin{bmatrix}
 \frac{\sigma^{2}}{n} & \cdots & \frac{\sigma^{2}}{n} \\
  \vdots & \ddots & \vdots \\
 \frac{\sigma^{2}}{n} & \cdots & \frac{\sigma^{2}}{n}
+\end{bmatrix}
+$$
+
+## Matrix Factorization
+
+<!---
+https://www.cs.bu.edu/fac/snyder/cs132-book/L12MatrixFactorizations.html#
+--->
+
+The **factorization** (or **decomposition**) of a matrix $\bA$ expresses the matrix as a product
+of two or more matrices, for example, $\bA = \bB\bC$. Matrix multiplication
+defines the result of $\bB \bC$, but how can we reverse this and express the
+result as a product of matrices?
+
+The reasons for matrix factorization are to simplify computation, to make 
+working with the matrix easier, and to reveal important properties of $\bA$. 
+Consequently, not any factorization will do, we are interested in very specific
+forms of writing $\bA$ as a product. Two important matrix factorizations are the 
+**eigenvalue** decomposition and the **singular value** decomposition. 
+
+The word *eigen* in **eigenvalue** has German roots. It means to own, the German
+noun *Eigentum* refers to possession (ownership). It also means an inherent 
+property that is special to a person or entity. *Eigen* can refer to a peculiar
+property. To make the concept of an eigenvalue or an eigenvector understandable,
+the idea of an inherent property of oneself is appropriate. To see the connection
+we consider first linear transformations from $\mathbb{R}^n$ tp $\mathbb{R}^m$.
+
+### Linear Transformations
+
+If $\bA_{(m \times n)}$ is a matrix and $x_n$ is a vector in $\mathbb{R}^n$, then
+$$
+\by = \bA\bx
+$$
+is a vector in $\mathbb{R}^m$. The matrix $\bA$ linearly transformed the $n$-vector $\bx$
+into the $m$-vector $\by$. You can say that $\bA$ "moved" $\bx$ to %$\by$.
+The transform is called **linear** because the transformation $\bA$ of a linear
+combination of two vectors---$c_1\bx_1 + c_2\bx_2$---is identical to the linear
+combination of the tranformed vectors:
+$$
+\bA(c_1\bx_1 + c_2\bx_2) = c_1(\bA\bx_1) + c_2(\bA\bx_2)
+$$
+
+
+### Eigenvalue Decomposition
+
+Suppose $\bA$ is a square matrix, $(n \times n)$. Is there a vector $\bx$ for 
+which the transformation of $\bx$ results in a multiple of **itself**? That is,
+can we find some vector $\bx$ and some number $\lambda$ for which
+$$
+\bA \bx = \lambda\bx
+$$
+
+Rearranging terms, the equation can be written as 
+$$
+(\bA - \lambda\bI)\bx = \bzero
+$$
+
+Clearly, $\bx=\bzero$ satisfies the equation regardless of the value of $\lambda$. 
+A nonzero solution exists if and only if $det(\bA-\lambda\bI) = 0$. The values
+for $\lambda$ for which this **characteristic equation** holds are called the
+**eigenvalues** of $\bA$.
+
+If $\lambda_j$ is such a value, and $\bx_j$ is a vector for which
+$$
+\bA \bx_j = \lambda_j \bx_j
+$$
+then $\bx_j$ is called the **eigenvector** of $\bA$ corresponding to the eigenvalue
+$\lambda_j$.
+
+Some interesting results about eigenvalues:
+
+1. If $\bA_{(n\times n)}$ is singular, then it has at least one zero eigenvalue.
+
+2. For $\bA_{(n\times n)}$ and $\bC_{(n \times n)}$ nonsingular, the following 
+matrices have the same eigenvalues: $\bA$, $\bC^{-1}\bA\bC$, $\bC\bA\bC^{-1}$.
+
+3. $\bA$ and $\bA^\prime$ have the same eigenvalues.
+
+4. If $\bA$ is nonsingular and $\lambda$ is one of its eigenvalues, then $\lambda$
+is an eigenvalue of $\bA^{-1}$.
+
+---
+
+We have finally arrived at the following: the **eigenvalue decomposition** 
+(or **eigendecomposition**) of a
+square $(n \times n)$ matrix $\bA$ is a factorization in terms of eigenvalues 
+and eigenvectors:
+$$
+\bA = \textbf{Q}\boldsymbol{\Lambda}\textbf{Q}^{-1}
+$$
+where $\boldsymbol{\Lambda}$ is a diagonal matrix containing the $n$ eigenvalues
+$\lambda_1, \cdots, \lambda_n$ and $\textbf{Q}$ is an $(n \times n)$ matrix of 
+eigenvectors. 
+
+If $\bA$ is a real symmetric matrix, then $\textbf{Q}$ is an
+**orthogonal** matrix, which implies that $\textbf{Q}^{-1} = \textbf{Q}^\prime$.
+An orthogonal (or orthonormal) matrix is a square matrix of real numbers whose
+columns are independent (perpendicular) of each other and have unit length. If 
+$\textbf{Q}$ is orthogonal, this property can be expressed as $\textbf{Q}^\prime\textbf{Q}=\bI$,
+which implies that the transpose of the orthogonal matrix is its inverse.
+
+We can then write the eigenvalue decomposition as
+$$
+\bA = \textbf{Q}\boldsymbol{\Lambda}\textbf{Q}^\prime
+$$
+
+One interpretation of the eigenvalues is the extent to which they shrink or
+stretch $\bA$ in the direction of the eigenvectors. For a real symmetric $\bA$
+we can write
+$$
+\bA\textbf{q} = \lambda\textbf{q}
+$$
+where $\textbf{q}$ is one of the orthonormal eigenvectors, $||\textbf{q}||=1$.
+Then
+$$
+||\bA\textbf{q}|| = ||\lambda\textbf{q}|| =  |\lambda| \, ||\textbf{q}|| = |\lambda|
+$$
+
+
+#### Constructing an inverse
+
+If $\bA$ is of full rank, then an inverse can be constructed from the eigenvalue
+decomposition as
+$$
+\bA^{-1} = \textbf{Q}\boldsymbol{\Lambda}^{-1}\textbf{Q}^{-1}
+$$
+and in the case of a real symmetric matrix:
+$$
+\bA = \textbf{Q}\boldsymbol{\Lambda}^{-1}\textbf{Q}^\prime
+$$
+
+The number of nonzero diagonal values of $\boldsymbol{\Lambda}$ equals the 
+rank of the decomposed matrix. For a nonsingular (full-rank) $\bA$, all eigenvalues
+are greater than zero. The $\lambda_j$ can be close to zero, however, so 
+when computing eigenvalues with finite-precision arithmetic (computers!), we
+apply thresholds to declare a singularity.
+
+### Singular Value Decomposition (SVD)
+
+The matrix factorized in the eigendecomposition is a square $(n \times n)$ matrix.
+What can we say about arbitrary $\bA_{(m \times n)}$ matrices? The eigendecomposition
+cannot be applied directly, because we need a square matrix. What happens if 
+we consider the decomposition of the square symmetric $\bA^\prime \bA$ instead?
+We know that there is an eigenvalue decomposition of the form
+$$
+\bA^\prime \bA = \textbf{Q}\boldsymbol{\Lambda}\textbf{Q}^\prime
+$$
+The **singular values** of $\bA$ are the square roots of the eigenvalues of $\bA^\prime\bA$.
+They are the lengths of the vectors $\bA\textbf{q}_1, \cdots, \bA\textbf{q}_n$,
+where $\textbf{q}_j$ is the $j$^th^ eigenvector of $\bA^\prime\bA$.
+
+The singular value decomposition (SVD) of the $(m \times n)$ matrix $\bA$ is written
+as
+$$
+\bA = \textbf{U}\bSigma\textbf{V}^\prime
+$$
+where $\bSigma$ is a $(m \times n)$ diagonal matrix containing the singular values of $\bA$ (the
+square roots of the eigenvalues of $\bA^\prime \bA$), $\textbf{U}$ is a $(m \times m)$
+orthogonal matrix of **left singular vectors**, and $\bV$ is a $(n \times n)$
+matrix of **right singular vectors** of $\bA$.
+
+The SVD is an important operation on matrices with many applications in statistics
+and data science:
+
+- Principal component analysis
+- Reducing the dimensionality of a high-dimensional problem 
+- Computing a low-rank approximation to a matrix
+- Imputation of missing values
+- Spectral analysis
+- Image processing 
+- Computing inverse and generalized inverse matrices
+
+#### Constructing an inverse
+
+If $\bA$ is square and nonsingular, we can find its inverse from the elements
+of the singular value decomposition. Since
+$$
+\bA = \textbf{U}\bSigma\textbf{V}^\prime
+$$
+$$
+\bA^{-1} = \left(\textbf{V}^\prime\right)^{-1}\bSigma^{-1}\textbf{U}^{-1} = \textbf{V}\bSigma^{-1}\textbf{U}^\prime
+$$
+The first equality applies the rule for the inverse of a product, the second
+equality uses the fact that $\textbf{U}$ and $\textbf{V}$ are orthogonal matrices.
+As in the case of using the eigendecomposition for inversion, $\bSigma^{-1}$
+is a diagonal matrix with the reciprocals of the singular values on the diagonal.
+
+#### Constructing a generalized inverse
+
+If $\bA$ is nonsingular, we cannot construct an inverse, but the previous approach
+can be modified to construct a generalized inverse as
+$$
+\bA^{-1} = \textbf{V}{\bSigma^*}^{-1}\textbf{U}^\prime
+$$
+where ${\bSigma^*}^{-1}$ is a diagonal matrix; its $i$^th^ diagonal value is 
+the $i$^th^ singular value if $\sigma_i$ is nonzero, and is zero otherwise.
+Since the singular values are often arranged in order, $\sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_n$,
+this amounts to setting the last $n-r$ singular values to zero, if $r$ is the 
+rank of $\bA$.
+
+You can show that a matrix so constructed satisfies the conditions for a 
+generalized inverse.
+
+
+
+## Matrix Differentiation {#sec-matrix-differentiation}
+
+Estimation of parameters in statistical models often requires minimization or maximization of an objective function. For example, the ordinary least squares (OLS) principle finds the OLS estimator as the function of the data that minimizes the error sum of squares of the model. Maximum likelihood finds estimators of the parameters as the functions of the data that maximizes the joint likelihood (the joint distribution function) of the data.
+
+The parameters of the models appear as elements of vectors and matrices. Finding estimators of the parameters thus requires calculus on vectors and matrices. Consider matrix $\bA$, whose elements depend on a scalar parameter $\theta$, $\bA = \left\lbrack a_{ij}(\theta) \right\rbrack$. The derivative of $\bA$ with respect to $\theta$ is the matrix of the derivatives of the typical elements $a_{ij}(\theta)$ with respect to $\theta$. We write this formally as
+
+$$\frac{\partial\bA}{\partial\theta} = \left\lbrack \frac{\partial a_{ij}(\theta)}{\partial\theta} \right\rbrack$$
+
+The derivative of a function $f(\btheta)$ with respect to the vector $\btheta_{(p \times 1)}$ is the vector of the partial derivatives of the function
+
+$$\frac{\partial f\left( \btheta \right)}{\partial\btheta} = \begin{bmatrix}
+\frac{\partial f\left( \btheta \right)}{\partial\theta_{1}} \\
+ \vdots \\
+\frac{\partial f\left( \btheta \right)}{\partial\theta_{p}}
 \end{bmatrix}$$
+
+Here are some useful results from vector and matrix calculus where $\bA$ and $\bB$ are functions of $\theta$ and vector $\bX$ does not depend on $\theta$:
+
+1.  $\frac{{\partial ln}\left| \bA \right|}{\partial\theta} = \frac{1}{\left| \bA \right|}\frac{\partial\left| \bA \right|}{\partial\theta} = tr\left( \bA^{- 1}\frac{\partial\bA}{\partial\theta} \right)$
+
+2.  $\frac{\partial\bA^{- 1}}{\partial\theta} = - \bA^{- 1}\frac{\partial\bA}{\partial\theta\ }\bA^{- 1}$
+
+3.  $\frac{\partial tr\left( \mathbf{AB} \right)}{\partial\theta} = tr\left( \frac{\mathbf{\partial}\bA}{\partial\theta}\bB \right) + tr\left( \bA\frac{\mathbf{\partial}\bB}{\partial\theta} \right)$
+
+4.  $\frac{\partial\bX^\prime\bA^{- 1}\bX}{\partial\theta} = - \bX^\prime\bA^{- 1}\frac{\partial\bA}{\partial\theta}\bA^{- 1}\bX$
+
+5.  $\frac{\partial\bX^{\prime}\mathbf{Ax}}{\partial\bX} = 2\mathbf{Ax}$
+
+6.  $\frac{\partial\bX^\prime\bA}{\partial\bX} = \frac{\partial\bA^\prime\bX}{\partial\bX} = \bA$
+
 
 ## Multivariate Gaussian Distribution {#sec-multi-gaussian}
 

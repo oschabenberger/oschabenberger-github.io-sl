@@ -38,10 +38,10 @@ flushright {
 .quote {
     color: $col-vt-maroon;
     font-size: 1em;
-    text-align: center;
+    text-align: left; /* center; */
+    padding-inline: 75px;
     font-weight: 600;
     font-style: italic;
-    
 }
 
 .assignment {

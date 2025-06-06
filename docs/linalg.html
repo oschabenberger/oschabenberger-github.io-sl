@@ -496,13 +496,22 @@ window.Quarto = {
    
   <ul>
   <li><a href="#basics" id="toc-basics" class="nav-link active" data-scroll-target="#basics"><span class="header-section-number">3.1</span> Basics</a></li>
-  <li><a href="#special-matrices" id="toc-special-matrices" class="nav-link" data-scroll-target="#special-matrices"><span class="header-section-number">3.2</span> Special Matrices</a></li>
+  <li><a href="#special-matrices" id="toc-special-matrices" class="nav-link" data-scroll-target="#special-matrices"><span class="header-section-number">3.2</span> Special Matrices</a>
+  <ul>
+  <li><a href="#special-values" id="toc-special-values" class="nav-link" data-scroll-target="#special-values">Special Values</a></li>
+  <li><a href="#special-patterns" id="toc-special-patterns" class="nav-link" data-scroll-target="#special-patterns">Special Patterns</a></li>
+  </ul></li>
   <li><a href="#basic-operations-on-matrices-and-vectors" id="toc-basic-operations-on-matrices-and-vectors" class="nav-link" data-scroll-target="#basic-operations-on-matrices-and-vectors"><span class="header-section-number">3.3</span> Basic Operations on Matrices and Vectors</a>
   <ul>
   <li><a href="#transpose" id="toc-transpose" class="nav-link" data-scroll-target="#transpose">Transpose</a></li>
   <li><a href="#addition-and-subtraction" id="toc-addition-and-subtraction" class="nav-link" data-scroll-target="#addition-and-subtraction">Addition and Subtraction</a></li>
   <li><a href="#multiplication" id="toc-multiplication" class="nav-link" data-scroll-target="#multiplication">Multiplication</a></li>
-  <li><a href="#inversion-and-rank" id="toc-inversion-and-rank" class="nav-link" data-scroll-target="#inversion-and-rank">Inversion and Rank</a></li>
+  <li><a href="#inversion-and-rank" id="toc-inversion-and-rank" class="nav-link" data-scroll-target="#inversion-and-rank">Inversion and Rank</a>
+  <ul class="collapse">
+  <li><a href="#full-rank-matrices" id="toc-full-rank-matrices" class="nav-link" data-scroll-target="#full-rank-matrices">Full rank matrices</a></li>
+  <li><a href="#inverse-of-partitioned-matrices" id="toc-inverse-of-partitioned-matrices" class="nav-link" data-scroll-target="#inverse-of-partitioned-matrices">Inverse of partitioned matrices</a></li>
+  <li><a href="#rank-deficient-matrices" id="toc-rank-deficient-matrices" class="nav-link" data-scroll-target="#rank-deficient-matrices">Rank-deficient matrices</a></li>
+  </ul></li>
   <li><a href="#determinant" id="toc-determinant" class="nav-link" data-scroll-target="#determinant">Determinant</a></li>
   <li><a href="#trace" id="toc-trace" class="nav-link" data-scroll-target="#trace">Trace</a></li>
   </ul></li>
@@ -511,15 +520,29 @@ window.Quarto = {
   <li><a href="#expected-value" id="toc-expected-value" class="nav-link" data-scroll-target="#expected-value">Expected Value</a></li>
   <li><a href="#covariance-matrix" id="toc-covariance-matrix" class="nav-link" data-scroll-target="#covariance-matrix">Covariance Matrix</a></li>
   <li><a href="#variance-covariance-matrix" id="toc-variance-covariance-matrix" class="nav-link" data-scroll-target="#variance-covariance-matrix">Variance-covariance Matrix</a></li>
+  <li><a href="#correlation-matrix" id="toc-correlation-matrix" class="nav-link" data-scroll-target="#correlation-matrix">Correlation Matrix</a></li>
   </ul></li>
-  <li><a href="#sec-matrix-differentiation" id="toc-sec-matrix-differentiation" class="nav-link" data-scroll-target="#sec-matrix-differentiation"><span class="header-section-number">3.5</span> Matrix Differentiation</a></li>
+  <li><a href="#cross-product-matrix" id="toc-cross-product-matrix" class="nav-link" data-scroll-target="#cross-product-matrix"><span class="header-section-number">3.5</span> Cross-product Matrix</a></li>
   <li><a href="#sec-idempotent" id="toc-sec-idempotent" class="nav-link" data-scroll-target="#sec-idempotent"><span class="header-section-number">3.6</span> Idempotent Matrices</a>
   <ul>
   <li><a href="#projections" id="toc-projections" class="nav-link" data-scroll-target="#projections">Projections</a></li>
   <li><a href="#sec-hat-matrix" id="toc-sec-hat-matrix" class="nav-link" data-scroll-target="#sec-hat-matrix">The “Hat” Matrix</a></li>
-  <li><a href="#a-special-case" id="toc-a-special-case" class="nav-link" data-scroll-target="#a-special-case">A Special Case</a></li>
   </ul></li>
-  <li><a href="#sec-multi-gaussian" id="toc-sec-multi-gaussian" class="nav-link" data-scroll-target="#sec-multi-gaussian"><span class="header-section-number">3.7</span> Multivariate Gaussian Distribution</a>
+  <li><a href="#matrix-factorization" id="toc-matrix-factorization" class="nav-link" data-scroll-target="#matrix-factorization"><span class="header-section-number">3.7</span> Matrix Factorization</a>
+  <ul>
+  <li><a href="#linear-transformations" id="toc-linear-transformations" class="nav-link" data-scroll-target="#linear-transformations">Linear Transformations</a></li>
+  <li><a href="#eigenvalue-decomposition" id="toc-eigenvalue-decomposition" class="nav-link" data-scroll-target="#eigenvalue-decomposition">Eigenvalue Decomposition</a>
+  <ul class="collapse">
+  <li><a href="#constructing-an-inverse" id="toc-constructing-an-inverse" class="nav-link" data-scroll-target="#constructing-an-inverse">Constructing an inverse</a></li>
+  </ul></li>
+  <li><a href="#singular-value-decomposition-svd" id="toc-singular-value-decomposition-svd" class="nav-link" data-scroll-target="#singular-value-decomposition-svd">Singular Value Decomposition (SVD)</a>
+  <ul class="collapse">
+  <li><a href="#constructing-an-inverse-1" id="toc-constructing-an-inverse-1" class="nav-link" data-scroll-target="#constructing-an-inverse-1">Constructing an inverse</a></li>
+  <li><a href="#constructing-a-generalized-inverse" id="toc-constructing-a-generalized-inverse" class="nav-link" data-scroll-target="#constructing-a-generalized-inverse">Constructing a generalized inverse</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#sec-matrix-differentiation" id="toc-sec-matrix-differentiation" class="nav-link" data-scroll-target="#sec-matrix-differentiation"><span class="header-section-number">3.8</span> Matrix Differentiation</a></li>
+  <li><a href="#sec-multi-gaussian" id="toc-sec-multi-gaussian" class="nav-link" data-scroll-target="#sec-multi-gaussian"><span class="header-section-number">3.9</span> Multivariate Gaussian Distribution</a>
   <ul>
   <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
   <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">Properties</a>
@@ -613,6 +636,8 @@ y_{n}
 </section>
 <section id="special-matrices" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="special-matrices"><span class="header-section-number">3.2</span> Special Matrices</h2>
+<section id="special-values" class="level3">
+<h3 class="anchored" data-anchor-id="special-values">Special Values</h3>
 <p>A few special matrices, common in statistics and machine learning are</p>
 <ul>
 <li><p><span class="math inline">\(\textbf{1}_{n} = \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix}\)</span>, the <strong>unit</strong> vector of size <span class="math inline">\(n\)</span>; all its elements are 1.</p></li>
@@ -621,7 +646,60 @@ y_{n}
 <li><p><span class="math inline">\(\textbf{J}_{(n \times k)} = \begin{bmatrix} 1 &amp; 1 &amp; 1 \\ \vdots &amp; \cdots &amp; \vdots \\ 1 &amp; 1 &amp; 1 \end{bmatrix}\)</span>, the <strong>unit</strong> matrix of size <span class="math inline">\((n \times k)\)</span>. All its elements are 1.</p></li>
 <li><p><span class="math inline">\(\textbf{I}_{n} = \begin{bmatrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; \ddots &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix}\)</span>, the <strong>identity</strong> matrix of size <span class="math inline">\((n \times n)\)</span> with 1s on the diagonal and 0s elsewhere.</p></li>
 </ul>
-<p>If the order of these matrices is obvious from the context, the subscripts tend to be omitted.</p>
+<p>If the order of these matrices is obvious from the context, the subscripts can be omitted.</p>
+</section>
+<section id="special-patterns" class="level3">
+<h3 class="anchored" data-anchor-id="special-patterns">Special Patterns</h3>
+<p>Patterned matrices play an important role in statistical operations. Recognizing a particular structure of a matrix we can reduce the amount of work required to find inverses, eigenvalues, determinants, etc. For example, if <span class="math inline">\(\textbf{D}\)</span> is a diagonal matrix with <span class="math inline">\(d_{ii} \ne 0\)</span>, then an inverse <span class="math inline">\(\textbf{D}^{-1}\)</span> can be found by simply replacing <span class="math inline">\(d_{ii}\)</span> with <span class="math inline">\(1/d_{ii}\)</span>. Finding the inverse of a matrix in general is a much more elaborate task.</p>
+<p>Performing operations on patterned matrices can lead to patterns in the result of the operations. An example is the multiplication of partitioned matrices.</p>
+<p>A matrix with the same number of rows and columns is a <strong>square</strong> matrix.</p>
+<p>Square matrices for which the typical element <span class="math inline">\(a_{ij} = a_{ji}\)</span> are <strong>symmetric</strong> matrices. For example, the matrix <span class="math display">\[
+\begin{bmatrix}
+54 &amp; 37 &amp; 5 \\
+37 &amp; 27 &amp; 4 \\
+5 &amp;   4 &amp; 21
+\end{bmatrix}
+\]</span> is a symmetric matrix, The values in the off-diagonal cells are mirrored across the diagonal. Symmetric matrices play an important role in statistics; cross-product, variance-covariance, “hat”, and correlation matrices are examples.</p>
+<p>A <strong>diagonal</strong> matrix is a symmetric matrix where all off-diagonal entries are zero. The identity matrix <span class="math inline">\(\textbf{I}_{n}\)</span> is diagonal, as is the following <span class="math display">\[
+\begin{bmatrix}
+54 &amp; 0 &amp; 0 \\
+0 &amp; 27 &amp; 0 \\
+0 &amp; 0 &amp; 21
+\end{bmatrix}
+\]</span></p>
+<p>A <strong>triangular</strong> matrix is a square matrix with zeros above (lower triangular) or below (upper triangular) the diagonal. For example, <span class="math display">\[
+\textbf{A}_u = \begin{bmatrix}
+a_{11} &amp; a_{12} &amp; a_{13} \\
+0      &amp; a_{22} &amp; a_{23} \\
+0      &amp;   0    &amp; a_{33}
+\end{bmatrix}
+\]</span> is upper-triangular and <span class="math display">\[
+\textbf{A}_l = \begin{bmatrix}
+a_{11} &amp;   0    &amp;    0 \\
+a_{21} &amp; a_{22} &amp;    0 \\
+a_{31} &amp; a_{32} &amp; a_{33}
+\end{bmatrix}
+\]</span> is lower-triangular. Lower and upper triangular matrices play an important role in solving linear systems by LU decomposition. The procedure derives its name from factorizing a matrix into a lower (L) and upper (U) triangular form.</p>
+<hr>
+<p>A matrix is said to be <strong>partitioned</strong>, if it can be arranged in separate blocks of sub-matrices. Most important in statistics and data science are partitions of square matrices: <span class="math display">\[
+\textbf{B}_{(n \times n)} = \begin{bmatrix}
+\textbf{B}_{11} &amp; \textbf{B}_{12} \\
+\textbf{B}_{21} &amp; \textbf{B}_{22}
+\end{bmatrix}
+\]</span></p>
+<p>The sizes of the <span class="math inline">\(B_{ij}\)</span> sub-matrices are <span class="math inline">\((n_i \times n_j)\)</span>. An important case of partitioning occurs in the variance-covariance matrix of two random vectors (more on this below). Briefly, if <span class="math inline">\(\textbf{Y}= [\textbf{Y}_1, \textbf{Y}_2]^\prime\)</span>, then the variance matrix of <span class="math inline">\(\textbf{Y}\)</span> is partitioned as follows: <span class="math display">\[
+\text{Var}[\textbf{Y}] = \begin{bmatrix}
+\text{Var}[\textbf{Y}_1] &amp; \text{Cov}[\textbf{Y}_1,\textbf{Y}_2] \\
+\text{Cov}[\textbf{Y}_2,\textbf{Y}_1] &amp; \text{Var}[\textbf{Y}_2]
+\end{bmatrix}
+\]</span></p>
+<p>A partitioned matrix is <strong>block-diagonal</strong>, if the off-diagonal sub-matrices are zero matrices. This occurs with the variance matrix of <span class="math inline">\(\textbf{Y}= [\textbf{Y}_1, \textbf{Y}_2]^\prime\)</span>, if <span class="math inline">\(\textbf{Y}_1\)</span> and <span class="math inline">\(\textbf{Y}_2\)</span> are uncorrelated: <span class="math display">\[
+\text{Var}[\textbf{Y}] = \begin{bmatrix}
+\text{Var}[\textbf{Y}_1] &amp; \textbf{0}\\
+\textbf{0}&amp; \text{Var}[\textbf{Y}_2]
+\end{bmatrix}
+\]</span></p>
+</section>
 </section>
 <section id="basic-operations-on-matrices-and-vectors" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="basic-operations-on-matrices-and-vectors"><span class="header-section-number">3.3</span> Basic Operations on Matrices and Vectors</h2>
@@ -720,11 +798,17 @@ b_{k}
 <section id="inversion-and-rank" class="level3">
 <h3 class="anchored" data-anchor-id="inversion-and-rank">Inversion and Rank</h3>
 <p>In scalar algebra, division and multiplication are inverse operations, dividing a non-zero scalar by itself yields the multiplicative identity: <span class="math inline">\(\frac{a}{a} = 1\)</span>. What is the equivalent of this operation for matrices? First, inversion of a matrix does not reduce it to a scalar, the multiplicative identity for matrices is the identity matrix <span class="math inline">\(\textbf{I}\)</span>, a diagonal matrix with 1s on the diagonal. Second, the inversion is only defined for square matrices. If <span class="math inline">\(\textbf{A}\)</span> is an <span class="math inline">\((n \times n)\)</span> matrix, the matrix <span class="math inline">\(\textbf{B}\)</span> for which</p>
-<p><span class="math display">\[\textbf{A}\textbf{B}= \textbf{I}\]</span></p>
+<p><span class="math display">\[
+\textbf{A}\textbf{B}= \textbf{I}
+\]</span></p>
 <p>is called the <strong>inverse</strong> of <span class="math inline">\(\textbf{A}\)</span>, denoted as <span class="math inline">\(\textbf{A}^{- 1}\)</span>.</p>
-<p>Inverse matrices do not have to exist, even for square matrices. If <span class="math inline">\(\textbf{A}\)</span> has an inverse matrix, then <span class="math inline">\(\textbf{A}\)</span> is called a <strong>non-singular</strong> matrix. In that case, <span class="math inline">\(\textbf{A}^{- 1}\textbf{A}= \textbf{A}\textbf{A}^{- 1} = \text{I}\)</span>.</p>
+<section id="full-rank-matrices" class="level4">
+<h4 class="anchored" data-anchor-id="full-rank-matrices">Full rank matrices</h4>
+<p>Inverse matrices do not have to exist, even for square matrices. If <span class="math inline">\(\textbf{A}\)</span> has an inverse matrix, then <span class="math inline">\(\textbf{A}\)</span> is called a <strong>nonsingular</strong> matrix. In that case, <span class="math inline">\(\textbf{A}^{- 1}\textbf{A}= \textbf{A}\textbf{A}^{- 1} = \text{I}\)</span>.</p>
 <p>For the inverse of a square matrix to exist, for the matrix to be non-singular, the matrix must be of full <strong>rank</strong>. The rank of a matrix, denoted <span class="math inline">\(r(\textbf{A})\)</span>, is the number of its linearly independent columns. What does that mean? Suppose we are dealing with a <span class="math inline">\((n \times k)\)</span> matrix <span class="math inline">\(\textbf{B}\)</span> and its column vectors are <span class="math inline">\(\textbf{B}_{1},\cdots,\textbf{B}_{k}\)</span>. A linear combination of the columns of <span class="math inline">\(\textbf{B}\)</span> is</p>
-<p><span class="math display">\[c_{1}\textbf{b}_{1} + c_{2}\textbf{b}_{2} + \cdots + c_{k}\textbf{b}_{k} = q\]</span></p>
+<p><span class="math display">\[
+c_{1}\textbf{b}_{1} + c_{2}\textbf{b}_{2} + \cdots + c_{k}\textbf{b}_{k} = q
+\]</span></p>
 <p>If you can find a set of scalars <span class="math inline">\(c_{1},\cdots,c_{k}\)</span> such that <span class="math inline">\(q = 0\)</span>, then the columns of <span class="math inline">\(\textbf{B}\)</span> are linearly dependent. If the only set of scalars that yields <span class="math inline">\(q = 0\)</span> is</p>
 <p><span class="math display">\[c_{1} = c_{2} = \cdots = c_{k} = 0\]</span></p>
 <p>then the columns of <span class="math inline">\(\textbf{B}\)</span> are not linearly dependent and the rank of <span class="math inline">\(\textbf{B}\)</span> is <span class="math inline">\(k\)</span>.</p>
@@ -735,21 +819,29 @@ b_{k}
 <li><p><span class="math inline">\(r\left( \textbf{A}+ \textbf{B}\right) \leq r\left( \textbf{A}\right) + r(\textbf{B})\)</span></p></li>
 </ol>
 <p>The first two results are particularly important in statistical models. In models with linear structures, it is common to collect the <span class="math inline">\(p\)</span> input variables in a linear model, including the intercept as a column of ones, into a matrix <span class="math inline">\(\textbf{X}_{(n\  \times p + 1)}\)</span>:</p>
-<p><span class="math display">\[\textbf{X}_{(n\  \times p + 1)} = \begin{bmatrix}
+<p><span class="math display">\[
+\textbf{X}_{(n\  \times p + 1)} =
+\begin{bmatrix}
 1 &amp; x_{11} &amp; \begin{matrix}
 \cdots &amp; x_{1p}
 \end{matrix} \\
-\vdots &amp; \vdots &amp; \begin{matrix}
+\vdots &amp; \vdots &amp;
+\begin{matrix}
 \ddots &amp; \vdots
 \end{matrix} \\
 1 &amp; x_{n1} &amp; \begin{matrix}
 \cdots &amp; x_{np}
 \end{matrix}
-\end{bmatrix}\]</span></p>
+\end{bmatrix}
+\]</span></p>
 <p>Suppose we want to solve the linear system <span class="math inline">\(\textbf{Y}= \textbf{X}\textbf{c}\)</span> for <span class="math inline">\(\textbf{c}\)</span>. Start by pre-multiplying both sides of the equation with the transpose of <span class="math inline">\(\textbf{X}\)</span>:</p>
-<p><span class="math display">\[\textbf{X}^{\prime}\textbf{Y}= \textbf{X}^{\prime}\textbf{X}\textbf{c}\]</span></p>
+<p><span class="math display">\[
+\textbf{X}^{\prime}\textbf{Y}= \textbf{X}^{\prime}\textbf{X}\textbf{c}
+\]</span></p>
 <p>If we had an inverse of <span class="math inline">\(\textbf{X}^\prime\textbf{X}\)</span>, then we can now pre-multiply both sides with that inverse and isolate <span class="math inline">\(\text{c}\)</span>:</p>
-<p><span class="math display">\[{\left( \textbf{X}^\prime\textbf{X}\right)^{\mathbf{- 1}}\textbf{X}}^{\prime}\textbf{Y}= \left( \textbf{X}^\prime\textbf{X}\right)^{-1}\textbf{X}^\prime\textbf{X}\textbf{c}= \textbf{I}\textbf{c}= \textbf{c}\]</span></p>
+<p><span class="math display">\[
+\left( \textbf{X}^\prime\textbf{X}\right)^{\mathbf{- 1}}\textbf{X}^{\prime}\textbf{Y}= \left( \textbf{X}^\prime\textbf{X}\right)^{-1}\textbf{X}^\prime\textbf{X}\textbf{c}= \textbf{I}\textbf{c}= \textbf{c}
+\]</span></p>
 <p>We have a solution to the system, namely <span class="math inline">\({\textbf{c}=\left( \textbf{X}^\prime\textbf{X}\right)}^{- 1}\textbf{X}^{\prime}\textbf{Y}\)</span>, only if the inverse <span class="math inline">\(\left( \textbf{X}^\prime\textbf{X}\right)^{-1}\)</span> exists. And that requires this <span class="math inline">\((p + 1) \times (p + 1)\)</span> matrix is of full rank <span class="math inline">\(r\left( \left( \textbf{X}^\prime\textbf{X}\right)^{- 1} \right) = p + 1\)</span>. This, in turn is equivalent to saying that <span class="math inline">\(\textbf{X}\)</span> has full rank <span class="math inline">\(p + 1\)</span> because of property (i).</p>
 <p>Here are some useful results about inverse matrices:</p>
 <ol type="1">
@@ -758,15 +850,52 @@ b_{k}
 <li><p><span class="math inline">\(\left( \textbf{A}\textbf{B}\right)^{- 1} = \textbf{B}^{-1}\textbf{A}^{-1}\)</span></p></li>
 <li><p><span class="math inline">\(r\left( \textbf{A}^{- 1} \right) = r(\textbf{A})\)</span></p></li>
 </ol>
-<p>If the matrix <span class="math inline">\(\textbf{X}\)</span> is of less than full rank, it is called a <strong>rank-deficient</strong> matrix. Can we still solve the linear system <span class="math inline">\(\textbf{Y}= \textbf{X}\textbf{c}\)</span>? Not by using a (regular) inverse matrix, but there is a way out, by using a <strong>generalized inverse</strong> matrix. If a matrix <span class="math inline">\(\textbf{A}^{-}\)</span> can be found that satisfies</p>
-<p><span class="math display">\[\textbf{A}\textbf{A}^{-}\textbf{A}= \textbf{A}\]</span></p>
-<p>then it is called the generalized inverse (or pseudo-inverse or g-inverse) of <span class="math inline">\(\textbf{A}\)</span>. Suppose we can find such a generalized inverse <span class="math inline">\(\left( \textbf{X}^{\prime}\textbf{X}\right)^{-}\)</span>f or <span class="math inline">\(\textbf{X}^\prime\textbf{X}\)</span>. What if we use that in the solution of the linear system,</p>
-<p><span class="math display">\[\textbf{c}= {\left( \textbf{X}^{\prime}\textbf{X}\right)^{-}\textbf{X}}^{\prime}\textbf{Y}\]</span></p>
-<p>Unfortunately, whereas regular inverses are unique, there are (infinitely) many generalized inverses that satisfy the condition <span class="math inline">\((\textbf{X}^\prime\textbf{X})\left( \textbf{X}^\prime\textbf{X}\right)^{-}\textbf{X}^\prime\textbf{X}= \textbf{X}^\prime\textbf{X}\)</span>. So, there will be infinitely many possible solutions to the linear system. Fortunately, it turns out that generalized inverses have some nice properties, for example, <span class="math inline">\(\textbf{X}\left( \textbf{X}^\prime\textbf{X}\right)^{-}\textbf{X}\)</span> is invariant to the choice of the generalized inverse. Even if the solution <span class="math inline">\(\textbf{c}\)</span> is not unique, <span class="math inline">\(\textbf{X}\textbf{c}\)</span> is unique. This result is important in linear models with rank-deficient design matrices, a condition that is common when the model contains classification variables. While the parameter estimates in such a model are not unique, because we need to use a generalized inverse to derive the estimates, the predicted values are the same, no matter which generalized inverse we choose.</p>
+</section>
+<section id="inverse-of-partitioned-matrices" class="level4">
+<h4 class="anchored" data-anchor-id="inverse-of-partitioned-matrices">Inverse of partitioned matrices</h4>
+<p>Suppose that <span class="math inline">\(\textbf{B}_{(n \times n)}\)</span> is a partitioned matrix <span class="math display">\[
+\textbf{B}_{(n \times n)} = \begin{bmatrix}
+\textbf{B}_{11} &amp; \textbf{B}_{12} \\
+\textbf{B}_{21} &amp; \textbf{B}_{22}
+\end{bmatrix}
+\]</span></p>
+<p>where <span class="math inline">\(B_{ij}\)</span> is of dimension <span class="math inline">\(n_i \times n_j\)</span>. If <span class="math inline">\(\textbf{A}= \textbf{B}^{-1}\)</span>, then <span class="math inline">\(\textbf{A}\)</span> is also a partitioned matrix with <span class="math display">\[
+\begin{align*}
+\textbf{A}_{11} &amp;= \left[\textbf{B}_{11} - \textbf{B}_{12}\textbf{B}_{22}^{-1}\textbf{B}_{21} \right]^{-1} \\
+\textbf{A}_{12} &amp;= -\textbf{B}_{11}^{-1}\textbf{B}_{12}\left[\textbf{B}_{22} - \textbf{B}_{21}\textbf{B}_{11}^{-1}\textbf{B}_{12}\right]^{-1} = \textbf{B}_{11}^{-1}\textbf{B}_{12}\textbf{A}_{22} \\
+\textbf{A}_{22} &amp;= \left[\textbf{B}_{22} - \textbf{B}_{21}\textbf{B}_{11}^{-1}\textbf{B}_{12}\right] \\
+\textbf{A}_{21} &amp;= -\textbf{B}_{22}^{-1}\textbf{B}_{21}\left[\textbf{B}_{11} - \textbf{B}_{12}\textbf{B}_{22}^{-1}\textbf{B}_{21}\right]^{-1} -\textbf{B}_{22}^{-1}\textbf{B}_{21}\textbf{A}_{11}
+\end{align*}
+\]</span></p>
+</section>
+<section id="rank-deficient-matrices" class="level4">
+<h4 class="anchored" data-anchor-id="rank-deficient-matrices">Rank-deficient matrices</h4>
+<p>The linear system <span class="math inline">\(\textbf{Y}= \textbf{X}\textbf{c}\)</span> has a unique solution if <span class="math inline">\(\textbf{X}\)</span> is an <span class="math inline">\((n\times n)\)</span> nonsingular matrix. If <span class="math inline">\(\textbf{X}\)</span> is not square or if <span class="math inline">\(\textbf{X}\)</span> is singular, then we can still find a solution to the linear system, but it is not unique. If the matrix <span class="math inline">\(\textbf{X}\)</span> is of less than full rank (singular), it is called a <strong>rank-deficient</strong> matrix. We can then make progress by using a <strong>generalized inverse</strong> matrix instead of the (non-existing) inverse.</p>
+<p>Also called <strong>pseudo inverses</strong> or <strong>g-inverses</strong>, the generalized inverse of matrix <span class="math inline">\(\textbf{X}\)</span> is denoted <span class="math inline">\(\textbf{X}^{-}\)</span> and satisfies</p>
+<p><span class="math display">\[
+\textbf{X}\textbf{X}^{-}\textbf{X}= \textbf{X}
+\]</span> Suppose we can find such a generalized inverse <span class="math inline">\(\left( \textbf{X}^{\prime}\textbf{X}\right)^{-}\)</span> of <span class="math inline">\(\textbf{X}^\prime\textbf{X}\)</span>. What if we use that in the solution of the linear system,</p>
+<p><span class="math display">\[
+\textbf{c}= {\left( \textbf{X}^{\prime}\textbf{X}\right)^{-}\textbf{X}}^{\prime}\textbf{Y}
+\]</span></p>
+<p>Unfortunately, whereas regular inverses are unique, there are (infinitely) many generalized inverses that satisfy the condition <span class="math inline">\((\textbf{X}^\prime\textbf{X})\left( \textbf{X}^\prime\textbf{X}\right)^{-}\textbf{X}^\prime\textbf{X}= \textbf{X}^\prime\textbf{X}\)</span>. So, there will be infinitely many possible solutions to the linear system. Fortunately, it turns out that generalized inverses have some nice properties, for example, <span class="math inline">\(\textbf{X}\left( \textbf{X}^\prime\textbf{X}\right)^{-}\textbf{X}\)</span> is invariant to the choice of the generalized inverse. Even if the solution <span class="math inline">\(\textbf{c}\)</span> is not unique, <span class="math inline">\(\textbf{X}\textbf{c}\)</span> is unique. This result is important in linear models with rank-deficient design matrices, a condition that is common when the model contains classification variables. While the parameter estimates in such a model are not unique—because we need to use a generalized inverse to derive the estimates—the predicted values are the same, no matter which generalized inverse we selected.</p>
+<p>Here are some properties of generalized inverses, these resemble the properties of the inverse:</p>
+<ol type="1">
+<li><p>If <span class="math inline">\(c\)</span> is nonzero, then <span class="math inline">\((c\textbf{A})^- = (1/c)\textbf{A}^-\)</span></p></li>
+<li><p><span class="math inline">\(\textbf{A}\textbf{A}^bA = \textbf{A}\text{ and } \textbf{A}^-\textbf{A}\textbf{A}^- = \textbf{A}^-\)</span></p></li>
+<li><p><span class="math inline">\(\left(\textbf{A}^\prime\right)^- = \left(\textbf{A}^-\right)^\prime\)</span></p></li>
+<li><p><span class="math inline">\(\left(\textbf{A}^- \right)^- = \textbf{A}\)</span></p></li>
+<li><p><span class="math inline">\(r(\textbf{A}^-) = r(\textbf{A}) = r(\textbf{A}\textbf{A}^-) = r(\textbf{A}\textbf{A}^-\textbf{A})\)</span></p></li>
+<li><p>If <span class="math inline">\(\textbf{A}\)</span> is symmetric, so is <span class="math inline">\(\textbf{A}^-\)</span></p></li>
+</ol>
+<p>A technique for constructing generalized inverses relies on the singular value decomposition and is covered below. For a diagonal matrix <span class="math inline">\(\textbf{D}\)</span>, constructing a generalized inverse is simple: replace the non-zero diagonal values <span class="math inline">\(d_{ii}\)</span> with <span class="math inline">\(1\d_{ii}\)</span>, and leave the zero diagonal values in place.</p>
+</section>
 </section>
 <section id="determinant" class="level3">
 <h3 class="anchored" data-anchor-id="determinant">Determinant</h3>
-<p>The rank reduces a matrix to a single scalar value, the number of linearly independent columns of the matrix. Another value that reduces a square matrix to a single scalar is the determinant, written as <span class="math inline">\(det(\textbf{A})\)</span> or <span class="math inline">\(|\textbf{A}|\)</span>. The determinant has a geometric interpretation which is not that relevant for our discussion. What matters more is that the determinant appears frequently in expressions of multivariate probability distributions and knowing how to manipulate the determinants.</p>
+<p>The rank reduces a matrix to a single scalar value, the number of linearly independent columns of the matrix. Another value that reduces a square matrix to a single scalar is the <strong>determinant</strong>, written as <span class="math inline">\(det(\textbf{A})\)</span> or <span class="math inline">\(|\textbf{A}|\)</span>.</p>
+<p>If a matrix <span class="math inline">\(\textbf{A}\)</span> has an inverse, then it is square and its determinant is nonzero.</p>
+<p>The determinant has a geometric interpretation which is not that relevant for our discussion. What matters is that the determinant appears frequently in expressions of multivariate probability distributions and knowing how to manipulate the determinants.</p>
 <ol type="1">
 <li><p><span class="math inline">\(|\textbf{A}| = |\textbf{A}^\prime|\)</span></p></li>
 <li><p><span class="math inline">\(|\textbf{I}| = 1\)</span></p></li>
@@ -860,27 +989,41 @@ Y_{n}
 <p>Finally, an important result about expected values of quadratic forms, heavily used to in decomposing variability is</p>
 <p><span class="math display">\[\text{E}\left\lbrack \textbf{Y}^\prime\mathbf{AY} \right\rbrack = tr\left( \textbf{A}\text{Var}\left\lbrack \textbf{Y}\right\rbrack \right) + \text{E}\left\lbrack \textbf{Y}\right\rbrack^\prime\textbf{A}\ \text{E}\lbrack\textbf{Y}\rbrack\]</span></p>
 </section>
+<section id="correlation-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="correlation-matrix">Correlation Matrix</h3>
+<p>Suppose <span class="math inline">\(\textbf{Y}_n\)</span> is a random vector with a positive definite (full rank) variance matrix <span class="math inline">\(\textbf{V}= \text{Var}[\textbf{Y}] = [v_{ij}]\)</span>. The <strong>correlation matrix</strong> is the <span class="math inline">\((n \times n)\)</span> matrix with typical element <span class="math display">\[
+\textbf{R}= \left[\text{Corr}[Y_i,Y_j]\right] = \frac{v_{ij}}{\sqrt{v_{ii} \ v_{jj}}}
+\]</span></p>
+<p>You can express <span class="math inline">\(\textbf{R}\)</span> as a product of matrices, <span class="math display">\[
+\textbf{R}= \textbf{D}^{-1/2} \textbf{V}\textbf{D}^{-1/2}
+\]</span> where <span class="math inline">\(\textbf{D}\)</span> is a <span class="math inline">\((n \times n)\)</span> diagonal matrix that contains the variances <span class="math inline">\(v_{ii}\)</span> on its diagonal.</p>
 </section>
-<section id="sec-matrix-differentiation" class="level2" data-number="3.5">
-<h2 data-number="3.5" class="anchored" data-anchor-id="sec-matrix-differentiation"><span class="header-section-number">3.5</span> Matrix Differentiation</h2>
-<p>Estimation of parameters in statistical models often requires minimization or maximization of an objective function. For example, the ordinary least squares (OLS) principle finds the OLS estimator as the function of the data that minimizes the error sum of squares of the model. Maximum likelihood finds estimators of the parameters as the functions of the data that maximizes the joint likelihood (the joint distribution function) of the data.</p>
-<p>The parameters of the models appear as elements of vectors and matrices. Finding estimators of the parameters thus requires calculus on vectors and matrices. Consider matrix <span class="math inline">\(\textbf{A}\)</span>, whose elements depend on a scalar parameter <span class="math inline">\(\theta\)</span>, <span class="math inline">\(\textbf{A}= \left\lbrack a_{ij}(\theta) \right\rbrack\)</span>. The derivative of <span class="math inline">\(\textbf{A}\)</span> with respect to <span class="math inline">\(\theta\)</span> is the matrix of the derivatives of the typical elements <span class="math inline">\(a_{ij}(\theta)\)</span> with respect to <span class="math inline">\(\theta\)</span>. We write this formally as</p>
-<p><span class="math display">\[\frac{\partial\textbf{A}}{\partial\theta} = \left\lbrack \frac{\partial a_{ij}(\theta)}{\partial\theta} \right\rbrack\]</span></p>
-<p>The derivative of a function <span class="math inline">\(f(\boldsymbol{\theta})\)</span> with respect to the vector <span class="math inline">\(\boldsymbol{\theta}_{(p \times 1)}\)</span> is the vector of the partial derivatives of the function</p>
-<p><span class="math display">\[\frac{\partial f\left( \boldsymbol{\theta}\right)}{\partial\boldsymbol{\theta}} = \begin{bmatrix}
-\frac{\partial f\left( \boldsymbol{\theta}\right)}{\partial\theta_{1}} \\
-\vdots \\
-\frac{\partial f\left( \boldsymbol{\theta}\right)}{\partial\theta_{p}}
-\end{bmatrix}\]</span></p>
-<p>Here are some useful results from vector and matrix calculus where <span class="math inline">\(\textbf{A}\)</span> and <span class="math inline">\(\textbf{B}\)</span> are functions of <span class="math inline">\(\theta\)</span> and vector <span class="math inline">\(\textbf{X}\)</span> does not depend on <span class="math inline">\(\theta\)</span>:</p>
-<ol type="1">
-<li><p><span class="math inline">\(\frac{{\partial ln}\left| \textbf{A}\right|}{\partial\theta} = \frac{1}{\left| \textbf{A}\right|}\frac{\partial\left| \textbf{A}\right|}{\partial\theta} = tr\left( \textbf{A}^{- 1}\frac{\partial\textbf{A}}{\partial\theta} \right)\)</span></p></li>
-<li><p><span class="math inline">\(\frac{\partial\textbf{A}^{- 1}}{\partial\theta} = - \textbf{A}^{- 1}\frac{\partial\textbf{A}}{\partial\theta\ }\textbf{A}^{- 1}\)</span></p></li>
-<li><p><span class="math inline">\(\frac{\partial tr\left( \mathbf{AB} \right)}{\partial\theta} = tr\left( \frac{\mathbf{\partial}\textbf{A}}{\partial\theta}\textbf{B}\right) + tr\left( \textbf{A}\frac{\mathbf{\partial}\textbf{B}}{\partial\theta} \right)\)</span></p></li>
-<li><p><span class="math inline">\(\frac{\partial\textbf{X}^\prime\textbf{A}^{- 1}\textbf{X}}{\partial\theta} = - \textbf{X}^\prime\textbf{A}^{- 1}\frac{\partial\textbf{A}}{\partial\theta}\textbf{A}^{- 1}\textbf{X}\)</span></p></li>
-<li><p><span class="math inline">\(\frac{\partial\textbf{X}^{\prime}\mathbf{Ax}}{\partial\textbf{X}} = 2\mathbf{Ax}\)</span></p></li>
-<li><p><span class="math inline">\(\frac{\partial\textbf{X}^\prime\textbf{A}}{\partial\textbf{X}} = \frac{\partial\textbf{A}^\prime\textbf{X}}{\partial\textbf{X}} = \textbf{A}\)</span></p></li>
-</ol>
+</section>
+<section id="cross-product-matrix" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="cross-product-matrix"><span class="header-section-number">3.5</span> Cross-product Matrix</h2>
+<p>Statistical models are often expressed in terms of a vector of length <span class="math inline">\(p\)</span> derived from the input variables of the model: <span class="math inline">\(\textbf{x}= [x_1, x_2, \cdots, x_p]^\prime\)</span>. With continuous input variables, <span class="math inline">\(x_j\)</span> refers to the value of the variable itself or a transformation such as the logarithm, square root, etc. The values of <span class="math inline">\(x_j\)</span> can also be constructed from transformations and functions involving other variables, for example <span class="math inline">\(x_3 = x_1 * x_2\)</span>.</p>
+<p>In the case of a qualitative factor with <span class="math inline">\(k\)</span> levels, the factor can occupy <span class="math inline">\(k-1\)</span> binary variables in the model vector. Often, a 1 is added at the beginning of the vector to accommodate an intercept term: <span class="math inline">\(\textbf{x}= [1, x_1, x_2, \cdots, x_p]^\prime\)</span>.</p>
+<p>The vector of inputs for the <span class="math inline">\(i\)</span><sup>th</sup> observation is then <span class="math inline">\(\textbf{x}_i = [1, x_{i1}, x_{i2}, \cdots, x_{ip}]^\prime\)</span>.</p>
+<p>When these input rows are stacked, we obtain the <span class="math inline">\((n \times p+1)\)</span> <strong>model matrix</strong> (sometimes called the <strong>design matrix</strong>) <span id="eq-model-matrix"><span class="math display">\[
+\textbf{X}_{(n\times p+1)} = \begin{bmatrix}
+   1 &amp; x_{11} &amp; x_{12} &amp; \cdots &amp; x_{1p} \\
+   1 &amp; x_{21} &amp; x_{22} &amp; \cdots &amp; x_{2p} \\
+   \vdots     &amp; \vdots &amp; \ddots &amp; \vdots \\
+   1 &amp; x_{n1} &amp; x_{n2} &amp; \cdots &amp; x_{np}
+\end{bmatrix}
+\tag{3.1}\]</span></span></p>
+<p>A <strong>cross-product</strong> matrix is the product of the transpose of a matrix with itself: <span class="math display">\[
+\textbf{X}^\prime\textbf{X}
+\]</span> A cross-product matrix is square and symmetric. The cross-product of the model matrix plays an important role in estimating model parameters and in determining their properties. For the model matrix in <a href="#eq-model-matrix" class="quarto-xref">Equation&nbsp;<span>3.1</span></a>, the entries of the cross-product matrix take the following form <span class="math display">\[
+\textbf{X}^\prime\textbf{X}= \begin{bmatrix}
+  n &amp; \sum x_{i1} &amp; \sum x_{i2} &amp; \cdots &amp; \sum x_{ip} \\
+  \sum x_{i1}   &amp; \sum x_{i1}^2 &amp; \sum x_{i1}x_{i2} &amp; \cdots &amp; \sum x_{i1}x_{ip} \\
+  \sum x_{i2} &amp; \sum x_{i2}x_{i1} &amp; \sum x_{i2}^2 &amp; \cdots &amp; \sum x_{i2}x_{ip}  \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+  \sum x_{ip} &amp; \cdots &amp; \cdots &amp; \cdots &amp; \sum x_{ip}^2
+\end{bmatrix}
+\]</span></p>
+<p>The sum of squares of the <span class="math inline">\(\textbf{X}\)</span> columns are on the diagonal, the sum of the cross-products are in the off-diagonal cells.</p>
 </section>
 <section id="sec-idempotent" class="level2" data-number="3.6">
 <h2 data-number="3.6" class="anchored" data-anchor-id="sec-idempotent"><span class="header-section-number">3.6</span> Idempotent Matrices</h2>
@@ -921,9 +1064,7 @@ Y_{n}
 </ol>
 <p>You can use these properties to show that in the linear regression model with uncorrelated errors and equal variance the variance matrix of the model residuals <span class="math inline">\(\textbf{Y}- \widehat{\textbf{Y}}\)</span> is</p>
 <p><span class="math display">\[\text{Var}\left\lbrack \textbf{Y}- \widehat{\textbf{Y}} \right\rbrack = \sigma^{2}(\textbf{I}- \textbf{H})\]</span></p>
-</section>
-<section id="a-special-case" class="level3">
-<h3 class="anchored" data-anchor-id="a-special-case">A Special Case</h3>
+<hr>
 <p>Consider the special case where <span class="math inline">\(\textbf{X}= \textbf{1}_{n}\)</span>, a column vector of ones. The corresponding linear model is <span class="math inline">\(\textbf{Y}= \textbf{1}\beta + \boldsymbol{\epsilon}\)</span>, an intercept-only model. The hat matrix for this model is</p>
 <p><span class="math display">\[\textbf{1}\left( \textbf{1}^{\prime}\textbf{1}\right)^{- 1}\textbf{1}^\prime = \frac{1}{n}\textbf{1}\textbf{1}^\prime = \frac{1}{n}\textbf{J}= \begin{bmatrix}
 \frac{1}{n} &amp; \cdots &amp; \frac{1}{n} \\
@@ -937,15 +1078,131 @@ Y_{n}
 \overline{Y}
 \end{bmatrix}\]</span></p>
 <p>The predicted values are all the same, the sample mean. In other words, <span class="math inline">\(\beta = \overline{Y}\)</span>. Since the projector is idempotent, deriving the variance of the predicted value in the <em>iid</em> case is simple:</p>
-<p><span class="math display">\[\text{Var}\left\lbrack \textbf{H}\textbf{Y}\right\rbrack = \textbf{H}\text{Var}\left\lbrack \textbf{Y}\right\rbrack\textbf{H}^\prime = \sigma^{2}\textbf{H}\textbf{H}^{\prime} = \sigma^{2}\textbf{H}= \sigma^{2}\frac{1}{n}\textbf{J}=\begin{bmatrix}
+<p><span class="math display">\[
+\text{Var}\left\lbrack \textbf{H}\textbf{Y}\right\rbrack = \textbf{H}\text{Var}\left\lbrack \textbf{Y}\right\rbrack\textbf{H}^\prime = \sigma^{2}\textbf{H}\textbf{H}^{\prime} = \sigma^{2}\textbf{H}= \sigma^{2}\frac{1}{n}\textbf{J}=\begin{bmatrix}
 \frac{\sigma^{2}}{n} &amp; \cdots &amp; \frac{\sigma^{2}}{n} \\
 \vdots &amp; \ddots &amp; \vdots \\
 \frac{\sigma^{2}}{n} &amp; \cdots &amp; \frac{\sigma^{2}}{n}
+\end{bmatrix}
+\]</span></p>
+</section>
+</section>
+<section id="matrix-factorization" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="matrix-factorization"><span class="header-section-number">3.7</span> Matrix Factorization</h2>
+<!---
+https://www.cs.bu.edu/fac/snyder/cs132-book/L12MatrixFactorizations.html#
+--->
+<p>The <strong>factorization</strong> (or <strong>decomposition</strong>) of a matrix <span class="math inline">\(\textbf{A}\)</span> expresses the matrix as a product of two or more matrices, for example, <span class="math inline">\(\textbf{A}= \textbf{B}\textbf{C}\)</span>. Matrix multiplication defines the result of <span class="math inline">\(\textbf{B}\textbf{C}\)</span>, but how can we reverse this and express the result as a product of matrices?</p>
+<p>The reasons for matrix factorization are to simplify computation, to make working with the matrix easier, and to reveal important properties of <span class="math inline">\(\textbf{A}\)</span>. Consequently, not any factorization will do, we are interested in very specific forms of writing <span class="math inline">\(\textbf{A}\)</span> as a product. Two important matrix factorizations are the <strong>eigenvalue</strong> decomposition and the <strong>singular value</strong> decomposition.</p>
+<p>The word <em>eigen</em> in <strong>eigenvalue</strong> has German roots. It means to own, the German noun <em>Eigentum</em> refers to possession (ownership). It also means an inherent property that is special to a person or entity. <em>Eigen</em> can refer to a peculiar property. To make the concept of an eigenvalue or an eigenvector understandable, the idea of an inherent property of oneself is appropriate. To see the connection we consider first linear transformations from <span class="math inline">\(\mathbb{R}^n\)</span> tp <span class="math inline">\(\mathbb{R}^m\)</span>.</p>
+<section id="linear-transformations" class="level3">
+<h3 class="anchored" data-anchor-id="linear-transformations">Linear Transformations</h3>
+<p>If <span class="math inline">\(\textbf{A}_{(m \times n)}\)</span> is a matrix and <span class="math inline">\(x_n\)</span> is a vector in <span class="math inline">\(\mathbb{R}^n\)</span>, then <span class="math display">\[
+\textbf{y}= \textbf{A}\textbf{x}
+\]</span> is a vector in <span class="math inline">\(\mathbb{R}^m\)</span>. The matrix <span class="math inline">\(\textbf{A}\)</span> linearly transformed the <span class="math inline">\(n\)</span>-vector <span class="math inline">\(\textbf{x}\)</span> into the <span class="math inline">\(m\)</span>-vector <span class="math inline">\(\textbf{y}\)</span>. You can say that <span class="math inline">\(\textbf{A}\)</span> “moved” <span class="math inline">\(\textbf{x}\)</span> to %<span class="math inline">\(\textbf{y}\)</span>. The transform is called <strong>linear</strong> because the transformation <span class="math inline">\(\textbf{A}\)</span> of a linear combination of two vectors—<span class="math inline">\(c_1\textbf{x}_1 + c_2\textbf{x}_2\)</span>—is identical to the linear combination of the tranformed vectors: <span class="math display">\[
+\textbf{A}(c_1\textbf{x}_1 + c_2\textbf{x}_2) = c_1(\textbf{A}\textbf{x}_1) + c_2(\textbf{A}\textbf{x}_2)
+\]</span></p>
+</section>
+<section id="eigenvalue-decomposition" class="level3">
+<h3 class="anchored" data-anchor-id="eigenvalue-decomposition">Eigenvalue Decomposition</h3>
+<p>Suppose <span class="math inline">\(\textbf{A}\)</span> is a square matrix, <span class="math inline">\((n \times n)\)</span>. Is there a vector <span class="math inline">\(\textbf{x}\)</span> for which the transformation of <span class="math inline">\(\textbf{x}\)</span> results in a multiple of <strong>itself</strong>? That is, can we find some vector <span class="math inline">\(\textbf{x}\)</span> and some number <span class="math inline">\(\lambda\)</span> for which <span class="math display">\[
+\textbf{A}\textbf{x}= \lambda\textbf{x}
+\]</span></p>
+<p>Rearranging terms, the equation can be written as <span class="math display">\[
+(\textbf{A}- \lambda\textbf{I})\textbf{x}= \textbf{0}
+\]</span></p>
+<p>Clearly, <span class="math inline">\(\textbf{x}=\textbf{0}\)</span> satisfies the equation regardless of the value of <span class="math inline">\(\lambda\)</span>. A nonzero solution exists if and only if <span class="math inline">\(det(\textbf{A}-\lambda\textbf{I}) = 0\)</span>. The values for <span class="math inline">\(\lambda\)</span> for which this <strong>characteristic equation</strong> holds are called the <strong>eigenvalues</strong> of <span class="math inline">\(\textbf{A}\)</span>.</p>
+<p>If <span class="math inline">\(\lambda_j\)</span> is such a value, and <span class="math inline">\(\textbf{x}_j\)</span> is a vector for which <span class="math display">\[
+\textbf{A}\textbf{x}_j = \lambda_j \textbf{x}_j
+\]</span> then <span class="math inline">\(\textbf{x}_j\)</span> is called the <strong>eigenvector</strong> of <span class="math inline">\(\textbf{A}\)</span> corresponding to the eigenvalue <span class="math inline">\(\lambda_j\)</span>.</p>
+<p>Some interesting results about eigenvalues:</p>
+<ol type="1">
+<li><p>If <span class="math inline">\(\textbf{A}_{(n\times n)}\)</span> is singular, then it has at least one zero eigenvalue.</p></li>
+<li><p>For <span class="math inline">\(\textbf{A}_{(n\times n)}\)</span> and <span class="math inline">\(\textbf{C}_{(n \times n)}\)</span> nonsingular, the following matrices have the same eigenvalues: <span class="math inline">\(\textbf{A}\)</span>, <span class="math inline">\(\textbf{C}^{-1}\textbf{A}\textbf{C}\)</span>, <span class="math inline">\(\textbf{C}\textbf{A}\textbf{C}^{-1}\)</span>.</p></li>
+<li><p><span class="math inline">\(\textbf{A}\)</span> and <span class="math inline">\(\textbf{A}^\prime\)</span> have the same eigenvalues.</p></li>
+<li><p>If <span class="math inline">\(\textbf{A}\)</span> is nonsingular and <span class="math inline">\(\lambda\)</span> is one of its eigenvalues, then <span class="math inline">\(\lambda\)</span> is an eigenvalue of <span class="math inline">\(\textbf{A}^{-1}\)</span>.</p></li>
+</ol>
+<hr>
+<p>We have finally arrived at the following: the <strong>eigenvalue decomposition</strong> (or <strong>eigendecomposition</strong>) of a square <span class="math inline">\((n \times n)\)</span> matrix <span class="math inline">\(\textbf{A}\)</span> is a factorization in terms of eigenvalues and eigenvectors: <span class="math display">\[
+\textbf{A}= \textbf{Q}\boldsymbol{\Lambda}\textbf{Q}^{-1}
+\]</span> where <span class="math inline">\(\boldsymbol{\Lambda}\)</span> is a diagonal matrix containing the <span class="math inline">\(n\)</span> eigenvalues <span class="math inline">\(\lambda_1, \cdots, \lambda_n\)</span> and <span class="math inline">\(\textbf{Q}\)</span> is an <span class="math inline">\((n \times n)\)</span> matrix of eigenvectors.</p>
+<p>If <span class="math inline">\(\textbf{A}\)</span> is a real symmetric matrix, then <span class="math inline">\(\textbf{Q}\)</span> is an <strong>orthogonal</strong> matrix, which implies that <span class="math inline">\(\textbf{Q}^{-1} = \textbf{Q}^\prime\)</span>. An orthogonal (or orthonormal) matrix is a square matrix of real numbers whose columns are independent (perpendicular) of each other and have unit length. If <span class="math inline">\(\textbf{Q}\)</span> is orthogonal, this property can be expressed as <span class="math inline">\(\textbf{Q}^\prime\textbf{Q}=\textbf{I}\)</span>, which implies that the transpose of the orthogonal matrix is its inverse.</p>
+<p>We can then write the eigenvalue decomposition as <span class="math display">\[
+\textbf{A}= \textbf{Q}\boldsymbol{\Lambda}\textbf{Q}^\prime
+\]</span></p>
+<p>One interpretation of the eigenvalues is the extent to which they shrink or stretch <span class="math inline">\(\textbf{A}\)</span> in the direction of the eigenvectors. For a real symmetric <span class="math inline">\(\textbf{A}\)</span> we can write <span class="math display">\[
+\textbf{A}\textbf{q} = \lambda\textbf{q}
+\]</span> where <span class="math inline">\(\textbf{q}\)</span> is one of the orthonormal eigenvectors, <span class="math inline">\(||\textbf{q}||=1\)</span>. Then <span class="math display">\[
+||\textbf{A}\textbf{q}|| = ||\lambda\textbf{q}|| =  |\lambda| \, ||\textbf{q}|| = |\lambda|
+\]</span></p>
+<section id="constructing-an-inverse" class="level4">
+<h4 class="anchored" data-anchor-id="constructing-an-inverse">Constructing an inverse</h4>
+<p>If <span class="math inline">\(\textbf{A}\)</span> is of full rank, then an inverse can be constructed from the eigenvalue decomposition as <span class="math display">\[
+\textbf{A}^{-1} = \textbf{Q}\boldsymbol{\Lambda}^{-1}\textbf{Q}^{-1}
+\]</span> and in the case of a real symmetric matrix: <span class="math display">\[
+\textbf{A}= \textbf{Q}\boldsymbol{\Lambda}^{-1}\textbf{Q}^\prime
+\]</span></p>
+<p>The number of nonzero diagonal values of <span class="math inline">\(\boldsymbol{\Lambda}\)</span> equals the rank of the decomposed matrix. For a nonsingular (full-rank) <span class="math inline">\(\textbf{A}\)</span>, all eigenvalues are greater than zero. The <span class="math inline">\(\lambda_j\)</span> can be close to zero, however, so when computing eigenvalues with finite-precision arithmetic (computers!), we apply thresholds to declare a singularity.</p>
+</section>
+</section>
+<section id="singular-value-decomposition-svd" class="level3">
+<h3 class="anchored" data-anchor-id="singular-value-decomposition-svd">Singular Value Decomposition (SVD)</h3>
+<p>The matrix factorized in the eigendecomposition is a square <span class="math inline">\((n \times n)\)</span> matrix. What can we say about arbitrary <span class="math inline">\(\textbf{A}_{(m \times n)}\)</span> matrices? The eigendecomposition cannot be applied directly, because we need a square matrix. What happens if we consider the decomposition of the square symmetric <span class="math inline">\(\textbf{A}^\prime \textbf{A}\)</span> instead? We know that there is an eigenvalue decomposition of the form <span class="math display">\[
+\textbf{A}^\prime \textbf{A}= \textbf{Q}\boldsymbol{\Lambda}\textbf{Q}^\prime
+\]</span> The <strong>singular values</strong> of <span class="math inline">\(\textbf{A}\)</span> are the square roots of the eigenvalues of <span class="math inline">\(\textbf{A}^\prime\textbf{A}\)</span>. They are the lengths of the vectors <span class="math inline">\(\textbf{A}\textbf{q}_1, \cdots, \textbf{A}\textbf{q}_n\)</span>, where <span class="math inline">\(\textbf{q}_j\)</span> is the <span class="math inline">\(j\)</span><sup>th</sup> eigenvector of <span class="math inline">\(\textbf{A}^\prime\textbf{A}\)</span>.</p>
+<p>The singular value decomposition (SVD) of the <span class="math inline">\((m \times n)\)</span> matrix <span class="math inline">\(\textbf{A}\)</span> is written as <span class="math display">\[
+\textbf{A}= \textbf{U}\boldsymbol{\Sigma}\textbf{V}^\prime
+\]</span> where <span class="math inline">\(\boldsymbol{\Sigma}\)</span> is a <span class="math inline">\((m \times n)\)</span> diagonal matrix containing the singular values of <span class="math inline">\(\textbf{A}\)</span> (the square roots of the eigenvalues of <span class="math inline">\(\textbf{A}^\prime \textbf{A}\)</span>), <span class="math inline">\(\textbf{U}\)</span> is a <span class="math inline">\((m \times m)\)</span> orthogonal matrix of <strong>left singular vectors</strong>, and <span class="math inline">\(\textbf{V}\)</span> is a <span class="math inline">\((n \times n)\)</span> matrix of <strong>right singular vectors</strong> of <span class="math inline">\(\textbf{A}\)</span>.</p>
+<p>The SVD is an important operation on matrices with many applications in statistics and data science:</p>
+<ul>
+<li>Principal component analysis</li>
+<li>Reducing the dimensionality of a high-dimensional problem</li>
+<li>Computing a low-rank approximation to a matrix</li>
+<li>Imputation of missing values</li>
+<li>Spectral analysis</li>
+<li>Image processing</li>
+<li>Computing inverse and generalized inverse matrices</li>
+</ul>
+<section id="constructing-an-inverse-1" class="level4">
+<h4 class="anchored" data-anchor-id="constructing-an-inverse-1">Constructing an inverse</h4>
+<p>If <span class="math inline">\(\textbf{A}\)</span> is square and nonsingular, we can find its inverse from the elements of the singular value decomposition. Since <span class="math display">\[
+\textbf{A}= \textbf{U}\boldsymbol{\Sigma}\textbf{V}^\prime
+\]</span> <span class="math display">\[
+\textbf{A}^{-1} = \left(\textbf{V}^\prime\right)^{-1}\boldsymbol{\Sigma}^{-1}\textbf{U}^{-1} = \textbf{V}\boldsymbol{\Sigma}^{-1}\textbf{U}^\prime
+\]</span> The first equality applies the rule for the inverse of a product, the second equality uses the fact that <span class="math inline">\(\textbf{U}\)</span> and <span class="math inline">\(\textbf{V}\)</span> are orthogonal matrices. As in the case of using the eigendecomposition for inversion, <span class="math inline">\(\boldsymbol{\Sigma}^{-1}\)</span> is a diagonal matrix with the reciprocals of the singular values on the diagonal.</p>
+</section>
+<section id="constructing-a-generalized-inverse" class="level4">
+<h4 class="anchored" data-anchor-id="constructing-a-generalized-inverse">Constructing a generalized inverse</h4>
+<p>If <span class="math inline">\(\textbf{A}\)</span> is nonsingular, we cannot construct an inverse, but the previous approach can be modified to construct a generalized inverse as <span class="math display">\[
+\textbf{A}^{-1} = \textbf{V}{\boldsymbol{\Sigma}^*}^{-1}\textbf{U}^\prime
+\]</span> where <span class="math inline">\({\boldsymbol{\Sigma}^*}^{-1}\)</span> is a diagonal matrix; its <span class="math inline">\(i\)</span><sup>th</sup> diagonal value is the <span class="math inline">\(i\)</span><sup>th</sup> singular value if <span class="math inline">\(\sigma_i\)</span> is nonzero, and is zero otherwise. Since the singular values are often arranged in order, <span class="math inline">\(\sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_n\)</span>, this amounts to setting the last <span class="math inline">\(n-r\)</span> singular values to zero, if <span class="math inline">\(r\)</span> is the rank of <span class="math inline">\(\textbf{A}\)</span>.</p>
+<p>You can show that a matrix so constructed satisfies the conditions for a generalized inverse.</p>
+</section>
+</section>
+</section>
+<section id="sec-matrix-differentiation" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="sec-matrix-differentiation"><span class="header-section-number">3.8</span> Matrix Differentiation</h2>
+<p>Estimation of parameters in statistical models often requires minimization or maximization of an objective function. For example, the ordinary least squares (OLS) principle finds the OLS estimator as the function of the data that minimizes the error sum of squares of the model. Maximum likelihood finds estimators of the parameters as the functions of the data that maximizes the joint likelihood (the joint distribution function) of the data.</p>
+<p>The parameters of the models appear as elements of vectors and matrices. Finding estimators of the parameters thus requires calculus on vectors and matrices. Consider matrix <span class="math inline">\(\textbf{A}\)</span>, whose elements depend on a scalar parameter <span class="math inline">\(\theta\)</span>, <span class="math inline">\(\textbf{A}= \left\lbrack a_{ij}(\theta) \right\rbrack\)</span>. The derivative of <span class="math inline">\(\textbf{A}\)</span> with respect to <span class="math inline">\(\theta\)</span> is the matrix of the derivatives of the typical elements <span class="math inline">\(a_{ij}(\theta)\)</span> with respect to <span class="math inline">\(\theta\)</span>. We write this formally as</p>
+<p><span class="math display">\[\frac{\partial\textbf{A}}{\partial\theta} = \left\lbrack \frac{\partial a_{ij}(\theta)}{\partial\theta} \right\rbrack\]</span></p>
+<p>The derivative of a function <span class="math inline">\(f(\boldsymbol{\theta})\)</span> with respect to the vector <span class="math inline">\(\boldsymbol{\theta}_{(p \times 1)}\)</span> is the vector of the partial derivatives of the function</p>
+<p><span class="math display">\[\frac{\partial f\left( \boldsymbol{\theta}\right)}{\partial\boldsymbol{\theta}} = \begin{bmatrix}
+\frac{\partial f\left( \boldsymbol{\theta}\right)}{\partial\theta_{1}} \\
+\vdots \\
+\frac{\partial f\left( \boldsymbol{\theta}\right)}{\partial\theta_{p}}
 \end{bmatrix}\]</span></p>
+<p>Here are some useful results from vector and matrix calculus where <span class="math inline">\(\textbf{A}\)</span> and <span class="math inline">\(\textbf{B}\)</span> are functions of <span class="math inline">\(\theta\)</span> and vector <span class="math inline">\(\textbf{X}\)</span> does not depend on <span class="math inline">\(\theta\)</span>:</p>
+<ol type="1">
+<li><p><span class="math inline">\(\frac{{\partial ln}\left| \textbf{A}\right|}{\partial\theta} = \frac{1}{\left| \textbf{A}\right|}\frac{\partial\left| \textbf{A}\right|}{\partial\theta} = tr\left( \textbf{A}^{- 1}\frac{\partial\textbf{A}}{\partial\theta} \right)\)</span></p></li>
+<li><p><span class="math inline">\(\frac{\partial\textbf{A}^{- 1}}{\partial\theta} = - \textbf{A}^{- 1}\frac{\partial\textbf{A}}{\partial\theta\ }\textbf{A}^{- 1}\)</span></p></li>
+<li><p><span class="math inline">\(\frac{\partial tr\left( \mathbf{AB} \right)}{\partial\theta} = tr\left( \frac{\mathbf{\partial}\textbf{A}}{\partial\theta}\textbf{B}\right) + tr\left( \textbf{A}\frac{\mathbf{\partial}\textbf{B}}{\partial\theta} \right)\)</span></p></li>
+<li><p><span class="math inline">\(\frac{\partial\textbf{X}^\prime\textbf{A}^{- 1}\textbf{X}}{\partial\theta} = - \textbf{X}^\prime\textbf{A}^{- 1}\frac{\partial\textbf{A}}{\partial\theta}\textbf{A}^{- 1}\textbf{X}\)</span></p></li>
+<li><p><span class="math inline">\(\frac{\partial\textbf{X}^{\prime}\mathbf{Ax}}{\partial\textbf{X}} = 2\mathbf{Ax}\)</span></p></li>
+<li><p><span class="math inline">\(\frac{\partial\textbf{X}^\prime\textbf{A}}{\partial\textbf{X}} = \frac{\partial\textbf{A}^\prime\textbf{X}}{\partial\textbf{X}} = \textbf{A}\)</span></p></li>
+</ol>
 </section>
-</section>
-<section id="sec-multi-gaussian" class="level2" data-number="3.7">
-<h2 data-number="3.7" class="anchored" data-anchor-id="sec-multi-gaussian"><span class="header-section-number">3.7</span> Multivariate Gaussian Distribution</h2>
+<section id="sec-multi-gaussian" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="sec-multi-gaussian"><span class="header-section-number">3.9</span> Multivariate Gaussian Distribution</h2>
 <section id="definition" class="level3">
 <h3 class="anchored" data-anchor-id="definition">Definition</h3>
 <p>A scalar random variable <span class="math inline">\(Y\)</span> has a <strong>Gaussian</strong> distribution function with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^{2}\)</span> if its probability density function is given by</p>

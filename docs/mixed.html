@@ -750,7 +750,7 @@ Note
 \text{Cov}[\textbf{b},\boldsymbol{\epsilon}] &amp;= \textbf{0}
 \end{align*}
 \tag{31.3}\]</span></span></p>
-<p>The assumption of Gaussian distributions for the random effects and the errors is common, it makes the subsequent analysis simple compared to any alternative specification. It should be noted that this implies a Gaussian distribution for <span class="math inline">\(\textbf{Y}\)</span> as well. Applying the results for the multivariate Gaussian (<a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 3.7</span></a>), the conditional and marginal (population-average) distribution of <span class="math inline">\(\textbf{Y}\)</span> is</p>
+<p>The assumption of Gaussian distributions for the random effects and the errors is common, it makes the subsequent analysis simple compared to any alternative specification. It should be noted that this implies a Gaussian distribution for <span class="math inline">\(\textbf{Y}\)</span> as well. Applying the results for the multivariate Gaussian (<a href="linalg.html#sec-multi-gaussian" class="quarto-xref"><span>Section 3.9</span></a>), the conditional and marginal (population-average) distribution of <span class="math inline">\(\textbf{Y}\)</span> is</p>
 <p><span class="math display">\[
 \begin{align*}
 \textbf{Y}| \textbf{b}&amp;\sim G(\textbf{X}\boldsymbol{\beta}+ \textbf{Z}\textbf{b}, \textbf{R}) \\
@@ -2085,7 +2085,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>
   </div>
 </footer>
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","selector":".lightbox","openEffect":"zoom","loop":false});
+<script>var lightboxQuarto = GLightbox({"loop":false,"closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom","selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
