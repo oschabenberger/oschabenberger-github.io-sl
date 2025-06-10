@@ -1,0 +1,175 @@
+---
+title: "Move data into ads database"
+author: "Oliver Schabenberger"
+date: "03/09/2025"
+output: 
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options: 
+  markdown: 
+    wrap: 80
+---
+
+```{r setup, include=FALSE}
+options(width=80)
+library(duckdb)
+library(ISLR2)
+library(MASS)
+library(dplyr)
+library(knitr)
+library(caret)
+
+knitr::opts_chunk$set(echo=TRUE, warning=F, message=F, fig.asp=0.7, cache=FALSE)
+
+```
+
+
+Open connection to the database
+
+```{r}
+conn <- dbConnect(duckdb(),dbdir="ads.ddb", read_only=FALSE)
+```
+
+## CSV files
+
+```{r}
+pisa <- read.csv(file="data/pisa.csv")
+head(pisa)
+
+dbWriteTable(conn, "pisa", pisa, overwrite=TRUE)
+
+```
+
+
+## Data sets for ADS 5064 Foundations of Data Science
+
+```{r}
+library(readxl)
+sal_survey <- read_excel("data/Ask_A_Manager_Salary_Survey_2021.xlsx")
+names(sal_survey) <- c("Timestamp",
+                       "AgeGroup",
+                       "Industry",
+                       "JobTitle",
+                       "AddlContextTitle",
+                       "Salary",
+                       "AddlSalary",
+                       "Currency",
+                       "OtherCurrency",
+                       "AddlContextSalary",
+                       "Country",
+                       "StateUS",
+                       "City",
+                       "ExperienceOverall",
+                       "ExperienceField",
+                       "EducationLevel",
+                       "Gender",
+                       "Race")
+head(sal_survey)
+dbWriteTable(conn, "SalarySurvey", sal_survey, overwrite=TRUE)
+```
+
+
+## Data sets from R packages
+
+```{r}
+# From ISLR2
+data(Bikeshare)
+dbWriteTable(conn, "Bikeshare", Bikeshare, overwrite=TRUE)
+
+data(Auto)
+dbWriteTable(conn, "Auto", Auto, overwrite=TRUE)
+
+data(Hitters)
+dbWriteTable(conn, "Hitters", Hitters, overwrite=TRUE)
+
+data(Credit)
+dbWriteTable(conn, "Credit", Credit, overwrite=TRUE)
+
+data(Default)
+dbWriteTable(conn, "Default", Default, overwrite=TRUE)
+
+
+# From MASS
+data(UScrime)
+head(UScrime)
+dbWriteTable(conn, "UScrime", UScrime, overwrite=TRUE)
+
+data(Boston)
+head(Boston)
+dbWriteTable(conn, "Boston", Boston, overwrite=TRUE)
+
+# From betareg
+library(betareg)
+data("GasolineYield")
+dbWriteTable(conn, "GasolineYield", GasolineYield, overwrite=TRUE)
+
+# from lme4
+library(lme4)
+data(cbpp)
+dbWriteTable(conn, "cbpp", cbpp)
+
+# From palmerpenguins
+library(palmerpenguins)
+data(penguins)
+dbWriteTable(conn,"penguins", penguins)
+
+```
+
+## Various simulated data sets
+
+### Mitscherlich data from nonlinear regression
+
+```{r}
+set.seed(675)
+x <- seq(from=0, to=400, by=20)
+lambda <- 80
+xi <- 40  
+kappa <- 0.01 
+M <- lambda + (xi-lambda) * exp(-kappa * x)
+Yield <- M + rnorm(length(M),mean=0,sd=3)
+mitsch <- data.frame(Yield,M,x)
+dbWriteTable(conn,"Mitscherlich", mitsch, overwrite=TRUE)
+```
+
+Log-logistic data from nonlinear regression
+
+```{r}
+set.seed(654)
+x <- seq(0.0001,0.6,.01)
+x <- x + abs(rnorm(length(x),0,0.1))
+x <- sort(x)
+alpha <- 100
+delta <- 10
+psi <- 50 
+beta <- 2.5
+
+mn <- delta + (alpha-delta)/(1+psi*exp(beta*log(x)))
+y <- mn + rnorm(length(x),mean=0,sd=9)
+df <- data.frame(y,x)
+dbWriteTable(conn,"loglogistic",df, overwrite=TRUE)
+```
+
+Simulated data from Garcia-Portugues for local regression
+
+```{r}
+set.seed(12345)
+n <- 100
+eps <- rnorm(n, sd = 2)
+m <- function(x) x^2 * cos(x)
+X <- rnorm(n, sd = 2)
+Y <- m(X) + eps
+df <- data.frame(Y,X)
+dbWriteTable(conn,"SimRegData",df, overwrite=TRUE)
+```
+
+
+```{r}
+tbls <- dbGetQuery(conn, "show tables;")
+
+db_pisa <- dbGetQuery(conn, "Select * from pisa;")
+head(db_pisa)
+
+dbDisconnect(conn)
+
+```

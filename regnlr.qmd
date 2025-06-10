@@ -342,7 +342,7 @@ to a value just slightlyl larger than the largest yield value.
 ## R
 
 ```{r, warning=FALSE}
-lam0 <- 80 #max(mitsch$Yield) + 1e-6
+lam0 <- 80 
 lm.fit <- lm(log(lam0 - Yield) ~ x, data=mitsch)
 lm.fit
 ```
