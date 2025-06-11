@@ -374,8 +374,6 @@ From this linear regression we get starting values
 
 :::
 
-
-
 ::::
 :::
 
